@@ -1,6 +1,6 @@
 {
   "name": "simplicite",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A lib ease to access Simplicit&eacute;&reg; REST services",
   "main": "simplicite.js",
   "repository": {
