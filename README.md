@@ -9,6 +9,12 @@ Introduction
 
 This is the NodeJS API for the [Simplicit&eacute;&reg; platform](http://www.simplicitesoftware.com).
 
+To install it:
+
+	npm install simplicite
+
+Check `test.js` for sample usage.
+
 License
 -------
 
