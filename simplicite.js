@@ -2,34 +2,30 @@
  * Simplicit&eacute;&reg; NodeJS lib
  */
 module.exports = {
-  Session: function(params) {
+  session: function(params) {
     if (!params) params = {};
     var debug = params.debug || false;
     var baseURL = params.baseURL || "http://localhost:8080";
     var root = params.root || "";
-    // TODO
+
+    function getBusinessObject(name, instance) {
+      return {
+        metadata: { name: name, instance: instance }
+      }
+    }
+
+    function getBusinessProcess(name) {
+      return {
+        metadata: { name: name }
+      }
+    }
+
     return {
       debug: debug,
       baseURL: baseURL,
-      root: root
+      root: root,
+      getBusinessObject: getBusinessObject,
+      getBusinessProcess: getBusinessProcess
     };
-  },
-  
-  BusinessObject:  function(session, name, instance) {
-    var metadata = { name: name, instance: instance };
-    // TODO
-    return {
-      session: session,
-      metadata: metadata
-    };
-  },
-  
-  BusinessProcess: function(session, name) {
-    var metadata = { name: name };
-    // TODO
-    return {
-      session: session,
-      metadata: metadata
-    };
-  };
+  }
 };
