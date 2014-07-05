@@ -2,7 +2,7 @@
   "name": "simplicite",
   "version": "0.0.0",
   "description": "A lib ease to access Simplicit&eacute;&reg; REST services",
-  "main": "index.js",
+  "main": "simplicite.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/simplicitesoftware/nodejs-api.git"
