@@ -21,6 +21,7 @@ module.exports = {
 			var p = path || '/'; 
 			p = (root !== '' ? '/' + root : '') + p;
 			var m = method || 'GET'; 
+			if (debug) console.log("[call]" + m + ", " + p);
 			http.request({ host: host, port: port, method: m, path: p }, function(res) {
 				var r = ""
 				res.on("data", function (chunk) {
@@ -31,14 +32,23 @@ module.exports = {
 				});
 			}).end();
 		}
-		call('/health', 'GET', function(res) {
-			console.log(res);
-		});
 
 		function getBusinessObject(name, instance) {
 			if (!instance) instance = 'node_' + name;
+			var self = this;
+			function getMetadata(callback, context) {
+				var self = this;
+				call("/json/obj?object=" + name + "&inst=" + instance + "&action=metadata" + (context ? "&context=" + context : ""), "GET", function(res) {
+					if (debug) console.log("[obj.getMetadata] response = " + res);
+					var r = eval('(' + res + ')');
+					self.metadata = r.response;
+					if (callback) callback.call(self, self.metadata);
+				});
+
+			}
 			return {
-				metadata: { name: name, instance: instance }
+				metadata: { name: name, instance: instance },
+				getMetadata: getMetadata
 			}
 		}
 

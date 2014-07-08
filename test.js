@@ -4,12 +4,15 @@ var demo = simplicite.session({
 	url: 'http://localhost:8080',
 	root: 'demo',
 	login: 'designer',
-	password: 'designer'
+	password: 'designer',
+	debug: false
 });
 console.log(demo.metadata);
 
 var prd = demo.getBusinessObject('DemoProduct');
-console.log(prd.metadata);
+prd.getMetadata(function() {
+	console.log(prd.metadata.label);
+});
 
-var plcord = demo.getBusinessProcess('DemoPlaceNewOrder');
-console.log(plcord.metadata);
+//var plcord = demo.getBusinessProcess('DemoPlaceNewOrder');
+//console.log(plcord.metadata);
