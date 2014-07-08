@@ -13,8 +13,12 @@ module.exports = {
 		var login = params.login || 'public';
 		var password = params.password || '';
 
-		if (debug)
-			console.log("[simplicite] Base URL = " + scheme + '://' + host + ':' + port + (root !== '' ? '/' + root : ''));
+		var infoHandler = params.infoHandler || function(msg) { console.log("INFO - " + msg); };
+		var warnHandler = params.warnHandler || function(msg) { console.log("WARN - " + msg); };
+		var errorHandler = params.errorHandler || function(msg) { console.log("ERROR - " + msg); };
+		var debugHandler = params.debugHandler || function(msg) { if (debug) console.log("DEBUG - " + msg); };
+
+		debugHandler("[simplicite] Base URL = " + scheme + '://' + host + ':' + port + (root !== '' ? '/' + root : ''));
 
 		var http = require(scheme);
 
@@ -22,8 +26,7 @@ module.exports = {
 			var p = path || '/'; 
 			p = (root !== '' ? '/' + root : '') + p;
 			var m = method || 'GET'; 
-			if (debug)
-				console.log("[simplicite.call] URL = " + m + ", " + p);
+			debugHandler("[simplicite.call] URL = " + m + ", " + p);
 			http.request({ host: host, port: port, method: m, path: p }, function(res) {
 				var r = ""
 				res.on("data", function (chunk) {
@@ -43,25 +46,31 @@ module.exports = {
 			function getMetadata(callback, context) {
 				var self = this;
 				call(path + "&action=metadata" + (context ? "&context=" + context : ""), "GET", function(res) {
-					if (debug)
-						console.log("[simplicite.BusinessObject.getMetadata] HTTP response = " + res);
+					debugHandler("[simplicite.BusinessObject.getMetadata] HTTP response = " + res);
 					var r = eval('(' + res + ')');
-					self.metadata = r.response;
-					if (callback)
-						callback.call(self, self.metadata);
+					if (r.type === "error") {
+						errorHandler.call(self, r.response.message);
+					} else {
+						self.metadata = r.response;
+						if (callback)
+							callback.call(self, self.metadata);
+					}
 				});
 			}
 
 			function search(callback, filters) {
 				var self = this;
 				call(path + "&action=search", "GET", function(res) {
-					if (debug)
-						console.log("[simplicite.BusinessObject.search] HTTP response = " + res);
+					debugHandler("[simplicite.BusinessObject.search] HTTP response = " + res);
 					var r = eval('(' + res + ')');
-					self.count = r.response.count;
-					self.list = r.response.list;
-					if (callback)
-						callback.call(self, self.list);
+					if (r.type === "error") {
+						errorHandler.call(self, r.response.message);
+					} else {
+						self.count = r.response.count;
+						self.list = r.response.list;
+						if (callback)
+							callback.call(self, self.list);
+					}
 				});
 			}
 

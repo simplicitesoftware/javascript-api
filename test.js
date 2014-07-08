@@ -5,7 +5,7 @@ var demo = simplicite.session({
 	root: 'demo',
 	login: 'designer',
 	password: 'designer',
-	debug: false
+	debug: true
 });
 console.log(demo.metadata);
 
