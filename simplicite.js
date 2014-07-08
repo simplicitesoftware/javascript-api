@@ -28,7 +28,7 @@ module.exports = {
 			var m = method || 'GET'; 
 			debugHandler("[simplicite.call] URL = " + m + ", " + p);
 			http.request({ host: host, port: port, method: m, path: p }, function(res) {
-				var r = ""
+				var r = "";
 				res.on("data", function (chunk) {
 					r += chunk;
 				});
@@ -109,13 +109,13 @@ module.exports = {
 				create: create,
 				update: update,
 				del: del
-			}
+			};
 		}
 
 		function getBusinessProcess(name) {
 			return {
 				metadata: { name: name }
-			}
+			};
 		}
 
 		return {
