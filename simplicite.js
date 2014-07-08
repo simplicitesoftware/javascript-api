@@ -3,6 +3,81 @@
  */
 module.exports = {
 	session: function(params) {
+		constants = {
+			DEFAULT_ROWID: '0',
+				
+			CONTEXT_NONE: 0,
+			CONTEXT_SEARCH: 1,
+			CONTEXT_LIST: 2,
+			CONTEXT_CREATE: 3,
+			CONTEXT_COPY: 4,
+			CONTEXT_UPDATE: 5,
+			CONTEXT_DELETE: 6,
+			CONTEXT_GRAPH: 7,
+			CONTEXT_CROSSTAB: 8,
+			CONTEXT_PRINTTMPL: 9,
+			CONTEXT_UPDATEALL: 10,
+			CONTEXT_REFSELECT: 11,
+			CONTEXT_DATAMAPSELECT: 12,
+			CONTEXT_PREVALIDATE: 13,
+			CONTEXT_POSTVALIDATE: 14,
+			CONTEXT_STATETRANSITION: 15,
+			CONTEXT_EXPORT: 16,
+			CONTEXT_IMPORT: 17,
+			CONTEXT_ASSOCIATE: 18,
+			CONTEXT_PANELLIST: 19,
+			
+			TYPE_ID: 0,
+			TYPE_INT: 1,
+			TYPE_FLOAT: 2,
+			TYPE_STRING: 3,
+			TYPE_DATE: 4,
+			TYPE_DATETIME: 5,
+			TYPE_TIME: 6,
+			TYPE_ENUM: 7,
+			TYPE_BOOLEAN: 8,
+			TYPE_PASSWORD: 9,
+			TYPE_URL: 10,
+			TYPE_HTML: 11,
+			TYPE_EMAIL: 12,
+			TYPE_LONG_STRING: 13,
+			TYPE_ENUM_MULTI: 14,
+			TYPE_REGEXP: 15,
+			TYPE_DOC: 17,
+			TYPE_FLOAT_EMPTY: 18,
+			TYPE_EXTFILE: 19,
+			TYPE_IMAGE: 20,
+			TYPE_NOTEPAD: 21,
+			TYPE_PHONENUM: 22,
+			TYPE_COLOR: 23,
+			TYPE_OBJECT: 24,
+			TYPE_GEOCOORDS: 25,
+	
+			VIS_NOT: 0,
+			VIS_LIST: 1,
+			VIS_FORM: 2,
+			VIS_BOTH: 3,
+	
+			SEARCH_NONE: 0,
+			SEARCH_MONO: 1,
+			SEARCH_MULTI_CHECK: 2,
+			SEARCH_MULTI_LIST: 3,
+	
+			RENDERING_DEFAULT: '',
+			RENDERING_SELECTBOX: 'SB',
+			RENDERING_HORIZCHECKBOX: 'HCB',
+			RENDERING_VERTCHECKBOX: 'VCB',
+			RENDERING_HORIZRADIOBUTTON: 'HRB',
+			RENDERING_VERTRADIOBUTTON: 'VRB',
+	
+			TRUE: '1',
+			FALSE: '0',
+	
+			ERRLEVEL_FATAL: 1,
+			ERRLEVEL_ERROR: 2,
+			ERRLEVEL_WARNING: 3
+		};
+		
 		if (!params) params = {};
 		var debug = params.debug || false;
 		var scheme = params.scheme || 'http';
@@ -48,22 +123,21 @@ module.exports = {
 			return p;
 		}
 
-		function call(path, method, callback) {
+		function call(path, callback) {
 			var p = path || '/'; 
 			p = (root !== '' ? '/' + root : '') + p;
-			var m = method || 'GET'; 
 			var req = {
 					host: host,
 					port: port,
-					method: m,
+					method: 'POST',
 					path: p,
-					headers: {}
+					headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
 				};
 			if (cookies)
 				req.headers['Cookie'] = cookies;
 			if (auth)
 				req.headers['Authorization'] = auth;
-			debugHandler('[simplicite.call] URL = ' + m + ', ' + p);
+			debugHandler('[simplicite.call] URL = ' + p);
 			http.request(req, function(res) {
 				cookies = res.headers['set-cookie'];
 				var r = '';
@@ -84,7 +158,12 @@ module.exports = {
 			function getMetadata(callback, params) {
 				var self = this;
 				if (!params) params = {};
-				call(path + '&action=metadata' + (params.context ? '&context=' + params.context : '') + (params.contextParam ? '&contextparam=' + params.contextParam : ''), 'GET', function(res) {
+				var p = '';
+				if (params.context)
+					p += '&context=' + params.context;
+				if (params.contextParam)
+					p += '&contextparam=' + params.contextParam;
+				call(path + '&action=metadata' + p, function(res) {
 					debugHandler('[simplicite.BusinessObject.getMetadata] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
 					if (r.type === 'error') {
@@ -101,8 +180,16 @@ module.exports = {
 				var self = this;
 				self.filters = filters;
 				if (!params) params = {};
-				// TODO : use POST ?
-				call(path + '&action=search' + (filters ? '&' + callParams(filters) : '') + (params.page ? '&page=' + params.page : ''), 'GET', function(res) {
+				var p = '';
+				if (params.page)
+					p += '&page=' + params.page;
+				var id = params.inlineDocs;
+				if (id)
+					p += "&inline_documents=" + (id.join ? id.join(",") : id);
+				var it = params.inlineThumbs;
+				if (it)
+					p += "&inline_thumbnails=" + (it.join ? it.join(",") : it);
+				call(path + '&action=search' + (filters ? '&' + callParams(filters) : '') + p, function(res) {
 					debugHandler('[simplicite.BusinessObject.search] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
 					if (r.type === 'error') {
@@ -118,11 +205,25 @@ module.exports = {
 				});
 			}
 
-			function get(callback, rowId) {
+			function get(callback, rowId, params) {
 				var self = this;
-				// TODO : handle non standard row_id
-				call(path + '&action=select&' + self.metadata.rowidfield + '=' + rowId, 'GET', function(res) {
-					debugHandler('[simplicite.BusinessObject.search] HTTP response = ' + res);
+				if (!params) params = {};
+				var p = '';
+				if (params.context)
+					p += '&context=' + params.context;
+				var id = params.inlineDocs;
+				if (id)
+					p += "&inline_documents=" + (id.join ? id.join(",") : id);
+				var it = params.inlineThumbs;
+				if (it)
+					p += "&inline_thumbnails=" + (it.join ? it.join(",") : it);
+				if (params.fields) {
+					for (var i = 0; i < params.fields.length; i++) {
+						url += "&fields=" + params.fields[i].replace(".", "__");
+					}
+				}
+				call(path + '&action=get&' + self.metadata.rowidfield + '=' + rowId + p, function(res) {
+					debugHandler('[simplicite.BusinessObject.get] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
 					if (r.type === 'error') {
 						errorHandler.call(self, r.response.message);
@@ -135,7 +236,19 @@ module.exports = {
 			}
 
 			function getForCreate(callback) {
-				this.get('0');
+				this.get(callback, constants.DEFAULT_ROWID, { context: constants.CONTEXT_CREATE });
+			}
+
+			function getForUpdate(callback, rowId) {
+				this.get(callback, rowId, { context: constants.CONTEXT_UPDATE });
+			}
+
+			function getForCopy(callback, rowId) {
+				this.get(callback, rowId, { context: constants.CONTEXT_COPY });
+			}
+
+			function getForDelete(callback, rowId) {
+				this.get(callback, rowId, { context: constants.CONTEXT_CREATE });
 			}
 
 			function save(callback, item) {
@@ -158,6 +271,11 @@ module.exports = {
 				// TODO
 			}
 
+			function action(callback, action) {
+				var self = this;
+				// TODO
+			}
+
 			return {
 				metadata: { name: name, instance: instance },
 				getMetadata: getMetadata,
@@ -175,14 +293,40 @@ module.exports = {
 				getRowIdFieldName: function() { return this.metadata.rowidfield; },
 				getRowIdField: function() { return this.getField(this.getRowIdFieldName()); },
 				getLinks: function() { return this.metadata.links; },
+				getValueForCode: function(field, code) {
+					var n = 0;
+					var l = field.listOfValues;
+					if (l === undefined) return code;
+					while (n < l.length && l[n].code != code) n++;
+					return (n == l.length ? code : l[n].value);
+				},
+				getListValue: function(list, code) {
+					for (var i = 0; i < list.length; i++) {
+						var l = list[i];
+						if (l.code == code) return l.value;
+					}
+					return undefined;
+				},
+				
 				search: search,
+
 				get: get,
-				getForCreate: getForCreate,
 				select: get,
+				getForCreate: getForCreate,
+				selectForCreate: getForCreate,
+				getForUpdate: getForUpdate,
+				selectForUpdate: getForUpdate,
+				getForCopy: getForCopy,
+				selectForCopy: getForCopy,
+				getForDelete: getForDelete,
+				selectForDelete: getForDelete,
+				getRowId: function() { if (this.item) return this.item[this.getRowIdFieldName()]; },
+				
 				save: save,
 				create: create,
 				update: update,
-				del: del
+				del: del,
+				action: action
 			};
 		}
 
@@ -193,6 +337,7 @@ module.exports = {
 		}
 
 		return {
+			constants: constants,
 			metadata: {
 				scheme: scheme,
 				host: host,

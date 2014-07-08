@@ -21,8 +21,11 @@ prd.getMetadata(function() {
 	prd.search(function() {
 		for (var i = 0; i < prd.list.length; i++) {
 			var item = prd.list[i];
-			console.log(item.row_id + ' ' + item.prdSupId__supName + ' ' + item.prdReference + ' ' + item.prdName);
+			console.log('list[' + i + "]: " + item.row_id + ' ' + item.prdSupId__supName + ' ' + item.prdReference + ' ' + item.prdName);
 		}
+		prd.get(function() {
+			console.log('item: ' + prd.item.row_id + ' ' + prd.item.prdSupId__supName + ' ' + prd.item.prdReference + ' ' + prd.item.prdName);
+		}, 1);
 	}, { prdName: 'Tablet%' });
 });
 
