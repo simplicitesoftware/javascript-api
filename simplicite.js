@@ -10,8 +10,10 @@ module.exports = {
 		var host = params.host || 'localhost';
 		var port = params.port || 8080;
 		var root = params.root || '';
-		var login = params.login || 'public';
-		var password = params.password || '';
+
+		var login = params.login;
+		var password = params.password;
+		var auth = login && password ? 'Basic ' + new Buffer(login + ':' + password).toString('base64') : undefined;
 
 		var infoHandler = params.infoHandler || function(msg) { console.log('INFO - ' + msg); };
 		var warnHandler = params.warnHandler || function(msg) { console.log('WARN - ' + msg); };
@@ -24,20 +26,45 @@ module.exports = {
 
 		var cookies = undefined;
 
+		function callParams(data) {
+			var p = "";
+			if (data === undefined)
+				return p;
+			var n = 0;
+			for (var i in data) {
+				var d = data[i];
+				if (d === undefined)
+					d = "";
+				if (d.id !== undefined && d.content !== undefined) // Document ?
+					p += (n++ != 0 ? "&" : "") + i + "=" + encodeURIComponent("id|" + d.id + "|name|" + d.name + "|content|" + d.content);
+				else if (d.object !== undefined && d.row_id !== undefined) // Object ?
+					p += (n++ != 0 ? "&" : "") + i + "=" + encodeURIComponent("object|" + d.object + "|row_id|" + d.row_id);
+				else if (d.sort) // Array ?
+					for (var j = 0; j < d.length; j++)
+						p += (n++ != 0 ? "&" : "") + i + "=" + encodeURIComponent(d[j]);
+				else
+					p += (n++ != 0 ? "&" : "") + i + "=" + encodeURIComponent(d);
+			}
+			return p;
+		}
+
 		function call(path, method, callback) {
 			var p = path || '/'; 
 			p = (root !== '' ? '/' + root : '') + p;
 			var m = method || 'GET'; 
-			var callParams = {
+			var req = {
 					host: host,
 					port: port,
 					method: m,
-					path: p
+					path: p,
+					headers: {}
 				};
 			if (cookies)
-				callParams.headers =  { 'Cookie': cookies };
+				req.headers['Cookie'] = cookies;
+			if (auth)
+				req.headers['Authorization'] = auth;
 			debugHandler('[simplicite.call] URL = ' + m + ', ' + p);
-			http.request(callParams, function(res) {
+			http.request(req, function(res) {
 				cookies = res.headers['set-cookie'];
 				var r = '';
 				res.on('data', function (chunk) {

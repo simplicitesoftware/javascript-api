@@ -2,7 +2,7 @@ var simplicite = require('./simplicite');
 
 var demo = simplicite.session({
 	url: 'http://localhost:8080',
-	root: 'demo',
+	root: 'demows',
 	login: 'designer',
 	password: 'designer',
 	debug: false
