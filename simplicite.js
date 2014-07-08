@@ -4,7 +4,7 @@
 module.exports = {
 	session: function(params) {
 		constants = {
-			DEFAULT_ROWID: '0',
+			DEFAULT_ROW_ID: '0',
 				
 			CONTEXT_NONE: 0,
 			CONTEXT_SEARCH: 1,
@@ -123,7 +123,7 @@ module.exports = {
 			return p;
 		}
 
-		function call(path, callback) {
+		function call(path, data, callback) {
 			var p = path || '/'; 
 			p = (root !== '' ? '/' + root : '') + p;
 			var req = {
@@ -138,7 +138,7 @@ module.exports = {
 			if (auth)
 				req.headers['Authorization'] = auth;
 			debugHandler('[simplicite.call] URL = ' + p);
-			http.request(req, function(res) {
+			var r = http.request(req, function(res) {
 				cookies = res.headers['set-cookie'];
 				var r = '';
 				res.on('data', function (chunk) {
@@ -148,9 +148,13 @@ module.exports = {
 					if (callback)
 						callback.call(this, r);
 				});
-			}).end();
+			});
+			if (data) r.write(data);
+			r.end();
 		}
 
+		// TODO : other methods (getGrant, getNews, ...)
+		
 		function getBusinessObject(name, instance) {
 			if (!instance) instance = 'node_' + name;
 			var path = '/json/obj?object=' + name + '&inst=' + instance;
@@ -163,7 +167,7 @@ module.exports = {
 					p += '&context=' + params.context;
 				if (params.contextParam)
 					p += '&contextparam=' + params.contextParam;
-				call(path + '&action=metadata' + p, function(res) {
+				call(path + '&action=metadata' + p, undefined, function(res) {
 					debugHandler('[simplicite.BusinessObject.getMetadata] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
 					if (r.type === 'error') {
@@ -176,9 +180,31 @@ module.exports = {
 				});
 			}
 
+			function getFilters(callback, params) {
+				var self = this;
+				if (!params) params = {};
+				var p = '';
+				if (params.context)
+					p += '&context=' + params.context;
+				if (params.reset)
+					p += '&reset=' + params.reset;
+				call(path + '&action=filters' + p, undefined, function(res) {
+					debugHandler('[simplicite.BusinessObject.getFilters] HTTP response = ' + res);
+					var r = eval('(' + res + ')');
+					if (r.type === 'error') {
+						errorHandler.call(self, r.response.message);
+					} else {
+						self.item = r.response;
+						if (callback)
+							callback.call(self, self.item);
+					}
+				});
+			}
+
 			function search(callback, filters, params) {
 				var self = this;
-				self.filters = filters;
+				if (filters)
+					self.filters = filters;
 				if (!params) params = {};
 				var p = '';
 				if (params.page)
@@ -189,7 +215,7 @@ module.exports = {
 				var it = params.inlineThumbs;
 				if (it)
 					p += "&inline_thumbnails=" + (it.join ? it.join(",") : it);
-				call(path + '&action=search' + (filters ? '&' + callParams(filters) : '') + p, function(res) {
+				call(path + '&action=search' + p, filters ? callParams(self.filters) : undefined, function(res) {
 					debugHandler('[simplicite.BusinessObject.search] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
 					if (r.type === 'error') {
@@ -222,7 +248,7 @@ module.exports = {
 						url += "&fields=" + params.fields[i].replace(".", "__");
 					}
 				}
-				call(path + '&action=get&' + self.metadata.rowidfield + '=' + rowId + p, function(res) {
+				call(path + '&action=get&' + self.metadata.rowidfield + '=' + rowId + p, undefined, function(res) {
 					debugHandler('[simplicite.BusinessObject.get] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
 					if (r.type === 'error') {
@@ -236,7 +262,7 @@ module.exports = {
 			}
 
 			function getForCreate(callback) {
-				this.get(callback, constants.DEFAULT_ROWID, { context: constants.CONTEXT_CREATE });
+				this.get(callback, constants.DEFAULT_ROW_ID, { context: constants.CONTEXT_CREATE });
 			}
 
 			function getForUpdate(callback, rowId) {
@@ -251,31 +277,101 @@ module.exports = {
 				this.get(callback, rowId, { context: constants.CONTEXT_CREATE });
 			}
 
-			function save(callback, item) {
+			function populate(callback, rowId, params) {
+				var self = this;
+				if (!params) params = {};
+				var p = '';
+				if (params.context)
+					p += '&context=' + params.context;
+				var id = params.inlineDocs;
+				if (id)
+					p += "&inline_documents=" + (id.join ? id.join(",") : id);
+				var it = params.inlineThumbs;
+				if (it)
+					p += "&inline_thumbnails=" + (it.join ? it.join(",") : it);
+				call(path + '&action=populate&' + self.metadata.rowidfield + '=' + rowId + p, undefined, function(res) {
+					debugHandler('[simplicite.BusinessObject.populate] HTTP response = ' + res);
+					var r = eval('(' + res + ')');
+					if (r.type === 'error') {
+						errorHandler.call(self, r.response.message);
+					} else {
+						self.item = r.response;
+						if (callback)
+							callback.call(self, self.item);
+					}
+				});
+			}
+
+			function save(callback, item, params) {
+				if (item)
+					this.item = item;
+				if (this.item[this.metadata.rowidfield] == constants.DEFAULT_ROW_ID)
+					this.create(callback, item, params);
+				else
+					this.update(callback, item, params);
+			}
+
+			function create(callback, item, params) {
+				var self = this;
+				if (item)
+					self.item = item;
+				if (!params) params = {};
+				call(path + '&action=create', self.item, function(res) {
+					debugHandler('[simplicite.BusinessObject.create] HTTP response = ' + res);
+					var r = eval('(' + res + ')');
+					if (r.type === 'error') {
+						errorHandler.call(self, r.response.message);
+					} else {
+						self.item = r.response;
+						if (callback)
+							callback.call(self, self.item);
+					}
+				});
+			}
+
+			function update(callback, item, params) {
+				var self = this;
+				if (item)
+					self.item = item;
+				if (!params) params = {};
+				call(path + '&action=update', self.item, function(res) {
+					debugHandler('[simplicite.BusinessObject.update] HTTP response = ' + res);
+					var r = eval('(' + res + ')');
+					if (r.type === 'error') {
+						errorHandler.call(self, r.response.message);
+					} else {
+						self.item = r.response;
+						if (callback)
+							callback.call(self, self.item);
+					}
+				});
+			}
+
+			function del(callback, item, params) {
+				var self = this;
+				if (item)
+					self.item = item;
+				if (!params) params = {};
+				call(path + '&action=delete&' + self.metadata.rowidfield + "=" + self.item[self.metadata.rowidfield], undefined, function(res) {
+					debugHandler('[simplicite.BusinessObject.del] HTTP response = ' + res);
+					var r = eval('(' + res + ')');
+					if (r.type === 'error') {
+						errorHandler.call(self, r.response.message);
+					} else {
+						self.item = undefined;
+						if (callback)
+							callback.call(self);
+					}
+				});
+			}
+
+			function action(callback, action, params) {
 				var self = this;
 				// TODO
 			}
 
-			function create(callback, item) {
-				var self = this;
-				// TODO
-			}
-
-			function update(callback, item) {
-				var self = this;
-				// TODO
-			}
-
-			function del(callback, item) {
-				var self = this;
-				// TODO
-			}
-
-			function action(callback, action) {
-				var self = this;
-				// TODO
-			}
-
+			// TODO : other methods (crosstab, setParameter, getParameter, ...)
+			
 			return {
 				metadata: { name: name, instance: instance },
 				getMetadata: getMetadata,
@@ -308,6 +404,7 @@ module.exports = {
 					return undefined;
 				},
 				
+				getFilters: getFilters,
 				search: search,
 
 				get: get,
