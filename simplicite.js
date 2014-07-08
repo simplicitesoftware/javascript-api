@@ -196,7 +196,7 @@ module.exports = {
 					} else {
 						self.item = r.response;
 						if (callback)
-							callback.call(self, self.item);
+							callback.call(self, self.filters);
 					}
 				});
 			}
