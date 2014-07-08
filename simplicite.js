@@ -403,6 +403,13 @@ module.exports = {
 					}
 					return undefined;
 				},
+				isRowIdField: function(field) {
+					return !field.ref && field.name == this.metadata.rowidfield;
+				},
+				isTimestampField: function(field) {
+					var n = field.name;
+					return !field.ref && (n == "created_by" || n == "created_dt" || n == "updated_by" || n == "updated_dt");
+				},
 				
 				getFilters: getFilters,
 				search: search,
