@@ -40,8 +40,6 @@ module.exports = {
 			if (!inst) inst = 'node_' + name;
 			var path = "/json/obj?object=" + name + "&inst=" + inst;
 
-			var self = this;
-
 			function getMetadata(callback, context) {
 				var self = this;
 				call(path + "&action=metadata" + (context ? "&context=" + context : ""), "GET", function(res) {
@@ -55,26 +53,32 @@ module.exports = {
 			}
 
 			function search(callback, filters) {
+				var self = this;
 				// TODO
 			}
 
 			function get(callback, rowId) {
+				var self = this;
 				// TODO
 			}
 
 			function save(callback, item) {
+				var self = this;
 				// TODO
 			}
 
 			function create(callback, item) {
+				var self = this;
 				// TODO
 			}
 
 			function update(callback, item) {
+				var self = this;
 				// TODO
 			}
 
 			function del(callback, item) {
+				var self = this;
 				// TODO
 			}
 
