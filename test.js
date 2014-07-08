@@ -17,7 +17,7 @@ prd.getMetadata(function() {
 			var item = prd.list[i];
 			console.log(item.row_id + ' ' + item.prdSupId__supName + ' ' + item.prdReference + ' ' + item.prdName);
 		}
-	});
+	}, { prdName: 'Tablet%' });
 });
 
 //var plcord = demo.getBusinessProcess('DemoPlaceNewOrder');

@@ -27,23 +27,23 @@ module.exports = {
 		var cookies = undefined;
 
 		function callParams(data) {
-			var p = "";
+			var p = '';
 			if (data === undefined)
 				return p;
 			var n = 0;
 			for (var i in data) {
 				var d = data[i];
 				if (d === undefined)
-					d = "";
+					d = '';
 				if (d.id !== undefined && d.content !== undefined) // Document ?
-					p += (n++ != 0 ? "&" : "") + i + "=" + encodeURIComponent("id|" + d.id + "|name|" + d.name + "|content|" + d.content);
+					p += (n++ != 0 ? '&' : '') + i + '=' + encodeURIComponent('id|' + d.id + '|name|' + d.name + '|content|' + d.content);
 				else if (d.object !== undefined && d.row_id !== undefined) // Object ?
-					p += (n++ != 0 ? "&" : "") + i + "=" + encodeURIComponent("object|" + d.object + "|row_id|" + d.row_id);
+					p += (n++ != 0 ? '&' : '') + i + '=' + encodeURIComponent('object|' + d.object + '|row_id|' + d.row_id);
 				else if (d.sort) // Array ?
 					for (var j = 0; j < d.length; j++)
-						p += (n++ != 0 ? "&" : "") + i + "=" + encodeURIComponent(d[j]);
+						p += (n++ != 0 ? '&' : '') + i + '=' + encodeURIComponent(d[j]);
 				else
-					p += (n++ != 0 ? "&" : "") + i + "=" + encodeURIComponent(d);
+					p += (n++ != 0 ? '&' : '') + i + '=' + encodeURIComponent(d);
 			}
 			return p;
 		}
@@ -98,7 +98,7 @@ module.exports = {
 
 			function search(callback, filters) {
 				var self = this;
-				call(path + '&action=search', 'GET', function(res) {
+				call(path + '&action=search' + (filters ? '&' + callParams(filters) : ''), 'GET', function(res) {
 					debugHandler('[simplicite.BusinessObject.search] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
 					if (r.type === 'error') {
