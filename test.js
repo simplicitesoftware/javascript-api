@@ -5,7 +5,7 @@ var demo = simplicite.session({
 	root: 'demo',
 	login: 'designer',
 	password: 'designer',
-	debug: true
+	debug: false
 });
 console.log(demo.metadata);
 
@@ -15,7 +15,7 @@ prd.getMetadata(function() {
 	prd.search(function() {
 		for (var i = 0; i < prd.list.length; i++) {
 			var item = prd.list[i];
-			console.log(item.row_id + " " + item.prdName);
+			console.log(item.row_id + ' ' + item.prdSupId__supName + ' ' + item.prdReference + ' ' + item.prdName);
 		}
 	});
 });

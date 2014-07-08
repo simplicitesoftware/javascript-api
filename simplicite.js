@@ -13,26 +13,37 @@ module.exports = {
 		var login = params.login || 'public';
 		var password = params.password || '';
 
-		var infoHandler = params.infoHandler || function(msg) { console.log("INFO - " + msg); };
-		var warnHandler = params.warnHandler || function(msg) { console.log("WARN - " + msg); };
-		var errorHandler = params.errorHandler || function(msg) { console.log("ERROR - " + msg); };
-		var debugHandler = params.debugHandler || function(msg) { if (debug) console.log("DEBUG - " + msg); };
+		var infoHandler = params.infoHandler || function(msg) { console.log('INFO - ' + msg); };
+		var warnHandler = params.warnHandler || function(msg) { console.log('WARN - ' + msg); };
+		var errorHandler = params.errorHandler || function(msg) { console.log('ERROR - ' + msg); };
+		var debugHandler = params.debugHandler || function(msg) { if (debug) console.log('DEBUG - ' + msg); };
 
-		debugHandler("[simplicite] Base URL = " + scheme + '://' + host + ':' + port + (root !== '' ? '/' + root : ''));
+		debugHandler('[simplicite] Base URL = ' + scheme + '://' + host + ':' + port + (root !== '' ? '/' + root : ''));
 
 		var http = require(scheme);
+
+		var cookies = undefined;
 
 		function call(path, method, callback) {
 			var p = path || '/'; 
 			p = (root !== '' ? '/' + root : '') + p;
 			var m = method || 'GET'; 
-			debugHandler("[simplicite.call] URL = " + m + ", " + p);
-			http.request({ host: host, port: port, method: m, path: p }, function(res) {
-				var r = "";
-				res.on("data", function (chunk) {
+			var callParams = {
+					host: host,
+					port: port,
+					method: m,
+					path: p
+				};
+			if (cookies)
+				callParams.headers =  { 'Cookie': cookies };
+			debugHandler('[simplicite.call] URL = ' + m + ', ' + p);
+			http.request(callParams, function(res) {
+				cookies = res.headers['set-cookie'];
+				var r = '';
+				res.on('data', function (chunk) {
 					r += chunk;
 				});
-				res.on("end", function () {
+				res.on('end', function () {
 					if (callback)
 						callback.call(this, r);
 				});
@@ -41,14 +52,14 @@ module.exports = {
 
 		function getBusinessObject(name, inst) {
 			if (!inst) inst = 'node_' + name;
-			var path = "/json/obj?object=" + name + "&inst=" + inst;
+			var path = '/json/obj?object=' + name + '&inst=' + inst;
 
 			function getMetadata(callback, context) {
 				var self = this;
-				call(path + "&action=metadata" + (context ? "&context=" + context : ""), "GET", function(res) {
-					debugHandler("[simplicite.BusinessObject.getMetadata] HTTP response = " + res);
+				call(path + '&action=metadata' + (context ? '&context=' + context : ''), 'GET', function(res) {
+					debugHandler('[simplicite.BusinessObject.getMetadata] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
-					if (r.type === "error") {
+					if (r.type === 'error') {
 						errorHandler.call(self, r.response.message);
 					} else {
 						self.metadata = r.response;
@@ -60,10 +71,10 @@ module.exports = {
 
 			function search(callback, filters) {
 				var self = this;
-				call(path + "&action=search", "GET", function(res) {
-					debugHandler("[simplicite.BusinessObject.search] HTTP response = " + res);
+				call(path + '&action=search', 'GET', function(res) {
+					debugHandler('[simplicite.BusinessObject.search] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
-					if (r.type === "error") {
+					if (r.type === 'error') {
 						errorHandler.call(self, r.response.message);
 					} else {
 						self.count = r.response.count;
