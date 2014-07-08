@@ -215,7 +215,7 @@ module.exports = {
 				var it = params.inlineThumbs;
 				if (it)
 					p += "&inline_thumbnails=" + (it.join ? it.join(",") : it);
-				call(path + '&action=search' + p, filters ? callParams(self.filters) : undefined, function(res) {
+				call(path + '&action=search' + p, callParams(self.filters), function(res) {
 					debugHandler('[simplicite.BusinessObject.search] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
 					if (r.type === 'error') {
@@ -316,7 +316,7 @@ module.exports = {
 				if (item)
 					self.item = item;
 				if (!params) params = {};
-				call(path + '&action=create', self.item, function(res) {
+				call(path + '&action=create', callParams(self.item), function(res) {
 					debugHandler('[simplicite.BusinessObject.create] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
 					if (r.type === 'error') {
@@ -334,7 +334,7 @@ module.exports = {
 				if (item)
 					self.item = item;
 				if (!params) params = {};
-				call(path + '&action=update', self.item, function(res) {
+				call(path + '&action=update', callParams(self.item), function(res) {
 					debugHandler('[simplicite.BusinessObject.update] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
 					if (r.type === 'error') {

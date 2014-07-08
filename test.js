@@ -7,10 +7,11 @@ var demo = simplicite.session({
 	password: 'designer',
 	debug: false
 });
-console.log(demo.metadata);
+//console.log(demo.metadata);
 
 var sys = demo.getBusinessObject('SystemParam');
 sys.getMetadata(function() {
+	console.log("Got metadata !");
 	console.log('Name: ' + sys.getName());
 	console.log('Instance: ' + sys.getInstance());
 	console.log('Label: ' + sys.getLabel());
@@ -19,13 +20,26 @@ sys.getMetadata(function() {
 	console.log('Fields.length: ' + sys.getFields().length);
 	console.log('Links.length: ' + sys.getLinks().length);
 	sys.search(function() {
+		console.log("Searched !");
 		for (var i = 0; i < sys.list.length; i++) {
 			var item = sys.list[i];
 			console.log('list[' + i + "]: " + item.row_id + ' ' + item.sys_code + ' ' + item.sys_value);
 		}
 		sys.get(function() {
+			console.log("Selected !");
 			console.log('item: ' + sys.item.row_id + ' ' + sys.item.sys_code + ' ' + sys.item.sys_value);
-		}, 1);
+			sys.getForCreate(function() {
+				console.log("Got for creation !");
+				console.log(sys.item);
+				sys.create(function() {
+					console.log("Created !");
+					console.log(sys.item);
+					sys.del(function() {
+						console.log("Deleted !");
+					});
+				}, { sys_code: "TEST", sys_value: "Test" });
+			});
+		}, 2);
 	}, { sys_code: 'EASYMODE%' });
 });
 
