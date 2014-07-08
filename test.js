@@ -9,24 +9,24 @@ var demo = simplicite.session({
 });
 console.log(demo.metadata);
 
-var prd = demo.getBusinessObject('DemoProduct');
-prd.getMetadata(function() {
-	console.log('Name: ' + prd.getName());
-	console.log('Instance: ' + prd.getInstance());
-	console.log('Label: ' + prd.getLabel());
-	console.log('Help: ' + prd.getHelp());
-	console.log('RowId.name: ' + prd.getRowIdField().name);
-	console.log('Fields.length: ' + prd.getFields().length);
-	console.log('Links.length: ' + prd.getLinks().length);
-	prd.search(function() {
-		for (var i = 0; i < prd.list.length; i++) {
-			var item = prd.list[i];
-			console.log('list[' + i + "]: " + item.row_id + ' ' + item.prdSupId__supName + ' ' + item.prdReference + ' ' + item.prdName);
+var sys = demo.getBusinessObject('SystemParam');
+sys.getMetadata(function() {
+	console.log('Name: ' + sys.getName());
+	console.log('Instance: ' + sys.getInstance());
+	console.log('Label: ' + sys.getLabel());
+	console.log('Help: ' + sys.getHelp());
+	console.log('RowId.name: ' + sys.getRowIdField().name);
+	console.log('Fields.length: ' + sys.getFields().length);
+	console.log('Links.length: ' + sys.getLinks().length);
+	sys.search(function() {
+		for (var i = 0; i < sys.list.length; i++) {
+			var item = sys.list[i];
+			console.log('list[' + i + "]: " + item.row_id + ' ' + item.sys_code + ' ' + item.sys_value);
 		}
-		prd.get(function() {
-			console.log('item: ' + prd.item.row_id + ' ' + prd.item.prdSupId__supName + ' ' + prd.item.prdReference + ' ' + prd.item.prdName);
+		sys.get(function() {
+			console.log('item: ' + sys.item.row_id + ' ' + sys.item.sys_code + ' ' + sys.item.sys_value);
 		}, 1);
-	}, { prdName: 'Tablet%' });
+	}, { sys_code: 'EASYMODE%' });
 });
 
 //var plcord = demo.getBusinessProcess('DemoPlaceNewOrder');
