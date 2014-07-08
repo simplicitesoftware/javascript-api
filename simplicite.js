@@ -54,7 +54,15 @@ module.exports = {
 
 			function search(callback, filters) {
 				var self = this;
-				// TODO
+				call(path + "&action=search", "GET", function(res) {
+					if (debug)
+						console.log("[simplicite.BusinessObject.search] HTTP response = " + res);
+					var r = eval('(' + res + ')');
+					self.count = r.response.count;
+					self.list = r.response.list;
+					if (callback)
+						callback.call(self, self.list);
+				});
 			}
 
 			function get(callback, rowId) {
