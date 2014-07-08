@@ -77,13 +77,14 @@ module.exports = {
 			}).end();
 		}
 
-		function getBusinessObject(name, inst) {
-			if (!inst) inst = 'node_' + name;
-			var path = '/json/obj?object=' + name + '&inst=' + inst;
+		function getBusinessObject(name, instance) {
+			if (!instance) instance = 'node_' + name;
+			var path = '/json/obj?object=' + name + '&inst=' + instance;
 
-			function getMetadata(callback, context) {
+			function getMetadata(callback, params) {
 				var self = this;
-				call(path + '&action=metadata' + (context ? '&context=' + context : ''), 'GET', function(res) {
+				if (!params) params = {};
+				call(path + '&action=metadata' + (params.context ? '&context=' + params.context : '') + (params.contextParam ? '&contextparam=' + params.contextParam : ''), 'GET', function(res) {
 					debugHandler('[simplicite.BusinessObject.getMetadata] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
 					if (r.type === 'error') {
@@ -96,15 +97,20 @@ module.exports = {
 				});
 			}
 
-			function search(callback, filters) {
+			function search(callback, filters, params) {
 				var self = this;
-				call(path + '&action=search' + (filters ? '&' + callParams(filters) : ''), 'GET', function(res) {
+				self.filters = filters;
+				if (!params) params = {};
+				// TODO : use POST ?
+				call(path + '&action=search' + (filters ? '&' + callParams(filters) : '') + (params.page ? '&page=' + params.page : ''), 'GET', function(res) {
 					debugHandler('[simplicite.BusinessObject.search] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
 					if (r.type === 'error') {
 						errorHandler.call(self, r.response.message);
 					} else {
 						self.count = r.response.count;
+						self.page = r.response.page;
+						self.maxpage = r.response.maxpage;
 						self.list = r.response.list;
 						if (callback)
 							callback.call(self, self.list);
@@ -114,7 +120,22 @@ module.exports = {
 
 			function get(callback, rowId) {
 				var self = this;
-				// TODO
+				// TODO : handle non standard row_id
+				call(path + '&action=select&' + self.metadata.rowidfield + '=' + rowId, 'GET', function(res) {
+					debugHandler('[simplicite.BusinessObject.search] HTTP response = ' + res);
+					var r = eval('(' + res + ')');
+					if (r.type === 'error') {
+						errorHandler.call(self, r.response.message);
+					} else {
+						self.item = r.response;
+						if (callback)
+							callback.call(self, self.item);
+					}
+				});
+			}
+
+			function getForCreate(callback) {
+				this.get('0');
 			}
 
 			function save(callback, item) {
@@ -138,10 +159,25 @@ module.exports = {
 			}
 
 			return {
-				metadata: { name: name, instance: inst },
+				metadata: { name: name, instance: instance },
 				getMetadata: getMetadata,
+				getName: function() { return this.metadata.name; },
+				getInstance: function() { return this.metadata.instance; },
+				getLabel: function() { return this.metadata.label; },
+				getHelp: function() { return this.metadata.help; },
+				getFields: function() { return this.metadata.fields; },
+				getField: function(name) {
+					var n = 0;
+					var fs = this.getFields();
+					while (n < fs.length && fs[n].name != name) n++;
+					return (n == fs.length ? undefined : fs[n]);
+				},
+				getRowIdFieldName: function() { return this.metadata.rowidfield; },
+				getRowIdField: function() { return this.getField(this.getRowIdFieldName()); },
+				getLinks: function() { return this.metadata.links; },
 				search: search,
 				get: get,
+				getForCreate: getForCreate,
 				select: get,
 				save: save,
 				create: create,

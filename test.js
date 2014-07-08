@@ -11,7 +11,13 @@ console.log(demo.metadata);
 
 var prd = demo.getBusinessObject('DemoProduct');
 prd.getMetadata(function() {
-	console.log(prd.metadata.label);
+	console.log('Name: ' + prd.getName());
+	console.log('Instance: ' + prd.getInstance());
+	console.log('Label: ' + prd.getLabel());
+	console.log('Help: ' + prd.getHelp());
+	console.log('RowId.name: ' + prd.getRowIdField().name);
+	console.log('Fields.length: ' + prd.getFields().length);
+	console.log('Links.length: ' + prd.getLinks().length);
 	prd.search(function() {
 		for (var i = 0; i < prd.list.length; i++) {
 			var item = prd.list[i];
