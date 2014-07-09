@@ -86,9 +86,9 @@ module.exports = {
 		var port = params.port || 8080;
 		var root = params.root || '';
 		
-		var login = params.login;
+		var user = params.user;
 		var password = params.password;
-		var auth = login && password ? 'Basic ' + new Buffer(login + ':' + password).toString('base64') : undefined;
+		var auth = user && password ? 'Basic ' + new Buffer(user + ':' + password).toString('base64') : undefined;
 
 		var infoHandler = params.infoHandler || function(msg) { console.log('INFO - ' + msg); };
 		var warnHandler = params.warnHandler || function(msg) { console.log('WARN - ' + msg); };
@@ -157,18 +157,67 @@ module.exports = {
 		var objpath = '/json/obj';
 		var pcspath = '/json/pcs';
 		
-		function getSessionId(callback, params) {
+		function login(callback, params) {
 			var self = this;
 			if (!params) params = {};
 			call(apppath + '?action=session', undefined, function(res) {
-				debugHandler('[simplicite.session] HTTP response = ' + res);
+				debugHandler('[simplicite.login] HTTP response = ' + res);
 				var r = eval('(' + res + ')');
 				if (r.type === 'error') {
 					errorHandler.call(self, r.response.message);
 				} else {
 					self.parameters.sessionId = r.response.id;
 					if (callback)
-						callback.call(self, self.parameters.sessionId );
+						callback.call(self, self.parameters.sessionId);
+				}
+			});
+		}
+		
+		function logout(callback, params) {
+			var self = this;
+			if (!params) params = {};
+			call(apppath + '?action=logout', undefined, function(res) {
+				debugHandler('[simplicite.logout] HTTP response = ' + res);
+				var r = eval('(' + res + ')');
+				if (r.type === 'error') {
+					errorHandler.call(self, r.response.message);
+				} else {
+					self.parameters.sessionId = undefined;
+					self.appinfo = undefined;
+					self.sysinfo = undefined;
+					self.grant = undefined;
+					if (callback)
+						callback.call(self);
+				}
+			});
+		}
+		
+		function getGrant(callback, params) {
+			var self = this;
+			if (!params) params = {};
+			p = '';
+			if (params.inlinePicture)
+				p += "&inline_picture=" + params.inlinePicture;
+			call(apppath + '?action=getgrant' + p, undefined, function(res) {
+				debugHandler('[simplicite.getGrant] HTTP response = ' + res);
+				var r = eval('(' + res + ')');
+				if (r.type === 'error') {
+					errorHandler.call(self, r.response.message);
+				} else {
+					self.grant = r.response;
+					/*if (self.grant.picture) {
+						self.grant.picture.url = self.documentURL("User", "usr_image_id", self.grant.userid, self.grant.picture.id);
+						self.grant.picture.thumbnailurl = self.grant.picture.url + "&thumbnail=true";
+					}*/
+					self.grant.getUserID = function() { return this.userid; };
+					self.grant.getLogin = function() { return this.login; };
+					self.grant.getLang = function() { return this.lang; };
+					self.grant.getEmail = function() { return this.email; };
+					self.grant.getFirstName = function() { return this.firstname; };
+					self.grant.getLastName = function() { return this.lastname; };
+					self.grant.hasResponsibility = function(group) { return this.responsibilities && this.responsibilities.indexOf(group)!=-1; };
+					if (callback)
+						callback.call(self);
 				}
 			});
 		}
@@ -205,7 +254,7 @@ module.exports = {
 			});
 		}
 
-		// TODO : other methods (getGrant, getNews, ...)
+		// TODO : other methods (getMenu, getNews, getTexts, get/setSysParam, documentURL, contentURL, resourceURL)
 
 		function getBusinessObject(name, instance) {
 			if (!instance) instance = 'node_' + name;
@@ -575,6 +624,14 @@ module.exports = {
 		}
 
 		function getBusinessProcess(name) {
+			// TODO
+			return {
+				metadata: { name: name }
+			};
+		}
+
+		function getExternalObject(name) {
+			// TODO
 			return {
 				metadata: { name: name }
 			};
@@ -587,13 +644,16 @@ module.exports = {
 				host: host,
 				port: port,
 				root: root,
-				login: login
+				user: user
 			},
-			getSessionId: getSessionId,
+			login: login,
+			logout: logout,
+			getGrant: getGrant,
 			getAppInfo: getAppInfo,
 			getSysInfo: getSysInfo,
 			getBusinessObject: getBusinessObject,
-			getBusinessProcess: getBusinessProcess
+			getBusinessProcess: getBusinessProcess,
+			getExternalObject: getExternalObject
 		};
 	}
 };

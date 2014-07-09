@@ -3,7 +3,7 @@ var simplicite = require('./simplicite');
 var app = simplicite.session({
 	url: 'http://localhost:8080',
 	root: 'demows',
-	login: 'designer',
+	user: 'designer',
 	password: 'designer',
 	encoding: 'ISO-8859-1',
 	debug: false
@@ -49,18 +49,30 @@ function objtest() {
 }
 
 function pcstest() {
-	//var plcord = app.getBusinessProcess('DemoPlaceNewOrder');
+	//var plcord = app.getBusinessProcess('???');
 	//console.log(plcord.metadata);
 }
 
-app.getSessionId(function() {
+function exttest() {
+	//var extord = app.getExternalObject('???');
+	//console.log(extord.metadata);
+}
+
+app.login(function() {
 	console.log(app.parameters);
-	app.getAppInfo(function() {
-		console.log(app.appinfo);
-		app.getSysInfo(function() {
-			console.log(app.sysinfo);
-			objtest();
-			//pcstest();
+	app.getGrant(function() {
+		console.log(app.grant);
+		console.log('Hello ' + app.grant.getLogin() + ' (' + app.grant.getFirstName() + ' ' + app.grant.getLastName() + ')');
+		if (app.grant.hasResponsibility('ADMIN'))
+			console.log('You are platform administrator !');
+		app.getAppInfo(function() {
+			console.log(app.appinfo);
+			app.getSysInfo(function() {
+				console.log(app.sysinfo);
+				objtest();
+				//pcstest();
+				//exttest();
+			});
 		});
-	});
+	}, { inlinePicture: true });
 });

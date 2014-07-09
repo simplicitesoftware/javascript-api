@@ -15,7 +15,7 @@ To install it:
 
 Check `test.js` for sample usage.
 
-**This is a very early stage work in progress, please don't use yet**
+**This is a very stage work in progress, use at your own risks**
 
 License
 -------
