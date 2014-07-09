@@ -85,7 +85,7 @@ module.exports = {
 		var host = params.host || 'localhost';
 		var port = params.port || 8080;
 		var root = params.root || '';
-
+		
 		var login = params.login;
 		var password = params.password;
 		var auth = login && password ? 'Basic ' + new Buffer(login + ':' + password).toString('base64') : undefined;
@@ -131,7 +131,7 @@ module.exports = {
 					port: port,
 					method: 'POST',
 					path: p,
-					headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+					headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8' }
 				};
 			if (cookies)
 				req.headers['Cookie'] = cookies;
@@ -153,11 +153,63 @@ module.exports = {
 			r.end();
 		}
 
-		// TODO : other methods (getGrant, getNews, ...)
+		var apppath = '/json/app';
+		var objpath = '/json/obj';
+		var pcspath = '/json/pcs';
 		
+		function getSessionId(callback, params) {
+			var self = this;
+			if (!params) params = {};
+			call(apppath + '?action=session', undefined, function(res) {
+				debugHandler('[simplicite.session] HTTP response = ' + res);
+				var r = eval('(' + res + ')');
+				if (r.type === 'error') {
+					errorHandler.call(self, r.response.message);
+				} else {
+					self.parameters.sessionId = r.response.id;
+					if (callback)
+						callback.call(self, self.parameters.sessionId );
+				}
+			});
+		}
+		
+		function getAppInfo(callback, params) {
+			var self = this;
+			if (!params) params = {};
+			call(apppath + '?action=getinfo', undefined, function(res) {
+				debugHandler('[simplicite.getAppInfo] HTTP response = ' + res);
+				var r = eval('(' + res + ')');
+				if (r.type === 'error') {
+					errorHandler.call(self, r.response.message);
+				} else {
+					self.appinfo = r.response;
+					if (callback)
+						callback.call(self, self.metadata);
+				}
+			});
+		}
+
+		function getSysInfo(callback, params) {
+			var self = this;
+			if (!params) params = {};
+			call(apppath + '?action=sysinfo', undefined, function(res) {
+				debugHandler('[simplicite.getSysInfo] HTTP response = ' + res);
+				var r = eval('(' + res + ')');
+				if (r.type === 'error') {
+					errorHandler.call(self, r.response.message);
+				} else {
+					self.sysinfo = r.response;
+					if (callback)
+						callback.call(self, self.metadata);
+				}
+			});
+		}
+
+		// TODO : other methods (getGrant, getNews, ...)
+
 		function getBusinessObject(name, instance) {
 			if (!instance) instance = 'node_' + name;
-			var path = '/json/obj?object=' + name + '&inst=' + instance;
+			var path = objpath + '?object=' + name + '&inst=' + instance;
 
 			function getMetadata(callback, params) {
 				var self = this;
@@ -530,13 +582,16 @@ module.exports = {
 
 		return {
 			constants: constants,
-			metadata: {
+			parameters: {
 				scheme: scheme,
 				host: host,
 				port: port,
 				root: root,
 				login: login
 			},
+			getSessionId: getSessionId,
+			getAppInfo: getAppInfo,
+			getSysInfo: getSysInfo,
 			getBusinessObject: getBusinessObject,
 			getBusinessProcess: getBusinessProcess
 		};
