@@ -15,7 +15,7 @@ To install it:
 
 Check `test.js` for sample usage.
 
-**This is a very stage work in progress, use at your own risks**
+**This is still a __BETA__ stage module, use at your own risks**
 
 License
 -------
