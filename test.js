@@ -36,6 +36,9 @@ sys.getMetadata(function() {
 					console.log(sys.item);
 					sys.del(function() {
 						console.log("Deleted !");
+						sys.action(function(res) {
+							console.log("Action result = " + res);
+						}, "getVersion");
 					});
 				}, { sys_code: "TEST", sys_value: "Test" });
 			});

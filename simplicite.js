@@ -139,7 +139,7 @@ module.exports = {
 				req.headers['Authorization'] = auth;
 			debugHandler('[simplicite.call] URL = ' + p);
 			var r = http.request(req, function(res) {
-				cookies = res.headers['set-cookie'];
+				cookies = res.headers['set-cookie'] || cookies;
 				var r = '';
 				res.on('data', function (chunk) {
 					r += chunk;
@@ -211,10 +211,10 @@ module.exports = {
 					p += '&page=' + params.page;
 				var id = params.inlineDocs;
 				if (id)
-					p += "&inline_documents=" + (id.join ? id.join(",") : id);
+					p += '&inline_documents=' + (id.join ? id.join(',') : id);
 				var it = params.inlineThumbs;
 				if (it)
-					p += "&inline_thumbnails=" + (it.join ? it.join(",") : it);
+					p += '&inline_thumbnails=' + (it.join ? it.join(',') : it);
 				call(path + '&action=search' + p, callParams(self.filters), function(res) {
 					debugHandler('[simplicite.BusinessObject.search] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
@@ -239,13 +239,13 @@ module.exports = {
 					p += '&context=' + params.context;
 				var id = params.inlineDocs;
 				if (id)
-					p += "&inline_documents=" + (id.join ? id.join(",") : id);
+					p += '&inline_documents=' + (id.join ? id.join(',') : id);
 				var it = params.inlineThumbs;
 				if (it)
-					p += "&inline_thumbnails=" + (it.join ? it.join(",") : it);
+					p += '&inline_thumbnails=' + (it.join ? it.join(',') : it);
 				if (params.fields) {
 					for (var i = 0; i < params.fields.length; i++) {
-						url += "&fields=" + params.fields[i].replace(".", "__");
+						url += '&fields=' + params.fields[i].replace('.', '__');
 					}
 				}
 				call(path + '&action=get&' + self.metadata.rowidfield + '=' + rowId + p, undefined, function(res) {
@@ -285,10 +285,10 @@ module.exports = {
 					p += '&context=' + params.context;
 				var id = params.inlineDocs;
 				if (id)
-					p += "&inline_documents=" + (id.join ? id.join(",") : id);
+					p += '&inline_documents=' + (id.join ? id.join(',') : id);
 				var it = params.inlineThumbs;
 				if (it)
-					p += "&inline_thumbnails=" + (it.join ? it.join(",") : it);
+					p += '&inline_thumbnails=' + (it.join ? it.join(',') : it);
 				call(path + '&action=populate&' + self.metadata.rowidfield + '=' + rowId + p, undefined, function(res) {
 					debugHandler('[simplicite.BusinessObject.populate] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
@@ -352,7 +352,7 @@ module.exports = {
 				if (item)
 					self.item = item;
 				if (!params) params = {};
-				call(path + '&action=delete&' + self.metadata.rowidfield + "=" + self.item[self.metadata.rowidfield], undefined, function(res) {
+				call(path + '&action=delete&' + self.metadata.rowidfield + '=' + self.item[self.metadata.rowidfield], undefined, function(res) {
 					debugHandler('[simplicite.BusinessObject.del] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
 					if (r.type === 'error') {
@@ -367,11 +367,94 @@ module.exports = {
 
 			function action(callback, action, params) {
 				var self = this;
-				// TODO
+				if (!params) params = {};
+				call(path + '&action=' + action, undefined, function(res) {
+					debugHandler('[simplicite.BusinessObject.action(' + action + ')] HTTP response = ' + res);
+					var r = eval('(' + res + ')');
+					if (r.type === 'error') {
+						errorHandler.call(self, r.response.message);
+					} else {
+						var res = r.response.result;
+						if (callback)
+							callback.call(self, res);
+					}
+				});
 			}
 
-			// TODO : other methods (crosstab, setParameter, getParameter, ...)
-			
+			function crosstab(callback, crosstab, filters, params) {
+				var self = this;
+				if (filters)
+					self.filters = filters;
+				if (!params) params = {};
+				call(path + '&action=crosstab&crosstab=' + crosstab, callParams(self.filters), function(res) {
+					debugHandler('[simplicite.BusinessObject.crosstab(' + crosstab + ')] HTTP response = ' + res);
+					var r = eval('(' + res + ')');
+					if (r.type === 'error') {
+						errorHandler.call(self, r.response.message);
+					} else {
+						self.crosstabdata = r.response;
+						if (callback)
+							callback.call(self, self.crosstabdata);
+					}
+				});
+			}
+
+			function print(callback, prt, params) {
+				var self = this;
+				if (!params) params = {};
+				var p = '';
+				if (params.all)
+					p += '&all=' + params.all;
+				if (params.mailing)
+					p += '&mailing=' + params.mailing;
+				call(path + '&action=print&printtemplate=' + prt + p, undefined, function(res) {
+					debugHandler('[simplicite.BusinessObject.print(' + prt + ')] HTTP response = ' + res);
+					var r = eval('(' + res + ')');
+					if (r.type === 'error') {
+						errorHandler.call(self, r.response.message);
+					} else {
+						var res = r.response.result;
+						if (callback)
+							callback.call(self, res);
+					}
+				});
+			}
+
+			function setParameter(callback, name, value, params) {
+				var self = this;
+				if (!params) params = {};
+				var p = { name: name };
+				if (value) p.value = value;
+				call(path + '&action=setparameter', callParams(p), function(res) {
+					debugHandler('[simplicite.BusinessObject.setParameter(' + name + ')] HTTP response = ' + res);
+					var r = eval('(' + res + ')');
+					if (r.type === 'error') {
+						errorHandler.call(self, r.response.message);
+					} else {
+						var res = r.response.result;
+						if (callback)
+							callback.call(self, res);
+					}
+				});
+			}
+
+			function getParameter(callback, name, params) {
+				var self = this;
+				if (!params) params = {};
+				var p = { name: name };
+				call(path + '&action=getparameter', callParams(p), function(res) {
+					debugHandler('[simplicite.BusinessObject.getParameter(' + name + ')] HTTP response = ' + res);
+					var r = eval('(' + res + ')');
+					if (r.type === 'error') {
+						errorHandler.call(self, r.response.message);
+					} else {
+						var res = r.response.result;
+						if (callback)
+							callback.call(self, res);
+					}
+				});
+			}
+
 			return {
 				metadata: { name: name, instance: instance },
 				getMetadata: getMetadata,
@@ -408,7 +491,7 @@ module.exports = {
 				},
 				isTimestampField: function(field) {
 					var n = field.name;
-					return !field.ref && (n == "created_by" || n == "created_dt" || n == "updated_by" || n == "updated_dt");
+					return !field.ref && (n == 'created_by' || n == 'created_dt' || n == 'updated_by' || n == 'updated_dt');
 				},
 				
 				getFilters: getFilters,
@@ -430,7 +513,12 @@ module.exports = {
 				create: create,
 				update: update,
 				del: del,
-				action: action
+
+				action: action,
+				crosstab: crosstab,
+				print: print,
+				setParameter: setParameter,
+				getParameter: getParameter
 			};
 		}
 
