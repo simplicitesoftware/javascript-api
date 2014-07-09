@@ -1,11 +1,12 @@
 var simplicite = require('./simplicite');
 
 var app = simplicite.session({
-	url: 'http://localhost:8080',
+	host: 'localhost',
+	port: 8080,
+	scheme: 'http',
 	root: 'demows',
 	user: 'designer',
 	password: 'designer',
-	encoding: 'ISO-8859-1',
 	debug: false
 });
 
