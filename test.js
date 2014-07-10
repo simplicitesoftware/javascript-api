@@ -59,16 +59,18 @@ function exttest() {
 	//console.log(extord.metadata);
 }
 
-app.login(function() {
+// Callback-style functions
+/*
+app._login(function() {
 	console.log(app.parameters);
-	app.getGrant(function() {
+	app._getGrant(function() {
 		console.log(app.grant);
 		console.log('Hello ' + app.grant.getLogin() + ' (' + app.grant.getFirstName() + ' ' + app.grant.getLastName() + ')');
 		if (app.grant.hasResponsibility('ADMIN'))
 			console.log('You are platform administrator !');
-		app.getAppInfo(function() {
+		app._getAppInfo(function() {
 			console.log(app.appinfo);
-			app.getSysInfo(function() {
+			app._getSysInfo(function() {
 				console.log(app.sysinfo);
 				objtest();
 				//pcstest();
@@ -76,4 +78,24 @@ app.login(function() {
 			});
 		});
 	}, { inlinePicture: true });
+});
+*/
+
+// Promise-style functions
+app.login().then(function(parameters) {
+	console.log(app.parameters);
+	return app.getGrant({ inlinePicture: true })
+}).then(function(grant) {
+	console.log(grant);
+	console.log('Hello ' + grant.getLogin() + ' (' + grant.getFirstName() + ' ' + grant.getLastName() + ')');
+	if (app.grant.hasResponsibility('ADMIN')) console.log('Beware, you are platform administrator !');
+	return app.getAppInfo();
+}).then(function(appinfo) {
+	console.log(appinfo);
+	return app.getSysInfo();
+}).then(function(sysinfo) {
+	console.log(sysinfo);
+	objtest();
+	//pcstest();
+	//exttest();
 });

@@ -168,7 +168,7 @@ module.exports = {
 				} else {
 					self.parameters.sessionId = r.response.id;
 					if (callback)
-						callback.call(self, self.parameters.sessionId);
+						callback.call(self, self.parameters);
 				}
 			});
 		}
@@ -217,7 +217,7 @@ module.exports = {
 					self.grant.getLastName = function() { return this.lastname; };
 					self.grant.hasResponsibility = function(group) { return this.responsibilities && this.responsibilities.indexOf(group)!=-1; };
 					if (callback)
-						callback.call(self);
+						callback.call(self, self.grant);
 				}
 			});
 		}
@@ -233,7 +233,7 @@ module.exports = {
 				} else {
 					self.appinfo = r.response;
 					if (callback)
-						callback.call(self, self.metadata);
+						callback.call(self, self.appinfo);
 				}
 			});
 		}
@@ -249,7 +249,7 @@ module.exports = {
 				} else {
 					self.sysinfo = r.response;
 					if (callback)
-						callback.call(self, self.metadata);
+						callback.call(self, self.sysinfo);
 				}
 			});
 		}
@@ -637,6 +637,7 @@ module.exports = {
 			};
 		}
 
+		var Q = require("q");
 		return {
 			constants: constants,
 			parameters: {
@@ -646,11 +647,36 @@ module.exports = {
 				root: root,
 				user: user
 			},
-			login: login,
-			logout: logout,
-			getGrant: getGrant,
-			getAppInfo: getAppInfo,
-			getSysInfo: getSysInfo,
+			_login: login,
+			login: function(params) {
+				var d = Q.defer();
+				this._login(function(parameters) { d.resolve(parameters); }, params);
+				return d.promise;
+			},
+			_logout: logout,
+			logout: function(params) {
+				var d = Q.defer();
+				this._logout(function() { d.resolve(); }, params);
+				return d.promise;
+			},
+			_getGrant: getGrant,
+			getGrant: function(params) {
+				var d = Q.defer();
+				this._getGrant(function(grant) { d.resolve(grant); }, params);
+				return d.promise;
+			},
+			_getAppInfo: getAppInfo,
+			getAppInfo: function(params) {
+				var d = Q.defer();
+				this._getAppInfo(function(appinfo) { d.resolve(appinfo); }, params);
+				return d.promise;
+			},
+			_getSysInfo: getSysInfo,
+			getSysInfo: function(params) {
+				var d = Q.defer();
+				this._getSysInfo(function(sysinfo) { d.resolve(sysinfo); }, params);
+				return d.promise;
+			},
 			getBusinessObject: getBusinessObject,
 			getBusinessProcess: getBusinessProcess,
 			getExternalObject: getExternalObject
