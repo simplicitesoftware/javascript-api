@@ -260,7 +260,7 @@ module.exports = {
 			if (!instance) instance = 'node_' + name;
 			var path = objpath + '?object=' + name + '&inst=' + instance;
 
-			function getMetadata(callback, params) {
+			function _getMetadata(callback, params) {
 				var self = this;
 				if (!params) params = {};
 				var p = '';
@@ -281,7 +281,7 @@ module.exports = {
 				});
 			}
 
-			function getFilters(callback, params) {
+			function _getFilters(callback, params) {
 				var self = this;
 				if (!params) params = {};
 				var p = '';
@@ -302,7 +302,7 @@ module.exports = {
 				});
 			}
 
-			function search(callback, filters, params) {
+			function _search(callback, filters, params) {
 				var self = this;
 				if (filters)
 					self.filters = filters;
@@ -332,7 +332,7 @@ module.exports = {
 				});
 			}
 
-			function get(callback, rowId, params) {
+			function _get(callback, rowId, params) {
 				var self = this;
 				if (!params) params = {};
 				var p = '';
@@ -362,23 +362,31 @@ module.exports = {
 				});
 			}
 
-			function getForCreate(callback) {
-				this.get(callback, constants.DEFAULT_ROW_ID, { context: constants.CONTEXT_CREATE });
+			function _getForCreate(callback, params) {
+				if (!params) params = {};
+				params.context = constants.CONTEXT_CREATE;
+				this._get(callback, constants.DEFAULT_ROW_ID, params);
 			}
 
-			function getForUpdate(callback, rowId) {
-				this.get(callback, rowId, { context: constants.CONTEXT_UPDATE });
+			function _getForUpdate(callback, rowId, params) {
+				if (!params) params = {};
+				params.context = constants.CONTEXT_UPDATE;
+				this._get(callback, rowId, params);
 			}
 
-			function getForCopy(callback, rowId) {
-				this.get(callback, rowId, { context: constants.CONTEXT_COPY });
+			function _getForCopy(callback, rowId, params) {
+				if (!params) params = {};
+				params.context = constants.CONTEXT_COPY;
+				this._get(callback, rowId, params);
 			}
 
-			function getForDelete(callback, rowId) {
-				this.get(callback, rowId, { context: constants.CONTEXT_CREATE });
+			function _getForDelete(callback, rowId, params) {
+				if (!params) params = {};
+				params.context = constants.CONTEXT_CREATE;
+				this._get(callback, rowId, params);
 			}
 
-			function populate(callback, rowId, params) {
+			function _populate(callback, rowId, params) {
 				var self = this;
 				if (!params) params = {};
 				var p = '';
@@ -403,7 +411,7 @@ module.exports = {
 				});
 			}
 
-			function save(callback, item, params) {
+			function _save(callback, item, params) {
 				if (item)
 					this.item = item;
 				if (this.item[this.metadata.rowidfield] == constants.DEFAULT_ROW_ID)
@@ -412,7 +420,7 @@ module.exports = {
 					this.update(callback, item, params);
 			}
 
-			function create(callback, item, params) {
+			function _create(callback, item, params) {
 				var self = this;
 				if (item)
 					self.item = item;
@@ -430,7 +438,7 @@ module.exports = {
 				});
 			}
 
-			function update(callback, item, params) {
+			function _update(callback, item, params) {
 				var self = this;
 				if (item)
 					self.item = item;
@@ -448,7 +456,7 @@ module.exports = {
 				});
 			}
 
-			function del(callback, item, params) {
+			function _del(callback, item, params) {
 				var self = this;
 				if (item)
 					self.item = item;
@@ -466,7 +474,7 @@ module.exports = {
 				});
 			}
 
-			function action(callback, action, params) {
+			function _action(callback, action, params) {
 				var self = this;
 				if (!params) params = {};
 				call(path + '&action=' + action, undefined, function(res) {
@@ -482,7 +490,7 @@ module.exports = {
 				});
 			}
 
-			function crosstab(callback, crosstab, filters, params) {
+			function _crosstab(callback, crosstab, filters, params) {
 				var self = this;
 				if (filters)
 					self.filters = filters;
@@ -500,7 +508,7 @@ module.exports = {
 				});
 			}
 
-			function print(callback, prt, params) {
+			function _print(callback, prt, params) {
 				var self = this;
 				if (!params) params = {};
 				var p = '';
@@ -521,7 +529,7 @@ module.exports = {
 				});
 			}
 
-			function setParameter(callback, name, value, params) {
+			function _setParameter(callback, name, value, params) {
 				var self = this;
 				if (!params) params = {};
 				var p = { name: name };
@@ -539,7 +547,7 @@ module.exports = {
 				});
 			}
 
-			function getParameter(callback, name, params) {
+			function _getParameter(callback, name, params) {
 				var self = this;
 				if (!params) params = {};
 				var p = { name: name };
@@ -558,7 +566,12 @@ module.exports = {
 
 			return {
 				metadata: { name: name, instance: instance },
-				getMetadata: getMetadata,
+				_getMetadata: _getMetadata,
+				getMetadata: function(params) {
+					var d = Q.defer();
+					this._getMetadata(function(metadata) { d.resolve(metadata); }, params);
+					return d.promise;
+				},
 				getName: function() { return this.metadata.name; },
 				getInstance: function() { return this.metadata.instance; },
 				getLabel: function() { return this.metadata.label; },
@@ -595,31 +608,112 @@ module.exports = {
 					return !field.ref && (n == 'created_by' || n == 'created_dt' || n == 'updated_by' || n == 'updated_dt');
 				},
 				
-				getFilters: getFilters,
-				search: search,
+				_getFilters: _getFilters,
+				getFilters: function(params) {
+					var d = Q.defer();
+					this._getFilters(function(filters) { d.resolve(filters); }, params);
+					return d.promise;
+				},
+				_search: _search,
+				search: function(filters, params) {
+					var d = Q.defer();
+					this._search(function(list) { d.resolve(list); }, filters, params);
+					return d.promise;
+				},
 
-				get: get,
-				select: get,
-				getForCreate: getForCreate,
-				selectForCreate: getForCreate,
-				getForUpdate: getForUpdate,
-				selectForUpdate: getForUpdate,
-				getForCopy: getForCopy,
-				selectForCopy: getForCopy,
-				getForDelete: getForDelete,
-				selectForDelete: getForDelete,
+				_get: _get,
+				get: function(rowId, params) {
+					var d = Q.defer();
+					this._get(function(item) { d.resolve(item); }, rowId, params);
+					return d.promise;
+				},
+				_getForCreate: _getForCreate,
+				getForCreate: function(params) {
+					var d = Q.defer();
+					this._getForCreate(function(item) { d.resolve(item); }, params);
+					return d.promise;
+				},
+				_getForUpdate: _getForUpdate,
+				getForUpdate: function(rowId, params) {
+					var d = Q.defer();
+					this._getForUpdate(function(item) { d.resolve(item); }, rowId, params);
+					return d.promise;
+				},
+				_getForCopy: _getForCopy,
+				getForCopy: function(rowId, params) {
+					var d = Q.defer();
+					this._getForCopy(function(item) { d.resolve(item); }, rowId, params);
+					return d.promise;
+				},
+				_getForDelete: _getForDelete,
+				getForDelete: function(rowId, params) {
+					var d = Q.defer();
+					this._getForDelete(function(item) { d.resolve(item); }, rowId, params);
+					return d.promise;
+				},
 				getRowId: function() { if (this.item) return this.item[this.getRowIdFieldName()]; },
 				
-				save: save,
-				create: create,
-				update: update,
-				del: del,
+				_populate: _populate,
+				populate: function(item, params) {
+					var d = Q.defer();
+					this._populate(function(item) { d.resolve(item); }, item, params);
+					return d.promise;
+				},
+				_save: _save,
+				save: function(item, params) {
+					var d = Q.defer();
+					this._save(function(item) { d.resolve(item); }, item, params);
+					return d.promise;
+				},
+				_create: _create,
+				create: function(item, params) {
+					var d = Q.defer();
+					this._create(function(item) { d.resolve(item); }, item, params);
+					return d.promise;
+				},
+				_update: _update,
+				update: function(item, params) {
+					var d = Q.defer();
+					this._update(function(item) { d.resolve(item); }, item, params);
+					return d.promise;
+				},
+				_del: _del,
+				del: function(item, params) {
+					var d = Q.defer();
+					this._del(function() { d.resolve(); }, item, params);
+					return d.promise;
+				},
 
-				action: action,
-				crosstab: crosstab,
-				print: print,
-				setParameter: setParameter,
-				getParameter: getParameter
+				_action: _action,
+				action: function(act, params) {
+					var d = Q.defer();
+					this._action(function(res) { d.resolve(res); }, act, params);
+					return d.promise;
+				},
+				_crosstab: _crosstab,
+				crosstab: function(ctb, params) {
+					var d = Q.defer();
+					this._crosstab(function(res) { d.resolve(res); }, ctb, params);
+					return d.promise;
+				},
+				_print: _print,
+				print: function(pt, params) {
+					var d = Q.defer();
+					this._print(function(res) { d.resolve(res); }, pt, params);
+					return d.promise;
+				},
+				_setParameter: _setParameter,
+				setParameter: function(name, value, params) {
+					var d = Q.defer();
+					this._setParameter(function() { d.resolve(); }, name, value, params);
+					return d.promise;
+				},
+				_getParameter: _getParameter,
+				getParameter: function(name, params) {
+					var d = Q.defer();
+					this._getParameter(function(value) { d.resolve(value); }, name, params);
+					return d.promise;
+				},
 			};
 		}
 
