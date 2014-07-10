@@ -7,7 +7,7 @@ Simplicit&eacute;&reg; NodeJS API
 Introduction
 ------------
 
-This is the NodeJS API for the [Simplicit&eacute;&reg; platform](http://www.simplicitesoftware.com).
+This is the Node.js API for the [Simplicit&eacute;&reg; platform](http://www.simplicitesoftware.com).
 
 To install it:
 
