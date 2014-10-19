@@ -254,7 +254,23 @@ module.exports = {
 			});
 		}
 
-		// TODO : other methods (getMenu, getNews, getTexts, get/setSysParam, documentURL, contentURL, resourceURL)
+		function getNews(callback, params) {
+			var self = this;
+			if (!params) params = {};
+			call(apppath + '?action=news', undefined, function(res) {
+				debugHandler('[simplicite.getSysInfo] HTTP response = ' + res);
+				var r = eval('(' + res + ')');
+				if (r.type === 'error') {
+					errorHandler.call(self, r.response.message);
+				} else {
+					self.sysinfo = r.response;
+					if (callback)
+						callback.call(self, self.news);
+				}
+			});
+		}
+
+		// TODO : other methods (getMenu, getTexts, get/setSysParam, documentURL, contentURL, resourceURL)
 
 		function getBusinessObject(name, instance) {
 			if (!instance) instance = 'node_' + name;
