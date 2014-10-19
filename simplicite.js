@@ -263,7 +263,7 @@ module.exports = {
 				if (r.type === 'error') {
 					errorHandler.call(self, r.response.message);
 				} else {
-					self.sysinfo = r.response;
+					self.news = r.response;
 					if (callback)
 						callback.call(self, self.news);
 				}
