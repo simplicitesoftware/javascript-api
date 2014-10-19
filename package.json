@@ -1,6 +1,6 @@
 {
   "name": "simplicite",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Simplicit&eacute;&reg; Node.js API",
   "main": "simplicite.js",
   "repository": {
