@@ -258,7 +258,7 @@ module.exports = {
 			var self = this;
 			if (!params) params = {};
 			call(apppath + '?action=news', undefined, function(res) {
-				debugHandler('[simplicite.getSysInfo] HTTP response = ' + res);
+				debugHandler('[simplicite.getNews] HTTP response = ' + res);
 				var r = eval('(' + res + ')');
 				if (r.type === 'error') {
 					errorHandler.call(self, r.response.message);
@@ -785,6 +785,12 @@ module.exports = {
 			getSysInfo: function(params) {
 				var d = Q.defer();
 				this._getSysInfo(function(sysinfo) { d.resolve(sysinfo); }, params);
+				return d.promise;
+			},
+			_getNews: getNews,
+			getNews: function(params) {
+				var d = Q.defer();
+				this._getNews(function(news) { d.resolve(news); }, params);
 				return d.promise;
 			},
 			getBusinessObject: getBusinessObject,

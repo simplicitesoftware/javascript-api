@@ -7,11 +7,7 @@
     "type": "git",
     "url": "git://github.com/simplicitesoftware/nodejs-api.git"
   },
-  "keywords": [
-    "Session",
-    "BusinessObject",
-    "BusinessProcess"
-  ],
+  "keywords": [ "simplicite", "simplicitesoftware", "apaas" ],
   "dependencies": {
     "q": "*"
   },
