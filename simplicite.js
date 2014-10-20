@@ -257,7 +257,10 @@ module.exports = {
 		function getNews(callback, params) {
 			var self = this;
 			if (!params) params = {};
-			call(apppath + '?action=news', undefined, function(res) {
+			p = '';
+			if (params.inlineImages)
+				p += "&inline_images=" + params.inlineImages;
+			call(apppath + '?action=news' + p, undefined, function(res) {
 				debugHandler('[simplicite.getNews] HTTP response = ' + res);
 				var r = eval('(' + res + ')');
 				if (r.type === 'error') {
