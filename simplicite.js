@@ -164,7 +164,7 @@ module.exports = {
 				debugHandler('[simplicite.login] HTTP response = ' + res);
 				var r = eval('(' + res + ')');
 				if (r.type === 'error') {
-					errorHandler.call(self, r.response.message);
+					(params.error ? params.error : errorHandler).call(self, r.response.message);
 				} else {
 					self.parameters.sessionId = r.response.id;
 					if (callback)
@@ -180,7 +180,7 @@ module.exports = {
 				debugHandler('[simplicite.logout] HTTP response = ' + res);
 				var r = eval('(' + res + ')');
 				if (r.type === 'error') {
-					errorHandler.call(self, r.response.message);
+					(params.error ? params.error : errorHandler).call(self, r.response.message);
 				} else {
 					self.parameters.sessionId = undefined;
 					self.appinfo = undefined;
@@ -202,7 +202,7 @@ module.exports = {
 				debugHandler('[simplicite.getGrant] HTTP response = ' + res);
 				var r = eval('(' + res + ')');
 				if (r.type === 'error') {
-					errorHandler.call(self, r.response.message);
+					(params.error ? params.error : errorHandler).call(self, r.response.message);
 				} else {
 					self.grant = r.response;
 					/*if (self.grant.picture) {
@@ -229,7 +229,7 @@ module.exports = {
 				debugHandler('[simplicite.getAppInfo] HTTP response = ' + res);
 				var r = eval('(' + res + ')');
 				if (r.type === 'error') {
-					errorHandler.call(self, r.response.message);
+					(params.error ? params.error : errorHandler).call(self, r.response.message);
 				} else {
 					self.appinfo = r.response;
 					if (callback)
@@ -245,7 +245,7 @@ module.exports = {
 				debugHandler('[simplicite.getSysInfo] HTTP response = ' + res);
 				var r = eval('(' + res + ')');
 				if (r.type === 'error') {
-					errorHandler.call(self, r.response.message);
+					(params.error ? params.error : errorHandler).call(self, r.response.message);
 				} else {
 					self.sysinfo = r.response;
 					if (callback)
@@ -264,7 +264,7 @@ module.exports = {
 				debugHandler('[simplicite.getNews] HTTP response = ' + res);
 				var r = eval('(' + res + ')');
 				if (r.type === 'error') {
-					errorHandler.call(self, r.response.message);
+					(params.error ? params.error : errorHandler).call(self, r.response.message);
 				} else {
 					self.news = r.response;
 					if (callback)
@@ -298,7 +298,7 @@ module.exports = {
 					debugHandler('[simplicite.BusinessObject.getMetadata] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
 					if (r.type === 'error') {
-						errorHandler.call(self, r.response.message);
+						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
 						self.metadata = r.response;
 						if (callback)
@@ -319,7 +319,7 @@ module.exports = {
 					debugHandler('[simplicite.BusinessObject.getFilters] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
 					if (r.type === 'error') {
-						errorHandler.call(self, r.response.message);
+						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
 						self.item = r.response;
 						if (callback)
@@ -346,7 +346,7 @@ module.exports = {
 					debugHandler('[simplicite.BusinessObject.search] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
 					if (r.type === 'error') {
-						errorHandler.call(self, r.response.message);
+						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
 						self.count = r.response.count;
 						self.page = r.response.page;
@@ -379,7 +379,7 @@ module.exports = {
 					debugHandler('[simplicite.BusinessObject.get] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
 					if (r.type === 'error') {
-						errorHandler.call(self, r.response.message);
+						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
 						self.item = r.response;
 						if (callback)
@@ -428,7 +428,7 @@ module.exports = {
 					debugHandler('[simplicite.BusinessObject.populate] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
 					if (r.type === 'error') {
-						errorHandler.call(self, r.response.message);
+						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
 						self.item = r.response;
 						if (callback)
@@ -455,7 +455,7 @@ module.exports = {
 					debugHandler('[simplicite.BusinessObject.create] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
 					if (r.type === 'error') {
-						errorHandler.call(self, r.response.message);
+						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
 						self.item = r.response;
 						if (callback)
@@ -473,7 +473,7 @@ module.exports = {
 					debugHandler('[simplicite.BusinessObject.update] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
 					if (r.type === 'error') {
-						errorHandler.call(self, r.response.message);
+						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
 						self.item = r.response;
 						if (callback)
@@ -491,7 +491,7 @@ module.exports = {
 					debugHandler('[simplicite.BusinessObject.del] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
 					if (r.type === 'error') {
-						errorHandler.call(self, r.response.message);
+						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
 						self.item = undefined;
 						if (callback)
@@ -507,7 +507,7 @@ module.exports = {
 					debugHandler('[simplicite.BusinessObject.action(' + action + ')] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
 					if (r.type === 'error') {
-						errorHandler.call(self, r.response.message);
+						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
 						var res = r.response.result;
 						if (callback)
@@ -525,7 +525,7 @@ module.exports = {
 					debugHandler('[simplicite.BusinessObject.crosstab(' + crosstab + ')] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
 					if (r.type === 'error') {
-						errorHandler.call(self, r.response.message);
+						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
 						self.crosstabdata = r.response;
 						if (callback)
@@ -546,7 +546,7 @@ module.exports = {
 					debugHandler('[simplicite.BusinessObject.print(' + prt + ')] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
 					if (r.type === 'error') {
-						errorHandler.call(self, r.response.message);
+						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
 						var res = r.response.result;
 						if (callback)
@@ -564,7 +564,7 @@ module.exports = {
 					debugHandler('[simplicite.BusinessObject.setParameter(' + name + ')] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
 					if (r.type === 'error') {
-						errorHandler.call(self, r.response.message);
+						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
 						var res = r.response.result;
 						if (callback)
@@ -581,7 +581,7 @@ module.exports = {
 					debugHandler('[simplicite.BusinessObject.getParameter(' + name + ')] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
 					if (r.type === 'error') {
-						errorHandler.call(self, r.response.message);
+						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
 						var res = r.response.result;
 						if (callback)
@@ -643,6 +643,8 @@ module.exports = {
 				_search: _search,
 				search: function(filters, params) {
 					var d = Q.defer();
+					if (!params) params = {};
+					params.error = function() { d.reject(e); }
 					this._search(function(list) { d.resolve(list); }, filters, params);
 					return d.promise;
 				},
