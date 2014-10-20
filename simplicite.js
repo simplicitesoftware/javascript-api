@@ -148,10 +148,9 @@ module.exports = {
 					if (callback)
 						callback.call(this, r);
 				});
-				res.on('error', function(e) {
-					if (error)
-						error.call(this, e);
-				});
+			}).on('error', function(e) {
+				if (error)
+					error.call(this, e);
 			});
 			if (data) r.write(data);
 			r.end();
