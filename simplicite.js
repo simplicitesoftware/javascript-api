@@ -275,8 +275,15 @@ module.exports = {
 
 		// TODO : other methods (getMenu, getTexts, get/setSysParam, documentURL, contentURL, resourceURL)
 
+		var businessObjectCache = {};
+
 		function getBusinessObject(name, instance) {
 			if (!instance) instance = 'node_' + name;
+			
+			var cacheKey = name + ":" + instance;
+			var obj = businessObjectCache[cacheKey];
+			if (obj) return obj;
+			
 			var path = objpath + '?object=' + name + '&inst=' + instance;
 
 			function _getMetadata(callback, params) {
@@ -583,7 +590,7 @@ module.exports = {
 				});
 			}
 
-			return {
+			obj = {
 				metadata: { name: name, instance: instance },
 				_getMetadata: _getMetadata,
 				getMetadata: function(params) {
@@ -734,6 +741,9 @@ module.exports = {
 					return d.promise;
 				},
 			};
+			
+			businessObjectCache[cacheKey] = obj;
+			return obj;
 		}
 
 		function getBusinessProcess(name) {
