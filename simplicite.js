@@ -637,6 +637,8 @@ module.exports = {
 				_getFilters: _getFilters,
 				getFilters: function(params) {
 					var d = Q.defer();
+					if (!params) params = {};
+					params.error = function(e) { d.reject(e); }
 					this._getFilters(function(filters) { d.resolve(filters); }, params);
 					return d.promise;
 				},
@@ -652,30 +654,40 @@ module.exports = {
 				_get: _get,
 				get: function(rowId, params) {
 					var d = Q.defer();
+					if (!params) params = {};
+					params.error = function(e) { d.reject(e); }
 					this._get(function(item) { d.resolve(item); }, rowId, params);
 					return d.promise;
 				},
 				_getForCreate: _getForCreate,
 				getForCreate: function(params) {
 					var d = Q.defer();
+					if (!params) params = {};
+					params.error = function(e) { d.reject(e); }
 					this._getForCreate(function(item) { d.resolve(item); }, params);
 					return d.promise;
 				},
 				_getForUpdate: _getForUpdate,
 				getForUpdate: function(rowId, params) {
 					var d = Q.defer();
+					if (!params) params = {};
+					params.error = function(e) { d.reject(e); }
 					this._getForUpdate(function(item) { d.resolve(item); }, rowId, params);
 					return d.promise;
 				},
 				_getForCopy: _getForCopy,
 				getForCopy: function(rowId, params) {
 					var d = Q.defer();
+					if (!params) params = {};
+					params.error = function(e) { d.reject(e); }
 					this._getForCopy(function(item) { d.resolve(item); }, rowId, params);
 					return d.promise;
 				},
 				_getForDelete: _getForDelete,
 				getForDelete: function(rowId, params) {
 					var d = Q.defer();
+					if (!params) params = {};
+					params.error = function(e) { d.reject(e); }
 					this._getForDelete(function(item) { d.resolve(item); }, rowId, params);
 					return d.promise;
 				},
@@ -684,30 +696,40 @@ module.exports = {
 				_populate: _populate,
 				populate: function(item, params) {
 					var d = Q.defer();
+					if (!params) params = {};
+					params.error = function(e) { d.reject(e); }
 					this._populate(function(item) { d.resolve(item); }, item, params);
 					return d.promise;
 				},
 				_save: _save,
 				save: function(item, params) {
 					var d = Q.defer();
+					if (!params) params = {};
+					params.error = function(e) { d.reject(e); }
 					this._save(function(item) { d.resolve(item); }, item, params);
 					return d.promise;
 				},
 				_create: _create,
 				create: function(item, params) {
 					var d = Q.defer();
+					if (!params) params = {};
+					params.error = function(e) { d.reject(e); }
 					this._create(function(item) { d.resolve(item); }, item, params);
 					return d.promise;
 				},
 				_update: _update,
 				update: function(item, params) {
 					var d = Q.defer();
+					if (!params) params = {};
+					params.error = function(e) { d.reject(e); }
 					this._update(function(item) { d.resolve(item); }, item, params);
 					return d.promise;
 				},
 				_del: _del,
 				del: function(item, params) {
 					var d = Q.defer();
+					if (!params) params = {};
+					params.error = function(e) { d.reject(e); }
 					this._del(function() { d.resolve(); }, item, params);
 					return d.promise;
 				},
@@ -715,30 +737,40 @@ module.exports = {
 				_action: _action,
 				action: function(act, params) {
 					var d = Q.defer();
+					if (!params) params = {};
+					params.error = function(e) { d.reject(e); }
 					this._action(function(res) { d.resolve(res); }, act, params);
 					return d.promise;
 				},
 				_crosstab: _crosstab,
 				crosstab: function(ctb, params) {
 					var d = Q.defer();
+					if (!params) params = {};
+					params.error = function(e) { d.reject(e); }
 					this._crosstab(function(res) { d.resolve(res); }, ctb, params);
 					return d.promise;
 				},
 				_print: _print,
 				print: function(pt, params) {
 					var d = Q.defer();
+					if (!params) params = {};
+					params.error = function(e) { d.reject(e); }
 					this._print(function(res) { d.resolve(res); }, pt, params);
 					return d.promise;
 				},
 				_setParameter: _setParameter,
 				setParameter: function(name, value, params) {
 					var d = Q.defer();
+					if (!params) params = {};
+					params.error = function(e) { d.reject(e); }
 					this._setParameter(function() { d.resolve(); }, name, value, params);
 					return d.promise;
 				},
 				_getParameter: _getParameter,
 				getParameter: function(name, params) {
 					var d = Q.defer();
+					if (!params) params = {};
+					params.error = function(e) { d.reject(e); }
 					this._getParameter(function(value) { d.resolve(value); }, name, params);
 					return d.promise;
 				},
@@ -775,36 +807,48 @@ module.exports = {
 			_login: login,
 			login: function(params) {
 				var d = Q.defer();
+				if (!params) params = {};
+				params.error = function(e) { d.reject(e); }
 				this._login(function(parameters) { d.resolve(parameters); }, params);
 				return d.promise;
 			},
 			_logout: logout,
 			logout: function(params) {
 				var d = Q.defer();
+				if (!params) params = {};
+				params.error = function(e) { d.reject(e); }
 				this._logout(function() { d.resolve(); }, params);
 				return d.promise;
 			},
 			_getGrant: getGrant,
 			getGrant: function(params) {
 				var d = Q.defer();
+				if (!params) params = {};
+				params.error = function(e) { d.reject(e); }
 				this._getGrant(function(grant) { d.resolve(grant); }, params);
 				return d.promise;
 			},
 			_getAppInfo: getAppInfo,
 			getAppInfo: function(params) {
 				var d = Q.defer();
+				if (!params) params = {};
+				params.error = function(e) { d.reject(e); }
 				this._getAppInfo(function(appinfo) { d.resolve(appinfo); }, params);
 				return d.promise;
 			},
 			_getSysInfo: getSysInfo,
 			getSysInfo: function(params) {
 				var d = Q.defer();
+				if (!params) params = {};
+				params.error = function(e) { d.reject(e); }
 				this._getSysInfo(function(sysinfo) { d.resolve(sysinfo); }, params);
 				return d.promise;
 			},
 			_getNews: getNews,
 			getNews: function(params) {
 				var d = Q.defer();
+				if (!params) params = {};
+				params.error = function(e) { d.reject(e); }
 				this._getNews(function(news) { d.resolve(news); }, params);
 				return d.promise;
 			},
