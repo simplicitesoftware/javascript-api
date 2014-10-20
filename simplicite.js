@@ -123,7 +123,7 @@ module.exports = {
 			return p;
 		}
 
-		function call(path, data, callback) {
+		function call(path, data, callback, error) {
 			var p = path || '/'; 
 			p = (root !== '' ? '/' + root : '') + p;
 			var req = {
@@ -141,12 +141,16 @@ module.exports = {
 			var r = http.request(req, function(res) {
 				cookies = res.headers['set-cookie'] || cookies;
 				var r = '';
-				res.on('data', function (chunk) {
+				res.on('data', function(chunk) {
 					r += chunk;
 				});
-				res.on('end', function () {
+				res.on('end', function() {
 					if (callback)
 						callback.call(this, r);
+				});
+				res.on('error', function(e) {
+					if (error)
+						error.call(this, e);
 				});
 			});
 			if (data) r.write(data);
@@ -170,6 +174,8 @@ module.exports = {
 					if (callback)
 						callback.call(self, self.parameters);
 				}
+			}, function(e) {
+				(params.error ? params.error : errorHandler).call(self, e);
 			});
 		}
 		
@@ -189,6 +195,8 @@ module.exports = {
 					if (callback)
 						callback.call(self);
 				}
+			}, function(e) {
+				(params.error ? params.error : errorHandler).call(self, e);
 			});
 		}
 		
@@ -219,6 +227,8 @@ module.exports = {
 					if (callback)
 						callback.call(self, self.grant);
 				}
+			}, function(e) {
+				(params.error ? params.error : errorHandler).call(self, e);
 			});
 		}
 		
@@ -235,6 +245,8 @@ module.exports = {
 					if (callback)
 						callback.call(self, self.appinfo);
 				}
+			}, function(e) {
+				(params.error ? params.error : errorHandler).call(self, e);
 			});
 		}
 
@@ -251,6 +263,8 @@ module.exports = {
 					if (callback)
 						callback.call(self, self.sysinfo);
 				}
+			}, function(e) {
+				(params.error ? params.error : errorHandler).call(self, e);
 			});
 		}
 
@@ -270,6 +284,8 @@ module.exports = {
 					if (callback)
 						callback.call(self, self.news);
 				}
+			}, function(e) {
+				(params.error ? params.error : errorHandler).call(self, e);
 			});
 		}
 
@@ -304,6 +320,8 @@ module.exports = {
 						if (callback)
 							callback.call(self, self.metadata);
 					}
+				}, function(e) {
+					(params.error ? params.error : errorHandler).call(self, e);
 				});
 			}
 
@@ -325,6 +343,8 @@ module.exports = {
 						if (callback)
 							callback.call(self, self.filters);
 					}
+				}, function(e) {
+					(params.error ? params.error : errorHandler).call(self, e);
 				});
 			}
 
@@ -355,6 +375,8 @@ module.exports = {
 						if (callback)
 							callback.call(self, self.list);
 					}
+				}, function(e) {
+					(params.error ? params.error : errorHandler).call(self, e);
 				});
 			}
 
@@ -385,6 +407,8 @@ module.exports = {
 						if (callback)
 							callback.call(self, self.item);
 					}
+				}, function(e) {
+					(params.error ? params.error : errorHandler).call(self, e);
 				});
 			}
 
@@ -434,6 +458,8 @@ module.exports = {
 						if (callback)
 							callback.call(self, self.item);
 					}
+				}, function(e) {
+					(params.error ? params.error : errorHandler).call(self, e);
 				});
 			}
 
@@ -461,6 +487,8 @@ module.exports = {
 						if (callback)
 							callback.call(self, self.item);
 					}
+				}, function(e) {
+					(params.error ? params.error : errorHandler).call(self, e);
 				});
 			}
 
@@ -479,6 +507,8 @@ module.exports = {
 						if (callback)
 							callback.call(self, self.item);
 					}
+				}, function(e) {
+					(params.error ? params.error : errorHandler).call(self, e);
 				});
 			}
 
@@ -497,6 +527,8 @@ module.exports = {
 						if (callback)
 							callback.call(self);
 					}
+				}, function(e) {
+					(params.error ? params.error : errorHandler).call(self, e);
 				});
 			}
 
@@ -513,6 +545,8 @@ module.exports = {
 						if (callback)
 							callback.call(self, res);
 					}
+				}, function(e) {
+					(params.error ? params.error : errorHandler).call(self, e);
 				});
 			}
 
@@ -531,6 +565,8 @@ module.exports = {
 						if (callback)
 							callback.call(self, self.crosstabdata);
 					}
+				}, function(e) {
+					(params.error ? params.error : errorHandler).call(self, e);
 				});
 			}
 
@@ -552,6 +588,8 @@ module.exports = {
 						if (callback)
 							callback.call(self, res);
 					}
+				}, function(e) {
+					(params.error ? params.error : errorHandler).call(self, e);
 				});
 			}
 
@@ -570,6 +608,8 @@ module.exports = {
 						if (callback)
 							callback.call(self, res);
 					}
+				}, function(e) {
+					(params.error ? params.error : errorHandler).call(self, e);
 				});
 			}
 
@@ -587,6 +627,8 @@ module.exports = {
 						if (callback)
 							callback.call(self, res);
 					}
+				}, function(e) {
+					(params.error ? params.error : errorHandler).call(self, e);
 				});
 			}
 
