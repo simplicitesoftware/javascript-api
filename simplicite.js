@@ -644,7 +644,7 @@ module.exports = {
 				search: function(filters, params) {
 					var d = Q.defer();
 					if (!params) params = {};
-					params.error = function() { d.reject(e); }
+					params.error = function(e) { d.reject(e); }
 					this._search(function(list) { d.resolve(list); }, filters, params);
 					return d.promise;
 				},
