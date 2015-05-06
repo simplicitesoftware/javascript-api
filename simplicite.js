@@ -156,9 +156,9 @@ module.exports = {
 			r.end();
 		}
 
-		var apppath = '/json/app';
-		var objpath = '/json/obj';
-		var pcspath = '/json/pcs';
+		var apppath = '/api/json/app';
+		var objpath = '/api/json/obj';
+		var pcspath = '/api/json/pcs';
 		
 		function login(callback, params) {
 			var self = this;
@@ -632,7 +632,7 @@ module.exports = {
 			}
 
 			obj = {
-				metadata: { name: name, instance: instance },
+metadata: { name: name, instance: instance, rowidfield: "row_id" },
 				_getMetadata: _getMetadata,
 				getMetadata: function(params) {
 					var d = Q.defer();
