@@ -4,6 +4,8 @@
 Simplicit&eacute;&reg; NodeJS API
 =================================
 
+[![NPM](https://nodei.co/npm/simplicite.png?downloads=true&downloadRank=true)](https://nodei.co/npm/simplicite/) 
+
 Introduction
 ------------
 
@@ -20,10 +22,7 @@ Check `test.js` for sample usage.
 Statistics
 ----------
 
-[![NPM](https://nodei.co/npm/simplicite.png?downloads=true&downloadRank=true)](https://nodei.co/npm/simplicite/) 
-
-
-[![NPM](https://nodei.co/npm-dl/simplicite.png?months=6&height=3)](https://nodei.co/npm/simplicite)
+[![NPM](https://nodei.co/npm-dl/simplicite.png?months=6&height=5)](https://nodei.co/npm/simplicite)
 
 License
 -------
