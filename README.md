@@ -17,6 +17,14 @@ Check `test.js` for sample usage.
 
 **This is still a __BETA__ stage module, use at your own risks**
 
+Statistics
+----------
+
+[![NPM](https://nodei.co/npm/simplicite.png?downloads=true&downloadRank=true)](https://nodei.co/npm/simplicite/) 
+
+
+[![NPM](https://nodei.co/npm-dl/simplicite.png?months=6&height=3)](https://nodei.co/npm/simplicite)
+
 License
 -------
 
