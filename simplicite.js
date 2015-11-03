@@ -78,7 +78,7 @@ module.exports = {
 			ERRLEVEL_WARNING: 3
 		};
 		
-		if (!params) params = {};
+		if (params === undefined) params = {};
 		var debug = params.debug || false;
 		var scheme = params.scheme || 'http';
 		if (scheme !== 'http' || scheme !== 'https') scheme = 'http';
@@ -86,9 +86,8 @@ module.exports = {
 		var port = params.port || 8080;
 		var root = params.root || '';
 		
-		var user = params.user;
-		var password = params.password;
-		var auth = user && password ? 'Basic ' + new Buffer(user + ':' + password).toString('base64') : undefined;
+		var tokenHeader = params.token !== undefined ? 'Bearer ' + params.token : undefined;
+		var basicHeader = params.user !== undefined && params.password !== undefined ? 'Basic ' + new Buffer(params.user + ':' + params.password).toString('base64') : undefined;
 
 		var infoHandler = params.infoHandler || function(msg) { console.log('INFO - ' + msg); };
 		var warnHandler = params.warnHandler || function(msg) { console.log('WARN - ' + msg); };
@@ -126,18 +125,23 @@ module.exports = {
 		function call(path, data, callback, error) {
 			var p = path || '/'; 
 			p = (root !== '' ? '/' + root : '') + p;
+			var m = data === undefined ? 'GET' : 'POST';
 			var req = {
 					host: host,
 					port: port,
-					method: 'POST',
+					method: m,
 					path: p,
-					headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8' }
+					headers: {}
 				};
+			if (data !== undefined)
+				req.headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=utf-8';
+			if (tokenHeader !== undefined)
+				req.headers['X-Simplicite-Authorization'] = tokenHeader;
+			else if (basicHeader !== undefined)
+				req.headers['Authorization'] = basicHeader;
 			if (cookies)
 				req.headers['Cookie'] = cookies;
-			if (auth)
-				req.headers['Authorization'] = auth;
-			debugHandler('[simplicite.call] URL = ' + p);
+			debugHandler('[simplicite.call] Request = ' + JSON.stringify(req));
 			var r = http.request(req, function(res) {
 				cookies = res.headers['set-cookie'] || cookies;
 				var r = '';
@@ -156,13 +160,29 @@ module.exports = {
 			r.end();
 		}
 
+		var healthpath = '/health';
+		
+		function getHealth(callback, params) {
+			var self = this;
+			if (params === undefined) params = {};
+			if (params.format === undefined) params.format = 'json';
+			call(healthpath + '?format=' + params.format, undefined, function(res) {
+				debugHandler('[simplicite.getHealth] HTTP response = ' + res);
+				health = eval('(' + res + ')');
+				if (callback)
+					callback.call(self, health);
+			}, function(e) {
+				(params.error ? params.error : errorHandler).call(self, e);
+			});
+		}
+
 		var apppath = '/api/json/app';
 		var objpath = '/api/json/obj';
 		var pcspath = '/api/json/pcs';
-		
+
 		function login(callback, params) {
 			var self = this;
-			if (!params) params = {};
+			if (params === undefined) params = {};
 			call(apppath + '?action=session', undefined, function(res) {
 				debugHandler('[simplicite.login] HTTP response = ' + res);
 				var r = eval('(' + res + ')');
@@ -170,6 +190,12 @@ module.exports = {
 					(params.error ? params.error : errorHandler).call(self, r.response.message);
 				} else {
 					self.parameters.sessionId = r.response.id;
+					debugHandler('[simplicite.login] Session ID = ' + self.parameters.sessionId);
+					self.parameters.authToken = r.response.authtoken;
+					if (self.parameters.authToken !== undefined) {
+						debugHandler('[simplicite.login] Auth token = ' + self.parameters.authToken);
+						tokenHeader = 'Bearer ' + self.parameters.authToken;
+					}
 					if (callback)
 						callback.call(self, self.parameters);
 				}
@@ -180,16 +206,20 @@ module.exports = {
 		
 		function logout(callback, params) {
 			var self = this;
-			if (!params) params = {};
+			if (params === undefined) params = {};
 			call(apppath + '?action=logout', undefined, function(res) {
 				debugHandler('[simplicite.logout] HTTP response = ' + res);
 				var r = eval('(' + res + ')');
 				if (r.type === 'error') {
 					(params.error ? params.error : errorHandler).call(self, r.response.message);
 				} else {
+					tokenHeader = undefined;
 					self.parameters.sessionId = undefined;
+					self.parameters.authToken = undefined;
+					self.health = undefined;
 					self.appinfo = undefined;
 					self.sysinfo = undefined;
+					self.userinfo = undefined;
 					self.grant = undefined;
 					if (callback)
 						callback.call(self);
@@ -201,7 +231,7 @@ module.exports = {
 		
 		function getGrant(callback, params) {
 			var self = this;
-			if (!params) params = {};
+			if (params === undefined) params = {};
 			p = '';
 			if (params.inlinePicture)
 				p += "&inline_picture=" + params.inlinePicture;
@@ -233,7 +263,7 @@ module.exports = {
 		
 		function getAppInfo(callback, params) {
 			var self = this;
-			if (!params) params = {};
+			if (params === undefined) params = {};
 			call(apppath + '?action=getinfo', undefined, function(res) {
 				debugHandler('[simplicite.getAppInfo] HTTP response = ' + res);
 				var r = eval('(' + res + ')');
@@ -251,7 +281,7 @@ module.exports = {
 
 		function getSysInfo(callback, params) {
 			var self = this;
-			if (!params) params = {};
+			if (params === undefined) params = {};
 			call(apppath + '?action=sysinfo', undefined, function(res) {
 				debugHandler('[simplicite.getSysInfo] HTTP response = ' + res);
 				var r = eval('(' + res + ')');
@@ -267,9 +297,27 @@ module.exports = {
 			});
 		}
 
+		function getUserInfo(callback, login, params) {
+			var self = this;
+			if (params === undefined) params = {};
+			call(apppath + '?action=userinfo', undefined, function(res) {
+				debugHandler('[simplicite.getUserInfo] HTTP response = ' + res);
+				var r = eval('(' + res + ')');
+				if (r.type === 'error') {
+					(params.error ? params.error : errorHandler).call(self, r.response.message);
+				} else {
+					self.userinfo = r.response;
+					if (callback)
+						callback.call(self, self.userinfo);
+				}
+			}, function(e) {
+				(params.error ? params.error : errorHandler).call(self, e);
+			});
+		}
+		
 		function getNews(callback, params) {
 			var self = this;
-			if (!params) params = {};
+			if (params === undefined) params = {};
 			p = '';
 			if (params.inlineImages)
 				p += "&inline_images=" + params.inlineImages;
@@ -293,7 +341,7 @@ module.exports = {
 		var businessObjectCache = {};
 
 		function getBusinessObject(name, instance) {
-			if (!instance) instance = 'node_' + name;
+			if (instance === undefined) instance = 'node_' + name;
 			
 			var cacheKey = name + ":" + instance;
 			var obj = businessObjectCache[cacheKey];
@@ -303,7 +351,7 @@ module.exports = {
 
 			function _getMetadata(callback, params) {
 				var self = this;
-				if (!params) params = {};
+				if (params === undefined) params = {};
 				var p = '';
 				if (params.context)
 					p += '&context=' + params.context;
@@ -326,7 +374,7 @@ module.exports = {
 
 			function _getFilters(callback, params) {
 				var self = this;
-				if (!params) params = {};
+				if (params === undefined) params = {};
 				var p = '';
 				if (params.context)
 					p += '&context=' + params.context;
@@ -351,7 +399,7 @@ module.exports = {
 				var self = this;
 				if (filters)
 					self.filters = filters;
-				if (!params) params = {};
+				if (params === undefined) params = {};
 				var p = '';
 				if (params.page)
 					p += '&page=' + params.page;
@@ -381,7 +429,7 @@ module.exports = {
 
 			function _get(callback, rowId, params) {
 				var self = this;
-				if (!params) params = {};
+				if (params === undefined) params = {};
 				var p = '';
 				if (params.context)
 					p += '&context=' + params.context;
@@ -412,32 +460,32 @@ module.exports = {
 			}
 
 			function _getForCreate(callback, params) {
-				if (!params) params = {};
+				if (params === undefined) params = {};
 				params.context = constants.CONTEXT_CREATE;
 				this._get(callback, constants.DEFAULT_ROW_ID, params);
 			}
 
 			function _getForUpdate(callback, rowId, params) {
-				if (!params) params = {};
+				if (params === undefined) params = {};
 				params.context = constants.CONTEXT_UPDATE;
 				this._get(callback, rowId, params);
 			}
 
 			function _getForCopy(callback, rowId, params) {
-				if (!params) params = {};
+				if (params === undefined) params = {};
 				params.context = constants.CONTEXT_COPY;
 				this._get(callback, rowId, params);
 			}
 
 			function _getForDelete(callback, rowId, params) {
-				if (!params) params = {};
+				if (params === undefined) params = {};
 				params.context = constants.CONTEXT_CREATE;
 				this._get(callback, rowId, params);
 			}
 
 			function _populate(callback, rowId, params) {
 				var self = this;
-				if (!params) params = {};
+				if (params === undefined) params = {};
 				var p = '';
 				if (params.context)
 					p += '&context=' + params.context;
@@ -475,7 +523,7 @@ module.exports = {
 				var self = this;
 				if (item)
 					self.item = item;
-				if (!params) params = {};
+				if (params === undefined) params = {};
 				call(path + '&action=create', callParams(self.item), function(res) {
 					debugHandler('[simplicite.BusinessObject.create] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
@@ -495,7 +543,7 @@ module.exports = {
 				var self = this;
 				if (item)
 					self.item = item;
-				if (!params) params = {};
+				if (params === undefined) params = {};
 				call(path + '&action=update', callParams(self.item), function(res) {
 					debugHandler('[simplicite.BusinessObject.update] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
@@ -515,7 +563,7 @@ module.exports = {
 				var self = this;
 				if (item)
 					self.item = item;
-				if (!params) params = {};
+				if (params === undefined) params = {};
 				call(path + '&action=delete&' + self.metadata.rowidfield + '=' + self.item[self.metadata.rowidfield], undefined, function(res) {
 					debugHandler('[simplicite.BusinessObject.del] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
@@ -533,7 +581,7 @@ module.exports = {
 
 			function _action(callback, action, params) {
 				var self = this;
-				if (!params) params = {};
+				if (params === undefined) params = {};
 				call(path + '&action=' + action, undefined, function(res) {
 					debugHandler('[simplicite.BusinessObject.action(' + action + ')] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
@@ -553,7 +601,7 @@ module.exports = {
 				var self = this;
 				if (filters)
 					self.filters = filters;
-				if (!params) params = {};
+				if (params === undefined) params = {};
 				call(path + '&action=crosstab&crosstab=' + crosstab, callParams(self.filters), function(res) {
 					debugHandler('[simplicite.BusinessObject.crosstab(' + crosstab + ')] HTTP response = ' + res);
 					var r = eval('(' + res + ')');
@@ -571,7 +619,7 @@ module.exports = {
 
 			function _print(callback, prt, params) {
 				var self = this;
-				if (!params) params = {};
+				if (params === undefined) params = {};
 				var p = '';
 				if (params.all)
 					p += '&all=' + params.all;
@@ -594,7 +642,7 @@ module.exports = {
 
 			function _setParameter(callback, name, value, params) {
 				var self = this;
-				if (!params) params = {};
+				if (params === undefined) params = {};
 				var p = { name: name };
 				if (value) p.value = value;
 				call(path + '&action=setparameter', callParams(p), function(res) {
@@ -614,7 +662,7 @@ module.exports = {
 
 			function _getParameter(callback, name, params) {
 				var self = this;
-				if (!params) params = {};
+				if (params === undefined) params = {};
 				var p = { name: name };
 				call(path + '&action=getparameter', callParams(p), function(res) {
 					debugHandler('[simplicite.BusinessObject.getParameter(' + name + ')] HTTP response = ' + res);
@@ -632,7 +680,7 @@ module.exports = {
 			}
 
 			obj = {
-metadata: { name: name, instance: instance, rowidfield: "row_id" },
+				metadata: { name: name, instance: instance, rowidfield: "row_id" },
 				_getMetadata: _getMetadata,
 				getMetadata: function(params) {
 					var d = Q.defer();
@@ -678,7 +726,7 @@ metadata: { name: name, instance: instance, rowidfield: "row_id" },
 				_getFilters: _getFilters,
 				getFilters: function(params) {
 					var d = Q.defer();
-					if (!params) params = {};
+					if (params === undefined) params = {};
 					params.error = function(e) { d.reject(e); }
 					this._getFilters(function(filters) { d.resolve(filters); }, params);
 					return d.promise;
@@ -686,7 +734,7 @@ metadata: { name: name, instance: instance, rowidfield: "row_id" },
 				_search: _search,
 				search: function(filters, params) {
 					var d = Q.defer();
-					if (!params) params = {};
+					if (params === undefined) params = {};
 					params.error = function(e) { d.reject(e); }
 					this._search(function(list) { d.resolve(list); }, filters, params);
 					return d.promise;
@@ -695,7 +743,7 @@ metadata: { name: name, instance: instance, rowidfield: "row_id" },
 				_get: _get,
 				get: function(rowId, params) {
 					var d = Q.defer();
-					if (!params) params = {};
+					if (params === undefined) params = {};
 					params.error = function(e) { d.reject(e); }
 					this._get(function(item) { d.resolve(item); }, rowId, params);
 					return d.promise;
@@ -703,7 +751,7 @@ metadata: { name: name, instance: instance, rowidfield: "row_id" },
 				_getForCreate: _getForCreate,
 				getForCreate: function(params) {
 					var d = Q.defer();
-					if (!params) params = {};
+					if (params === undefined) params = {};
 					params.error = function(e) { d.reject(e); }
 					this._getForCreate(function(item) { d.resolve(item); }, params);
 					return d.promise;
@@ -711,7 +759,7 @@ metadata: { name: name, instance: instance, rowidfield: "row_id" },
 				_getForUpdate: _getForUpdate,
 				getForUpdate: function(rowId, params) {
 					var d = Q.defer();
-					if (!params) params = {};
+					if (params === undefined) params = {};
 					params.error = function(e) { d.reject(e); }
 					this._getForUpdate(function(item) { d.resolve(item); }, rowId, params);
 					return d.promise;
@@ -719,7 +767,7 @@ metadata: { name: name, instance: instance, rowidfield: "row_id" },
 				_getForCopy: _getForCopy,
 				getForCopy: function(rowId, params) {
 					var d = Q.defer();
-					if (!params) params = {};
+					if (params === undefined) params = {};
 					params.error = function(e) { d.reject(e); }
 					this._getForCopy(function(item) { d.resolve(item); }, rowId, params);
 					return d.promise;
@@ -727,7 +775,7 @@ metadata: { name: name, instance: instance, rowidfield: "row_id" },
 				_getForDelete: _getForDelete,
 				getForDelete: function(rowId, params) {
 					var d = Q.defer();
-					if (!params) params = {};
+					if (params === undefined) params = {};
 					params.error = function(e) { d.reject(e); }
 					this._getForDelete(function(item) { d.resolve(item); }, rowId, params);
 					return d.promise;
@@ -737,7 +785,7 @@ metadata: { name: name, instance: instance, rowidfield: "row_id" },
 				_populate: _populate,
 				populate: function(item, params) {
 					var d = Q.defer();
-					if (!params) params = {};
+					if (params === undefined) params = {};
 					params.error = function(e) { d.reject(e); }
 					this._populate(function(item) { d.resolve(item); }, item, params);
 					return d.promise;
@@ -745,7 +793,7 @@ metadata: { name: name, instance: instance, rowidfield: "row_id" },
 				_save: _save,
 				save: function(item, params) {
 					var d = Q.defer();
-					if (!params) params = {};
+					if (params === undefined) params = {};
 					params.error = function(e) { d.reject(e); }
 					this._save(function(item) { d.resolve(item); }, item, params);
 					return d.promise;
@@ -753,7 +801,7 @@ metadata: { name: name, instance: instance, rowidfield: "row_id" },
 				_create: _create,
 				create: function(item, params) {
 					var d = Q.defer();
-					if (!params) params = {};
+					if (params === undefined) params = {};
 					params.error = function(e) { d.reject(e); }
 					this._create(function(item) { d.resolve(item); }, item, params);
 					return d.promise;
@@ -761,7 +809,7 @@ metadata: { name: name, instance: instance, rowidfield: "row_id" },
 				_update: _update,
 				update: function(item, params) {
 					var d = Q.defer();
-					if (!params) params = {};
+					if (params === undefined) params = {};
 					params.error = function(e) { d.reject(e); }
 					this._update(function(item) { d.resolve(item); }, item, params);
 					return d.promise;
@@ -769,7 +817,7 @@ metadata: { name: name, instance: instance, rowidfield: "row_id" },
 				_del: _del,
 				del: function(item, params) {
 					var d = Q.defer();
-					if (!params) params = {};
+					if (params === undefined) params = {};
 					params.error = function(e) { d.reject(e); }
 					this._del(function() { d.resolve(); }, item, params);
 					return d.promise;
@@ -778,7 +826,7 @@ metadata: { name: name, instance: instance, rowidfield: "row_id" },
 				_action: _action,
 				action: function(act, params) {
 					var d = Q.defer();
-					if (!params) params = {};
+					if (params === undefined) params = {};
 					params.error = function(e) { d.reject(e); }
 					this._action(function(res) { d.resolve(res); }, act, params);
 					return d.promise;
@@ -786,7 +834,7 @@ metadata: { name: name, instance: instance, rowidfield: "row_id" },
 				_crosstab: _crosstab,
 				crosstab: function(ctb, params) {
 					var d = Q.defer();
-					if (!params) params = {};
+					if (params === undefined) params = {};
 					params.error = function(e) { d.reject(e); }
 					this._crosstab(function(res) { d.resolve(res); }, ctb, params);
 					return d.promise;
@@ -794,7 +842,7 @@ metadata: { name: name, instance: instance, rowidfield: "row_id" },
 				_print: _print,
 				print: function(pt, params) {
 					var d = Q.defer();
-					if (!params) params = {};
+					if (params === undefined) params = {};
 					params.error = function(e) { d.reject(e); }
 					this._print(function(res) { d.resolve(res); }, pt, params);
 					return d.promise;
@@ -802,7 +850,7 @@ metadata: { name: name, instance: instance, rowidfield: "row_id" },
 				_setParameter: _setParameter,
 				setParameter: function(name, value, params) {
 					var d = Q.defer();
-					if (!params) params = {};
+					if (params === undefined) params = {};
 					params.error = function(e) { d.reject(e); }
 					this._setParameter(function() { d.resolve(); }, name, value, params);
 					return d.promise;
@@ -810,7 +858,7 @@ metadata: { name: name, instance: instance, rowidfield: "row_id" },
 				_getParameter: _getParameter,
 				getParameter: function(name, params) {
 					var d = Q.defer();
-					if (!params) params = {};
+					if (params === undefined) params = {};
 					params.error = function(e) { d.reject(e); }
 					this._getParameter(function(value) { d.resolve(value); }, name, params);
 					return d.promise;
@@ -842,13 +890,20 @@ metadata: { name: name, instance: instance, rowidfield: "row_id" },
 				scheme: scheme,
 				host: host,
 				port: port,
-				root: root,
-				user: user
+				root: root
+			},
+			_getHealth: getHealth,
+			getHealth: function(params) {
+				var d = Q.defer();
+				if (params === undefined) params = {};
+				params.error = function(e) { d.reject(e); }
+				this._getHealth(function(health) { d.resolve(health); }, params);
+				return d.promise;
 			},
 			_login: login,
 			login: function(params) {
 				var d = Q.defer();
-				if (!params) params = {};
+				if (params === undefined) params = {};
 				params.error = function(e) { d.reject(e); }
 				this._login(function(parameters) { d.resolve(parameters); }, params);
 				return d.promise;
@@ -856,7 +911,7 @@ metadata: { name: name, instance: instance, rowidfield: "row_id" },
 			_logout: logout,
 			logout: function(params) {
 				var d = Q.defer();
-				if (!params) params = {};
+				if (params === undefined) params = {};
 				params.error = function(e) { d.reject(e); }
 				this._logout(function() { d.resolve(); }, params);
 				return d.promise;
@@ -864,7 +919,7 @@ metadata: { name: name, instance: instance, rowidfield: "row_id" },
 			_getGrant: getGrant,
 			getGrant: function(params) {
 				var d = Q.defer();
-				if (!params) params = {};
+				if (params === undefined) params = {};
 				params.error = function(e) { d.reject(e); }
 				this._getGrant(function(grant) { d.resolve(grant); }, params);
 				return d.promise;
@@ -872,7 +927,7 @@ metadata: { name: name, instance: instance, rowidfield: "row_id" },
 			_getAppInfo: getAppInfo,
 			getAppInfo: function(params) {
 				var d = Q.defer();
-				if (!params) params = {};
+				if (params === undefined) params = {};
 				params.error = function(e) { d.reject(e); }
 				this._getAppInfo(function(appinfo) { d.resolve(appinfo); }, params);
 				return d.promise;
@@ -880,15 +935,23 @@ metadata: { name: name, instance: instance, rowidfield: "row_id" },
 			_getSysInfo: getSysInfo,
 			getSysInfo: function(params) {
 				var d = Q.defer();
-				if (!params) params = {};
+				if (params === undefined) params = {};
 				params.error = function(e) { d.reject(e); }
 				this._getSysInfo(function(sysinfo) { d.resolve(sysinfo); }, params);
+				return d.promise;
+			},
+			_getUserInfo: getUserInfo,
+			getUserInfo: function(login, params) {
+				var d = Q.defer();
+				if (params === undefined) params = {};
+				params.error = function(e) { d.reject(e); }
+				this._getUserInfo(function(userinfo) { d.resolve(userinfo); }, login, params);
 				return d.promise;
 			},
 			_getNews: getNews,
 			getNews: function(params) {
 				var d = Q.defer();
-				if (!params) params = {};
+				if (params === undefined) params = {};
 				params.error = function(e) { d.reject(e); }
 				this._getNews(function(news) { d.resolve(news); }, params);
 				return d.promise;

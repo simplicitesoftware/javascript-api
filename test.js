@@ -4,7 +4,7 @@ var app = simplicite.session({
 	host: "localhost",
 	port: 8080,
 	scheme: "http",
-	root: "demows",
+	root: "",
 	user: "designer",
 	password: "designer",
 	debug: true
