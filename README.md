@@ -1,15 +1,15 @@
 ![](http://www.simplicitesoftware.com/logos/logo250.png)
 ---
 
-Simplicit&eacute;&reg; NodeJS API
-=================================
+Simplicit&eacute;&reg; node.js&reg; API
+=======================================
 
 [![NPM](https://nodei.co/npm/simplicite.png?downloads=true&downloadRank=true)](https://nodei.co/npm/simplicite/) 
 
 Introduction
 ------------
 
-This is the Node.js API for the [Simplicit&eacute;&reg; platform](http://www.simplicitesoftware.com).
+This is the node.js&reg; API for the [Simplicit&eacute;&reg; platform](http://www.simplicitesoftware.com).
 
 To install it:
 

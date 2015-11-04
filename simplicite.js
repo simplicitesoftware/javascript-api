@@ -141,6 +141,7 @@ module.exports = {
 				req.headers['Cookie'] = cookies;
 			debugHandler('[simplicite.call] Request = ' + JSON.stringify(req));
 			var r = http.request(req, function(res) {
+				var s = res.statusCode;
 				cookies = res.headers['set-cookie'] || cookies;
 				var r = '';
 				res.on('data', function(chunk) {
@@ -148,7 +149,7 @@ module.exports = {
 				});
 				res.on('end', function() {
 					if (callback)
-						callback.call(this, r);
+						callback.call(this, r, s);
 				});
 			}).on('error', function(e) {
 				if (error)
@@ -158,13 +159,19 @@ module.exports = {
 			r.end();
 		}
 
+		function error(message) {
+			return { type: 'error', response: { message: message } };
+		}
+
 		var healthpath = '/health';
-		
-		function parse(res) {
+
+		function parse(res, status) {
 			try {
+				if (status != 200)
+					return error('HTTP status: ' + status);
 				return JSON.parse(res);
 			} catch (e) {
-				return { type: 'error', response: { message: 'Response parsing error: ' + e.message } };
+				return error('Parsing error: ' + e.message);
 			}
 		}
 
@@ -172,11 +179,11 @@ module.exports = {
 			var self = this;
 			params = params || {};
 			if (!params.format) params.format = 'json';
-			call(healthpath + '?format=' + params.format, undefined, function(res) {
-				debugHandler('[simplicite.getHealth] HTTP response = ' + res);
-				health = parse(res);
+			call(healthpath + '?format=' + params.format, undefined, function(res, status) {
+				debugHandler('[simplicite.getHealth] HTTP status = ' + status + ', response = ' + res);
+				health = parse(res, status);
 				if (health.type === 'error') {
-					(params.error ? params.error : errorHandler).call(self, health.message);
+					(params.error ? params.error : errorHandler).call(self, health.response.message);
 				} else if (callback)
 					callback.call(self, health);
 			}, function(e) {
@@ -191,9 +198,9 @@ module.exports = {
 		function login(callback, params) {
 			var self = this;
 			params = params || {};
-			call(apppath + '?action=session', undefined, function(res) {
-				debugHandler('[simplicite.login] HTTP response = ' + res);
-				var r = parse(res);
+			call(apppath + '?action=session', undefined, function(res, status) {
+				debugHandler('[simplicite.login] HTTP status = ' + status + ', response = ' + res);
+				var r = parse(res, status);
 				if (r.type === 'error') {
 					(params.error ? params.error : errorHandler).call(self, r.response.message);
 				} else {
@@ -215,9 +222,9 @@ module.exports = {
 		function logout(callback, params) {
 			var self = this;
 			params = params || {};
-			call(apppath + '?action=logout', undefined, function(res) {
-				debugHandler('[simplicite.logout] HTTP response = ' + res);
-				var r = parse(res);
+			call(apppath + '?action=logout', undefined, function(res, status) {
+				debugHandler('[simplicite.logout] HTTP status = ' + status + ', response = ' + res);
+				var r = parse(res, status);
 				if (r.type === 'error') {
 					(params.error ? params.error : errorHandler).call(self, r.response.message);
 				} else {
@@ -239,9 +246,9 @@ module.exports = {
 			p = '';
 			if (params.inlinePicture)
 				p += "&inline_picture=" + params.inlinePicture;
-			call(apppath + '?action=getgrant' + p, undefined, function(res) {
-				debugHandler('[simplicite.getGrant] HTTP response = ' + res);
-				var r = parse(res);
+			call(apppath + '?action=getgrant' + p, undefined, function(res, status) {
+				debugHandler('[simplicite.getGrant] HTTP status = ' + status + ', response = ' + res);
+				var r = parse(res, status);
 				if (r.type === 'error') {
 					(params.error ? params.error : errorHandler).call(self, r.response.message);
 				} else {
@@ -268,9 +275,9 @@ module.exports = {
 		function getAppInfo(callback, params) {
 			var self = this;
 			params = params || {};
-			call(apppath + '?action=getinfo', undefined, function(res) {
-				debugHandler('[simplicite.getAppInfo] HTTP response = ' + res);
-				var r = parse(res);
+			call(apppath + '?action=getinfo', undefined, function(res, status) {
+				debugHandler('[simplicite.getAppInfo] HTTP status = ' + status + ', response = ' + res);
+				var r = parse(res, status);
 				if (r.type === 'error') {
 					(params.error ? params.error : errorHandler).call(self, r.response.message);
 				} else {
@@ -286,9 +293,9 @@ module.exports = {
 		function getSysInfo(callback, params) {
 			var self = this;
 			params = params || {};
-			call(apppath + '?action=sysinfo', undefined, function(res) {
-				debugHandler('[simplicite.getSysInfo] HTTP response = ' + res);
-				var r = parse(res);
+			call(apppath + '?action=sysinfo', undefined, function(res, status) {
+				debugHandler('[simplicite.getSysInfo] HTTP status = ' + status + ', response = ' + res);
+				var r = parse(res, status);
 				if (r.type === 'error') {
 					(params.error ? params.error : errorHandler).call(self, r.response.message);
 				} else {
@@ -304,9 +311,9 @@ module.exports = {
 		function getUserInfo(callback, login, params) {
 			var self = this;
 			params = params || {};
-			call(apppath + '?action=userinfo', undefined, function(res) {
-				debugHandler('[simplicite.getUserInfo] HTTP response = ' + res);
-				var r = parse(res);
+			call(apppath + '?action=userinfo', undefined, function(res, status) {
+				debugHandler('[simplicite.getUserInfo] HTTP status = ' + status + ', response = ' + res);
+				var r = parse(res, status);
 				if (r.type === 'error') {
 					(params.error ? params.error : errorHandler).call(self, r.response.message);
 				} else {
@@ -325,9 +332,9 @@ module.exports = {
 			p = '';
 			if (params.inlineImages)
 				p += "&inline_images=" + params.inlineImages;
-			call(apppath + '?action=news' + p, undefined, function(res) {
-				debugHandler('[simplicite.getNews] HTTP response = ' + res);
-				var r = parse(res);
+			call(apppath + '?action=news' + p, undefined, function(res, status) {
+				debugHandler('[simplicite.getNews] HTTP status = ' + status + ', response = ' + res);
+				var r = parse(res, status);
 				if (r.type === 'error') {
 					(params.error ? params.error : errorHandler).call(self, r.response.message);
 				} else {
@@ -361,9 +368,9 @@ module.exports = {
 					p += '&context=' + params.context;
 				if (params.contextParam)
 					p += '&contextparam=' + params.contextParam;
-				call(path + '&action=metadata' + p, undefined, function(res) {
-					debugHandler('[simplicite.BusinessObject.getMetadata] HTTP response = ' + res);
-					var r = parse(res);
+				call(path + '&action=metadata' + p, undefined, function(res, status) {
+					debugHandler('[simplicite.BusinessObject.getMetadata] HTTP status = ' + status + ', response = ' + res);
+					var r = parse(res, status);
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
@@ -384,9 +391,9 @@ module.exports = {
 					p += '&context=' + params.context;
 				if (params.reset)
 					p += '&reset=' + params.reset;
-				call(path + '&action=filters' + p, undefined, function(res) {
-					debugHandler('[simplicite.BusinessObject.getFilters] HTTP response = ' + res);
-					var r = parse(res);
+				call(path + '&action=filters' + p, undefined, function(res, status) {
+					debugHandler('[simplicite.BusinessObject.getFilters] HTTP status = ' + status + ', response = ' + res);
+					var r = parse(res, status);
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
@@ -413,9 +420,9 @@ module.exports = {
 				var it = params.inlineThumbs;
 				if (it)
 					p += '&inline_thumbnails=' + (it.join ? it.join(',') : it);
-				call(path + '&action=search' + p, callParams(self.filters), function(res) {
-					debugHandler('[simplicite.BusinessObject.search] HTTP response = ' + res);
-					var r = parse(res);
+				call(path + '&action=search' + p, callParams(self.filters), function(res, status) {
+					debugHandler('[simplicite.BusinessObject.search] HTTP status = ' + status + ', response = ' + res);
+					var r = parse(res, status);
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
@@ -448,9 +455,9 @@ module.exports = {
 						url += '&fields=' + params.fields[i].replace('.', '__');
 					}
 				}
-				call(path + '&action=get&' + self.metadata.rowidfield + '=' + rowId + p, undefined, function(res) {
-					debugHandler('[simplicite.BusinessObject.get] HTTP response = ' + res);
-					var r = parse(res);
+				call(path + '&action=get&' + self.metadata.rowidfield + '=' + rowId + p, undefined, function(res, status) {
+					debugHandler('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response = ' + res);
+					var r = parse(res, status);
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
@@ -499,9 +506,9 @@ module.exports = {
 				var it = params.inlineThumbs;
 				if (it)
 					p += '&inline_thumbnails=' + (it.join ? it.join(',') : it);
-				call(path + '&action=populate&' + self.metadata.rowidfield + '=' + rowId + p, undefined, function(res) {
-					debugHandler('[simplicite.BusinessObject.populate] HTTP response = ' + res);
-					var r = parse(res);
+				call(path + '&action=populate&' + self.metadata.rowidfield + '=' + rowId + p, undefined, function(res, status) {
+					debugHandler('[simplicite.BusinessObject.populate] HTTP status = ' + status + ', response = ' + res);
+					var r = parse(res, status);
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
@@ -528,9 +535,9 @@ module.exports = {
 				if (item)
 					self.item = item;
 				params = params || {};
-				call(path + '&action=create', callParams(self.item), function(res) {
-					debugHandler('[simplicite.BusinessObject.create] HTTP response = ' + res);
-					var r = parse(res);
+				call(path + '&action=create', callParams(self.item), function(res, status) {
+					debugHandler('[simplicite.BusinessObject.create] HTTP status = ' + status + ', response = ' + res);
+					var r = parse(res, status);
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
@@ -548,9 +555,9 @@ module.exports = {
 				if (item)
 					self.item = item;
 				params = params || {};
-				call(path + '&action=update', callParams(self.item), function(res) {
-					debugHandler('[simplicite.BusinessObject.update] HTTP response = ' + res);
-					var r = parse(res);
+				call(path + '&action=update', callParams(self.item), function(res, status) {
+					debugHandler('[simplicite.BusinessObject.update] HTTP status = ' + status + ', response = ' + res);
+					var r = parse(res, status);
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
@@ -568,9 +575,9 @@ module.exports = {
 				if (item)
 					self.item = item;
 				params = params || {};
-				call(path + '&action=delete&' + self.metadata.rowidfield + '=' + self.item[self.metadata.rowidfield], undefined, function(res) {
-					debugHandler('[simplicite.BusinessObject.del] HTTP response = ' + res);
-					var r = parse(res);
+				call(path + '&action=delete&' + self.metadata.rowidfield + '=' + self.item[self.metadata.rowidfield], undefined, function(res, status) {
+					debugHandler('[simplicite.BusinessObject.del] HTTP status = ' + status + ', response = ' + res);
+					var r = parse(res, status);
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
@@ -586,9 +593,9 @@ module.exports = {
 			function _action(callback, action, params) {
 				var self = this;
 				params = params || {};
-				call(path + '&action=' + action, undefined, function(res) {
-					debugHandler('[simplicite.BusinessObject.action(' + action + ')] HTTP response = ' + res);
-					var r = parse(res);
+				call(path + '&action=' + action, undefined, function(res, status) {
+					debugHandler('[simplicite.BusinessObject.action(' + action + ')] HTTP status = ' + status + ', response = ' + res);
+					var r = parse(res, status);
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
@@ -606,9 +613,9 @@ module.exports = {
 				if (filters)
 					self.filters = filters;
 				params = params || {};
-				call(path + '&action=crosstab&crosstab=' + crosstab, callParams(self.filters), function(res) {
-					debugHandler('[simplicite.BusinessObject.crosstab(' + crosstab + ')] HTTP response = ' + res);
-					var r = parse(res);
+				call(path + '&action=crosstab&crosstab=' + crosstab, callParams(self.filters), function(res, status) {
+					debugHandler('[simplicite.BusinessObject.crosstab(' + crosstab + ')] HTTP status = ' + status + ', response = ' + res);
+					var r = parse(res, status);
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
@@ -629,9 +636,9 @@ module.exports = {
 					p += '&all=' + params.all;
 				if (params.mailing)
 					p += '&mailing=' + params.mailing;
-				call(path + '&action=print&printtemplate=' + prt + p, undefined, function(res) {
-					debugHandler('[simplicite.BusinessObject.print(' + prt + ')] HTTP response = ' + res);
-					var r = parse(res);
+				call(path + '&action=print&printtemplate=' + prt + p, undefined, function(res, status) {
+					debugHandler('[simplicite.BusinessObject.print(' + prt + ')] HTTP status = ' + status + ', response = ' + res);
+					var r = parse(res, status);
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
@@ -649,9 +656,9 @@ module.exports = {
 				params = params || {};
 				var p = { name: name };
 				if (value) p.value = value;
-				call(path + '&action=setparameter', callParams(p), function(res) {
-					debugHandler('[simplicite.BusinessObject.setParameter(' + name + ')] HTTP response = ' + res);
-					var r = parse(res);
+				call(path + '&action=setparameter', callParams(p), function(res, status) {
+					debugHandler('[simplicite.BusinessObject.setParameter(' + name + ')] HTTP status = ' + status + ', response = ' + res);
+					var r = parse(res, status);
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
@@ -668,9 +675,9 @@ module.exports = {
 				var self = this;
 				params = params || {};
 				var p = { name: name };
-				call(path + '&action=getparameter', callParams(p), function(res) {
-					debugHandler('[simplicite.BusinessObject.getParameter(' + name + ')] HTTP response = ' + res);
-					var r = parse(res);
+				call(path + '&action=getparameter', callParams(p), function(res, status) {
+					debugHandler('[simplicite.BusinessObject.getParameter(' + name + ')] HTTP status = ' + status + ', response = ' + res);
+					var r = parse(res, status);
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {

@@ -3,12 +3,12 @@ var simplicite = require('./simplicite');
 var debug = true;
 
 var app = simplicite.session({
-	host: 'localhost',
-	port: 8080,
-	scheme: 'http',
-	root: '',
-	user: 'designer',
-	password: 'designer',
+	scheme: process.env.SIMPLICITE_SCHEME || 'http',
+	host: process.env.SIMPLICITE_HOST || 'localhost',
+	port: process.env.SIMPLICITE_PORT || 8080,
+	root: process.env.SIMPLICITE_ROOT || '',
+	user: process.env.SIMPLICITE_USER || 'designer',
+	password: process.env.SIMPLICITE_PASSWORD || 'designer',
 	debug: debug
 });
 var sys;
