@@ -1,7 +1,7 @@
 {
   "name": "simplicite",
   "version": "0.0.20",
-  "description": "Simplicit&eacute;&reg; Node.js API",
+  "description": "Simplicite platform node.js API",
   "main": "simplicite.js",
   "repository": {
     "type": "git",
