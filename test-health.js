@@ -1,10 +1,10 @@
-var simplicite = require("./simplicite");
+var simplicite = require('./simplicite');
 
 var app = simplicite.session({
-	host: "localhost",
+	host: 'localhost',
 	port: 8080,
-	scheme: "http",
-	root: "",
+	scheme: 'http',
+	root: '',
 	debug: true
 });
 var sys;

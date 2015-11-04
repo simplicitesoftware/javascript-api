@@ -164,7 +164,7 @@ module.exports = {
 			try {
 				return JSON.parse(res);
 			} catch (e) {
-				return { type: "error", response: { message: "Response parsing error: " + e.message } };
+				return { type: 'error', response: { message: 'Response parsing error: ' + e.message } };
 			}
 		}
 
