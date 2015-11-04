@@ -1,14 +1,16 @@
 var simplicite = require("./simplicite");
 
 var app = simplicite.session({
-	host: "demo.apps.simplicite.io",
-	port: 80,
+	host: "localhost",
+	port: 8080,
 	scheme: "http",
 	root: "",
-	debug: false
+	debug: true
 });
 var sys;
 
 app.getHealth().then(function(health) {
 	console.log(health);
+}, function(reason) {
+	console.error('' + reason);
 });

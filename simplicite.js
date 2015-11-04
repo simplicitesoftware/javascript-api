@@ -78,7 +78,7 @@ module.exports = {
 			ERRLEVEL_WARNING: 3
 		};
 		
-		if (params === undefined) params = {};
+		params = params || {};
 		var debug = params.debug || false;
 		var scheme = params.scheme || 'http';
 		if (scheme !== 'http' || scheme !== 'https') scheme = 'http';
@@ -86,8 +86,9 @@ module.exports = {
 		var port = params.port || 8080;
 		var root = params.root || '';
 		
-		var tokenHeader = params.token !== undefined ? 'Bearer ' + params.token : undefined;
-		var basicHeader = params.user !== undefined && params.password !== undefined ? 'Basic ' + new Buffer(params.user + ':' + params.password).toString('base64') : undefined;
+		var user = params.user;
+		var tokenHeader = params.token ? 'Bearer ' + params.token : null;
+		var basicHeader = params.user && params.password ? 'Basic ' + new Buffer(params.user + ':' + params.password).toString('base64') : null;
 
 		var infoHandler = params.infoHandler || function(msg) { console.log('INFO - ' + msg); };
 		var warnHandler = params.warnHandler || function(msg) { console.log('WARN - ' + msg); };
@@ -98,20 +99,17 @@ module.exports = {
 
 		var http = require(scheme);
 
-		var cookies = undefined;
+		var cookies;
 
 		function callParams(data) {
 			var p = '';
-			if (data === undefined)
-				return p;
+			if (!data) return p;
 			var n = 0;
 			for (var i in data) {
-				var d = data[i];
-				if (d === undefined)
-					d = '';
-				if (d.id !== undefined && d.content !== undefined) // Document ?
+				var d = data[i] || '';
+				if (d.id && d.content) // Document ?
 					p += (n++ != 0 ? '&' : '') + i + '=' + encodeURIComponent('id|' + d.id + '|name|' + d.name + '|content|' + d.content);
-				else if (d.object !== undefined && d.row_id !== undefined) // Object ?
+				else if (d.object && d.row_id) // Object ?
 					p += (n++ != 0 ? '&' : '') + i + '=' + encodeURIComponent('object|' + d.object + '|row_id|' + d.row_id);
 				else if (d.sort) // Array ?
 					for (var j = 0; j < d.length; j++)
@@ -125,7 +123,7 @@ module.exports = {
 		function call(path, data, callback, error) {
 			var p = path || '/'; 
 			p = (root !== '' ? '/' + root : '') + p;
-			var m = data === undefined ? 'GET' : 'POST';
+			var m = data ? 'POST' : 'GET';
 			var req = {
 					host: host,
 					port: port,
@@ -133,11 +131,11 @@ module.exports = {
 					path: p,
 					headers: {}
 				};
-			if (data !== undefined)
+			if (data)
 				req.headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=utf-8';
-			if (tokenHeader !== undefined)
+			if (tokenHeader)
 				req.headers['X-Simplicite-Authorization'] = tokenHeader;
-			else if (basicHeader !== undefined)
+			else if (basicHeader)
 				req.headers['Authorization'] = basicHeader;
 			if (cookies)
 				req.headers['Cookie'] = cookies;
@@ -162,14 +160,24 @@ module.exports = {
 
 		var healthpath = '/health';
 		
+		function parse(res) {
+			try {
+				return JSON.parse(res);
+			} catch (e) {
+				return { type: "error", response: { message: "Response parsing error: " + e.message } };
+			}
+		}
+
 		function getHealth(callback, params) {
 			var self = this;
-			if (params === undefined) params = {};
-			if (params.format === undefined) params.format = 'json';
+			params = params || {};
+			if (!params.format) params.format = 'json';
 			call(healthpath + '?format=' + params.format, undefined, function(res) {
 				debugHandler('[simplicite.getHealth] HTTP response = ' + res);
-				health = eval('(' + res + ')');
-				if (callback)
+				health = parse(res);
+				if (health.type === 'error') {
+					(params.error ? params.error : errorHandler).call(self, health.message);
+				} else if (callback)
 					callback.call(self, health);
 			}, function(e) {
 				(params.error ? params.error : errorHandler).call(self, e);
@@ -182,17 +190,17 @@ module.exports = {
 
 		function login(callback, params) {
 			var self = this;
-			if (params === undefined) params = {};
+			params = params || {};
 			call(apppath + '?action=session', undefined, function(res) {
 				debugHandler('[simplicite.login] HTTP response = ' + res);
-				var r = eval('(' + res + ')');
+				var r = parse(res);
 				if (r.type === 'error') {
 					(params.error ? params.error : errorHandler).call(self, r.response.message);
 				} else {
 					self.parameters.sessionId = r.response.id;
 					debugHandler('[simplicite.login] Session ID = ' + self.parameters.sessionId);
 					self.parameters.authToken = r.response.authtoken;
-					if (self.parameters.authToken !== undefined) {
+					if (self.parameters.authToken) {
 						debugHandler('[simplicite.login] Auth token = ' + self.parameters.authToken);
 						tokenHeader = 'Bearer ' + self.parameters.authToken;
 					}
@@ -206,21 +214,17 @@ module.exports = {
 		
 		function logout(callback, params) {
 			var self = this;
-			if (params === undefined) params = {};
+			params = params || {};
 			call(apppath + '?action=logout', undefined, function(res) {
 				debugHandler('[simplicite.logout] HTTP response = ' + res);
-				var r = eval('(' + res + ')');
+				var r = parse(res);
 				if (r.type === 'error') {
 					(params.error ? params.error : errorHandler).call(self, r.response.message);
 				} else {
-					tokenHeader = undefined;
-					self.parameters.sessionId = undefined;
-					self.parameters.authToken = undefined;
-					self.health = undefined;
-					self.appinfo = undefined;
-					self.sysinfo = undefined;
-					self.userinfo = undefined;
-					self.grant = undefined;
+					delete tokenHeader,
+						self.parameters.sessionId, self.parameters.authToken, self.health;
+						self.appinfo, self.sysinfo;
+						self.userinfo, self.grant;
 					if (callback)
 						callback.call(self);
 				}
@@ -231,13 +235,13 @@ module.exports = {
 		
 		function getGrant(callback, params) {
 			var self = this;
-			if (params === undefined) params = {};
+			params = params || {};
 			p = '';
 			if (params.inlinePicture)
 				p += "&inline_picture=" + params.inlinePicture;
 			call(apppath + '?action=getgrant' + p, undefined, function(res) {
 				debugHandler('[simplicite.getGrant] HTTP response = ' + res);
-				var r = eval('(' + res + ')');
+				var r = parse(res);
 				if (r.type === 'error') {
 					(params.error ? params.error : errorHandler).call(self, r.response.message);
 				} else {
@@ -263,10 +267,10 @@ module.exports = {
 		
 		function getAppInfo(callback, params) {
 			var self = this;
-			if (params === undefined) params = {};
+			params = params || {};
 			call(apppath + '?action=getinfo', undefined, function(res) {
 				debugHandler('[simplicite.getAppInfo] HTTP response = ' + res);
-				var r = eval('(' + res + ')');
+				var r = parse(res);
 				if (r.type === 'error') {
 					(params.error ? params.error : errorHandler).call(self, r.response.message);
 				} else {
@@ -281,10 +285,10 @@ module.exports = {
 
 		function getSysInfo(callback, params) {
 			var self = this;
-			if (params === undefined) params = {};
+			params = params || {};
 			call(apppath + '?action=sysinfo', undefined, function(res) {
 				debugHandler('[simplicite.getSysInfo] HTTP response = ' + res);
-				var r = eval('(' + res + ')');
+				var r = parse(res);
 				if (r.type === 'error') {
 					(params.error ? params.error : errorHandler).call(self, r.response.message);
 				} else {
@@ -299,10 +303,10 @@ module.exports = {
 
 		function getUserInfo(callback, login, params) {
 			var self = this;
-			if (params === undefined) params = {};
+			params = params || {};
 			call(apppath + '?action=userinfo', undefined, function(res) {
 				debugHandler('[simplicite.getUserInfo] HTTP response = ' + res);
-				var r = eval('(' + res + ')');
+				var r = parse(res);
 				if (r.type === 'error') {
 					(params.error ? params.error : errorHandler).call(self, r.response.message);
 				} else {
@@ -317,13 +321,13 @@ module.exports = {
 		
 		function getNews(callback, params) {
 			var self = this;
-			if (params === undefined) params = {};
+			params = params || {};
 			p = '';
 			if (params.inlineImages)
 				p += "&inline_images=" + params.inlineImages;
 			call(apppath + '?action=news' + p, undefined, function(res) {
 				debugHandler('[simplicite.getNews] HTTP response = ' + res);
-				var r = eval('(' + res + ')');
+				var r = parse(res);
 				if (r.type === 'error') {
 					(params.error ? params.error : errorHandler).call(self, r.response.message);
 				} else {
@@ -341,7 +345,7 @@ module.exports = {
 		var businessObjectCache = {};
 
 		function getBusinessObject(name, instance) {
-			if (instance === undefined) instance = 'node_' + name;
+			instance = instance || 'node_' + name;
 			
 			var cacheKey = name + ":" + instance;
 			var obj = businessObjectCache[cacheKey];
@@ -351,7 +355,7 @@ module.exports = {
 
 			function _getMetadata(callback, params) {
 				var self = this;
-				if (params === undefined) params = {};
+				params = params || {};
 				var p = '';
 				if (params.context)
 					p += '&context=' + params.context;
@@ -359,7 +363,7 @@ module.exports = {
 					p += '&contextparam=' + params.contextParam;
 				call(path + '&action=metadata' + p, undefined, function(res) {
 					debugHandler('[simplicite.BusinessObject.getMetadata] HTTP response = ' + res);
-					var r = eval('(' + res + ')');
+					var r = parse(res);
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
@@ -374,7 +378,7 @@ module.exports = {
 
 			function _getFilters(callback, params) {
 				var self = this;
-				if (params === undefined) params = {};
+				params = params || {};
 				var p = '';
 				if (params.context)
 					p += '&context=' + params.context;
@@ -382,7 +386,7 @@ module.exports = {
 					p += '&reset=' + params.reset;
 				call(path + '&action=filters' + p, undefined, function(res) {
 					debugHandler('[simplicite.BusinessObject.getFilters] HTTP response = ' + res);
-					var r = eval('(' + res + ')');
+					var r = parse(res);
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
@@ -399,7 +403,7 @@ module.exports = {
 				var self = this;
 				if (filters)
 					self.filters = filters;
-				if (params === undefined) params = {};
+				params = params || {};
 				var p = '';
 				if (params.page)
 					p += '&page=' + params.page;
@@ -411,7 +415,7 @@ module.exports = {
 					p += '&inline_thumbnails=' + (it.join ? it.join(',') : it);
 				call(path + '&action=search' + p, callParams(self.filters), function(res) {
 					debugHandler('[simplicite.BusinessObject.search] HTTP response = ' + res);
-					var r = eval('(' + res + ')');
+					var r = parse(res);
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
@@ -429,7 +433,7 @@ module.exports = {
 
 			function _get(callback, rowId, params) {
 				var self = this;
-				if (params === undefined) params = {};
+				params = params || {};
 				var p = '';
 				if (params.context)
 					p += '&context=' + params.context;
@@ -446,7 +450,7 @@ module.exports = {
 				}
 				call(path + '&action=get&' + self.metadata.rowidfield + '=' + rowId + p, undefined, function(res) {
 					debugHandler('[simplicite.BusinessObject.get] HTTP response = ' + res);
-					var r = eval('(' + res + ')');
+					var r = parse(res);
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
@@ -460,32 +464,32 @@ module.exports = {
 			}
 
 			function _getForCreate(callback, params) {
-				if (params === undefined) params = {};
+				params = params || {};
 				params.context = constants.CONTEXT_CREATE;
 				this._get(callback, constants.DEFAULT_ROW_ID, params);
 			}
 
 			function _getForUpdate(callback, rowId, params) {
-				if (params === undefined) params = {};
+				params = params || {};
 				params.context = constants.CONTEXT_UPDATE;
 				this._get(callback, rowId, params);
 			}
 
 			function _getForCopy(callback, rowId, params) {
-				if (params === undefined) params = {};
+				params = params || {};
 				params.context = constants.CONTEXT_COPY;
 				this._get(callback, rowId, params);
 			}
 
 			function _getForDelete(callback, rowId, params) {
-				if (params === undefined) params = {};
+				params = params || {};
 				params.context = constants.CONTEXT_CREATE;
 				this._get(callback, rowId, params);
 			}
 
 			function _populate(callback, rowId, params) {
 				var self = this;
-				if (params === undefined) params = {};
+				params = params || {};
 				var p = '';
 				if (params.context)
 					p += '&context=' + params.context;
@@ -497,7 +501,7 @@ module.exports = {
 					p += '&inline_thumbnails=' + (it.join ? it.join(',') : it);
 				call(path + '&action=populate&' + self.metadata.rowidfield + '=' + rowId + p, undefined, function(res) {
 					debugHandler('[simplicite.BusinessObject.populate] HTTP response = ' + res);
-					var r = eval('(' + res + ')');
+					var r = parse(res);
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
@@ -523,10 +527,10 @@ module.exports = {
 				var self = this;
 				if (item)
 					self.item = item;
-				if (params === undefined) params = {};
+				params = params || {};
 				call(path + '&action=create', callParams(self.item), function(res) {
 					debugHandler('[simplicite.BusinessObject.create] HTTP response = ' + res);
-					var r = eval('(' + res + ')');
+					var r = parse(res);
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
@@ -543,10 +547,10 @@ module.exports = {
 				var self = this;
 				if (item)
 					self.item = item;
-				if (params === undefined) params = {};
+				params = params || {};
 				call(path + '&action=update', callParams(self.item), function(res) {
 					debugHandler('[simplicite.BusinessObject.update] HTTP response = ' + res);
-					var r = eval('(' + res + ')');
+					var r = parse(res);
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
@@ -563,10 +567,10 @@ module.exports = {
 				var self = this;
 				if (item)
 					self.item = item;
-				if (params === undefined) params = {};
+				params = params || {};
 				call(path + '&action=delete&' + self.metadata.rowidfield + '=' + self.item[self.metadata.rowidfield], undefined, function(res) {
 					debugHandler('[simplicite.BusinessObject.del] HTTP response = ' + res);
-					var r = eval('(' + res + ')');
+					var r = parse(res);
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
@@ -581,10 +585,10 @@ module.exports = {
 
 			function _action(callback, action, params) {
 				var self = this;
-				if (params === undefined) params = {};
+				params = params || {};
 				call(path + '&action=' + action, undefined, function(res) {
 					debugHandler('[simplicite.BusinessObject.action(' + action + ')] HTTP response = ' + res);
-					var r = eval('(' + res + ')');
+					var r = parse(res);
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
@@ -601,10 +605,10 @@ module.exports = {
 				var self = this;
 				if (filters)
 					self.filters = filters;
-				if (params === undefined) params = {};
+				params = params || {};
 				call(path + '&action=crosstab&crosstab=' + crosstab, callParams(self.filters), function(res) {
 					debugHandler('[simplicite.BusinessObject.crosstab(' + crosstab + ')] HTTP response = ' + res);
-					var r = eval('(' + res + ')');
+					var r = parse(res);
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
@@ -619,7 +623,7 @@ module.exports = {
 
 			function _print(callback, prt, params) {
 				var self = this;
-				if (params === undefined) params = {};
+				params = params || {};
 				var p = '';
 				if (params.all)
 					p += '&all=' + params.all;
@@ -627,7 +631,7 @@ module.exports = {
 					p += '&mailing=' + params.mailing;
 				call(path + '&action=print&printtemplate=' + prt + p, undefined, function(res) {
 					debugHandler('[simplicite.BusinessObject.print(' + prt + ')] HTTP response = ' + res);
-					var r = eval('(' + res + ')');
+					var r = parse(res);
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
@@ -642,12 +646,12 @@ module.exports = {
 
 			function _setParameter(callback, name, value, params) {
 				var self = this;
-				if (params === undefined) params = {};
+				params = params || {};
 				var p = { name: name };
 				if (value) p.value = value;
 				call(path + '&action=setparameter', callParams(p), function(res) {
 					debugHandler('[simplicite.BusinessObject.setParameter(' + name + ')] HTTP response = ' + res);
-					var r = eval('(' + res + ')');
+					var r = parse(res);
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
@@ -662,11 +666,11 @@ module.exports = {
 
 			function _getParameter(callback, name, params) {
 				var self = this;
-				if (params === undefined) params = {};
+				params = params || {};
 				var p = { name: name };
 				call(path + '&action=getparameter', callParams(p), function(res) {
 					debugHandler('[simplicite.BusinessObject.getParameter(' + name + ')] HTTP response = ' + res);
-					var r = eval('(' + res + ')');
+					var r = parse(res);
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response.message);
 					} else {
@@ -696,7 +700,7 @@ module.exports = {
 					var n = 0;
 					var fs = this.getFields();
 					while (n < fs.length && fs[n].name != name) n++;
-					return (n == fs.length ? undefined : fs[n]);
+					if (n < fs.length) return fs[n];
 				},
 				getRowIdFieldName: function() { return this.metadata.rowidfield; },
 				getRowIdField: function() { return this.getField(this.getRowIdFieldName()); },
@@ -706,14 +710,13 @@ module.exports = {
 					var l = field.listOfValues;
 					if (l === undefined) return code;
 					while (n < l.length && l[n].code != code) n++;
-					return (n == l.length ? code : l[n].value);
+					return n == l.length ? code : l[n].value;
 				},
 				getListValue: function(list, code) {
 					for (var i = 0; i < list.length; i++) {
 						var l = list[i];
 						if (l.code == code) return l.value;
 					}
-					return undefined;
 				},
 				isRowIdField: function(field) {
 					return !field.ref && field.name == this.metadata.rowidfield;
@@ -726,7 +729,7 @@ module.exports = {
 				_getFilters: _getFilters,
 				getFilters: function(params) {
 					var d = Q.defer();
-					if (params === undefined) params = {};
+					params = params || {};
 					params.error = function(e) { d.reject(e); }
 					this._getFilters(function(filters) { d.resolve(filters); }, params);
 					return d.promise;
@@ -734,7 +737,7 @@ module.exports = {
 				_search: _search,
 				search: function(filters, params) {
 					var d = Q.defer();
-					if (params === undefined) params = {};
+					params = params || {};
 					params.error = function(e) { d.reject(e); }
 					this._search(function(list) { d.resolve(list); }, filters, params);
 					return d.promise;
@@ -743,7 +746,7 @@ module.exports = {
 				_get: _get,
 				get: function(rowId, params) {
 					var d = Q.defer();
-					if (params === undefined) params = {};
+					params = params || {};
 					params.error = function(e) { d.reject(e); }
 					this._get(function(item) { d.resolve(item); }, rowId, params);
 					return d.promise;
@@ -751,7 +754,7 @@ module.exports = {
 				_getForCreate: _getForCreate,
 				getForCreate: function(params) {
 					var d = Q.defer();
-					if (params === undefined) params = {};
+					params = params || {};
 					params.error = function(e) { d.reject(e); }
 					this._getForCreate(function(item) { d.resolve(item); }, params);
 					return d.promise;
@@ -759,7 +762,7 @@ module.exports = {
 				_getForUpdate: _getForUpdate,
 				getForUpdate: function(rowId, params) {
 					var d = Q.defer();
-					if (params === undefined) params = {};
+					params = params || {};
 					params.error = function(e) { d.reject(e); }
 					this._getForUpdate(function(item) { d.resolve(item); }, rowId, params);
 					return d.promise;
@@ -767,7 +770,7 @@ module.exports = {
 				_getForCopy: _getForCopy,
 				getForCopy: function(rowId, params) {
 					var d = Q.defer();
-					if (params === undefined) params = {};
+					params = params || {};
 					params.error = function(e) { d.reject(e); }
 					this._getForCopy(function(item) { d.resolve(item); }, rowId, params);
 					return d.promise;
@@ -775,7 +778,7 @@ module.exports = {
 				_getForDelete: _getForDelete,
 				getForDelete: function(rowId, params) {
 					var d = Q.defer();
-					if (params === undefined) params = {};
+					params = params || {};
 					params.error = function(e) { d.reject(e); }
 					this._getForDelete(function(item) { d.resolve(item); }, rowId, params);
 					return d.promise;
@@ -785,7 +788,7 @@ module.exports = {
 				_populate: _populate,
 				populate: function(item, params) {
 					var d = Q.defer();
-					if (params === undefined) params = {};
+					params = params || {};
 					params.error = function(e) { d.reject(e); }
 					this._populate(function(item) { d.resolve(item); }, item, params);
 					return d.promise;
@@ -793,7 +796,7 @@ module.exports = {
 				_save: _save,
 				save: function(item, params) {
 					var d = Q.defer();
-					if (params === undefined) params = {};
+					params = params || {};
 					params.error = function(e) { d.reject(e); }
 					this._save(function(item) { d.resolve(item); }, item, params);
 					return d.promise;
@@ -801,7 +804,7 @@ module.exports = {
 				_create: _create,
 				create: function(item, params) {
 					var d = Q.defer();
-					if (params === undefined) params = {};
+					params = params || {};
 					params.error = function(e) { d.reject(e); }
 					this._create(function(item) { d.resolve(item); }, item, params);
 					return d.promise;
@@ -809,7 +812,7 @@ module.exports = {
 				_update: _update,
 				update: function(item, params) {
 					var d = Q.defer();
-					if (params === undefined) params = {};
+					params = params || {};
 					params.error = function(e) { d.reject(e); }
 					this._update(function(item) { d.resolve(item); }, item, params);
 					return d.promise;
@@ -826,7 +829,7 @@ module.exports = {
 				_action: _action,
 				action: function(act, params) {
 					var d = Q.defer();
-					if (params === undefined) params = {};
+					params = params || {};
 					params.error = function(e) { d.reject(e); }
 					this._action(function(res) { d.resolve(res); }, act, params);
 					return d.promise;
@@ -834,7 +837,7 @@ module.exports = {
 				_crosstab: _crosstab,
 				crosstab: function(ctb, params) {
 					var d = Q.defer();
-					if (params === undefined) params = {};
+					params = params || {};
 					params.error = function(e) { d.reject(e); }
 					this._crosstab(function(res) { d.resolve(res); }, ctb, params);
 					return d.promise;
@@ -842,7 +845,7 @@ module.exports = {
 				_print: _print,
 				print: function(pt, params) {
 					var d = Q.defer();
-					if (params === undefined) params = {};
+					params = params || {};
 					params.error = function(e) { d.reject(e); }
 					this._print(function(res) { d.resolve(res); }, pt, params);
 					return d.promise;
@@ -850,7 +853,7 @@ module.exports = {
 				_setParameter: _setParameter,
 				setParameter: function(name, value, params) {
 					var d = Q.defer();
-					if (params === undefined) params = {};
+					params = params || {};
 					params.error = function(e) { d.reject(e); }
 					this._setParameter(function() { d.resolve(); }, name, value, params);
 					return d.promise;
@@ -858,7 +861,7 @@ module.exports = {
 				_getParameter: _getParameter,
 				getParameter: function(name, params) {
 					var d = Q.defer();
-					if (params === undefined) params = {};
+					params = params || {};
 					params.error = function(e) { d.reject(e); }
 					this._getParameter(function(value) { d.resolve(value); }, name, params);
 					return d.promise;
@@ -890,12 +893,13 @@ module.exports = {
 				scheme: scheme,
 				host: host,
 				port: port,
-				root: root
+				root: root,
+				user: user
 			},
 			_getHealth: getHealth,
 			getHealth: function(params) {
 				var d = Q.defer();
-				if (params === undefined) params = {};
+				params = params || {};
 				params.error = function(e) { d.reject(e); }
 				this._getHealth(function(health) { d.resolve(health); }, params);
 				return d.promise;
@@ -903,7 +907,7 @@ module.exports = {
 			_login: login,
 			login: function(params) {
 				var d = Q.defer();
-				if (params === undefined) params = {};
+				params = params || {};
 				params.error = function(e) { d.reject(e); }
 				this._login(function(parameters) { d.resolve(parameters); }, params);
 				return d.promise;
@@ -911,7 +915,7 @@ module.exports = {
 			_logout: logout,
 			logout: function(params) {
 				var d = Q.defer();
-				if (params === undefined) params = {};
+				params = params || {};
 				params.error = function(e) { d.reject(e); }
 				this._logout(function() { d.resolve(); }, params);
 				return d.promise;
@@ -919,7 +923,7 @@ module.exports = {
 			_getGrant: getGrant,
 			getGrant: function(params) {
 				var d = Q.defer();
-				if (params === undefined) params = {};
+				params = params || {};
 				params.error = function(e) { d.reject(e); }
 				this._getGrant(function(grant) { d.resolve(grant); }, params);
 				return d.promise;
@@ -927,7 +931,7 @@ module.exports = {
 			_getAppInfo: getAppInfo,
 			getAppInfo: function(params) {
 				var d = Q.defer();
-				if (params === undefined) params = {};
+				params = params || {};
 				params.error = function(e) { d.reject(e); }
 				this._getAppInfo(function(appinfo) { d.resolve(appinfo); }, params);
 				return d.promise;
@@ -935,7 +939,7 @@ module.exports = {
 			_getSysInfo: getSysInfo,
 			getSysInfo: function(params) {
 				var d = Q.defer();
-				if (params === undefined) params = {};
+				params = params || {};
 				params.error = function(e) { d.reject(e); }
 				this._getSysInfo(function(sysinfo) { d.resolve(sysinfo); }, params);
 				return d.promise;
@@ -951,7 +955,7 @@ module.exports = {
 			_getNews: getNews,
 			getNews: function(params) {
 				var d = Q.defer();
-				if (params === undefined) params = {};
+				params = params || {};
 				params.error = function(e) { d.reject(e); }
 				this._getNews(function(news) { d.resolve(news); }, params);
 				return d.promise;
