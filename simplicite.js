@@ -78,27 +78,49 @@ module.exports = {
 			ERRLEVEL_WARNING: 3
 		};
 		
-		params = params || {};
-		var debug = params.debug || false;
-		var scheme = params.scheme || 'http';
-		if (scheme !== 'http' || scheme !== 'https') scheme = 'http';
-		var host = params.host || 'localhost';
-		var port = params.port || 8080;
-		var root = params.root || '';
-		
-		var user = params.user;
-		var tokenHeader = params.token ? 'Bearer ' + params.token : null;
-		var basicHeader = params.user && params.password ? 'Basic ' + new Buffer(params.user + ':' + params.password).toString('base64') : null;
-
 		var infoHandler = params.infoHandler || function(msg) { console.log('INFO - ' + msg); };
 		var warnHandler = params.warnHandler || function(msg) { console.log('WARN - ' + msg); };
 		var errorHandler = params.errorHandler || function(msg) { console.log('ERROR - ' + msg); };
 		var debugHandler = params.debugHandler || function(msg) { if (debug) console.log('DEBUG - ' + msg); };
 
+		params = params || {};
+		if (params.url) {
+			try {
+				params.scheme = params.url.replace(/:.*$/, '');
+				var u = params.url.replace(new RegExp('^' + params.scheme + ':\/\/'), '').split(':');
+				if (u.length == 1) {
+					params.host = u[0].replace(/\/.*$/, '');
+					params.port = params.scheme === 'http' ? 80 : 443;
+					params.root = u[0].replace(new RegExp('^' + params.host + '[\/]{0,1}'), '');
+				} else {
+					params.host = u[0];
+					params.port = parseInt(u[1].replace(/\/.*$/, ''));
+					if (isNaN(params.port)) throw 'Incorrect port';
+					params.root = u[1].replace(new RegExp('^' + params.port + '[\/]{0,1}'), '');
+				}
+				if (params.root === '/') params.root = '';
+			} catch (e) {
+				console.error('Unable to parse URL [' + params.url + ']: ' + e.message);
+				return;
+			}
+		}
+		var scheme = params.scheme || 'http';
+		if (scheme !== 'http' && scheme !== 'https') {
+			console.error('Incorrect scheme [' + params.scheme + ']');
+			return;
+		}
+		var host = params.host || 'localhost';
+		var port = params.port || 8080;
+		var root = params.root || '';
+		var debug = params.debug || false;
+		
 		debugHandler('[simplicite] Base URL = ' + scheme + '://' + host + ':' + port + (root !== '' ? '/' + root : ''));
 
-		var http = require(scheme);
+		var user = params.user;
+		var tokenHeader = params.token ? 'Bearer ' + params.token : null;
+		var basicHeader = params.user && params.password ? 'Basic ' + new Buffer(params.user + ':' + params.password).toString('base64') : null;
 
+		var http = require(scheme);
 		var cookies;
 
 		function callParams(data) {
