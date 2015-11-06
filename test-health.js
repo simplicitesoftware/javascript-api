@@ -7,6 +7,7 @@ var app = simplicite.session({
 var sys;
 
 app.getHealth().then(function(health) {
+	delete health._scope; // Clean scope from response
 	console.log(health);
 }, function(reason) {
 	console.error('' + reason);
