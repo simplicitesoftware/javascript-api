@@ -266,7 +266,7 @@ module.exports = {
 			params = params || {};
 			p = '';
 			if (params.inlinePicture)
-				p += "&inline_picture=" + params.inlinePicture;
+				p += '&inline_picture=' + params.inlinePicture;
 			call(apppath + '?action=getgrant' + p, undefined, function(res, status) {
 				debugHandler('[simplicite.getGrant] HTTP status = ' + status + ', response = ' + res);
 				var r = parse(res, status);
@@ -275,8 +275,8 @@ module.exports = {
 				} else {
 					self.grant = r.response;
 					/*if (self.grant.picture) {
-						self.grant.picture.url = self.documentURL("User", "usr_image_id", self.grant.userid, self.grant.picture.id);
-						self.grant.picture.thumbnailurl = self.grant.picture.url + "&thumbnail=true";
+						self.grant.picture.url = self.documentURL('User', 'usr_image_id', self.grant.userid, self.grant.picture.id);
+						self.grant.picture.thumbnailurl = self.grant.picture.url + '&thumbnail=true';
 					}*/
 					self.grant.getUserID = function() { return this.userid; };
 					self.grant.getLogin = function() { return this.login; };
@@ -352,7 +352,7 @@ module.exports = {
 			params = params || {};
 			p = '';
 			if (params.inlineImages)
-				p += "&inline_images=" + params.inlineImages;
+				p += '&inline_images=' + params.inlineImages;
 			call(apppath + '?action=news' + p, undefined, function(res, status) {
 				debugHandler('[simplicite.getNews] HTTP status = ' + status + ', response = ' + res);
 				var r = parse(res, status);
@@ -375,7 +375,7 @@ module.exports = {
 		function getBusinessObject(name, instance) {
 			instance = instance || 'node_' + name;
 			
-			var cacheKey = name + ":" + instance;
+			var cacheKey = name + ':' + instance;
 			var obj = businessObjectCache[cacheKey];
 			if (obj) return obj;
 			
@@ -712,7 +712,7 @@ module.exports = {
 			}
 
 			obj = {
-				metadata: { name: name, instance: instance, rowidfield: "row_id" },
+				metadata: { name: name, instance: instance, rowidfield: 'row_id' },
 				_getMetadata: _getMetadata,
 				getMetadata: function(params) {
 					var d = Q.defer();
@@ -914,7 +914,7 @@ module.exports = {
 			};
 		}
 
-		var Q = require("q");
+		var Q = require('q');
 		return {
 			constants: constants,
 			parameters: {
