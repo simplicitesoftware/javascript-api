@@ -5,7 +5,7 @@ var debug = true;
 var app = simplicite.session({
 	scheme: process.env.TEST_SIMPLICITE_SCHEME || 'http',
 	host: process.env.TEST_SIMPLICITE_HOST || 'localhost',
-	port: process.env.TEST_SIMPLICITE_PORT || 8080,
+	port: parseInt(process.env.TEST_SIMPLICITE_PORT) || 8080,
 	root: process.env.TEST_SIMPLICITE_ROOT || '',
 	user: process.env.TEST_SIMPLICITE_USER || 'designer',
 	password: process.env.TEST_SIMPLICITE_PASSWORD || 'designer',
