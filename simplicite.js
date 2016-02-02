@@ -77,7 +77,9 @@ module.exports = {
 			ERRLEVEL_ERROR: 2,
 			ERRLEVEL_WARNING: 3
 		};
-		
+
+		var timeout = 30;
+
 		var infoHandler = params.infoHandler || function(msg) { console.log('INFO - ' + msg); };
 		var warnHandler = params.warnHandler || function(msg) { console.log('WARN - ' + msg); };
 		var errorHandler = params.errorHandler || function(msg) { console.log('ERROR - ' + msg); };
@@ -176,6 +178,9 @@ module.exports = {
 			}).on('error', function(e) {
 				if (error)
 					error.call(this, e);
+			}).setTimeout(timeout, function() {
+				if (error)
+					error.call(this, "Timeout");
 			});
 			if (data) r.write(data);
 			r.end();
@@ -293,6 +298,23 @@ module.exports = {
 			});
 		}
 		
+		/*function setPassword(callback, password, params) {
+			var self = this;
+			params = params || {};
+			call(apppath + '?action=setpassword&password=' + password, undefined, function(res, status) {
+				debugHandler('[simplicite.setPassword] HTTP status = ' + status + ', response = ' + res);
+				var r = parse(res, status);
+				if (r.type === 'error') {
+					(params.error ? params.error : errorHandler).call(self, r.response);
+				} else {
+					if (callback)
+						callback.call(self, self.appinfo);
+				}
+			}, function(e) {
+				(params.error ? params.error : errorHandler).call(self, e);
+			});
+		}*/
+
 		function getAppInfo(callback, params) {
 			var self = this;
 			params = params || {};

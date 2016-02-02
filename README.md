@@ -19,6 +19,11 @@ Check `test.js` for sample usage.
 
 **This is still a __BETA__ stage module, use at your own risks**
 
+TODO:
+
+- Set password
+- Search on index (for Simplicité version 3.1+)
+
 NPM statistics
 --------------
 
