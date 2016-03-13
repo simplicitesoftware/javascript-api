@@ -55,7 +55,7 @@ app.login().then(function(parameters) {
 	console.log('Found ' + list.length + ' items');
 	for (var i = 0; i < list.length; i++) {
 		var item = list[i];
-		console.log('  item[' + i + ']: ' + + item.row_id + ' ' + item.sys_code + ' ' + item.sys_value);
+		console.log('  item[' + i + ']: ' + item.row_id + ' ' + item.sys_code + ' ' + item.sys_value);
 	}
 	return sys.get(2); // Chaining next promise
 }).then(function(item) {
