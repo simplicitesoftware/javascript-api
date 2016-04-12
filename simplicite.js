@@ -167,16 +167,16 @@ module.exports = {
 			if (cookies)
 				req.headers['Cookie'] = cookies;
 			debugHandler('[simplicite.call] Request = ' + JSON.stringify(req));
-			var r = http.request(req, function(res) {
+			var hr = http.request(req, function(res) {
 				var s = res.statusCode;
 				cookies = res.headers['set-cookie'] || cookies;
-				//var r = '';
-				res.on('data', function(chunk) {
-					r += chunk;
+				var c = '';
+				res.on('data', function(d) {
+					c += d;
 				});
 				res.on('end', function() {
 					if (callback)
-						callback.call(this, r, s);
+						callback.call(this, c, s);
 				});
 			}).on('error', function(e) {
 				if (error)
@@ -185,8 +185,8 @@ module.exports = {
 				if (error)
 					error.call(this, "Timeout");
 			});
-			if (data) r.write(data);
-			r.end();
+			if (data) hr.write(data);
+			hr.end();
 		}
 
 		function getError(error, status) {
