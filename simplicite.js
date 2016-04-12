@@ -1,9 +1,10 @@
 /**
  * Simplicit&eacute;&reg; NodeJS lib
  */
+/*eslint-env node */
 module.exports = {
 	session: function(params) {
-		constants = {
+		var constants = {
 			DEFAULT_ROW_ID: '0',
 				
 			CONTEXT_NONE: 0,
@@ -78,26 +79,23 @@ module.exports = {
 			ERRLEVEL_WARNING: 3
 		};
 
-		var timeout = 30;
+		var Q = require('q');
 
-		var infoHandler = params.infoHandler || function(msg) { console.log('INFO - ' + msg); };
-		var warnHandler = params.warnHandler || function(msg) { console.log('WARN - ' + msg); };
-		var errorHandler = params.errorHandler || function(msg) { console.log('ERROR - ' + msg); };
-		var debugHandler = params.debugHandler || function(msg) { if (debug) console.log('DEBUG - ' + msg); };
+		var timeout = 30;
 
 		params = params || {};
 		if (params.url) {
 			try {
 				params.scheme = params.url.replace(/:.*$/, '');
 				var u = params.url.replace(new RegExp('^' + params.scheme + ':\/\/'), '').split(':');
-				if (u.length == 1) {
+				if (u.length === 1) {
 					params.host = u[0].replace(/\/.*$/, '');
 					params.port = params.scheme === 'http' ? 80 : 443;
 					params.root = u[0].replace(new RegExp('^' + params.host + '[\/]{0,1}'), '');
 				} else {
 					params.host = u[0];
-					params.port = parseInt(u[1].replace(/\/.*$/, ''));
-					if (isNaN(params.port)) throw 'Incorrect port';
+					params.port = parseInt(u[1].replace(/\/.*$/, ''), 10);
+					if (isNaN(params.port)) throw new Error('Incorrect port');
 					params.root = u[1].replace(new RegExp('^' + params.port + '[\/]{0,1}'), '');
 				}
 				if (params.root === '/') params.root = '';
@@ -113,10 +111,15 @@ module.exports = {
 		}
 		var host = params.host || 'localhost';
 		var port = params.port || 8080;
-		var root = params.root || '';
+		var approot = params.root || '';
 		var debug = params.debug || false;
 		
-		debugHandler('[simplicite] Base URL = ' + scheme + '://' + host + ':' + port + (root !== '' ? '/' + root : ''));
+		var infoHandler = params.infoHandler || function(msg) { console.log('INFO - ' + msg); };
+		var warnHandler = params.warnHandler || function(msg) { console.log('WARN - ' + msg); };
+		var errorHandler = params.errorHandler || function(msg) { console.log('ERROR - ' + msg); };
+		var debugHandler = params.debugHandler || function(msg) { if (debug) console.log('DEBUG - ' + msg); };
+
+		debugHandler('[simplicite] Base URL = ' + scheme + '://' + host + ':' + port + (approot !== '' ? '/' + approot : ''));
 
 		var user = params.user;
 		var tokenHeader = params.token ? 'Bearer ' + params.token : null;
@@ -132,21 +135,21 @@ module.exports = {
 			for (var i in data) {
 				var d = data[i] || '';
 				if (d.id && d.content) // Document ?
-					p += (n++ != 0 ? '&' : '') + i + '=' + encodeURIComponent('id|' + d.id + '|name|' + d.name + '|content|' + d.content);
+					p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent('id|' + d.id + '|name|' + d.name + '|content|' + d.content);
 				else if (d.object && d.row_id) // Object ?
-					p += (n++ != 0 ? '&' : '') + i + '=' + encodeURIComponent('object|' + d.object + '|row_id|' + d.row_id);
+					p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent('object|' + d.object + '|row_id|' + d.row_id);
 				else if (d.sort) // Array ?
 					for (var j = 0; j < d.length; j++)
-						p += (n++ != 0 ? '&' : '') + i + '=' + encodeURIComponent(d[j]);
+						p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent(d[j]);
 				else
-					p += (n++ != 0 ? '&' : '') + i + '=' + encodeURIComponent(d);
+					p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent(d);
 			}
 			return p;
 		}
 
 		function call(path, data, callback, error) {
 			var p = path || '/'; 
-			p = (root !== '' ? '/' + root : '') + p;
+			p = (approot !== '' ? '/' + approot : '') + p;
 			var m = data ? 'POST' : 'GET';
 			var req = {
 					host: host,
@@ -167,7 +170,7 @@ module.exports = {
 			var r = http.request(req, function(res) {
 				var s = res.statusCode;
 				cookies = res.headers['set-cookie'] || cookies;
-				var r = '';
+				//var r = '';
 				res.on('data', function(chunk) {
 					r += chunk;
 				});
@@ -194,7 +197,7 @@ module.exports = {
 
 		function parse(res, status) {
 			try {
-				if (status != 200)
+				if (status !== 200)
 					return { type: 'error', response: getError('HTTP status: ' + status, status) };
 				return JSON.parse(res);
 			} catch (e) {
@@ -207,7 +210,7 @@ module.exports = {
 			params = params || {};
 			call(healthpath, undefined, function(res, status) {
 				debugHandler('[simplicite.getHealth] HTTP status = ' + status + ', response = ' + res);
-				health = parse(res, status);
+				var health = parse(res, status);
 				if (health.type === 'error') {
 					(params.error ? params.error : errorHandler).call(self, health.response);
 				} else if (callback)
@@ -219,7 +222,8 @@ module.exports = {
 
 		var apppath = '/api/json/app';
 		var objpath = '/api/json/obj';
-		var pcspath = '/api/json/pcs';
+		// TODO: use for processes
+		//var pcspath = '/api/json/pcs';
 
 		function login(callback, params) {
 			var self = this;
@@ -269,7 +273,7 @@ module.exports = {
 		function getGrant(callback, params) {
 			var self = this;
 			params = params || {};
-			p = '';
+			var p = '';
 			if (params.inlinePicture)
 				p += '&inline_picture=' + params.inlinePicture;
 			call(apppath + '?action=getgrant' + p, undefined, function(res, status) {
@@ -289,7 +293,7 @@ module.exports = {
 					self.grant.getEmail = function() { return this.email; };
 					self.grant.getFirstName = function() { return this.firstname; };
 					self.grant.getLastName = function() { return this.lastname; };
-					self.grant.hasResponsibility = function(group) { return this.responsibilities && this.responsibilities.indexOf(group)!=-1; };
+					self.grant.hasResponsibility = function(group) { return this.responsibilities && this.responsibilities.indexOf(group) !== -1; };
 					if (callback)
 						callback.call(self, self.grant);
 				}
@@ -354,7 +358,7 @@ module.exports = {
 		function getUserInfo(callback, login, params) {
 			var self = this;
 			params = params || {};
-			call(apppath + '?action=userinfo', undefined, function(res, status) {
+			call(apppath + '?action=userinfo' + (login ? '&login=' + login: ''), undefined, function(res, status) {
 				debugHandler('[simplicite.getUserInfo] HTTP status = ' + status + ', response = ' + res);
 				var r = parse(res, status);
 				if (r.type === 'error') {
@@ -372,7 +376,7 @@ module.exports = {
 		function getNews(callback, params) {
 			var self = this;
 			params = params || {};
-			p = '';
+			var p = '';
 			if (params.inlineImages)
 				p += '&inline_images=' + params.inlineImages;
 			call(apppath + '?action=news' + p, undefined, function(res, status) {
@@ -390,7 +394,7 @@ module.exports = {
 			});
 		}
 
-		// TODO : other methods (getMenu, getTexts, get/setSysParam, documentURL, contentURL, resourceURL)
+		// TODO: add other methods (getMenu, getTexts, get/setSysParam, documentURL, contentURL, resourceURL)
 
 		var businessObjectCache = {};
 
@@ -495,7 +499,7 @@ module.exports = {
 					p += '&inline_thumbnails=' + (it.join ? it.join(',') : it);
 				if (params.fields) {
 					for (var i = 0; i < params.fields.length; i++) {
-						url += '&fields=' + params.fields[i].replace('.', '__');
+						p += '&fields=' + params.fields[i].replace('.', '__');
 					}
 				}
 				call(path + '&action=get&' + self.metadata.rowidfield + '=' + rowId + p, undefined, function(res, status) {
@@ -567,7 +571,7 @@ module.exports = {
 			function _save(callback, item, params) {
 				if (item)
 					this.item = item;
-				if (this.item[this.metadata.rowidfield] == constants.DEFAULT_ROW_ID)
+				if (this.item[this.metadata.rowidfield] === constants.DEFAULT_ROW_ID)
 					this.create(callback, item, params);
 				else
 					this.update(callback, item, params);
@@ -642,9 +646,9 @@ module.exports = {
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response);
 					} else {
-						var res = r.response.result;
+						var result = r.response.result;
 						if (callback)
-							callback.call(self, res);
+							callback.call(self, result);
 					}
 				}, function(e) {
 					(params.error ? params.error : errorHandler).call(self, e);
@@ -685,9 +689,9 @@ module.exports = {
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response);
 					} else {
-						var res = r.response.result;
+						var result = r.response.result;
 						if (callback)
-							callback.call(self, res);
+							callback.call(self, result);
 					}
 				}, function(e) {
 					(params.error ? params.error : errorHandler).call(self, e);
@@ -705,9 +709,9 @@ module.exports = {
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response);
 					} else {
-						var res = r.response.result;
+						var result = r.response.result;
 						if (callback)
-							callback.call(self, res);
+							callback.call(self, result);
 					}
 				}, function(e) {
 					(params.error ? params.error : errorHandler).call(self, e);
@@ -724,9 +728,9 @@ module.exports = {
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response);
 					} else {
-						var res = r.response.result;
+						var result = r.response.result;
 						if (callback)
-							callback.call(self, res);
+							callback.call(self, result);
 					}
 				}, function(e) {
 					(params.error ? params.error : errorHandler).call(self, e);
@@ -749,7 +753,7 @@ module.exports = {
 				getField: function(name) {
 					var n = 0;
 					var fs = this.getFields();
-					while (n < fs.length && fs[n].name != name) n++;
+					while (n < fs.length && fs[n].name !== name) n++;
 					if (n < fs.length) return fs[n];
 				},
 				getRowIdFieldName: function() { return this.metadata.rowidfield; },
@@ -759,28 +763,28 @@ module.exports = {
 					var n = 0;
 					var l = field.listOfValues;
 					if (l === undefined) return code;
-					while (n < l.length && l[n].code != code) n++;
-					return n == l.length ? code : l[n].value;
+					while (n < l.length && l[n].code !== code) n++;
+					return n === l.length ? code : l[n].value;
 				},
 				getListValue: function(list, code) {
 					for (var i = 0; i < list.length; i++) {
 						var l = list[i];
-						if (l.code == code) return l.value;
+						if (l.code === code) return l.value;
 					}
 				},
 				isRowIdField: function(field) {
-					return !field.ref && field.name == this.metadata.rowidfield;
+					return !field.ref && field.name === this.metadata.rowidfield;
 				},
 				isTimestampField: function(field) {
 					var n = field.name;
-					return !field.ref && (n == 'created_by' || n == 'created_dt' || n == 'updated_by' || n == 'updated_dt');
+					return !field.ref && (n === 'created_by' || n === 'created_dt' || n === 'updated_by' || n === 'updated_dt');
 				},
 				
 				_getFilters: _getFilters,
 				getFilters: function(params) {
 					var d = Q.defer();
 					params = params || {};
-					params.error = function(e) { d.reject(e); }
+					params.error = function(e) { d.reject(e); };
 					this._getFilters(function(filters) { d.resolve(filters); }, params);
 					return d.promise;
 				},
@@ -788,7 +792,7 @@ module.exports = {
 				search: function(filters, params) {
 					var d = Q.defer();
 					params = params || {};
-					params.error = function(e) { d.reject(e); }
+					params.error = function(e) { d.reject(e); };
 					this._search(function(list) { d.resolve(list); }, filters, params);
 					return d.promise;
 				},
@@ -797,7 +801,7 @@ module.exports = {
 				get: function(rowId, params) {
 					var d = Q.defer();
 					params = params || {};
-					params.error = function(e) { d.reject(e); }
+					params.error = function(e) { d.reject(e); };
 					this._get(function(item) { d.resolve(item); }, rowId, params);
 					return d.promise;
 				},
@@ -805,7 +809,7 @@ module.exports = {
 				getForCreate: function(params) {
 					var d = Q.defer();
 					params = params || {};
-					params.error = function(e) { d.reject(e); }
+					params.error = function(e) { d.reject(e); };
 					this._getForCreate(function(item) { d.resolve(item); }, params);
 					return d.promise;
 				},
@@ -813,7 +817,7 @@ module.exports = {
 				getForUpdate: function(rowId, params) {
 					var d = Q.defer();
 					params = params || {};
-					params.error = function(e) { d.reject(e); }
+					params.error = function(e) { d.reject(e); };
 					this._getForUpdate(function(item) { d.resolve(item); }, rowId, params);
 					return d.promise;
 				},
@@ -821,7 +825,7 @@ module.exports = {
 				getForCopy: function(rowId, params) {
 					var d = Q.defer();
 					params = params || {};
-					params.error = function(e) { d.reject(e); }
+					params.error = function(e) { d.reject(e); };
 					this._getForCopy(function(item) { d.resolve(item); }, rowId, params);
 					return d.promise;
 				},
@@ -829,7 +833,7 @@ module.exports = {
 				getForDelete: function(rowId, params) {
 					var d = Q.defer();
 					params = params || {};
-					params.error = function(e) { d.reject(e); }
+					params.error = function(e) { d.reject(e); };
 					this._getForDelete(function(item) { d.resolve(item); }, rowId, params);
 					return d.promise;
 				},
@@ -839,7 +843,7 @@ module.exports = {
 				populate: function(item, params) {
 					var d = Q.defer();
 					params = params || {};
-					params.error = function(e) { d.reject(e); }
+					params.error = function(e) { d.reject(e); };
 					this._populate(function(item) { d.resolve(item); }, item, params);
 					return d.promise;
 				},
@@ -847,7 +851,7 @@ module.exports = {
 				save: function(item, params) {
 					var d = Q.defer();
 					params = params || {};
-					params.error = function(e) { d.reject(e); }
+					params.error = function(e) { d.reject(e); };
 					this._save(function(item) { d.resolve(item); }, item, params);
 					return d.promise;
 				},
@@ -855,7 +859,7 @@ module.exports = {
 				create: function(item, params) {
 					var d = Q.defer();
 					params = params || {};
-					params.error = function(e) { d.reject(e); }
+					params.error = function(e) { d.reject(e); };
 					this._create(function(item) { d.resolve(item); }, item, params);
 					return d.promise;
 				},
@@ -863,7 +867,7 @@ module.exports = {
 				update: function(item, params) {
 					var d = Q.defer();
 					params = params || {};
-					params.error = function(e) { d.reject(e); }
+					params.error = function(e) { d.reject(e); };
 					this._update(function(item) { d.resolve(item); }, item, params);
 					return d.promise;
 				},
@@ -871,7 +875,7 @@ module.exports = {
 				del: function(item, params) {
 					var d = Q.defer();
 					if (params === undefined) params = {};
-					params.error = function(e) { d.reject(e); }
+					params.error = function(e) { d.reject(e); };
 					this._del(function() { d.resolve(); }, item, params);
 					return d.promise;
 				},
@@ -880,7 +884,7 @@ module.exports = {
 				action: function(act, params) {
 					var d = Q.defer();
 					params = params || {};
-					params.error = function(e) { d.reject(e); }
+					params.error = function(e) { d.reject(e); };
 					this._action(function(res) { d.resolve(res); }, act, params);
 					return d.promise;
 				},
@@ -888,7 +892,7 @@ module.exports = {
 				crosstab: function(ctb, params) {
 					var d = Q.defer();
 					params = params || {};
-					params.error = function(e) { d.reject(e); }
+					params.error = function(e) { d.reject(e); };
 					this._crosstab(function(res) { d.resolve(res); }, ctb, params);
 					return d.promise;
 				},
@@ -896,7 +900,7 @@ module.exports = {
 				print: function(pt, params) {
 					var d = Q.defer();
 					params = params || {};
-					params.error = function(e) { d.reject(e); }
+					params.error = function(e) { d.reject(e); };
 					this._print(function(res) { d.resolve(res); }, pt, params);
 					return d.promise;
 				},
@@ -904,7 +908,7 @@ module.exports = {
 				setParameter: function(name, value, params) {
 					var d = Q.defer();
 					params = params || {};
-					params.error = function(e) { d.reject(e); }
+					params.error = function(e) { d.reject(e); };
 					this._setParameter(function() { d.resolve(); }, name, value, params);
 					return d.promise;
 				},
@@ -912,7 +916,7 @@ module.exports = {
 				getParameter: function(name, params) {
 					var d = Q.defer();
 					params = params || {};
-					params.error = function(e) { d.reject(e); }
+					params.error = function(e) { d.reject(e); };
 					this._getParameter(function(value) { d.resolve(value); }, name, params);
 					return d.promise;
 				},
@@ -923,35 +927,38 @@ module.exports = {
 		}
 
 		function getBusinessProcess(name) {
-			// TODO
+			// TODO: implement processes services
 			return {
 				metadata: { name: name }
 			};
 		}
 
 		function getExternalObject(name) {
-			// TODO
+			// TODO: implement external objects services
 			return {
 				metadata: { name: name }
 			};
 		}
 
-		var Q = require('q');
 		return {
 			constants: constants,
 			parameters: {
 				scheme: scheme,
 				host: host,
 				port: port,
-				root: root,
+				root: approot,
 				user: user
 			},
+			info: infoHandler,
+			warn: warnHandler,
+			error: errorHandler,
+			debug: debugHandler,
 			_getError: getError,
 			_getHealth: getHealth,
 			getHealth: function(params) {
 				var d = Q.defer();
 				params = params || {};
-				params.error = function(e) { var err = this._getError(e); err._scope = this; d.reject(err); }
+				params.error = function(e) { var err = this._getError(e); err._scope = this; d.reject(err); };
 				this._getHealth(function(health) { health = health || {}; health._scope = this; d.resolve(health); }, params);
 				return d.promise;
 			},
@@ -959,7 +966,7 @@ module.exports = {
 			login: function(params) {
 				var d = Q.defer();
 				params = params || {};
-				params.error = function(e) { d.reject(e); }
+				params.error = function(e) { d.reject(e); };
 				this._login(function(parameters) { d.resolve(parameters); }, params);
 				return d.promise;
 			},
@@ -967,7 +974,7 @@ module.exports = {
 			logout: function(params) {
 				var d = Q.defer();
 				params = params || {};
-				params.error = function(e) { d.reject(e); }
+				params.error = function(e) { d.reject(e); };
 				this._logout(function() { d.resolve(); }, params);
 				return d.promise;
 			},
@@ -975,7 +982,7 @@ module.exports = {
 			getGrant: function(params) {
 				var d = Q.defer();
 				params = params || {};
-				params.error = function(e) { d.reject(e); }
+				params.error = function(e) { d.reject(e); };
 				this._getGrant(function(grant) { d.resolve(grant); }, params);
 				return d.promise;
 			},
@@ -983,7 +990,7 @@ module.exports = {
 			getAppInfo: function(params) {
 				var d = Q.defer();
 				params = params || {};
-				params.error = function(e) { d.reject(e); }
+				params.error = function(e) { d.reject(e); };
 				this._getAppInfo(function(appinfo) { d.resolve(appinfo); }, params);
 				return d.promise;
 			},
@@ -991,7 +998,7 @@ module.exports = {
 			getSysInfo: function(params) {
 				var d = Q.defer();
 				params = params || {};
-				params.error = function(e) { d.reject(e); }
+				params.error = function(e) { d.reject(e); };
 				this._getSysInfo(function(sysinfo) { d.resolve(sysinfo); }, params);
 				return d.promise;
 			},
@@ -999,7 +1006,7 @@ module.exports = {
 			getUserInfo: function(login, params) {
 				var d = Q.defer();
 				if (params === undefined) params = {};
-				params.error = function(e) { d.reject(e); }
+				params.error = function(e) { d.reject(e); };
 				this._getUserInfo(function(userinfo) { d.resolve(userinfo); }, login, params);
 				return d.promise;
 			},
@@ -1007,7 +1014,7 @@ module.exports = {
 			getNews: function(params) {
 				var d = Q.defer();
 				params = params || {};
-				params.error = function(e) { d.reject(e); }
+				params.error = function(e) { d.reject(e); };
 				this._getNews(function(news) { d.resolve(news); }, params);
 				return d.promise;
 			},
