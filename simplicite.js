@@ -181,7 +181,7 @@ module.exports = {
 			}).on('error', function(e) {
 				if (error)
 					error.call(this, e);
-			}).setTimeout(timeout, function() {
+			}).setTimeout(timeout * 1000, function() {
 				if (error)
 					error.call(this, "Timeout");
 			});
@@ -497,6 +497,9 @@ module.exports = {
 				var it = params.inlineThumbs;
 				if (it)
 					p += '&inline_thumbnails=' + (it.join ? it.join(',') : it);
+				var tv = params.treeView;
+				if (tv)
+					p += '&treeview=' + tv;
 				if (params.fields) {
 					for (var i = 0; i < params.fields.length; i++) {
 						p += '&fields=' + params.fields[i].replace('.', '__');
@@ -508,9 +511,9 @@ module.exports = {
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response);
 					} else {
-						self.item = r.response;
+						self.item = tv ? r.response.item : r.response;
 						if (callback)
-							callback.call(self, self.item);
+							callback.call(self, tv ? r.response : self.item);
 					}
 				}, function(e) {
 					(params.error ? params.error : errorHandler).call(self, e);
@@ -655,11 +658,11 @@ module.exports = {
 				});
 			}
 
-			function _crosstab(callback, crosstab, filters, params) {
+			function _crosstab(callback, crosstab, params) {
 				var self = this;
-				if (filters)
-					self.filters = filters;
 				params = params || {};
+				if (params.filters)
+					self.filters = params.filters;
 				call(path + '&action=crosstab&crosstab=' + crosstab, callParams(self.filters), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.crosstab(' + crosstab + ')] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
@@ -678,6 +681,8 @@ module.exports = {
 			function _print(callback, prt, params) {
 				var self = this;
 				params = params || {};
+				if (params.filters)
+					self.filters = params.filters;
 				var p = '';
 				if (params.all)
 					p += '&all=' + params.all;

@@ -11,7 +11,7 @@ var app = simplicite.session({
 	password: process.env.TEST_SIMPLICITE_PASSWORD || 'designer',
 	debug: debug
 });
-var sys;
+var sys, usr;
 
 // Using promise-style functions
 app.login().then(function(parameters) {
@@ -19,27 +19,27 @@ app.login().then(function(parameters) {
 	console.log('Logged in as ' + parameters.user);
 	return app.getGrant({ inlinePicture: true }); // Chaining next promise
 }, function(reason) {
-	console.error('Login failed (reason: ' + reason + ')');
-	app.error = reason;
+	console.error('ERROR: Login failed (reason: ' + reason + ')');
+	app.loginError = reason;
 }).then(function(grant) {
-	if (app.error) return;
+	if (app.loginError) return;
 	if (debug) console.log(grant);
 	console.log('Hello ' + grant.getFirstName() + ' ' + grant.getLastName() + ' (' + grant.getLogin() + ')');
 	if (app.grant.hasResponsibility('ADMIN')) console.log('Beware, you are platform administrator !');
 	return app.getAppInfo(); // Chaining next promise
 }).then(function(appinfo) {
-	if (app.error) return;
+	if (app.loginError) return;
 	if (debug) console.log(appinfo);
 	console.log('Application title: ' + appinfo.title);
 	return app.getSysInfo(); // Chaining next promise
 }).then(function(sysinfo) {
-	if (app.error) return;
+	if (app.loginError) return;
 	if (debug) console.log(sysinfo);
 	console.log('Memory: ' + sysinfo.heapmaxsize);
 	sys = app.getBusinessObject('SystemParam');
 	return sys.getMetadata(); // Chaining next promise
 }).then(function(metadata) {
-	if (app.error) return;
+	if (app.loginError) return;
 	if (debug) console.log(metadata);
 	console.log('Name: ' + sys.getName());
 	console.log('Instance: ' + sys.getInstance());
@@ -50,7 +50,7 @@ app.login().then(function(parameters) {
 	console.log('Links.length: ' + sys.getLinks().length);
 	return sys.search({ sys_code: 'EASYMODE%' });
 }).then(function(list) {
-	if (app.error) return;
+	if (app.loginError) return;
 	if (debug) console.log(list);
 	console.log('Found ' + list.length + ' items');
 	for (var i = 0; i < list.length; i++) {
@@ -59,31 +59,37 @@ app.login().then(function(parameters) {
 	}
 	return sys.get(2); // Chaining next promise
 }).then(function(item) {
-	if (app.error) return;
+	if (app.loginError) return;
 	if (debug) console.log(item);
 	console.log('Got item for rowId 2 !');
 	console.log('item: ' + item.row_id + ' ' + item.sys_code + ' ' + item.sys_value);
 	return sys.getForCreate(); // Chaining next promise
 }).then(function(item) {
-	if (app.error) return;
+	if (app.loginError) return;
 	if (debug) console.log(item);
 	console.log('Got new item for creation !');
 	item.sys_code = 'TEST';
 	item.sys_value = 'Test';
 	return sys.create(item); // Chaining next promise
 }).then(function(item) {
-	if (app.error) return;
+	if (app.loginError) return;
 	if (debug) console.log(item);
 	console.log('Created new item !');
 	return sys.del(item); // Chaining next promise
 }).then(function() {
-	if (app.error) return;
+	if (app.loginError) return;
 	console.log('Deleted item !');
-	return app.logout();
+	usr = app.getBusinessObject('User');
+	return usr.get(1, { treeView: 'TreeUser' }); // Chaining next promise
+}).then(function(tree) {
+	if (app.loginError) return;
+	console.log('Got treeview !');
+	if (debug) console.log(tree);
+	return app.logout(); // Chaining next promise
 }).then(function() {
-	if (app.error) return;
+	if (app.loginError) return;
 	console.log('Logged out');
-});
+}).then;
 
 // Using callback-style functions
 /*
@@ -127,6 +133,14 @@ app._login(function() {
 										console.log('Deleted !');
 										sys.action(function(res) {
 											console.log('Action result = ' + res);
+											usr = app.getBusinessObject('User');
+											usr.get(function(tree) {
+												console.log('Got treeview !');
+												console.log(tree);
+												app._logout(function() {
+													conole.log('Logged out');
+												});
+											}, 1, { treeView: 'TreeUser' });
 										}, 'getVersion');
 									});
 								}, { sys_code: 'TEST', sys_value: 'Testé' });
