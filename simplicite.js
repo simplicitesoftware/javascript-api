@@ -467,6 +467,9 @@ module.exports = {
 				var it = params.inlineThumbs;
 				if (it)
 					p += '&inline_thumbnails=' + (it.join ? it.join(',') : it);
+				var io = params.inlineObjs;
+				if (io !== undefined)
+					url += "&inline_objects=" + (io.join ? io.join(",") : io);
 				call(path + '&action=search' + p, callParams(self.filters), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.search] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
@@ -497,6 +500,9 @@ module.exports = {
 				var it = params.inlineThumbs;
 				if (it)
 					p += '&inline_thumbnails=' + (it.join ? it.join(',') : it);
+				var io = params.inlineObjs;
+				if (io !== undefined)
+					url += "&inline_objects=" + (io.join ? io.join(",") : io);
 				var tv = params.treeView;
 				if (tv)
 					p += '&treeview=' + tv;
