@@ -6,7 +6,7 @@ module.exports = {
 	session: function(params) {
 		var constants = {
 			DEFAULT_ROW_ID: '0',
-				
+
 			CONTEXT_NONE: 0,
 			CONTEXT_SEARCH: 1,
 			CONTEXT_LIST: 2,
@@ -27,7 +27,7 @@ module.exports = {
 			CONTEXT_IMPORT: 17,
 			CONTEXT_ASSOCIATE: 18,
 			CONTEXT_PANELLIST: 19,
-			
+
 			TYPE_ID: 0,
 			TYPE_INT: 1,
 			TYPE_FLOAT: 2,
@@ -53,27 +53,27 @@ module.exports = {
 			TYPE_COLOR: 23,
 			TYPE_OBJECT: 24,
 			TYPE_GEOCOORDS: 25,
-	
+
 			VIS_NOT: 0,
 			VIS_LIST: 1,
 			VIS_FORM: 2,
 			VIS_BOTH: 3,
-	
+
 			SEARCH_NONE: 0,
 			SEARCH_MONO: 1,
 			SEARCH_MULTI_CHECK: 2,
 			SEARCH_MULTI_LIST: 3,
-	
+
 			RENDERING_DEFAULT: '',
 			RENDERING_SELECTBOX: 'SB',
 			RENDERING_HORIZCHECKBOX: 'HCB',
 			RENDERING_VERTCHECKBOX: 'VCB',
 			RENDERING_HORIZRADIOBUTTON: 'HRB',
 			RENDERING_VERTRADIOBUTTON: 'VRB',
-	
+
 			TRUE: '1',
 			FALSE: '0',
-	
+
 			ERRLEVEL_FATAL: 1,
 			ERRLEVEL_ERROR: 2,
 			ERRLEVEL_WARNING: 3
@@ -113,7 +113,7 @@ module.exports = {
 		var port = params.port || 8080;
 		var approot = params.root || '';
 		var debug = params.debug || false;
-		
+
 		var infoHandler = params.infoHandler || function(msg) { console.log('INFO - ' + msg); };
 		var warnHandler = params.warnHandler || function(msg) { console.log('WARN - ' + msg); };
 		var errorHandler = params.errorHandler || function(msg) { console.log('ERROR - ' + msg); };
@@ -148,7 +148,7 @@ module.exports = {
 		}
 
 		function call(path, data, callback, error) {
-			var p = path || '/'; 
+			var p = path || '/';
 			p = (approot !== '' ? '/' + approot : '') + p;
 			var m = data ? 'POST' : 'GET';
 			var req = {
@@ -248,7 +248,7 @@ module.exports = {
 				(params.error ? params.error : errorHandler).call(self, e);
 			});
 		}
-		
+
 		function logout(callback, params) {
 			var self = this;
 			params = params || {};
@@ -269,7 +269,7 @@ module.exports = {
 				(params.error ? params.error : errorHandler).call(self, e);
 			});
 		}
-		
+
 		function getGrant(callback, params) {
 			var self = this;
 			params = params || {};
@@ -301,7 +301,7 @@ module.exports = {
 				(params.error ? params.error : errorHandler).call(self, e);
 			});
 		}
-		
+
 		/*function setPassword(callback, password, params) {
 			var self = this;
 			params = params || {};
@@ -372,7 +372,7 @@ module.exports = {
 				(params.error ? params.error : errorHandler).call(self, e);
 			});
 		}
-		
+
 		function getNews(callback, params) {
 			var self = this;
 			params = params || {};
@@ -400,14 +400,14 @@ module.exports = {
 
 		function getBusinessObject(name, instance) {
 			instance = instance || 'node_' + name;
-			
+
 			var cacheKey = name + ':' + instance;
 			var obj = businessObjectCache[cacheKey];
 			if (obj) return obj;
-			
+
 			var path = objpath + '?object=' + name + '&inst=' + instance;
 
-			function _getMetadata(callback, params) {
+			function _getMetaData(callback, params) {
 				var self = this;
 				params = params || {};
 				var p = '';
@@ -416,7 +416,7 @@ module.exports = {
 				if (params.contextParam)
 					p += '&contextparam=' + params.contextParam;
 				call(path + '&action=metadata' + p, undefined, function(res, status) {
-					debugHandler('[simplicite.BusinessObject.getMetadata] HTTP status = ' + status + ', response = ' + res);
+					debugHandler('[simplicite.BusinessObject.getMetaData] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response);
@@ -750,10 +750,10 @@ module.exports = {
 
 			obj = {
 				metadata: { name: name, instance: instance, rowidfield: 'row_id' },
-				_getMetadata: _getMetadata,
-				getMetadata: function(params) {
+				_getMetaData: _getMetaData,
+				getMetaData: function(params) {
 					var d = Q.defer();
-					this._getMetadata(function(metadata) { d.resolve(metadata); }, params);
+					this._getMetaData(function(metadata) { d.resolve(metadata); }, params);
 					return d.promise;
 				},
 				getName: function() { return this.metadata.name; },
@@ -790,7 +790,7 @@ module.exports = {
 					var n = field.name;
 					return !field.ref && (n === 'created_by' || n === 'created_dt' || n === 'updated_by' || n === 'updated_dt');
 				},
-				
+
 				_getFilters: _getFilters,
 				getFilters: function(params) {
 					var d = Q.defer();
@@ -849,7 +849,7 @@ module.exports = {
 					return d.promise;
 				},
 				getRowId: function() { if (this.item) return this.item[this.getRowIdFieldName()]; },
-				
+
 				_populate: _populate,
 				populate: function(item, params) {
 					var d = Q.defer();
@@ -932,7 +932,7 @@ module.exports = {
 					return d.promise;
 				},
 			};
-			
+
 			businessObjectCache[cacheKey] = obj;
 			return obj;
 		}

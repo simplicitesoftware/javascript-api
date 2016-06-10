@@ -37,7 +37,7 @@ app.login().then(function(parameters) {
 	if (debug) console.log(sysinfo);
 	console.log('Memory: ' + sysinfo.heapmaxsize);
 	sys = app.getBusinessObject('SystemParam');
-	return sys.getMetadata(); // Chaining next promise
+	return sys.getMetaData(); // Chaining next promise
 }).then(function(metadata) {
 	if (app.loginError) return;
 	if (debug) console.log(metadata);
@@ -105,7 +105,7 @@ app._login(function() {
 			app._getSysInfo(function() {
 				console.log(app.sysinfo);
 				sys = app.getBusinessObject('SystemParam');
-				sys._getMetadata(function() {
+				sys._getMetaData(function() {
 					console.log('Got metadata !');
 					console.log('Name: ' + sys.getName());
 					console.log('Instance: ' + sys.getInstance());
@@ -153,4 +153,3 @@ app._login(function() {
 	}, { inlinePicture: true });
 });
 */
-
