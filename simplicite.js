@@ -185,8 +185,10 @@ module.exports = {
 				if (error)
 					error.call(this, "Timeout");
 			});
-			if (data) hr.write(data);
-			hr.end();
+      if(hr){
+			  if (data) hr.write(data);
+			  hr.end();
+      }
 		}
 
 		function getError(error, status) {
