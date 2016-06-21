@@ -1,13 +1,17 @@
 {
   "name": "simplicite",
-  "version": "0.0.26",
+  "version": "0.0.27",
   "description": "Simplicite(R) platform API for node.js(R)",
   "main": "simplicite.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/simplicitesoftware/nodejs-api.git"
   },
-  "keywords": [ "simplicite", "simplicitesoftware", "apaas" ],
+  "keywords": [
+    "simplicite",
+    "simplicitesoftware",
+    "apaas"
+  ],
   "dependencies": {
     "request": "*",
     "q": "*"
