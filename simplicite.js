@@ -185,10 +185,9 @@ module.exports = {
 				if (error)
 					error.call(this, "Timeout");
 			});
-      if(hr){
-			  if (data) hr.write(data);
-			  hr.end();
-      }
+			if (!hr) throw "Unable to instanciate HTTP request";
+			if (data) hr.write(data);
+			hr.end();
 		}
 
 		function getError(error, status) {
