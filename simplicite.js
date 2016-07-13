@@ -152,12 +152,15 @@ module.exports = {
 			p = (approot !== '' ? '/' + approot : '') + p;
 			var m = data ? 'POST' : 'GET';
 			var req = {
+					scheme: scheme,
 					host: host,
 					port: port,
 					method: m,
 					path: p,
 					headers: {}
 				};
+			if (scheme === "https")
+				req.rejectUnauthorized = false;
 			if (data)
 				req.headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=utf-8';
 			if (tokenHeader)
