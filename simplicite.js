@@ -104,7 +104,7 @@ module.exports = {
 				return;
 			}
 		}
-		var scheme = params.scheme || 'http';
+		var scheme = params.scheme || (params.port === 443 ? 'https' : 'http');
 		if (scheme !== 'http' && scheme !== 'https') {
 			console.error('Incorrect scheme [' + params.scheme + ']');
 			return;
