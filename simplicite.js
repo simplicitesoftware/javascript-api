@@ -463,8 +463,8 @@ module.exports = {
 					self.filters = filters;
 				params = params || {};
 				var p = '';
-				if (params.page)
-					p += '&page=' + params.page;
+				if (params.page > 0)
+					p += '&page=' + (params.page - 1);
 				var id = params.inlineDocs;
 				if (id)
 					p += '&inline_documents=' + (id.join ? id.join(',') : id);
@@ -481,8 +481,8 @@ module.exports = {
 						(params.error ? params.error : errorHandler).call(self, r.response);
 					} else {
 						self.count = r.response.count;
-						self.page = r.response.page;
-						self.maxpage = r.response.maxpage;
+						self.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
+						self.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
 						self.list = r.response.list;
 						if (callback)
 							callback.call(self, self.list);

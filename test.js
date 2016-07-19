@@ -48,7 +48,7 @@ app.login().then(function(parameters) {
 	console.log('RowId.name: ' + sys.getRowIdField().name);
 	console.log('Fields.length: ' + sys.getFields().length);
 	console.log('Links.length: ' + sys.getLinks().length);
-	return sys.search({ sys_code: 'EASYMODE%' });
+	return sys.search({ sys_code: 'EASYMODE%' }); // Chaining next promise
 }).then(function(list) {
 	if (app.loginError) return;
 	if (debug) console.log(list);
@@ -89,7 +89,7 @@ app.login().then(function(parameters) {
 }).then(function() {
 	if (app.loginError) return;
 	console.log('Logged out');
-}).then;
+});
 
 // Using callback-style functions
 /*
