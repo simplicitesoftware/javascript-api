@@ -492,6 +492,29 @@ module.exports = {
 				});
 			}
 
+			function _getCount(callback, filters, params) {
+				var self = this;
+				if (filters)
+					self.filters = filters;
+				params = params || {};
+				call(path + '&action=count', callParams(self.filters), function(res, status) {
+					debugHandler('[simplicite.BusinessObject.getCount] HTTP status = ' + status + ', response = ' + res);
+					var r = parse(res, status);
+					if (r.type === 'error') {
+						(params.error ? params.error : errorHandler).call(self, r.response);
+					} else {
+						self.count = r.response.count;
+						self.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
+						self.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
+						self.list = [];
+						if (callback)
+							callback.call(self, self.count);
+					}
+				}, function(e) {
+					(params.error ? params.error : errorHandler).call(self, e);
+				});
+			}
+
 			function _get(callback, rowId, params) {
 				var self = this;
 				params = params || {};
@@ -811,6 +834,14 @@ module.exports = {
 					this._search(function(list) { d.resolve(list); }, filters, params);
 					return d.promise;
 				},
+				_getCount: _getCount,
+				getCount: function(filters, params) {
+					var d = Q.defer();
+					params = params || {};
+					params.error = function(e) { d.reject(e); };
+					this._getCount(function(count) { d.resolve(count); }, filters, params);
+					return d.promise;
+				},
 
 				_get: _get,
 				get: function(rowId, params) {
@@ -872,6 +903,7 @@ module.exports = {
 				},
 				_create: _create,
 				create: function(item, params) {
+					item.row_id = constants.DEFAULT_ROW_ID;
 					var d = Q.defer();
 					params = params || {};
 					params.error = function(e) { d.reject(e); };

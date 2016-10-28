@@ -48,6 +48,11 @@ app.login().then(function(parameters) {
 	console.log('RowId.name: ' + sys.getRowIdField().name);
 	console.log('Fields.length: ' + sys.getFields().length);
 	console.log('Links.length: ' + sys.getLinks().length);
+	return sys.getCount({ sys_code: 'EASYMODE%' }); // Chaining next promise
+}).then(function(count) {
+	if (app.loginError) return;
+	if (debug) console.log(count);
+	console.log('Count: ' + count);
 	return sys.search({ sys_code: 'EASYMODE%' }); // Chaining next promise
 }).then(function(list) {
 	if (app.loginError) return;
