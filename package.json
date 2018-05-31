@@ -1,6 +1,6 @@
 {
   "name": "simplicite",
-  "version": "0.0.33",
+  "version": "0.0.34",
   "description": "Simplicite(R) platform API for node.js(R)",
   "main": "simplicite.js",
   "repository": {
@@ -10,7 +10,8 @@
   "keywords": [
     "simplicite",
     "simplicitesoftware",
-    "apaas"
+    "apaas",
+    "lowcode"
   ],
   "dependencies": {
     "q": "^2.0.3",
