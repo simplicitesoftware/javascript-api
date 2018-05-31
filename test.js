@@ -7,7 +7,7 @@ const app = simplicite.session({
 	host: process.env.TEST_SIMPLICITE_HOST || 'localhost',
 	port: parseInt(process.env.TEST_SIMPLICITE_PORT) || 8080,
 	root: process.env.TEST_SIMPLICITE_ROOT || '',
-	user: process.env.TEST_SIMPLICITE_USER || 'designer',
+	user: process.env.TEST_SIMPLICITE_USERNAME || 'designer',
 	password: process.env.TEST_SIMPLICITE_PASSWORD || 'designer',
 	debug: debug
 });
