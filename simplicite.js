@@ -4,8 +4,7 @@
 module.exports = {
 	session: function(params) {
 		const Q = require('q');
-		const http = require('http');
-		const https = require('https');
+		const request = require('xhr-request');
 
 		const constants = {
 			DEFAULT_ROW_ID: '0',
@@ -153,46 +152,29 @@ module.exports = {
 			let p = path || '/';
 			p = (approot !== '' ? '/' + approot : '') + p;
 			let m = data ? 'POST' : 'GET';
-			let req = {
-					scheme: scheme,
-					host: host,
-					port: port,
-					method: m,
-					path: p,
-					headers: {}
-				};
-			if (scheme === "https")
-				req.rejectUnauthorized = false;
+			let h = {};
 			if (data)
-				req.headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=utf-8';
+				h['Content-Type'] = 'application/x-www-form-urlencoded; charset=utf-8';
 			if (tokenHeader)
-				req.headers['X-Simplicite-Authorization'] = tokenHeader;
+				h['X-Simplicite-Authorization'] = tokenHeader;
 			else if (basicHeader)
-				req.headers['Authorization'] = basicHeader;
+				h.Authorization = basicHeader;
 			if (cookies)
-				req.headers['Cookie'] = cookies;
-			debugHandler('[simplicite.call] Request = ' + JSON.stringify(req));
-			let hr = (scheme=='https' ? https : http).request(req, function(res) {
-				let s = res.statusCode;
-				cookies = res.headers['set-cookie'] || cookies;
-				let c = '';
-				res.on('data', function(d) {
-					c += d;
+				h.Cookie = cookies;
+			request(scheme + '://' + host + ':' + port + p, {
+					method: m,
+					headers: h,
+					timeout: timeout * 1000,
+					body: data
+				}, function (err, data, res) {
+					if (err) {
+						if (error)
+							error.call(this, err);
+						else
+							throw err;
+					} else if (callback)
+						callback.call(this, data, res.statusCode);
 				});
-				res.on('end', function() {
-					if (callback)
-						callback.call(this, c, s);
-				});
-			}).on('error', function(e) {
-				if (error)
-					error.call(this, e);
-			}).setTimeout(timeout * 1000, function() {
-				if (error)
-					error.call(this, "Timeout");
-			});
-			if (!hr) throw "Unable to instanciate HTTP request";
-			if (data) hr.write(data);
-			hr.end();
 		}
 
 		function getError(error, status) {

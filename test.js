@@ -20,8 +20,8 @@ app.login().then(function(params) {
 	console.log('Logged in as ' + params.username);
 	return app.getGrant({ inlinePicture: true }); // Chaining next promise
 }, function(reason) {
-	console.error('ERROR: Login failed (reason: ' + reason + ')');
 	app.loginError = reason;
+	console.error('Login failed (status: ' + reason.status + ', message: ' + reason.message + ')');
 }).then(function(grant) {
 	if (app.loginError) return;
 	if (debug) console.log(grant);
@@ -141,13 +141,13 @@ app._login(function() {
 									console.log(sys.item);
 									sys._del(function() {
 										console.log('Deleted!');
-										sys.action(function(res) {
+										sys._action(function(res) {
 											console.log('Action result = ' + res);
 											usr = app.getBusinessObject('User');
-											usr.search(function(list) {
+											usr._search(function(list) {
 												console.log('Got users list with thumbnails!');
 												console.log(list);
-												usr.get(function(tree) {
+												usr._get(function(tree) {
 													console.log('Got user treeview!');
 													console.log(tree);
 													app._logout(function() {
