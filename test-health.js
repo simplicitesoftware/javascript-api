@@ -1,7 +1,6 @@
-/*eslint-env node */
-var simplicite = require('./simplicite');
+const simplicite = require('./simplicite');
 
-var app = simplicite.session({
+const app = simplicite.session({
 	url: process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080',
 	debug: true
 });
