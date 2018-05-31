@@ -492,7 +492,6 @@ module.exports = {
 				let p = _getOpts(params);
 				if (params.page > 0)
 					p += '&page=' + (params.page - 1);
-
 				call(path + '&action=search' + p, callParams(self.filters), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.search] HTTP status = ' + status + ', response = ' + res);
 					let r = parse(res, status);
