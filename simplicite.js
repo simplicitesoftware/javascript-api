@@ -121,9 +121,13 @@ module.exports = {
 
 		debugHandler('[simplicite] Base URL = ' + scheme + '://' + host + ':' + port + (approot !== '' ? '/' + approot : ''));
 
-		let user = params.user;
+		let username = params.username;
+		if (!username) username = params.user; // naming flexibility
+		if (!username) username = params.login; // naming flexibility
+		let password = params.password;
+		if (!password) password = params.pwd; // naming flexibility
+		let basicHeader = username && password ? 'Basic ' + new Buffer(username + ':' + password).toString('base64') : null;
 		let tokenHeader = params.token ? 'Bearer ' + params.token : null;
-		let basicHeader = params.user && params.password ? 'Basic ' + new Buffer(params.user + ':' + params.password).toString('base64') : null;
 		let cookies = null;
 
 		function callParams(data) {
@@ -458,23 +462,40 @@ module.exports = {
 				});
 			}
 
+			function _getOpts(params) {
+				let opts = '';
+				if (params.context)
+					opts += '&context=' + params.context;
+				let id = params.inlineDocs;
+				if (!id)
+					id = params.inlineDocuments;
+				if (id)
+					opts += '&inline_documents=' + (id.join ? id.join(',') : id);
+				let it = params.inlineThumbs;
+				if (!it)
+					it = params.inlineThumbnails;
+				if (it)
+					opts += '&inline_thumbnails=' + (it.join ? it.join(',') : it);
+				let io = params.inlineObjs;
+				if (!io)
+					io = params.inlineObjects;
+				if (io)
+					opts += "&inline_objects=" + (io.join ? io.join(",") : io);
+				let tv = params.treeView;
+				if (tv)
+					opts += '&treeview=' + tv;
+				return opts;
+			}
+
 			function _search(callback, filters, params) {
 				let self = this;
 				if (filters)
 					self.filters = filters;
 				params = params || {};
-				let p = '';
+				let p = _getOpts(params);
 				if (params.page > 0)
 					p += '&page=' + (params.page - 1);
-				let id = params.inlineDocs;
-				if (id)
-					p += '&inline_documents=' + (id.join ? id.join(',') : id);
-				let it = params.inlineThumbs;
-				if (it)
-					p += '&inline_thumbnails=' + (it.join ? it.join(',') : it);
-				let io = params.inlineObjs;
-				if (io !== undefined)
-					url += "&inline_objects=" + (io.join ? io.join(",") : io);
+
 				call(path + '&action=search' + p, callParams(self.filters), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.search] HTTP status = ' + status + ', response = ' + res);
 					let r = parse(res, status);
@@ -519,21 +540,7 @@ module.exports = {
 			function _get(callback, rowId, params) {
 				let self = this;
 				params = params || {};
-				let p = '';
-				if (params.context)
-					p += '&context=' + params.context;
-				let id = params.inlineDocs;
-				if (id)
-					p += '&inline_documents=' + (id.join ? id.join(',') : id);
-				let it = params.inlineThumbs;
-				if (it)
-					p += '&inline_thumbnails=' + (it.join ? it.join(',') : it);
-				let io = params.inlineObjs;
-				if (io !== undefined)
-					url += "&inline_objects=" + (io.join ? io.join(",") : io);
-				let tv = params.treeView;
-				if (tv)
-					p += '&treeview=' + tv;
+				let p = _getOpts(params);
 				if (params.fields) {
 					for (let i = 0; i < params.fields.length; i++) {
 						p += '&fields=' + params.fields[i].replace('.', '__');
@@ -581,15 +588,7 @@ module.exports = {
 			function _populate(callback, rowId, params) {
 				let self = this;
 				params = params || {};
-				let p = '';
-				if (params.context)
-					p += '&context=' + params.context;
-				let id = params.inlineDocs;
-				if (id)
-					p += '&inline_documents=' + (id.join ? id.join(',') : id);
-				let it = params.inlineThumbs;
-				if (it)
-					p += '&inline_thumbnails=' + (it.join ? it.join(',') : it);
+				let p = _getOpts(params);
 				call(path + '&action=populate&' + self.metadata.rowidfield + '=' + rowId + p, undefined, function(res, status) {
 					debugHandler('[simplicite.BusinessObject.populate] HTTP status = ' + status + ', response = ' + res);
 					let r = parse(res, status);
@@ -619,7 +618,8 @@ module.exports = {
 				if (item)
 					self.item = item;
 				params = params || {};
-				call(path + '&action=create', callParams(self.item), function(res, status) {
+				let p = _getOpts(params);
+				call(path + '&action=create' + p, callParams(self.item), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.create] HTTP status = ' + status + ', response = ' + res);
 					let r = parse(res, status);
 					if (r.type === 'error') {
@@ -639,7 +639,8 @@ module.exports = {
 				if (item)
 					self.item = item;
 				params = params || {};
-				call(path + '&action=update', callParams(self.item), function(res, status) {
+				let p = _getOpts(params);
+				call(path + '&action=update' + p, callParams(self.item), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.update] HTTP status = ' + status + ', response = ' + res);
 					let r = parse(res, status);
 					if (r.type === 'error') {
@@ -995,7 +996,7 @@ module.exports = {
 				host: host,
 				port: port,
 				root: approot,
-				user: user
+				username: username
 			},
 			info: infoHandler,
 			warn: warnHandler,

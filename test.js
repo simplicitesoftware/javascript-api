@@ -7,7 +7,7 @@ const app = simplicite.session({
 	host: process.env.TEST_SIMPLICITE_HOST || 'localhost',
 	port: parseInt(process.env.TEST_SIMPLICITE_PORT) || 8080,
 	root: process.env.TEST_SIMPLICITE_ROOT || '',
-	user: process.env.TEST_SIMPLICITE_USERNAME || 'designer',
+	username: process.env.TEST_SIMPLICITE_USERNAME || 'designer',
 	password: process.env.TEST_SIMPLICITE_PASSWORD || 'designer',
 	debug: debug
 });
@@ -15,9 +15,9 @@ const app = simplicite.session({
 let sys, usr;
 
 // Using promise-style functions
-app.login().then(function(parameters) {
-	if (debug) console.log(app.parameters);
-	console.log('Logged in as ' + parameters.user);
+app.login().then(function(params) {
+	if (debug) console.log(params);
+	console.log('Logged in as ' + params.username);
 	return app.getGrant({ inlinePicture: true }); // Chaining next promise
 }, function(reason) {
 	console.error('ERROR: Login failed (reason: ' + reason + ')');
