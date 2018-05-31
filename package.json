@@ -1,7 +1,7 @@
 {
   "name": "simplicite",
-  "version": "1.0.1",
-  "description": "Simplicite(R) platform API",
+  "version": "1.0.2",
+  "description": "Simplicite(R) platform Node.js API",
   "main": "simplicite.js",
   "repository": {
     "type": "git",

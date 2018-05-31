@@ -1,8 +1,8 @@
-const simplicite = require('./simplicite');
+var simplicite = require('./simplicite');
 
-const debug = true;
+var debug = true;
 
-const app = simplicite.session({
+var app = simplicite.session({
 	scheme: process.env.TEST_SIMPLICITE_SCHEME || 'http',
 	host: process.env.TEST_SIMPLICITE_HOST || 'localhost',
 	port: parseInt(process.env.TEST_SIMPLICITE_PORT) || 8080,
@@ -12,7 +12,7 @@ const app = simplicite.session({
 	debug: debug
 });
 
-let sys, usr;
+var sys, usr;
 
 // Using promise-style functions
 app.login().then(function(params) {
@@ -59,8 +59,8 @@ app.login().then(function(params) {
 	if (app.loginError) return;
 	if (debug) console.log(list);
 	console.log('Found ' + list.length + ' items');
-	for (let i = 0; i < list.length; i++) {
-		let item = list[i];
+	for (var i = 0; i < list.length; i++) {
+		var item = list[i];
 		console.log('  item[' + i + ']: ' + item.row_id + ' ' + item.sys_code + ' ' + item.sys_value);
 	}
 	return sys.get(2); // Chaining next promise
@@ -126,8 +126,8 @@ app._login(function() {
 					console.log('Links.length: ' + sys.getLinks().length);
 					sys._search(function() {
 						console.log('Searched!');
-						for (let i = 0; i < sys.list.length; i++) {
-							let item = sys.list[i];
+						for (var i = 0; i < sys.list.length; i++) {
+							var item = sys.list[i];
 							console.log('list[' + i + ']: ' + item.row_id + ' ' + item.sys_code + ' ' + item.sys_value);
 						}
 						sys._get(function() {

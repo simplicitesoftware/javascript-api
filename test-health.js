@@ -1,6 +1,6 @@
-const simplicite = require('./simplicite');
+var simplicite = require('./simplicite');
 
-const app = simplicite.session({
+var app = simplicite.session({
 	url: process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080',
 	debug: true
 });
