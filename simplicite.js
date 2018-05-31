@@ -481,9 +481,6 @@ module.exports = {
 					io = params.inlineObjects;
 				if (io)
 					opts += "&inline_objects=" + (io.join ? io.join(",") : io);
-				let tv = params.treeView;
-				if (tv)
-					opts += '&treeview=' + tv;
 				return opts;
 			}
 
@@ -541,6 +538,9 @@ module.exports = {
 				let self = this;
 				params = params || {};
 				let p = _getOpts(params);
+				let tv = params.treeView;
+				if (tv)
+					p += '&treeview=' + tv;
 				if (params.fields) {
 					for (let i = 0; i < params.fields.length; i++) {
 						p += '&fields=' + params.fields[i].replace('.', '__');
