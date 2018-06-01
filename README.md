@@ -1,5 +1,5 @@
 ![Simplicit&eacute; Software](https://www.simplicite.io/resources/logos/logo250.png)
-***
+* * *
 
 <a href="https://www.simplicite.io"><img src="https://img.shields.io/badge/author-Simplicite_Software-blue.svg?style=flat-square" alt="Author"></a>&nbsp;<img src="https://img.shields.io/badge/license-Apache--2.0-orange.svg?style=flat-square" alt="License"> [![Gitter chat](https://badges.gitter.im/org.png)](https://gitter.im/simplicite/Lobby)
 
@@ -11,9 +11,9 @@ Simplicit&eacute;&reg; node.js&reg; &amp; browser API
 Introduction
 ------------
 
-This is the node.js&reg; & browser API for the [Simplicit&eacute;&reg; platform](http://www.simplicitesoftware.com).
+This is the node.js&reg; &amp; browser API for the [Simplicit&eacute;&reg; platform](http://www.simplicitesoftware.com).
 
-It can be used as is in a server-side node application or in a web application by builing a bundle with [Browserify](https://github.com/simplicitesoftware/nodejs-api)
+It can be used in **server-side** node applications or in a **client-side** web application (by builing a bundle with [Browserify](https://github.com/simplicitesoftware/nodejs-api)a)
 
 To install it:
 
