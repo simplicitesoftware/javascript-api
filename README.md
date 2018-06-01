@@ -13,7 +13,7 @@ Introduction
 
 This is the node.js&reg; &amp; browser API for the [Simplicit&eacute;&reg; platform](http://www.simplicitesoftware.com).
 
-It can be used in **server-side** node applications or in a **client-side** web application (by builing a bundle with [Browserify](https://github.com/simplicitesoftware/nodejs-api)a)
+It can be used in **server-side** node applications or in a **client-side** web application (e.g. by building a bundle with [Browserify](https://github.com/simplicitesoftware/nodejs-api)).
 
 To install it:
 
