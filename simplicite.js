@@ -5,6 +5,7 @@ module.exports = {
 	session: function(params) {
 		var Q = require('q');
 		var request = require('xhr-request');
+		var Buffer = Buffer || require('buffer');
 
 		var constants = {
 			DEFAULT_ROW_ID: '0',
