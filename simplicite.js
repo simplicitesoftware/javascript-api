@@ -5,7 +5,7 @@ module.exports = {
 	session: function(params) {
 		var Q = require('q');
 		var request = require('xhr-request');
-		var Buffer = Buffer || require('buffer');
+		var buffer = require('buffer');
 
 		var constants = {
 			DEFAULT_ROW_ID: '0',
@@ -126,7 +126,7 @@ module.exports = {
 		if (!username) username = params.login; // naming flexibility
 		var password = params.password;
 		if (!password) password = params.pwd; // naming flexibility
-		var basicHeader = username && password ? 'Basic ' + new Buffer(username + ':' + password).toString('base64') : null;
+		var basicHeader = username && password ? 'Basic ' + new buffer.Buffer(username + ':' + password).toString('base64') : null;
 		var tokenHeader = params.token ? 'Bearer ' + params.token : null;
 		var cookies = null;
 
