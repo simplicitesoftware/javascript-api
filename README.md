@@ -21,8 +21,8 @@ To install it:
 
 Check `test.js` for sample of basic usage. For more advanced examples, check these repositories:
 
-- [node demo](https://github.com/simplicitesoftware/nodejs-demo)
-- [web demo](https://github.com/simplicitesoftware/web-demo)
+- [Node.js&reg; demo](https://github.com/simplicitesoftware/nodejs-demo)
+- [Web demo](https://github.com/simplicitesoftware/web-demo)
 - [React&reg; demo](https://github.com/simplicitesoftware/react-demo)
 - [React&reg; native demo](https://github.com/simplicitesoftware/react-native-demo)
 
