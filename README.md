@@ -27,7 +27,7 @@ Check `test.js` for sample of basic usage. For more advanced examples, check the
 - [React&reg; native demo](https://github.com/simplicitesoftware/react-native-demo)
 
 
-> **Note**: This is still a __BETA__ stage module, use at your own risks**
+> **Note**: This is still a __BETA__ stage module, use at your own risks
 
 NPM statistics
 --------------
