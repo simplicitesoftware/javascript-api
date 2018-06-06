@@ -11,7 +11,7 @@ Simplicit&eacute;&reg; node.js&reg; &amp; browser JavaScript API
 Introduction
 ------------
 
-This is the node.js&reg; &amp; browser API for the [Simplicit&eacute;&reg; platform](http://www.simplicitesoftware.com).
+This is the node.js&reg; &amp; browser **JavaScript API** for the [Simplicit&eacute;&reg; platform](http://www.simplicitesoftware.com).
 
 It can be used in **server-side** node applications, in a **client-side** web application
 (e.g. by building a bundle with [browserify](http://browserify.org/) and/or by using various dedicated frameworks)
