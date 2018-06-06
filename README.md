@@ -3,8 +3,8 @@
 
 <a href="https://www.simplicite.io"><img src="https://img.shields.io/badge/author-Simplicite_Software-blue.svg?style=flat-square" alt="Author"></a>&nbsp;<img src="https://img.shields.io/badge/license-Apache--2.0-orange.svg?style=flat-square" alt="License"> [![Gitter chat](https://badges.gitter.im/org.png)](https://gitter.im/simplicite/Lobby)
 
-Simplicit&eacute;&reg; node.js&reg; &amp; browser API
-=====================================================
+Simplicit&eacute;&reg; node.js&reg; &amp; browser JavaScript API
+================================================================
 
 [![NPM](https://nodei.co/npm/simplicite.png?downloads=true&downloadRank=true)](https://nodei.co/npm/simplicite/) 
 
@@ -13,7 +13,11 @@ Introduction
 
 This is the node.js&reg; &amp; browser API for the [Simplicit&eacute;&reg; platform](http://www.simplicitesoftware.com).
 
-It can be used in **server-side** node applications or in a **client-side** web application (e.g. by building a bundle with [Browserify](https://github.com/simplicitesoftware/nodejs-api)).
+It can be used in **server-side** node applications, in a **client-side** web application
+(e.g. by building a bundle with [Browserify](http://browserify.org/) and/or by using various frameworks)
+or in **native* JavaScrip-based frameworks.
+
+> **Note**: for browser compatibility reasons this module is implemented in ES5
 
 To install it:
 
