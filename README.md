@@ -19,13 +19,39 @@ To install it:
 
 	npm install simplicite
 
-Check `test.js` for sample of basic usage. For more advanced examples, check these repositories:
+Basic usage:
 
-- [Node.js&reg; demo](https://github.com/simplicitesoftware/nodejs-demo)
-- [Web demo](https://github.com/simplicitesoftware/web-demo)
-- [React&reg; demo](https://github.com/simplicitesoftware/react-demo)
-- [React&reg; native demo](https://github.com/simplicitesoftware/react-native-demo)
+```javascript
+const app = require('simplicite').session({
+	url: '<instance base URL',
+	username: '<username>',
+	password: '<password>'
+});
+let obj;
+app.login().then(function() {
+	obj = app.getBusinessObject('MyObject')
+	app.search().then(function(res) {
+		// Do something with search result (available both as res and as obj.list)
+		// Etc.
+	});
+}).fail(function(reason) {
+	console.error('Login failed (status: ' + reason.status + ', message: ' + reason.message + ')');
+});
+```
 
+Check `test.js` for other examples of basic usage.
+
+For more advanced examples, check these repositories:
+
+- **Server-side**:
+	- [Node.js&reg; demo](https://github.com/simplicitesoftware/nodejs-demo)
+- **Client-side**:
+	- [Web demo](https://github.com/simplicitesoftware/web-demo)
+	- [React&reg; demo](https://github.com/simplicitesoftware/react-demo)
+	- [Angular demo](https://github.com/simplicitesoftware/angular-demo)
+	- [Vue.js demo](https://github.com/simplicitesoftware/vue-demo)
+- **Native**:
+	- [React&reg; native demo](https://github.com/simplicitesoftware/react-native-demo)
 
 > **Note**: This is still a __BETA__ stage module, use at your own risks
 
