@@ -15,7 +15,7 @@ This is the node.js&reg; &amp; browser **JavaScript API** for the [Simplicit&eac
 
 It can be used in **server-side** node applications, in a **client-side** web applications
 (e.g. by building a bundle with [browserify](http://browserify.org) and/or by using various dedicated frameworks)
-or in **native* JavaScript-based mobile frameworks.
+or in **native** JavaScript-based mobile frameworks.
 
 > **Note**: for browser compatibility reasons this module is implemented in ES5
 
@@ -55,7 +55,7 @@ For more advanced examples, check these repositories:
 	- [Angular demo](https://github.com/simplicitesoftware/angular-demo)
 	- [Vue.js demo](https://github.com/simplicitesoftware/vue-demo)
 - **Native**:
-	- [React&reg; native demo](https://github.com/simplicitesoftware/react-native-demo)
+	- [React Native&reg; demo](https://github.com/simplicitesoftware/react-native-demo)
 
 > **Note**: This is still a __BETA__ stage module, use at your own risks
 
