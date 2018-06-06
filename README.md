@@ -21,7 +21,9 @@ or in **native** JavaScript-based mobile frameworks.
 
 To install it:
 
-	npm install simplicite
+```bash
+npm install simplicite
+```
 
 Basic usage:
 
