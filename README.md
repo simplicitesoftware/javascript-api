@@ -23,9 +23,9 @@ Basic usage:
 
 ```javascript
 const app = require('simplicite').session({
-	url: '<instance base URL',
-	username: '<username>',
-	password: '<password>'
+	url: '<my instance base URL>',
+	username: '<my username>',
+	password: '<my password>'
 });
 let obj;
 app.login().then(function() {
