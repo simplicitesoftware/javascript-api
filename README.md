@@ -29,7 +29,7 @@ const app = require('simplicite').session({
 });
 let obj;
 app.login().then(function() {
-	obj = app.getBusinessObject('MyObject')
+	obj = app.getBusinessObject('MyObject');
 	app.search().then(function(res) {
 		// Do something with search result (available both as res and as obj.list)
 		// Etc.
@@ -54,11 +54,6 @@ For more advanced examples, check these repositories:
 	- [React&reg; native demo](https://github.com/simplicitesoftware/react-native-demo)
 
 > **Note**: This is still a __BETA__ stage module, use at your own risks
-
-NPM statistics
---------------
-
-[![NPM](https://nodei.co/npm-dl/simplicite.png?months=6&height=3)](https://nodei.co/npm/simplicite)
 
 License
 -------
