@@ -59,8 +59,6 @@ For more advanced examples, check these repositories:
 - **Native**:
 	- [React Native&reg; demo](https://github.com/simplicitesoftware/react-native-demo)
 
-> **Note**: This is still a __BETA__ stage module, use at your own risks
-
 License
 -------
 
