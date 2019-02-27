@@ -174,8 +174,9 @@ module.exports = {
 							error.call(this, err);
 						else
 							throw err;
-					} else if (callback)
+					} else if (callback) {
 						callback.call(this, data, res.statusCode);
+					}
 				});
 		}
 
@@ -203,8 +204,9 @@ module.exports = {
 				var health = parse(res, status);
 				if (health.type === 'error') {
 					(params.error ? params.error : errorHandler).call(self, health.response);
-				} else if (callback)
+				} else if (callback) {
 					callback.call(self, health);
+				}
 			}, function(e) {
 				(params.error ? params.error : errorHandler).call(self, e);
 			});
