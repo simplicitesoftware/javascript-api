@@ -166,6 +166,7 @@ module.exports = {
 					method: m,
 					headers: h,
 					timeout: timeout * 1000,
+					withCredentials: true,
 					body: data
 				}, function (err, data, res) {
 					if (err) {
@@ -475,12 +476,15 @@ module.exports = {
 				var p = _getOpts(params);
 				if (params.page > 0)
 					p += '&page=' + (params.page - 1);
+				if (params.metadata===true) p += "&_md=true";
+				if (params.visible===true) p += "&_visible=true";
 				call(path + '&action=search' + p, callParams(self.filters), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.search] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
 						(params.error ? params.error : errorHandler).call(self, r.response);
 					} else {
+						if (res.meta) self.metadata = r.response.meta;
 						self.count = r.response.count;
 						self.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
 						self.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
@@ -528,6 +532,8 @@ module.exports = {
 						p += '&fields=' + params.fields[i].replace('.', '__');
 					}
 				}
+				if (params.metadata) p += "&_md=true";
+				if (params.social) p += "&_social=true";
 				call(path + '&action=get&' + self.metadata.rowidfield + '=' + rowId + p, undefined, function(res, status) {
 					debugHandler('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
