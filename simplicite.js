@@ -126,7 +126,7 @@ module.exports = {
 		if (!username) username = params.login; // naming flexibility
 		var password = params.password;
 		if (!password) password = params.pwd; // naming flexibility
-		var basicHeader = username && password ? 'Basic ' + new buffer.Buffer(username + ':' + password).toString('base64') : null;
+		var basicHeader = username && password ? 'Basic ' + (buffer.Buffer.from ? buffer.Buffer.from(username + ':' + password) : new buffer.Buffer(username + ':' + password)).toString('base64') : null;
 		var tokenHeader = params.token ? 'Bearer ' + params.token : null;
 		var cookies = null;
 
