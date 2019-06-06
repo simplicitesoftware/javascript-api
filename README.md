@@ -22,7 +22,7 @@ or in **native** JavaScript-based mobile frameworks.
 To install it:
 
 ```bash
-npm install simplicite
+npm install
 ```
 
 Basic usage:
