@@ -598,13 +598,14 @@ module.exports = {
 		/**
 		 * Get user info
 		 * @param {function} callback Callback (called upon success)
+		 * @param {string} userlogin User login
 		 * @param {object} opts Options
 		 * @function
 		 */
-		function getUserInfo(callback, userLogin, opts) {
+		function getUserInfo(callback, userlogin, opts) {
 			var self = this;
 			opts = opts || {};
-			call(apppath + '?action=userinfo' + (userLogin ? '&login=' + userLogin: ''), undefined, function(res, status) {
+			call(apppath + '?action=userinfo' + (userlogin ? '&login=' + userlogin: ''), undefined, function(res, status) {
 				debugHandler('[simplicite.getUserInfo] HTTP status = ' + status + ', response = ' + res);
 				var r = parse(res, status);
 				if (r.type === 'error') {
@@ -709,23 +710,23 @@ module.exports = {
 				});
 			}
 
-			function _getOpts(opts) {
+			function _getOptions(options) {
 				var opts = '';
-				if (opts.context)
-					opts += '&context=' + opts.context;
-				var id = opts.inlineDocs;
+				if (options.context)
+					opts += '&context=' + options.context;
+				var id = options.inlineDocs;
 				if (!id)
-					id = opts.inlineDocuments;
+					id = options.inlineDocuments;
 				if (id)
 					opts += '&inline_documents=' + (id.join ? id.join(',') : id);
-				var it = opts.inlineThumbs;
+				var it = options.inlineThumbs;
 				if (!it)
-					it = opts.inlineThumbnails;
+					it = options.inlineThumbnails;
 				if (it)
 					opts += '&inline_thumbnails=' + (it.join ? it.join(',') : it);
-				var io = opts.inlineObjs;
+				var io = options.inlineObjs;
 				if (!io)
-					io = opts.inlineObjects;
+					io = options.inlineObjects;
 				if (io)
 					opts += "&inline_objects=" + (io.join ? io.join(",") : io);
 				return opts;
@@ -736,7 +737,7 @@ module.exports = {
 				if (filters)
 					self.filters = filters;
 				opts = opts || {};
-				var p = _getOpts(opts);
+				var p = _getOptions(opts);
 				if (opts.page > 0)
 					p += '&page=' + (opts.page - 1);
 				if (opts.metadata===true) p += "&_md=true";
@@ -786,7 +787,7 @@ module.exports = {
 			function _get(callback, rowId, opts) {
 				var self = this;
 				opts = opts || {};
-				var p = _getOpts(opts);
+				var p = _getOptions(opts);
 				var tv = opts.treeView;
 				if (tv)
 					p += '&treeview=' + tv;
@@ -839,7 +840,7 @@ module.exports = {
 			function _populate(callback, rowId, opts) {
 				var self = this;
 				opts = opts || {};
-				var p = _getOpts(opts);
+				var p = _getOptions(opts);
 				call(path + '&action=populate&' + self.metadata.rowidfield + '=' + rowId + p, undefined, function(res, status) {
 					debugHandler('[simplicite.BusinessObject.populate] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
@@ -869,7 +870,7 @@ module.exports = {
 				if (item)
 					self.item = item;
 				opts = opts || {};
-				var p = _getOpts(opts);
+				var p = _getOptions(opts);
 				call(path + '&action=create' + p, callParams(self.item), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.create] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
@@ -890,7 +891,7 @@ module.exports = {
 				if (item)
 					self.item = item;
 				opts = opts || {};
-				var p = _getOpts(opts);
+				var p = _getOptions(opts);
 				call(path + '&action=update' + p, callParams(self.item), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.update] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
@@ -1041,10 +1042,10 @@ module.exports = {
 				getLabel: function() { return this.metadata.label; },
 				getHelp: function() { return this.metadata.help; },
 				getFields: function() { return this.metadata.fields; },
-				getField: function(name) {
+				getField: function(fieldname) {
 					var n = 0;
 					var fs = this.getFields();
-					while (n < fs.length && fs[n].name !== name) n++;
+					while (n < fs.length && fs[n].name !== fieldname) n++;
 					if (n < fs.length) return fs[n];
 				},
 				getRowIdFieldName: function() { return this.metadata.rowidfield; },
@@ -1205,19 +1206,19 @@ module.exports = {
 					return d.promise;
 				},
 				_setParameter: _setParameter,
-				setParameter: function(name, value, opts) {
+				setParameter: function(param, value, opts) {
 					var d = Q.defer();
 					opts = opts || {};
 					opts.error = function(e) { d.reject(e); };
-					this._setParameter(function() { d.resolve(); }, name, value, opts);
+					this._setParameter(function() { d.resolve(); }, param, value, opts);
 					return d.promise;
 				},
 				_getParameter: _getParameter,
-				getParameter: function(name, opts) {
+				getParameter: function(param, opts) {
 					var d = Q.defer();
 					opts = opts || {};
 					opts.error = function(e) { d.reject(e); };
-					this._getParameter(function(value) { d.resolve(value); }, name, opts);
+					this._getParameter(function(value) { d.resolve(value); }, param, opts);
 					return d.promise;
 				},
 			};
@@ -1303,11 +1304,11 @@ module.exports = {
 				return d.promise;
 			},
 			_getUserInfo: getUserInfo,
-			getUserInfo: function(login, opts) {
+			getUserInfo: function(userlogin, opts) {
 				var d = Q.defer();
 				if (opts === undefined) opts = {};
 				opts.error = function(e) { d.reject(e); };
-				this._getUserInfo(function(userinfo) { d.resolve(userinfo); }, login, opts);
+				this._getUserInfo(function(userinfo) { d.resolve(userinfo); }, userlogin, opts);
 				return d.promise;
 			},
 			_getNews: getNews,
