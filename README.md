@@ -8,6 +8,8 @@ Simplicit&eacute;&reg; node.js&reg; &amp; browser JavaScript API
 
 [![NPM](https://nodei.co/npm/simplicite.png?downloads=true&downloadRank=true)](https://nodei.co/npm/simplicite/) 
 
+[SonarCloud status](https://sonarcloud.io/project/issues?id=simplicitesoftware_nodejs-api)
+
 Introduction
 ------------
 

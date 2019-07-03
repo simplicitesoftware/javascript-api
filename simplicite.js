@@ -168,14 +168,14 @@ module.exports = {
 					timeout: timeout * 1000,
 					withCredentials: true,
 					body: data
-				}, function (err, data, res) {
+				}, function (err, dat, res) {
 					if (err) {
 						if (error)
 							error.call(this, err);
 						else
 							throw err;
 					} else if (callback) {
-						callback.call(this, data, res.statusCode);
+						callback.call(this, dat, res.statusCode);
 					}
 				});
 		}
@@ -183,8 +183,6 @@ module.exports = {
 		function getError(error, status) {
 			return typeof error === 'string' ? { message: error, status: status } : error;
 		}
-
-		var healthpath = '/health?format=json';
 
 		function parse(res, status) {
 			try {
@@ -196,25 +194,50 @@ module.exports = {
 			}
 		}
 
-		function getHealth(callback, params) {
+		/**
+		 * Health service path
+		 * @private
+		 */
+		var healthpath = '/health?format=json';
+
+		/**
+		 * Get health
+		 * @param {function} callback Callback (called upon success)
+		 * @param {object} prms Parameters
+		 * @function
+		 */
+		function getHealth(callback, prms) {
 			var self = this;
-			params = params || {};
+			prms = prms || {};
 			call(healthpath, undefined, function(res, status) {
 				debugHandler('[simplicite.getHealth] HTTP status = ' + status + ', response = ' + res);
 				var health = parse(res, status);
 				if (health.type === 'error') {
-					(params.error ? params.error : errorHandler).call(self, health.response);
+					(prms.error ? prms.error : errorHandler).call(self, health.response);
 				} else if (callback) {
 					callback.call(self, health);
 				}
 			}, function(e) {
-				(params.error ? params.error : errorHandler).call(self, e);
+				(prms.error ? prms.error : errorHandler).call(self, e);
 			});
 		}
 
+		/**
+		 * Application services
+		 * @private
+		 */
 		var apppath = '/api/json/app';
+		
+		/**
+		 * Business object services
+		 * @private
+		 */
 		var objpath = '/api/json/obj';
-		// TODO: use for processes
+		
+		/* TODO:
+		 * Business processes services
+		 * @private
+		 */
 		//var pcspath = '/api/json/pcs';
 
 		function login(callback, params) {
