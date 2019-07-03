@@ -664,6 +664,12 @@ module.exports = {
 
 			var path = objpath + '?object=' + name + '&inst=' + instance;
 
+			/**
+			 * Get meta data
+			 * @param {function} callback Callback (called upon success)
+			 * @param {object} opts Options
+			 * @function
+			 */
 			function _getMetaData(callback, opts) {
 				var self = this;
 				opts = opts || {};
@@ -687,6 +693,12 @@ module.exports = {
 				});
 			}
 
+			/**
+			 * Get current filters
+			 * @param {function} callback Callback (called upon success)
+			 * @param {object} opts Options
+			 * @function
+			 */
 			function _getFilters(callback, opts) {
 				var self = this;
 				opts = opts || {};
@@ -710,6 +722,12 @@ module.exports = {
 				});
 			}
 
+			/**
+			 * Build options parameters
+			 * @param {object} options Options
+			 * @function
+			 * @private
+			 */
 			function _getOptions(options) {
 				var opts = '';
 				if (options.context)
@@ -732,6 +750,13 @@ module.exports = {
 				return opts;
 			}
 
+			/**
+			 * Search
+			 * @param {function} callback Callback (called upon success)
+			 * @param {object} filters Filters (defaults to current filters)
+			 * @param {object} opts Options
+			 * @function
+			 */
 			function _search(callback, filters, opts) {
 				var self = this;
 				if (filters)
@@ -761,6 +786,13 @@ module.exports = {
 				});
 			}
 
+			/**
+			 * Count
+			 * @param {function} callback Callback (called upon success)
+			 * @param {object} filters Filters (defaults to current filters)
+			 * @param {object} opts Options
+			 * @function
+			 */
 			function _getCount(callback, filters, opts) {
 				var self = this;
 				if (filters)
@@ -784,6 +816,13 @@ module.exports = {
 				});
 			}
 
+			/**
+			 * Get
+			 * @param {function} callback Callback (called upon success)
+			 * @param {string} rowId Row ID
+			 * @param {object} opts Options
+			 * @function
+			 */
 			function _get(callback, rowId, opts) {
 				var self = this;
 				opts = opts || {};
@@ -813,30 +852,64 @@ module.exports = {
 				});
 			}
 
+			/**
+			 * Get for create
+			 * @param {function} callback Callback (called upon success)
+			 * @param {object} opts Options
+			 * @function
+			 */
 			function _getForCreate(callback, opts) {
 				opts = opts || {};
 				opts.context = constants.CONTEXT_CREATE;
 				this._get(callback, constants.DEFAULT_ROW_ID, opts);
 			}
 
+			/**
+			 * Get for update
+			 * @param {function} callback Callback (called upon success)
+			 * @param {string} rowId Row ID
+			 * @param {object} opts Options
+			 * @function
+			 */
 			function _getForUpdate(callback, rowId, opts) {
 				opts = opts || {};
 				opts.context = constants.CONTEXT_UPDATE;
 				this._get(callback, rowId, opts);
 			}
 
+			/**
+			 * Get for copy
+			 * @param {function} callback Callback (called upon success)
+			 * @param {string} rowId Row ID to copy
+			 * @param {object} opts Options
+			 * @function
+			 */
 			function _getForCopy(callback, rowId, opts) {
 				opts = opts || {};
 				opts.context = constants.CONTEXT_COPY;
 				this._get(callback, rowId, opts);
 			}
 
+			/**
+			 * Get for delete
+			 * @param {function} callback Callback (called upon success)
+			 * @param {string} rowId Row ID
+			 * @param {object} opts Options
+			 * @function
+			 */
 			function _getForDelete(callback, rowId, opts) {
 				opts = opts || {};
 				opts.context = constants.CONTEXT_CREATE;
 				this._get(callback, rowId, opts);
 			}
 
+			/**
+			 * Populate
+			 * @param {function} callback Callback (called upon success)
+			 * @param {string} rowId Row ID
+			 * @param {object} opts Options
+			 * @function
+			 */
 			function _populate(callback, rowId, opts) {
 				var self = this;
 				opts = opts || {};
@@ -856,6 +929,13 @@ module.exports = {
 				});
 			}
 
+			/**
+			 * Save
+			 * @param {function} callback Callback (called upon success)
+			 * @param {object} item Item (defaults to current item)
+			 * @param {object} opts Options
+			 * @function
+			 */
 			function _save(callback, item, opts) {
 				if (item)
 					this.item = item;
@@ -865,6 +945,13 @@ module.exports = {
 					this.update(callback, item, opts);
 			}
 
+			/**
+			 * Create (create or update)
+			 * @param {function} callback Callback (called upon success)
+			 * @param {object} item Item (defaults to current item)
+			 * @param {object} opts Options
+			 * @function
+			 */
 			function _create(callback, item, opts) {
 				var self = this;
 				if (item)
@@ -886,6 +973,13 @@ module.exports = {
 				});
 			}
 
+			/**
+			 * Update
+			 * @param {function} callback Callback (called upon success)
+			 * @param {object} item Item (defaults to current item)
+			 * @param {object} opts Options
+			 * @function
+			 */
 			function _update(callback, item, opts) {
 				var self = this;
 				if (item)
@@ -907,6 +1001,13 @@ module.exports = {
 				});
 			}
 
+			/**
+			 * Delete
+			 * @param {function} callback Callback (called upon success)
+			 * @param {object} item Item (defaults to current item)
+			 * @param {object} opts Options
+			 * @function
+			 */
 			function _del(callback, item, opts) {
 				var self = this;
 				if (item)
@@ -927,6 +1028,13 @@ module.exports = {
 				});
 			}
 
+			/**
+			 * Invoke custom action
+			 * @param {function} callback Callback (called upon success)
+			 * @param {string} action Action name
+			 * @param {object} opts Options
+			 * @function
+			 */
 			function _action(callback, action, opts) {
 				var self = this;
 				opts = opts || {};
@@ -945,6 +1053,13 @@ module.exports = {
 				});
 			}
 
+			/**
+			 * Build pivot table
+			 * @param {function} callback Callback (called upon success)
+			 * @param {string} crosstab Pivot table name
+			 * @param {object} opts Options
+			 * @function
+			 */
 			function _crosstab(callback, crosstab, opts) {
 				var self = this;
 				opts = opts || {};
@@ -965,6 +1080,13 @@ module.exports = {
 				});
 			}
 
+			/**
+			 * Invoke custom publication
+			 * @param {function} callback Callback (called upon success)
+			 * @param {string} prt Publication name
+			 * @param {object} opts Options
+			 * @function
+			 */
 			function _print(callback, prt, opts) {
 				var self = this;
 				opts = opts || {};
@@ -990,6 +1112,14 @@ module.exports = {
 				});
 			}
 
+			/**
+			 * Set object parameter
+			 * @param {function} callback Callback (called upon success)
+			 * @param {string} param Parameter name
+			 * @param {string} value Parameter value
+			 * @param {object} opts Options
+			 * @function
+			 */
 			function _setParameter(callback, param, value, opts) {
 				var self = this;
 				opts = opts || {};
@@ -1010,6 +1140,13 @@ module.exports = {
 				});
 			}
 
+			/**
+			 * Get object parameter
+			 * @param {function} callback Callback (called upon success)
+			 * @param {string} param Parameter name
+			 * @param {object} opts Options
+			 * @function
+			 */
 			function _getParameter(callback, param, opts) {
 				var self = this;
 				opts = opts || {};
