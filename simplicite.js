@@ -1239,7 +1239,7 @@ module.exports = {
 					var d = Q.defer();
 					opts = opts || {};
 					opts.error = function(e) { d.reject(e); };
-					this._get(function(item) { d.resolve(item); }, rowId, opts);
+					this._get(function(itm) { d.resolve(itm); }, rowId, opts);
 					return d.promise;
 				},
 				_getForCreate: _getForCreate,
@@ -1247,7 +1247,7 @@ module.exports = {
 					var d = Q.defer();
 					opts = opts || {};
 					opts.error = function(e) { d.reject(e); };
-					this._getForCreate(function(item) { d.resolve(item); }, opts);
+					this._getForCreate(function(itm) { d.resolve(itm); }, opts);
 					return d.promise;
 				},
 				_getForUpdate: _getForUpdate,
@@ -1255,7 +1255,7 @@ module.exports = {
 					var d = Q.defer();
 					opts = opts || {};
 					opts.error = function(e) { d.reject(e); };
-					this._getForUpdate(function(item) { d.resolve(item); }, rowId, opts);
+					this._getForUpdate(function(itm) { d.resolve(itm); }, rowId, opts);
 					return d.promise;
 				},
 				_getForCopy: _getForCopy,
@@ -1263,7 +1263,7 @@ module.exports = {
 					var d = Q.defer();
 					opts = opts || {};
 					opts.error = function(e) { d.reject(e); };
-					this._getForCopy(function(item) { d.resolve(item); }, rowId, opts);
+					this._getForCopy(function(itm) { d.resolve(itm); }, rowId, opts);
 					return d.promise;
 				},
 				_getForDelete: _getForDelete,
@@ -1271,7 +1271,7 @@ module.exports = {
 					var d = Q.defer();
 					opts = opts || {};
 					opts.error = function(e) { d.reject(e); };
-					this._getForDelete(function(item) { d.resolve(item); }, rowId, opts);
+					this._getForDelete(function(itm) { d.resolve(itm); }, rowId, opts);
 					return d.promise;
 				},
 				getRowId: function() { if (this.item) return this.item[this.getRowIdFieldName()]; },
@@ -1294,7 +1294,7 @@ module.exports = {
 				},
 				_create: _create,
 				create: function(itm, opts) {
-					item.row_id = constants.DEFAULT_ROW_ID;
+					itm.row_id = constants.DEFAULT_ROW_ID;
 					var d = Q.defer();
 					opts = opts || {};
 					opts.error = function(e) { d.reject(e); };

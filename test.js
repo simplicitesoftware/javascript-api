@@ -3,12 +3,12 @@ var simplicite = require('./simplicite');
 var debug = true;
 
 var app = simplicite.session({
-	scheme: process.env.TEST_SIMPLICITE_SCHEME || 'https',
-	host: process.env.TEST_SIMPLICITE_HOST || 'dev40.dev.simplicite.io',
-	port: parseInt(process.env.TEST_SIMPLICITE_PORT) || 443,
-	root: process.env.TEST_SIMPLICITE_ROOT || '',
+	scheme: process.env.TEST_SIMPLICITE_SCHEME || 'http',
+	host: process.env.TEST_SIMPLICITE_HOST || 'localhost',
+	port: parseInt(process.env.TEST_SIMPLICITE_PORT) || 8080,
+	root: process.env.TEST_SIMPLICITE_ROOT || '/simplicite',
 	username: process.env.TEST_SIMPLICITE_USERNAME || 'designer',
-	password: process.env.TEST_SIMPLICITE_PASSWORD || 'S1mplicite_',
+	password: process.env.TEST_SIMPLICITE_PASSWORD || 'designer',
 	debug: debug
 }), sys, usr;
 
@@ -73,12 +73,13 @@ app.login().then(function(params) {
 		return usr.search(null, { inlineThumbs: true });
 	}).then(function() {
 		console.log('Got users list with thumbnails!');
-		return usr.get(1, { treeView: 'TreeUser' });
-	}).then(function(tree) {
+		//return usr.get(1, { treeView: 'TreeUser' });
+		return app.logout();
+	})/*.then(function(tree) {
 		console.log('Got user treeview!');
 		if (debug) console.log(tree);
 		return app.logout();
-	}).then(function() {
+	})*/.then(function() {
 		console.log('Logged out');
 	});
 }).fail(function(reason) {
