@@ -47,7 +47,7 @@ app.login().then(function() {
 });
 ```
 
-Check `test.js` for other examples of basic usage.
+Check `test*.js` for other examples of basic usage.
 
 For more advanced examples, check these repositories:
 
@@ -60,6 +60,36 @@ For more advanced examples, check these repositories:
 	- [Vue.js demo](https://github.com/simplicitesoftware/vue-demo)
 - **Native**:
 	- [React Native&reg; demo](https://github.com/simplicitesoftware/react-native-demo)
+
+Minify
+------
+
+Install _Uglify-JS_:
+
+```bash
+npm install uglify-js -g
+```
+
+Minify:
+
+```bash
+uglifyjs simplicite.js -o simplicite.min.js
+```
+
+Documentation
+-------------
+
+Install _JSDoc_:
+
+```bash
+npm install -g jsdoc
+```
+
+Generate documentation:
+
+```bash
+jsdoc -d doc simplicite.js
+```
 
 License
 -------

@@ -1,7 +1,12 @@
 /**
- * Simplicit&eacute;&reg; Node.js lib
+ * Simplicite module
+ * @module simplicite
  */
 module.exports = {
+	/**
+	 * Simplicite application session
+	 * @exports simplicite.session
+	 */
 	session: function(params) {
 		var Q = require('q');
 		var request = require('xhr-request');
@@ -652,9 +657,16 @@ module.exports = {
 		/**
 		 * Business objects cache
 		 * @type {object}
+		 * @private
 		 */
 		var businessObjectCache = {};
 
+		/**
+		 * Get business object
+		 * @param {string} name Business object name
+		 * @param {string} instance Optional business object instance name
+		 * @exports simplicite.session.businessobject
+		 */
 		function getBusinessObject(name, instance) {
 			instance = instance || 'node_' + name;
 
