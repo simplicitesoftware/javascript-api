@@ -1,8 +1,6 @@
-var simplicite = require('./simplicite');
-
 var debug = true;
 
-var app = simplicite.session({
+var app = require('./simplicite').session({
 	scheme: process.env.TEST_SIMPLICITE_SCHEME || 'http',
 	host: process.env.TEST_SIMPLICITE_HOST || 'localhost',
 	port: parseInt(process.env.TEST_SIMPLICITE_PORT) || 8080,

@@ -1,6 +1,4 @@
-var simplicite = require('./simplicite');
-
-var app = simplicite.session({
+var app = require('./simplicite').session({
 	url: process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080/simplicite',
 	debug: true
 });
