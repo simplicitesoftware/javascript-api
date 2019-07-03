@@ -8,53 +8,239 @@ module.exports = {
 		var buffer = require('buffer');
 
 		var constants = {
+			/**
+			 * Default row ID
+			 * @const {string}
+			 */
 			DEFAULT_ROW_ID: '0',
 
+			/**
+			 * Default context
+			 * @const {number}
+			 */
 			CONTEXT_NONE: 0,
+			/**
+			 * Search context
+			 * @const {number}
+			 */
 			CONTEXT_SEARCH: 1,
+			/**
+			 * List context
+			 * @const {number}
+			 */
 			CONTEXT_LIST: 2,
+			/**
+			 * Creation context
+			 * @const {number}
+			 */
 			CONTEXT_CREATE: 3,
+			/**
+			 * Copy context
+			 * @const {number}
+			 */
 			CONTEXT_COPY: 4,
+			/**
+			 * Update context
+			 * @const {number}
+			 */
 			CONTEXT_UPDATE: 5,
+			/**
+			 * Delete context
+			 * @const {number}
+			 */
 			CONTEXT_DELETE: 6,
+			/**
+			 * Chart context
+			 * @const {number}
+			 */
 			CONTEXT_GRAPH: 7,
+			/**
+			 * Pivot table context
+			 * @const {number}
+			 */
 			CONTEXT_CROSSTAB: 8,
+			/**
+			 * Publication context
+			 * @const {number}
+			 */
 			CONTEXT_PRINTTMPL: 9,
+			/**
+			 * Bulk update context
+			 * @const {number}
+			 */
 			CONTEXT_UPDATEALL: 10,
+			/**
+			 * Reference selection context
+			 * @const {number}
+			 */
 			CONTEXT_REFSELECT: 11,
+			/**
+			 * Datamap selection context
+			 * @const {number}
+			 */
 			CONTEXT_DATAMAPSELECT: 12,
+			/**
+			 * Pre validation context
+			 * @const {number}
+			 */
 			CONTEXT_PREVALIDATE: 13,
+			/**
+			 * Post validation context
+			 * @const {number}
+			 */
 			CONTEXT_POSTVALIDATE: 14,
+			/**
+			 * State transition context
+			 * @const {number}
+			 */
 			CONTEXT_STATETRANSITION: 15,
+			/**
+			 * Export context
+			 * @const {number}
+			 */
 			CONTEXT_EXPORT: 16,
+			/**
+			 * Import context
+			 * @const {number}
+			 */
 			CONTEXT_IMPORT: 17,
+			/**
+			 * Association context
+			 * @const {number}
+			 */
 			CONTEXT_ASSOCIATE: 18,
+			/**
+			 * Panle list context
+			 * @const {number}
+			 */
 			CONTEXT_PANELLIST: 19,
 
+			/**
+			 * Foreign key (reference) type
+			 * @const {number}
+			 */
 			TYPE_ID: 0,
+			/**
+			 * Integer type
+			 * @const {number}
+			 */
 			TYPE_INT: 1,
+			/**
+			 * Decimal type
+			 * @const {number}
+			 */
 			TYPE_FLOAT: 2,
+			/**
+			 * Short string type
+			 * @const {number}
+			 */
 			TYPE_STRING: 3,
+			/**
+			 * Date type
+			 * @const {number}
+			 */
 			TYPE_DATE: 4,
+			/**
+			 * Date and time type
+			 * @const {number}
+			 */
 			TYPE_DATETIME: 5,
+			/**
+			 * Time type
+			 * @const {number}
+			 */
 			TYPE_TIME: 6,
+			/**
+			 * Simple enumeration type
+			 * @const {number}
+			 */
 			TYPE_ENUM: 7,
+			/**
+			 * Boolean type
+			 * @const {number}
+			 */
 			TYPE_BOOLEAN: 8,
+			/**
+			 * Password type
+			 * @const {number}
+			 */
 			TYPE_PASSWORD: 9,
+			/**
+			 * URL type
+			 * @const {number}
+			 */
 			TYPE_URL: 10,
+			/**
+			 * HTML content type
+			 * @const {number}
+			 */
 			TYPE_HTML: 11,
+			/**
+			 * Email type
+			 * @const {number}
+			 */
 			TYPE_EMAIL: 12,
+			/**
+			 * Long string type
+			 * @const {number}
+			 */
 			TYPE_LONG_STRING: 13,
+			/**
+			 * Multiple enumeration type
+			 * @const {number}
+			 */
 			TYPE_ENUM_MULTI: 14,
+			/**
+			 * Validated string type
+			 * @const {number}
+			 */
 			TYPE_REGEXP: 15,
+			/**
+			 * Document type
+			 * @const {number}
+			 */
 			TYPE_DOC: 17,
+			/**
+			 * Decimal type
+			 * @const {number}
+			 * @deprecated
+			 */
 			TYPE_FLOAT_EMPTY: 18,
+			/**
+			 * External file type
+			 * @const {number}
+			 * @deprecated
+			 */
 			TYPE_EXTFILE: 19,
+			/**
+			 * Image type
+			 * @const {number}
+			 */
 			TYPE_IMAGE: 20,
+			/**
+			 * Notepad type
+			 * @const {number}
+			 */
 			TYPE_NOTEPAD: 21,
+			/**
+			 * Phone number type
+			 * @const {number}
+			 */
 			TYPE_PHONENUM: 22,
+			/**
+			 * RGB color type
+			 * @const {number}
+			 */
 			TYPE_COLOR: 23,
+			/**
+			 * Object type
+			 * @const {number}
+			 */
 			TYPE_OBJECT: 24,
+			/**
+			 * Geocoordinates type
+			 * @const {number}
+			 */
 			TYPE_GEOCOORDS: 25,
 
 			VIS_NOT: 0,
@@ -195,13 +381,13 @@ module.exports = {
 		}
 
 		/**
-		 * Health service path
+		 * Health check service path
 		 * @private
 		 */
 		var healthpath = '/health?format=json';
 
 		/**
-		 * Get health
+		 * Get health check (no need to be authenticated)
 		 * @param {function} callback Callback (called upon success)
 		 * @param {object} prms Parameters
 		 * @function
@@ -223,31 +409,37 @@ module.exports = {
 		}
 
 		/**
-		 * Application services
+		 * Application services path
 		 * @private
 		 */
 		var apppath = '/api/json/app';
 		
 		/**
-		 * Business object services
+		 * Business object services path
 		 * @private
 		 */
 		var objpath = '/api/json/obj';
 		
 		/* TODO:
-		 * Business processes services
+		 * Business processes services path
 		 * @private
 		 */
 		//var pcspath = '/api/json/pcs';
 
-		function login(callback, params) {
+		/**
+		 * Login
+		 * @param {function} callback Callback (called upon success)
+		 * @param {object} prms Parameters
+		 * @function
+		 */
+		function login(callback, prms) {
 			var self = this;
-			params = params || {};
+			prms = prms || {};
 			call(apppath + '?action=session', undefined, function(res, status) {
 				debugHandler('[simplicite.login] HTTP status = ' + status + ', response = ' + res);
 				var r = parse(res, status);
 				if (r.type === 'error') {
-					(params.error ? params.error : errorHandler).call(self, r.response);
+					(prms.error ? prms.error : errorHandler).call(self, r.response);
 				} else {
 					self.parameters.sessionId = r.response.id;
 					debugHandler('[simplicite.login] Session ID = ' + self.parameters.sessionId);
@@ -260,18 +452,18 @@ module.exports = {
 						callback.call(self, self.parameters);
 				}
 			}, function(e) {
-				(params.error ? params.error : errorHandler).call(self, e);
+				(prms.error ? prms.error : errorHandler).call(self, e);
 			});
 		}
 
-		function logout(callback, params) {
+		function logout(callback, prms) {
 			var self = this;
-			params = params || {};
+			prms = prms || {};
 			call(apppath + '?action=logout', undefined, function(res, status) {
 				debugHandler('[simplicite.logout] HTTP status = ' + status + ', response = ' + res);
 				var r = parse(res, status);
 				if (r.type === 'error') {
-					(params.error ? params.error : errorHandler).call(self, r.response);
+					(prms.error ? prms.error : errorHandler).call(self, r.response);
 				} else {
 					delete self.parameters.sessionId;
 					delete self.parameters.authToken;
@@ -284,21 +476,21 @@ module.exports = {
 						callback.call(self);
 				}
 			}, function(e) {
-				(params.error ? params.error : errorHandler).call(self, e);
+				(prms.error ? prms.error : errorHandler).call(self, e);
 			});
 		}
 
-		function getGrant(callback, params) {
+		function getGrant(callback, prms) {
 			var self = this;
-			params = params || {};
+			prms = prms || {};
 			var p = '';
-			if (params.inlinePicture)
-				p += '&inline_picture=' + params.inlinePicture;
+			if (prms.inlinePicture)
+				p += '&inline_picture=' + prms.inlinePicture;
 			call(apppath + '?action=getgrant' + p, undefined, function(res, status) {
 				debugHandler('[simplicite.getGrant] HTTP status = ' + status + ', response = ' + res);
 				var r = parse(res, status);
 				if (r.type === 'error') {
-					(params.error ? params.error : errorHandler).call(self, r.response);
+					(prms.error ? prms.error : errorHandler).call(self, r.response);
 				} else {
 					self.grant = r.response;
 					/*if (self.grant.picture) {
@@ -316,99 +508,99 @@ module.exports = {
 						callback.call(self, self.grant);
 				}
 			}, function(e) {
-				(params.error ? params.error : errorHandler).call(self, e);
+				(prms.error ? prms.error : errorHandler).call(self, e);
 			});
 		}
 
-		/*function setPassword(callback, password, params) {
+		/*function setPassword(callback, password, prms) {
 			var self = this;
-			params = params || {};
+			prms = prms || {};
 			call(apppath + '?action=setpassword&password=' + password, undefined, function(res, status) {
 				debugHandler('[simplicite.setPassword] HTTP status = ' + status + ', response = ' + res);
 				var r = parse(res, status);
 				if (r.type === 'error') {
-					(params.error ? params.error : errorHandler).call(self, r.response);
+					(prms.error ? prms.error : errorHandler).call(self, r.response);
 				} else {
 					if (callback)
 						callback.call(self, self.appinfo);
 				}
 			}, function(e) {
-				(params.error ? params.error : errorHandler).call(self, e);
+				(prms.error ? prms.error : errorHandler).call(self, e);
 			});
 		}*/
 
-		function getAppInfo(callback, params) {
+		function getAppInfo(callback, prms) {
 			var self = this;
-			params = params || {};
+			prms = prms || {};
 			call(apppath + '?action=getinfo', undefined, function(res, status) {
 				debugHandler('[simplicite.getAppInfo] HTTP status = ' + status + ', response = ' + res);
 				var r = parse(res, status);
 				if (r.type === 'error') {
-					(params.error ? params.error : errorHandler).call(self, r.response);
+					(prms.error ? prms.error : errorHandler).call(self, r.response);
 				} else {
 					self.appinfo = r.response;
 					if (callback)
 						callback.call(self, self.appinfo);
 				}
 			}, function(e) {
-				(params.error ? params.error : errorHandler).call(self, e);
+				(prms.error ? prms.error : errorHandler).call(self, e);
 			});
 		}
 
-		function getSysInfo(callback, params) {
+		function getSysInfo(callback, prms) {
 			var self = this;
-			params = params || {};
+			prms = prms || {};
 			call(apppath + '?action=sysinfo', undefined, function(res, status) {
 				debugHandler('[simplicite.getSysInfo] HTTP status = ' + status + ', response = ' + res);
 				var r = parse(res, status);
 				if (r.type === 'error') {
-					(params.error ? params.error : errorHandler).call(self, r.response);
+					(prms.error ? prms.error : errorHandler).call(self, r.response);
 				} else {
 					self.sysinfo = r.response;
 					if (callback)
 						callback.call(self, self.sysinfo);
 				}
 			}, function(e) {
-				(params.error ? params.error : errorHandler).call(self, e);
+				(prms.error ? prms.error : errorHandler).call(self, e);
 			});
 		}
 
-		function getUserInfo(callback, login, params) {
+		function getUserInfo(callback, login, prms) {
 			var self = this;
-			params = params || {};
+			prms = prms || {};
 			call(apppath + '?action=userinfo' + (login ? '&login=' + login: ''), undefined, function(res, status) {
 				debugHandler('[simplicite.getUserInfo] HTTP status = ' + status + ', response = ' + res);
 				var r = parse(res, status);
 				if (r.type === 'error') {
-					(params.error ? params.error : errorHandler).call(self, r.response);
+					(prms.error ? prms.error : errorHandler).call(self, r.response);
 				} else {
 					self.userinfo = r.response;
 					if (callback)
 						callback.call(self, self.userinfo);
 				}
 			}, function(e) {
-				(params.error ? params.error : errorHandler).call(self, e);
+				(prms.error ? prms.error : errorHandler).call(self, e);
 			});
 		}
 
-		function getNews(callback, params) {
+		function getNews(callback, prms) {
 			var self = this;
-			params = params || {};
+			prms = prms || {};
 			var p = '';
-			if (params.inlineImages)
-				p += '&inline_images=' + params.inlineImages;
+			if (prms.inlineImages)
+				p += '&inline_images=' + prms.inlineImages;
 			call(apppath + '?action=news' + p, undefined, function(res, status) {
 				debugHandler('[simplicite.getNews] HTTP status = ' + status + ', response = ' + res);
 				var r = parse(res, status);
 				if (r.type === 'error') {
-					(params.error ? params.error : errorHandler).call(self, r.response);
+					(prms.error ? prms.error : errorHandler).call(self, r.response);
 				} else {
 					self.news = r.response;
 					if (callback)
 						callback.call(self, self.news);
 				}
 			}, function(e) {
-				(params.error ? params.error : errorHandler).call(self, e);
+				(prms.error ? prms.error : errorHandler).call(self, e);
 			});
 		}
 
@@ -425,89 +617,89 @@ module.exports = {
 
 			var path = objpath + '?object=' + name + '&inst=' + instance;
 
-			function _getMetaData(callback, params) {
+			function _getMetaData(callback, prms) {
 				var self = this;
-				params = params || {};
+				prms = prms || {};
 				var p = '';
-				if (params.context)
-					p += '&context=' + params.context;
-				if (params.contextParam)
-					p += '&contextparam=' + params.contextParam;
+				if (prms.context)
+					p += '&context=' + prms.context;
+				if (prms.contextParam)
+					p += '&contextparam=' + prms.contextParam;
 				call(path + '&action=metadata' + p, undefined, function(res, status) {
 					debugHandler('[simplicite.BusinessObject.getMetaData] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
-						(params.error ? params.error : errorHandler).call(self, r.response);
+						(prms.error ? prms.error : errorHandler).call(self, r.response);
 					} else {
 						self.metadata = r.response;
 						if (callback)
 							callback.call(self, self.metadata);
 					}
 				}, function(e) {
-					(params.error ? params.error : errorHandler).call(self, e);
+					(prms.error ? prms.error : errorHandler).call(self, e);
 				});
 			}
 
-			function _getFilters(callback, params) {
+			function _getFilters(callback, prms) {
 				var self = this;
-				params = params || {};
+				prms = prms || {};
 				var p = '';
-				if (params.context)
-					p += '&context=' + params.context;
-				if (params.reset)
-					p += '&reset=' + params.reset;
+				if (prms.context)
+					p += '&context=' + prms.context;
+				if (prms.reset)
+					p += '&reset=' + prms.reset;
 				call(path + '&action=filters' + p, undefined, function(res, status) {
 					debugHandler('[simplicite.BusinessObject.getFilters] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
-						(params.error ? params.error : errorHandler).call(self, r.response);
+						(prms.error ? prms.error : errorHandler).call(self, r.response);
 					} else {
 						self.item = r.response;
 						if (callback)
 							callback.call(self, self.filters);
 					}
 				}, function(e) {
-					(params.error ? params.error : errorHandler).call(self, e);
+					(prms.error ? prms.error : errorHandler).call(self, e);
 				});
 			}
 
-			function _getOpts(params) {
+			function _getOpts(prms) {
 				var opts = '';
-				if (params.context)
-					opts += '&context=' + params.context;
-				var id = params.inlineDocs;
+				if (prms.context)
+					opts += '&context=' + prms.context;
+				var id = prms.inlineDocs;
 				if (!id)
-					id = params.inlineDocuments;
+					id = prms.inlineDocuments;
 				if (id)
 					opts += '&inline_documents=' + (id.join ? id.join(',') : id);
-				var it = params.inlineThumbs;
+				var it = prms.inlineThumbs;
 				if (!it)
-					it = params.inlineThumbnails;
+					it = prms.inlineThumbnails;
 				if (it)
 					opts += '&inline_thumbnails=' + (it.join ? it.join(',') : it);
-				var io = params.inlineObjs;
+				var io = prms.inlineObjs;
 				if (!io)
-					io = params.inlineObjects;
+					io = prms.inlineObjects;
 				if (io)
 					opts += "&inline_objects=" + (io.join ? io.join(",") : io);
 				return opts;
 			}
 
-			function _search(callback, filters, params) {
+			function _search(callback, filters, prms) {
 				var self = this;
 				if (filters)
 					self.filters = filters;
-				params = params || {};
-				var p = _getOpts(params);
-				if (params.page > 0)
-					p += '&page=' + (params.page - 1);
-				if (params.metadata===true) p += "&_md=true";
-				if (params.visible===true) p += "&_visible=true";
+				prms = prms || {};
+				var p = _getOpts(prms);
+				if (prms.page > 0)
+					p += '&page=' + (prms.page - 1);
+				if (prms.metadata===true) p += "&_md=true";
+				if (prms.visible===true) p += "&_visible=true";
 				call(path + '&action=search' + p, callParams(self.filters), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.search] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
-						(params.error ? params.error : errorHandler).call(self, r.response);
+						(prms.error ? prms.error : errorHandler).call(self, r.response);
 					} else {
 						if (res.meta) self.metadata = r.response.meta;
 						self.count = r.response.count;
@@ -518,20 +710,20 @@ module.exports = {
 							callback.call(self, self.list);
 					}
 				}, function(e) {
-					(params.error ? params.error : errorHandler).call(self, e);
+					(prms.error ? prms.error : errorHandler).call(self, e);
 				});
 			}
 
-			function _getCount(callback, filters, params) {
+			function _getCount(callback, filters, prms) {
 				var self = this;
 				if (filters)
 					self.filters = filters;
-				params = params || {};
+				prms = prms || {};
 				call(path + '&action=count', callParams(self.filters), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.getCount] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
-						(params.error ? params.error : errorHandler).call(self, r.response);
+						(prms.error ? prms.error : errorHandler).call(self, r.response);
 					} else {
 						self.count = r.response.count;
 						self.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
@@ -541,259 +733,259 @@ module.exports = {
 							callback.call(self, self.count);
 					}
 				}, function(e) {
-					(params.error ? params.error : errorHandler).call(self, e);
+					(prms.error ? prms.error : errorHandler).call(self, e);
 				});
 			}
 
-			function _get(callback, rowId, params) {
+			function _get(callback, rowId, prms) {
 				var self = this;
-				params = params || {};
-				var p = _getOpts(params);
-				var tv = params.treeView;
+				prms = prms || {};
+				var p = _getOpts(prms);
+				var tv = prms.treeView;
 				if (tv)
 					p += '&treeview=' + tv;
-				if (params.fields) {
-					for (var i = 0; i < params.fields.length; i++) {
-						p += '&fields=' + params.fields[i].replace('.', '__');
+				if (prms.fields) {
+					for (var i = 0; i < prms.fields.length; i++) {
+						p += '&fields=' + prms.fields[i].replace('.', '__');
 					}
 				}
-				if (params.metadata) p += "&_md=true";
-				if (params.social) p += "&_social=true";
+				if (prms.metadata) p += "&_md=true";
+				if (prms.social) p += "&_social=true";
 				call(path + '&action=get&' + self.metadata.rowidfield + '=' + rowId + p, undefined, function(res, status) {
 					debugHandler('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
-						(params.error ? params.error : errorHandler).call(self, r.response);
+						(prms.error ? prms.error : errorHandler).call(self, r.response);
 					} else {
 						self.item = tv ? r.response.item : r.response;
 						if (callback)
 							callback.call(self, tv ? r.response : self.item);
 					}
 				}, function(e) {
-					(params.error ? params.error : errorHandler).call(self, e);
+					(prms.error ? prms.error : errorHandler).call(self, e);
 				});
 			}
 
-			function _getForCreate(callback, params) {
-				params = params || {};
-				params.context = constants.CONTEXT_CREATE;
-				this._get(callback, constants.DEFAULT_ROW_ID, params);
+			function _getForCreate(callback, prms) {
+				prms = prms || {};
+				prms.context = constants.CONTEXT_CREATE;
+				this._get(callback, constants.DEFAULT_ROW_ID, prms);
 			}
 
-			function _getForUpdate(callback, rowId, params) {
-				params = params || {};
-				params.context = constants.CONTEXT_UPDATE;
-				this._get(callback, rowId, params);
+			function _getForUpdate(callback, rowId, prms) {
+				prms = prms || {};
+				prms.context = constants.CONTEXT_UPDATE;
+				this._get(callback, rowId, prms);
 			}
 
-			function _getForCopy(callback, rowId, params) {
-				params = params || {};
-				params.context = constants.CONTEXT_COPY;
-				this._get(callback, rowId, params);
+			function _getForCopy(callback, rowId, prms) {
+				prms = prms || {};
+				prms.context = constants.CONTEXT_COPY;
+				this._get(callback, rowId, prms);
 			}
 
-			function _getForDelete(callback, rowId, params) {
-				params = params || {};
-				params.context = constants.CONTEXT_CREATE;
-				this._get(callback, rowId, params);
+			function _getForDelete(callback, rowId, prms) {
+				prms = prms || {};
+				prms.context = constants.CONTEXT_CREATE;
+				this._get(callback, rowId, prms);
 			}
 
-			function _populate(callback, rowId, params) {
+			function _populate(callback, rowId, prms) {
 				var self = this;
-				params = params || {};
-				var p = _getOpts(params);
+				prms = prms || {};
+				var p = _getOpts(prms);
 				call(path + '&action=populate&' + self.metadata.rowidfield + '=' + rowId + p, undefined, function(res, status) {
 					debugHandler('[simplicite.BusinessObject.populate] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
-						(params.error ? params.error : errorHandler).call(self, r.response);
+						(prms.error ? prms.error : errorHandler).call(self, r.response);
 					} else {
 						self.item = r.response;
 						if (callback)
 							callback.call(self, self.item);
 					}
 				}, function(e) {
-					(params.error ? params.error : errorHandler).call(self, e);
+					(prms.error ? prms.error : errorHandler).call(self, e);
 				});
 			}
 
-			function _save(callback, item, params) {
+			function _save(callback, item, prms) {
 				if (item)
 					this.item = item;
 				if (this.item[this.metadata.rowidfield] === constants.DEFAULT_ROW_ID)
-					this.create(callback, item, params);
+					this.create(callback, item, prms);
 				else
-					this.update(callback, item, params);
+					this.update(callback, item, prms);
 			}
 
-			function _create(callback, item, params) {
+			function _create(callback, item, prms) {
 				var self = this;
 				if (item)
 					self.item = item;
-				params = params || {};
-				var p = _getOpts(params);
+				prms = prms || {};
+				var p = _getOpts(prms);
 				call(path + '&action=create' + p, callParams(self.item), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.create] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
-						(params.error ? params.error : errorHandler).call(self, r.response);
+						(prms.error ? prms.error : errorHandler).call(self, r.response);
 					} else {
 						self.item = r.response;
 						if (callback)
 							callback.call(self, self.item);
 					}
 				}, function(e) {
-					(params.error ? params.error : errorHandler).call(self, e);
+					(prms.error ? prms.error : errorHandler).call(self, e);
 				});
 			}
 
-			function _update(callback, item, params) {
+			function _update(callback, item, prms) {
 				var self = this;
 				if (item)
 					self.item = item;
-				params = params || {};
-				var p = _getOpts(params);
+				prms = prms || {};
+				var p = _getOpts(prms);
 				call(path + '&action=update' + p, callParams(self.item), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.update] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
-						(params.error ? params.error : errorHandler).call(self, r.response);
+						(prms.error ? prms.error : errorHandler).call(self, r.response);
 					} else {
 						self.item = r.response;
 						if (callback)
 							callback.call(self, self.item);
 					}
 				}, function(e) {
-					(params.error ? params.error : errorHandler).call(self, e);
+					(prms.error ? prms.error : errorHandler).call(self, e);
 				});
 			}
 
-			function _del(callback, item, params) {
+			function _del(callback, item, prms) {
 				var self = this;
 				if (item)
 					self.item = item;
-				params = params || {};
+				prms = prms || {};
 				call(path + '&action=delete&' + self.metadata.rowidfield + '=' + self.item[self.metadata.rowidfield], undefined, function(res, status) {
 					debugHandler('[simplicite.BusinessObject.del] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
-						(params.error ? params.error : errorHandler).call(self, r.response);
+						(prms.error ? prms.error : errorHandler).call(self, r.response);
 					} else {
 						self.item = undefined;
 						if (callback)
 							callback.call(self);
 					}
 				}, function(e) {
-					(params.error ? params.error : errorHandler).call(self, e);
+					(prms.error ? prms.error : errorHandler).call(self, e);
 				});
 			}
 
-			function _action(callback, action, params) {
+			function _action(callback, action, prms) {
 				var self = this;
-				params = params || {};
+				prms = prms || {};
 				call(path + '&action=' + action, undefined, function(res, status) {
 					debugHandler('[simplicite.BusinessObject.action(' + action + ')] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
-						(params.error ? params.error : errorHandler).call(self, r.response);
+						(prms.error ? prms.error : errorHandler).call(self, r.response);
 					} else {
 						var result = r.response.result;
 						if (callback)
 							callback.call(self, result);
 					}
 				}, function(e) {
-					(params.error ? params.error : errorHandler).call(self, e);
+					(prms.error ? prms.error : errorHandler).call(self, e);
 				});
 			}
 
-			function _crosstab(callback, crosstab, params) {
+			function _crosstab(callback, crosstab, prms) {
 				var self = this;
-				params = params || {};
-				if (params.filters)
-					self.filters = params.filters;
+				prms = prms || {};
+				if (prms.filters)
+					self.filters = prms.filters;
 				call(path + '&action=crosstab&crosstab=' + crosstab, callParams(self.filters), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.crosstab(' + crosstab + ')] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
-						(params.error ? params.error : errorHandler).call(self, r.response);
+						(prms.error ? prms.error : errorHandler).call(self, r.response);
 					} else {
 						self.crosstabdata = r.response;
 						if (callback)
 							callback.call(self, self.crosstabdata);
 					}
 				}, function(e) {
-					(params.error ? params.error : errorHandler).call(self, e);
+					(prms.error ? prms.error : errorHandler).call(self, e);
 				});
 			}
 
-			function _print(callback, prt, params) {
+			function _print(callback, prt, prms) {
 				var self = this;
-				params = params || {};
-				if (params.filters)
-					self.filters = params.filters;
+				prms = prms || {};
+				if (prms.filters)
+					self.filters = prms.filters;
 				var p = '';
-				if (params.all)
-					p += '&all=' + params.all;
-				if (params.mailing)
-					p += '&mailing=' + params.mailing;
+				if (prms.all)
+					p += '&all=' + prms.all;
+				if (prms.mailing)
+					p += '&mailing=' + prms.mailing;
 				call(path + '&action=print&printtemplate=' + prt + p, undefined, function(res, status) {
 					debugHandler('[simplicite.BusinessObject.print(' + prt + ')] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
-						(params.error ? params.error : errorHandler).call(self, r.response);
+						(prms.error ? prms.error : errorHandler).call(self, r.response);
 					} else {
 						var result = r.response.result;
 						if (callback)
 							callback.call(self, result);
 					}
 				}, function(e) {
-					(params.error ? params.error : errorHandler).call(self, e);
+					(prms.error ? prms.error : errorHandler).call(self, e);
 				});
 			}
 
-			function _setParameter(callback, name, value, params) {
+			function _setParameter(callback, name, value, prms) {
 				var self = this;
-				params = params || {};
+				prms = prms || {};
 				var p = { name: name };
 				if (value) p.value = value;
 				call(path + '&action=setparameter', callParams(p), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.setParameter(' + name + ')] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
-						(params.error ? params.error : errorHandler).call(self, r.response);
+						(prms.error ? prms.error : errorHandler).call(self, r.response);
 					} else {
 						var result = r.response.result;
 						if (callback)
 							callback.call(self, result);
 					}
 				}, function(e) {
-					(params.error ? params.error : errorHandler).call(self, e);
+					(prms.error ? prms.error : errorHandler).call(self, e);
 				});
 			}
 
-			function _getParameter(callback, name, params) {
+			function _getParameter(callback, name, prms) {
 				var self = this;
-				params = params || {};
+				prms = prms || {};
 				var p = { name: name };
 				call(path + '&action=getparameter', callParams(p), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.getParameter(' + name + ')] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
-						(params.error ? params.error : errorHandler).call(self, r.response);
+						(prms.error ? prms.error : errorHandler).call(self, r.response);
 					} else {
 						var result = r.response.result;
 						if (callback)
 							callback.call(self, result);
 					}
 				}, function(e) {
-					(params.error ? params.error : errorHandler).call(self, e);
+					(prms.error ? prms.error : errorHandler).call(self, e);
 				});
 			}
 
 			obj = {
 				metadata: { name: name, instance: instance, rowidfield: 'row_id' },
 				_getMetaData: _getMetaData,
-				getMetaData: function(params) {
+				getMetaData: function(prms) {
 					var d = Q.defer();
 					this._getMetaData(function(metadata) { d.resolve(metadata); }, params);
 					return d.promise;
@@ -834,152 +1026,152 @@ module.exports = {
 				},
 
 				_getFilters: _getFilters,
-				getFilters: function(params) {
+				getFilters: function(prms) {
 					var d = Q.defer();
-					params = params || {};
-					params.error = function(e) { d.reject(e); };
-					this._getFilters(function(filters) { d.resolve(filters); }, params);
+					prms = prms || {};
+					prms.error = function(e) { d.reject(e); };
+					this._getFilters(function(filters) { d.resolve(filters); }, prms);
 					return d.promise;
 				},
 				_search: _search,
-				search: function(filters, params) {
+				search: function(filters, prms) {
 					var d = Q.defer();
-					params = params || {};
-					params.error = function(e) { d.reject(e); };
-					this._search(function(list) { d.resolve(list); }, filters, params);
+					prms = prms || {};
+					prms.error = function(e) { d.reject(e); };
+					this._search(function(list) { d.resolve(list); }, filters, prms);
 					return d.promise;
 				},
 				_getCount: _getCount,
-				getCount: function(filters, params) {
+				getCount: function(filters, prms) {
 					var d = Q.defer();
-					params = params || {};
-					params.error = function(e) { d.reject(e); };
-					this._getCount(function(count) { d.resolve(count); }, filters, params);
+					prms = prms || {};
+					prms.error = function(e) { d.reject(e); };
+					this._getCount(function(count) { d.resolve(count); }, filters, prms);
 					return d.promise;
 				},
 
 				_get: _get,
-				get: function(rowId, params) {
+				get: function(rowId, prms) {
 					var d = Q.defer();
-					params = params || {};
-					params.error = function(e) { d.reject(e); };
-					this._get(function(item) { d.resolve(item); }, rowId, params);
+					prms = prms || {};
+					prms.error = function(e) { d.reject(e); };
+					this._get(function(item) { d.resolve(item); }, rowId, prms);
 					return d.promise;
 				},
 				_getForCreate: _getForCreate,
-				getForCreate: function(params) {
+				getForCreate: function(prms) {
 					var d = Q.defer();
-					params = params || {};
-					params.error = function(e) { d.reject(e); };
-					this._getForCreate(function(item) { d.resolve(item); }, params);
+					prms = prms || {};
+					prms.error = function(e) { d.reject(e); };
+					this._getForCreate(function(item) { d.resolve(item); }, prms);
 					return d.promise;
 				},
 				_getForUpdate: _getForUpdate,
-				getForUpdate: function(rowId, params) {
+				getForUpdate: function(rowId, prms) {
 					var d = Q.defer();
-					params = params || {};
-					params.error = function(e) { d.reject(e); };
-					this._getForUpdate(function(item) { d.resolve(item); }, rowId, params);
+					prms = prms || {};
+					prms.error = function(e) { d.reject(e); };
+					this._getForUpdate(function(item) { d.resolve(item); }, rowId, prms);
 					return d.promise;
 				},
 				_getForCopy: _getForCopy,
-				getForCopy: function(rowId, params) {
+				getForCopy: function(rowId, prms) {
 					var d = Q.defer();
-					params = params || {};
-					params.error = function(e) { d.reject(e); };
-					this._getForCopy(function(item) { d.resolve(item); }, rowId, params);
+					prms = prms || {};
+					prms.error = function(e) { d.reject(e); };
+					this._getForCopy(function(item) { d.resolve(item); }, rowId, prms);
 					return d.promise;
 				},
 				_getForDelete: _getForDelete,
-				getForDelete: function(rowId, params) {
+				getForDelete: function(rowId, prms) {
 					var d = Q.defer();
-					params = params || {};
-					params.error = function(e) { d.reject(e); };
-					this._getForDelete(function(item) { d.resolve(item); }, rowId, params);
+					prms = prms || {};
+					prms.error = function(e) { d.reject(e); };
+					this._getForDelete(function(item) { d.resolve(item); }, rowId, prms);
 					return d.promise;
 				},
 				getRowId: function() { if (this.item) return this.item[this.getRowIdFieldName()]; },
 
 				_populate: _populate,
-				populate: function(item, params) {
+				populate: function(item, prms) {
 					var d = Q.defer();
-					params = params || {};
-					params.error = function(e) { d.reject(e); };
-					this._populate(function(item) { d.resolve(item); }, item, params);
+					prms = prms || {};
+					prms.error = function(e) { d.reject(e); };
+					this._populate(function(item) { d.resolve(item); }, item, prms);
 					return d.promise;
 				},
 				_save: _save,
-				save: function(item, params) {
+				save: function(item, prms) {
 					var d = Q.defer();
-					params = params || {};
-					params.error = function(e) { d.reject(e); };
-					this._save(function(item) { d.resolve(item); }, item, params);
+					prms = prms || {};
+					prms.error = function(e) { d.reject(e); };
+					this._save(function(item) { d.resolve(item); }, item, prms);
 					return d.promise;
 				},
 				_create: _create,
-				create: function(item, params) {
+				create: function(item, prms) {
 					item.row_id = constants.DEFAULT_ROW_ID;
 					var d = Q.defer();
-					params = params || {};
-					params.error = function(e) { d.reject(e); };
-					this._create(function(item) { d.resolve(item); }, item, params);
+					prms = prms || {};
+					prms.error = function(e) { d.reject(e); };
+					this._create(function(item) { d.resolve(item); }, item, prms);
 					return d.promise;
 				},
 				_update: _update,
-				update: function(item, params) {
+				update: function(item, prms) {
 					var d = Q.defer();
-					params = params || {};
-					params.error = function(e) { d.reject(e); };
-					this._update(function(item) { d.resolve(item); }, item, params);
+					prms = prms || {};
+					prms.error = function(e) { d.reject(e); };
+					this._update(function(item) { d.resolve(item); }, item, prms);
 					return d.promise;
 				},
 				_del: _del,
-				del: function(item, params) {
+				del: function(item, prms) {
 					var d = Q.defer();
-					if (params === undefined) params = {};
-					params.error = function(e) { d.reject(e); };
-					this._del(function() { d.resolve(); }, item, params);
+					if (prms === undefined) prms = {};
+					prms.error = function(e) { d.reject(e); };
+					this._del(function() { d.resolve(); }, item, prms);
 					return d.promise;
 				},
 
 				_action: _action,
-				action: function(act, params) {
+				action: function(act, prms) {
 					var d = Q.defer();
-					params = params || {};
-					params.error = function(e) { d.reject(e); };
-					this._action(function(res) { d.resolve(res); }, act, params);
+					prms = prms || {};
+					prms.error = function(e) { d.reject(e); };
+					this._action(function(res) { d.resolve(res); }, act, prms);
 					return d.promise;
 				},
 				_crosstab: _crosstab,
-				crosstab: function(ctb, params) {
+				crosstab: function(ctb, prms) {
 					var d = Q.defer();
-					params = params || {};
-					params.error = function(e) { d.reject(e); };
-					this._crosstab(function(res) { d.resolve(res); }, ctb, params);
+					prms = prms || {};
+					prms.error = function(e) { d.reject(e); };
+					this._crosstab(function(res) { d.resolve(res); }, ctb, prms);
 					return d.promise;
 				},
 				_print: _print,
-				print: function(pt, params) {
+				print: function(pt, prms) {
 					var d = Q.defer();
-					params = params || {};
-					params.error = function(e) { d.reject(e); };
-					this._print(function(res) { d.resolve(res); }, pt, params);
+					prms = prms || {};
+					prms.error = function(e) { d.reject(e); };
+					this._print(function(res) { d.resolve(res); }, pt, prms);
 					return d.promise;
 				},
 				_setParameter: _setParameter,
-				setParameter: function(name, value, params) {
+				setParameter: function(name, value, prms) {
 					var d = Q.defer();
-					params = params || {};
-					params.error = function(e) { d.reject(e); };
-					this._setParameter(function() { d.resolve(); }, name, value, params);
+					prms = prms || {};
+					prms.error = function(e) { d.reject(e); };
+					this._setParameter(function() { d.resolve(); }, name, value, prms);
 					return d.promise;
 				},
 				_getParameter: _getParameter,
-				getParameter: function(name, params) {
+				getParameter: function(name, prms) {
 					var d = Q.defer();
-					params = params || {};
-					params.error = function(e) { d.reject(e); };
-					this._getParameter(function(value) { d.resolve(value); }, name, params);
+					prms = prms || {};
+					prms.error = function(e) { d.reject(e); };
+					this._getParameter(function(value) { d.resolve(value); }, name, prms);
 					return d.promise;
 				},
 			};
@@ -1017,67 +1209,67 @@ module.exports = {
 			debug: debugHandler,
 			_getError: getError,
 			_getHealth: getHealth,
-			getHealth: function(params) {
+			getHealth: function(prms) {
 				var d = Q.defer();
-				params = params || {};
-				params.error = function(e) { var err = this._getError(e); err._scope = this; d.reject(err); };
-				this._getHealth(function(health) { health = health || {}; health._scope = this; d.resolve(health); }, params);
+				prms = prms || {};
+				prms.error = function(e) { var err = this._getError(e); err._scope = this; d.reject(err); };
+				this._getHealth(function(health) { health = health || {}; health._scope = this; d.resolve(health); }, prms);
 				return d.promise;
 			},
 			_login: login,
-			login: function(params) {
+			login: function(prms) {
 				var d = Q.defer();
-				params = params || {};
-				params.error = function(e) { d.reject(e); };
-				this._login(function(parameters) { d.resolve(parameters); }, params);
+				prms = prms || {};
+				prms.error = function(e) { d.reject(e); };
+				this._login(function(parameters) { d.resolve(parameters); }, prms);
 				return d.promise;
 			},
 			_logout: logout,
-			logout: function(params) {
+			logout: function(prms) {
 				var d = Q.defer();
-				params = params || {};
-				params.error = function(e) { d.reject(e); };
-				this._logout(function() { d.resolve(); }, params);
+				prms = prms || {};
+				prms.error = function(e) { d.reject(e); };
+				this._logout(function() { d.resolve(); }, prms);
 				return d.promise;
 			},
 			_getGrant: getGrant,
-			getGrant: function(params) {
+			getGrant: function(prms) {
 				var d = Q.defer();
-				params = params || {};
-				params.error = function(e) { d.reject(e); };
-				this._getGrant(function(grant) { d.resolve(grant); }, params);
+				prms = prms || {};
+				prms.error = function(e) { d.reject(e); };
+				this._getGrant(function(grant) { d.resolve(grant); }, prms);
 				return d.promise;
 			},
 			_getAppInfo: getAppInfo,
-			getAppInfo: function(params) {
+			getAppInfo: function(prms) {
 				var d = Q.defer();
-				params = params || {};
-				params.error = function(e) { d.reject(e); };
-				this._getAppInfo(function(appinfo) { d.resolve(appinfo); }, params);
+				prms = prms || {};
+				prms.error = function(e) { d.reject(e); };
+				this._getAppInfo(function(appinfo) { d.resolve(appinfo); }, prms);
 				return d.promise;
 			},
 			_getSysInfo: getSysInfo,
-			getSysInfo: function(params) {
+			getSysInfo: function(prms) {
 				var d = Q.defer();
-				params = params || {};
-				params.error = function(e) { d.reject(e); };
-				this._getSysInfo(function(sysinfo) { d.resolve(sysinfo); }, params);
+				prms = prms || {};
+				prms.error = function(e) { d.reject(e); };
+				this._getSysInfo(function(sysinfo) { d.resolve(sysinfo); }, prms);
 				return d.promise;
 			},
 			_getUserInfo: getUserInfo,
-			getUserInfo: function(login, params) {
+			getUserInfo: function(login, prms) {
 				var d = Q.defer();
-				if (params === undefined) params = {};
-				params.error = function(e) { d.reject(e); };
-				this._getUserInfo(function(userinfo) { d.resolve(userinfo); }, login, params);
+				if (prms === undefined) prms = {};
+				prms.error = function(e) { d.reject(e); };
+				this._getUserInfo(function(userinfo) { d.resolve(userinfo); }, login, prms);
 				return d.promise;
 			},
 			_getNews: getNews,
-			getNews: function(params) {
+			getNews: function(prms) {
 				var d = Q.defer();
-				params = params || {};
-				params.error = function(e) { d.reject(e); };
-				this._getNews(function(news) { d.resolve(news); }, params);
+				prms = prms || {};
+				prms.error = function(e) { d.reject(e); };
+				this._getNews(function(news) { d.resolve(news); }, prms);
 				return d.promise;
 			},
 			getBusinessObject: getBusinessObject,
