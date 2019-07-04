@@ -12,6 +12,9 @@ module.exports = {
 		var request = require('xhr-request');
 		var buffer = require('buffer');
 
+		/**
+		 * Constants
+		 */
 		var constants = {
 			/**
 			 * Default row ID
@@ -294,15 +297,45 @@ module.exports = {
 				return;
 			}
 		}
+		
+		/**
+		 * Scheme
+		 * @private
+		 */
 		var scheme = params.scheme || (params.port === 443 ? 'https' : 'http');
 		if (scheme !== 'http' && scheme !== 'https') {
 			console.error('Incorrect scheme [' + params.scheme + ']');
 			return;
 		}
+		
+		/**
+		 * Host
+		 * @private
+		 */
 		var host = params.host || 'localhost';
+		
+		/**
+		 * Port
+		 * @private
+		 */
 		var port = params.port || 8080;
+		
+		/**
+		 * Application root
+		 * @private
+		 */
 		var approot = params.root || '';
+		
+		/**
+		 * Debug
+		 * @private
+		 */
 		var debug = params.debug || false;
+		
+		/**
+		 * Timeout
+		 * @private
+		 */
 		var timeout = params.timeout || 30;
 
 		var infoHandler = params.infoHandler || function(msg) { console.log('INFO - ' + msg); };
@@ -312,15 +345,44 @@ module.exports = {
 
 		debugHandler('[simplicite] Base URL = ' + scheme + '://' + host + ':' + port + (approot !== '' ? '/' + approot : ''));
 
+		/**
+		 * Username
+		 * @private
+		 */
 		var username = params.username;
 		if (!username) username = params.user; // naming flexibility
 		if (!username) username = params.login; // naming flexibility
+		
+		/**
+		 * Password
+		 * @private
+		 */
 		var password = params.password;
 		if (!password) password = params.pwd; // naming flexibility
+		
+		/**
+		 * Basic HTTP authorization header
+		 * @private
+		 */
 		var basicHeader = username && password ? 'Basic ' + (buffer.Buffer.from ? buffer.Buffer.from(username + ':' + password) : new buffer.Buffer(username + ':' + password)).toString('base64') : null;
+
+		/**
+		 * Bearer token header
+		 * @private
+		 */
 		var tokenHeader = params.token ? 'Bearer ' + params.token : null;
+		
+		/**
+		 * Cookies
+		 * @private
+		 */
 		var cookies = null;
 
+		/**
+		 * Call parameters
+		 * @param {object} data Data
+		 * @private
+		 */
 		function callParams(data) {
 			var p = '';
 			if (!data) return p;
@@ -340,6 +402,14 @@ module.exports = {
 			return p;
 		}
 
+		/**
+		 * Call
+		 * @param {string} path Path
+		 * @param {object} data Data
+		 * @param {function} callback Callback
+		 * @param {function} error Error handler
+		 * @private
+		 */
 		function call(path, data, callback, error) {
 			var p = path || '/';
 			p = (approot !== '' ? '/' + approot : '') + p;
@@ -371,17 +441,29 @@ module.exports = {
 				});
 		}
 
-		function getError(error, status) {
+		/**
+		 * Get error object
+		 * @param {object} error Error
+		 * @param {string} error.message Error message
+		 * @param {number} status Error status
+		 */
+		function _getError(error, status) {
 			return typeof error === 'string' ? { message: error, status: status } : error;
 		}
 
+		/**
+		 * Parse result
+		 * @param {object} res Response to parse
+		 * @param {number} status HTTP status
+		 * @private
+		 */
 		function parse(res, status) {
 			try {
 				if (status !== 200)
-					return { type: 'error', response: getError('HTTP status: ' + status, status) };
+					return { type: 'error', response: _getError('HTTP status: ' + status, status) };
 				return JSON.parse(res);
 			} catch (e) {
-				return { typr: 'error', response: getError('Parsing error: ' + e.message, status) };
+				return { type: 'error', response: _getError('Parsing error: ' + e.message, status) };
 			}
 		}
 
@@ -397,11 +479,11 @@ module.exports = {
 		 * @param {object} opts Options
 		 * @function
 		 */
-		function getHealth(callback, opts) {
+		function _getHealth(callback, opts) {
 			var self = this;
 			opts = opts || {};
 			call(healthpath, undefined, function(res, status) {
-				debugHandler('[simplicite.getHealth] HTTP status = ' + status + ', response = ' + res);
+				debugHandler('[simplicite._getHealth] HTTP status = ' + status + ', response = ' + res);
 				var health = parse(res, status);
 				if (health.type === 'error') {
 					(opts.error ? opts.error : errorHandler).call(self, health.response);
@@ -437,7 +519,7 @@ module.exports = {
 		 * @param {object} opts Options
 		 * @function
 		 */
-		function login(callback, opts) {
+		function _login(callback, opts) {
 			var self = this;
 			opts = opts || {};
 			call(apppath + '?action=session', undefined, function(res, status) {
@@ -467,7 +549,7 @@ module.exports = {
 		 * @param {object} opts Options
 		 * @function
 		 */
-		function logout(callback, opts) {
+		function _logout(callback, opts) {
 			var self = this;
 			opts = opts || {};
 			call(apppath + '?action=logout', undefined, function(res, status) {
@@ -497,7 +579,7 @@ module.exports = {
 		 * @param {object} opts Options
 		 * @function
 		 */
-		function getGrant(callback, opts) {
+		function _getGrant(callback, opts) {
 			var self = this;
 			opts = opts || {};
 			var p = '';
@@ -535,7 +617,7 @@ module.exports = {
 		 * @param {object} opts Options
 		 * @function
 		 */
-		/*function setPassword(callback, password, opts) {
+		/*function _setPassword(callback, password, opts) {
 			var self = this;
 			opts = opts || {};
 			call(apppath + '?action=setpassword&password=' + password, undefined, function(res, status) {
@@ -558,7 +640,7 @@ module.exports = {
 		 * @param {object} opts Options
 		 * @function
 		 */
-		function getAppInfo(callback, opts) {
+		function _getAppInfo(callback, opts) {
 			var self = this;
 			opts = opts || {};
 			call(apppath + '?action=getinfo', undefined, function(res, status) {
@@ -582,7 +664,7 @@ module.exports = {
 		 * @param {object} opts Options
 		 * @function
 		 */
-		function getSysInfo(callback, opts) {
+		function _getSysInfo(callback, opts) {
 			var self = this;
 			opts = opts || {};
 			call(apppath + '?action=sysinfo', undefined, function(res, status) {
@@ -607,7 +689,7 @@ module.exports = {
 		 * @param {object} opts Options
 		 * @function
 		 */
-		function getUserInfo(callback, userlogin, opts) {
+		function _getUserInfo(callback, userlogin, opts) {
 			var self = this;
 			opts = opts || {};
 			call(apppath + '?action=userinfo' + (userlogin ? '&login=' + userlogin: ''), undefined, function(res, status) {
@@ -631,7 +713,7 @@ module.exports = {
 		 * @param {object} opts Options
 		 * @function
 		 */
-		function getNews(callback, opts) {
+		function _getNews(callback, opts) {
 			var self = this;
 			opts = opts || {};
 			var p = '';
@@ -1403,8 +1485,8 @@ module.exports = {
 			warn: warnHandler,
 			error: errorHandler,
 			debug: debugHandler,
-			_getError: getError,
-			_getHealth: getHealth,
+			_getError: _getError,
+			_getHealth: _getHealth,
 			getHealth: function(opts) {
 				var d = Q.defer();
 				opts = opts || {};
@@ -1412,7 +1494,7 @@ module.exports = {
 				this._getHealth(function(health) { health = health || {}; health._scope = this; d.resolve(health); }, opts);
 				return d.promise;
 			},
-			_login: login,
+			_login: _login,
 			login: function(opts) {
 				var d = Q.defer();
 				opts = opts || {};
@@ -1420,7 +1502,7 @@ module.exports = {
 				this._login(function(parameters) { d.resolve(parameters); }, opts);
 				return d.promise;
 			},
-			_logout: logout,
+			_logout: _logout,
 			logout: function(opts) {
 				var d = Q.defer();
 				opts = opts || {};
@@ -1428,7 +1510,7 @@ module.exports = {
 				this._logout(function() { d.resolve(); }, opts);
 				return d.promise;
 			},
-			_getGrant: getGrant,
+			_getGrant: _getGrant,
 			getGrant: function(opts) {
 				var d = Q.defer();
 				opts = opts || {};
@@ -1436,7 +1518,7 @@ module.exports = {
 				this._getGrant(function(grant) { d.resolve(grant); }, opts);
 				return d.promise;
 			},
-			_getAppInfo: getAppInfo,
+			_getAppInfo: _getAppInfo,
 			getAppInfo: function(opts) {
 				var d = Q.defer();
 				opts = opts || {};
@@ -1444,7 +1526,7 @@ module.exports = {
 				this._getAppInfo(function(appinfo) { d.resolve(appinfo); }, opts);
 				return d.promise;
 			},
-			_getSysInfo: getSysInfo,
+			_getSysInfo: _getSysInfo,
 			getSysInfo: function(opts) {
 				var d = Q.defer();
 				opts = opts || {};
@@ -1452,7 +1534,7 @@ module.exports = {
 				this._getSysInfo(function(sysinfo) { d.resolve(sysinfo); }, opts);
 				return d.promise;
 			},
-			_getUserInfo: getUserInfo,
+			_getUserInfo: _getUserInfo,
 			getUserInfo: function(userlogin, opts) {
 				var d = Q.defer();
 				if (opts === undefined) opts = {};
@@ -1460,7 +1542,7 @@ module.exports = {
 				this._getUserInfo(function(userinfo) { d.resolve(userinfo); }, userlogin, opts);
 				return d.promise;
 			},
-			_getNews: getNews,
+			_getNews: _getNews,
 			getNews: function(opts) {
 				var d = Q.defer();
 				opts = opts || {};
