@@ -71,13 +71,12 @@ app.login().then(function(params) {
 		return usr.search(null, { inlineThumbs: true });
 	}).then(function() {
 		console.log('Got users list with thumbnails!');
-		//return usr.get(1, { treeView: 'TreeUser' });
-		return app.logout();
-	})/*.then(function(tree) {
+		return usr.get(1, { treeView: 'TreeUser' });
+	}).then(function(tree) {
 		console.log('Got user treeview!');
 		if (debug) console.log(tree);
 		return app.logout();
-	})*/.then(function() {
+	}).then(function() {
 		console.log('Logged out');
 	});
 }).fail(function(reason) {
