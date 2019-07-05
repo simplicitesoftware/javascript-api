@@ -1,8 +1,7 @@
 {
   "name": "simplicite",
   "version": "1.0.7",
-  "description": "Simplicite(R) platform Node.js API",
-  "main": "simplicite.js",
+  "description": "Simplicite(R) platform Javascript API (for node.js and browser)",
   "repository": {
     "type": "git",
     "url": "git://github.com/simplicitesoftware/nodejs-api.git"
@@ -18,6 +17,19 @@
     "buffer": "latest",
     "xhr-request": "latest"
   },
+  "scripts": {
+    "minify": "uglifyjs src/simplicite.js -o dist/simplicite.min.js",
+    "jsdoc": "jsdoc -d doc src/simplicite.js",
+    "test-health": "node test/test-health.js",
+    "test": "node test/test.js"
+  },
+  "files": [
+    "src",
+    "test",
+    "simplicite.min.js"
+  ],
+  "main": "dist/simplicite.min.js",
+  "unpkg": "dist/simplicite.min.js",
   "author": "Simplicite Software <contact@simplicitesoftware.com> (http://www.simplicitesoftware.com/)",
   "license": "Apache-2.0"
 }

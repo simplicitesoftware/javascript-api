@@ -73,7 +73,7 @@ npm install uglify-js -g
 Minify:
 
 ```bash
-uglifyjs simplicite.js -o simplicite.min.js
+npm run minify
 ```
 
 Documentation
@@ -88,7 +88,7 @@ npm install -g jsdoc
 Generate documentation:
 
 ```bash
-jsdoc -d doc simplicite.js
+npm run jsdoc
 ```
 
 License
