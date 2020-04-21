@@ -1,3 +1,5 @@
 .tern-project
+package-lock.json
 node_modules
 doc
+**/Thumbs.db
