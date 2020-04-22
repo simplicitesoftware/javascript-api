@@ -11,9 +11,9 @@ var app = require('../src/simplicite').session({
 }), sys, usr;
 
 // Using promise-style functions
-app.login().then(function(params) {
-	if (debug) console.log(params);
-	console.log('Logged in as ' + params.username);
+app.login().then(function(res) {
+	if (debug) console.log(res);
+	console.log('Logged in as ' + res.login);
 	return app.getGrant({ inlinePicture: true }).then(function(grant) {
 		if (debug) console.log(grant);
 		console.log('Hello ' + grant.getFirstName() + ' ' + grant.getLastName() + ' (' + grant.getLogin() + ')');
@@ -76,9 +76,10 @@ app.login().then(function(params) {
 		console.log('Got user treeview!');
 		if (debug) console.log(tree);
 		return app.logout();
-	}).then(function() {
+	}).then(function(res) {
+		if (debug) console.log(res);
 		console.log('Logged out');
 	});
-}).fail(function(reason) {
-	console.error('Login failed (status: ' + reason.status + ', message: ' + reason.message + ')');
+}).fail(function(e) {
+	console.error('Login failed (status: ' + e.status + ', message: ' + e.message + ')');
 });

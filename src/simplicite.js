@@ -12,6 +12,11 @@ module.exports = {
 		var request = require('xhr-request');
 		var buffer = require('buffer');
 
+		var infoHandler = params.infoHandler || function(msg) { console.log('INFO - ' + msg); };
+		var warnHandler = params.warnHandler || function(msg) { console.log('WARN - ' + msg); };
+		var errorHandler = params.errorHandler || function(msg) { console.log('ERROR - ' + msg); };
+		var debugHandler = params.debugHandler || function(msg) { if (debug) console.log('DEBUG - ' + msg); };
+
 		/**
 		 * Constants
 		 */
@@ -297,7 +302,7 @@ module.exports = {
 				return;
 			}
 		}
-		
+
 		/**
 		 * Scheme
 		 * @private
@@ -307,71 +312,107 @@ module.exports = {
 			console.error('Incorrect scheme [' + params.scheme + ']');
 			return;
 		}
-		
+
 		/**
 		 * Host
 		 * @private
 		 */
 		var host = params.host || 'localhost';
-		
+
 		/**
 		 * Port
 		 * @private
 		 */
 		var port = params.port || 8080;
-		
+
 		/**
 		 * Application root
 		 * @private
 		 */
 		var approot = params.root || '';
-		
+
+		debugHandler('[simplicite] Base URL = ' + scheme + '://' + host + ':' + port + (approot !== '' ? '/' + approot : ''));
+
 		/**
 		 * Debug
 		 * @private
 		 */
 		var debug = params.debug || false;
-		
+
 		/**
 		 * Timeout
 		 * @private
 		 */
 		var timeout = params.timeout || 30;
 
-		var infoHandler = params.infoHandler || function(msg) { console.log('INFO - ' + msg); };
-		var warnHandler = params.warnHandler || function(msg) { console.log('WARN - ' + msg); };
-		var errorHandler = params.errorHandler || function(msg) { console.log('ERROR - ' + msg); };
-		var debugHandler = params.debugHandler || function(msg) { if (debug) console.log('DEBUG - ' + msg); };
-
-		debugHandler('[simplicite] Base URL = ' + scheme + '://' + host + ':' + port + (approot !== '' ? '/' + approot : ''));
-
 		/**
 		 * Username
 		 * @private
 		 */
-		var username = params.username;
-		if (!username) username = params.user; // naming flexibility
-		if (!username) username = params.login; // naming flexibility
-		
+		var username = params.username || params.user || params.login; // naming flexibility
+
+		/**
+		 * Set username
+		 * @param u Username
+		 */
+		function setUsername(u) {
+			username = u;
+		}
+
 		/**
 		 * Password
 		 * @private
 		 */
-		var password = params.password;
-		if (!password) password = params.pwd; // naming flexibility
-		
+		var password = params.password || params.pwd; // naming flexibility
+
+		/**
+		 * Set password
+		 * @param p Password
+		 */
+		function setPassword(p) {
+			password = p;
+		}
+
 		/**
 		 * Basic HTTP authorization header
 		 * @private
 		 */
-		var basicHeader = username && password ? 'Basic ' + (buffer.Buffer.from ? buffer.Buffer.from(username + ':' + password) : new buffer.Buffer(username + ':' + password)).toString('base64') : null;
+		function getBasicAuthHeader() {
+			return username && password
+				? 'Basic ' + (buffer.Buffer.from ? buffer.Buffer.from(username + ':' + password) : new buffer.Buffer(username + ':' + password)).toString('base64')
+				: null;
+		}
 
 		/**
-		 * Bearer token header
+		 * Auth token
 		 * @private
 		 */
-		var tokenHeader = params.token ? 'Bearer ' + params.token : null;
-		
+		var authToken = params.authToken || params.authtoken || params.token; // naming flexibility
+
+		/**
+		 * Set auth token
+		 * @param t Auth token
+		 */
+		function setAuthToken(t) {
+			authToken = t;
+		}
+
+		/**
+		 * Get bearer token header
+		 * @private
+		 */
+		function getBearerTokenHeader() {
+			return authToken
+				? 'Bearer ' + authToken
+				: null;
+		}
+
+		/**
+		 * Session ID
+		 * @private
+		 */
+		var sessionId = null;
+
 		/**
 		 * Cookies
 		 * @private
@@ -417,10 +458,14 @@ module.exports = {
 			var h = {};
 			if (data)
 				h['Content-Type'] = 'application/x-www-form-urlencoded; charset=utf-8';
-			if (tokenHeader)
-				h['X-Simplicite-Authorization'] = tokenHeader;
-			else if (basicHeader)
-				h.Authorization = basicHeader;
+			var b = getBearerTokenHeader();
+			if (b) {
+				h['X-Simplicite-Authorization'] = b;
+			} else {
+				b = getBasicAuthHeader();
+				if (b)
+					h.Authorization = b;
+			}
 			if (cookies)
 				h.Cookie = cookies;
 			request(scheme + '://' + host + ':' + port + p, {
@@ -468,10 +513,15 @@ module.exports = {
 		}
 
 		/**
+		 * Check if used within generic UI
+		 */
+		var ui = typeof window !== 'undefined' && typeof window.$ui !== 'undefined';
+
+		/**
 		 * Health check service path
 		 * @private
 		 */
-		var healthpath = '/health?format=json';
+		var healthpath = (ui ? '/ui/' : '') + '/health?format=json';
 
 		/**
 		 * Get health check (no need to be authenticated)
@@ -499,19 +549,19 @@ module.exports = {
 		 * Application services path
 		 * @private
 		 */
-		var apppath = '/api/json/app';
-		
+		var apppath = '/' + (ui ? 'ui' : 'api') + '/json/app';
+
 		/**
 		 * Business object services path
 		 * @private
 		 */
-		var objpath = '/api/json/obj';
-		
+		var objpath = '/' + (ui ? 'ui' : 'api') + '/json/obj';
+
 		/* TODO:
 		 * Business processes services path
 		 * @private
 		 */
-		//var pcspath = '/api/json/pcs';
+		//var pcspath = '/' + (ui ? 'ui' : 'api') + '/json/pcs';
 
 		/**
 		 * Login
@@ -528,15 +578,16 @@ module.exports = {
 				if (r.type === 'error') {
 					(opts.error ? opts.error : errorHandler).call(self, r.response);
 				} else {
-					self.parameters.sessionId = r.response.id;
-					debugHandler('[simplicite.login] Session ID = ' + self.parameters.sessionId);
-					self.parameters.authToken = r.response.authtoken;
-					if (self.parameters.authToken) {
-						debugHandler('[simplicite.login] Auth token = ' + self.parameters.authToken);
-						tokenHeader = 'Bearer ' + self.parameters.authToken;
-					}
+					self.sessionId = r.response.id;
+					debugHandler('[simplicite.login] Session ID = ' + self.sessionId);
+					self.username = r.response.login;
+					if (self.username)
+						debugHandler('[simplicite.login] Username = ' + self.username);
+					self.authToken = r.response.authtoken;
+					if (self.authToken)
+						debugHandler('[simplicite.login] Auth token = ' + self.authToken);
 					if (callback)
-						callback.call(self, self.parameters);
+						callback.call(self, r.response);
 				}
 			}, function(e) {
 				(opts.error ? opts.error : errorHandler).call(self, e);
@@ -558,15 +609,20 @@ module.exports = {
 				if (r.type === 'error') {
 					(opts.error ? opts.error : errorHandler).call(self, r.response);
 				} else {
-					delete self.parameters.sessionId;
-					delete self.parameters.authToken;
-					delete self.health;
-					delete self.appinfo;
-					delete self.sysinfo;
-					delete self.userinfo;
-					delete self.grant;
+					self.username = null;
+					self.password = null;
+					self.authToken = null;
+					self.sessionId = null;
+					self.cookies = null;
+
+					self.appinfo = undefined;
+					self.sysinfo = undefined;
+					self.userinfo = undefined;
+					self.grant = undefined;
+					self.businessObjectCache = {};
+
 					if (callback)
-						callback.call(self);
+						callback.call(self, r.response);
 				}
 			}, function(e) {
 				(opts.error ? opts.error : errorHandler).call(self, e);
@@ -1478,9 +1534,11 @@ module.exports = {
 				scheme: scheme,
 				host: host,
 				port: port,
-				root: approot,
-				username: username
+				root: approot
 			},
+			setUsername: setUsername,
+			setPassword: setPassword,
+			setAuthToken: setAuthToken,
 			info: infoHandler,
 			warn: warnHandler,
 			error: errorHandler,
@@ -1499,7 +1557,7 @@ module.exports = {
 				var d = Q.defer();
 				opts = opts || {};
 				opts.error = function(e) { d.reject(e); };
-				this._login(function(parameters) { d.resolve(parameters); }, opts);
+				this._login(function(res) { d.resolve(res); }, opts);
 				return d.promise;
 			},
 			_logout: _logout,
@@ -1507,7 +1565,7 @@ module.exports = {
 				var d = Q.defer();
 				opts = opts || {};
 				opts.error = function(e) { d.reject(e); };
-				this._logout(function() { d.resolve(); }, opts);
+				this._logout(function(res) { d.resolve(res); }, opts);
 				return d.promise;
 			},
 			_getGrant: _getGrant,
