@@ -349,14 +349,15 @@ module.exports = {
 		 * Username
 		 * @private
 		 */
-		var username = params.username || params.user || params.login; // naming flexibility
+		var username = params.username || params.login; // naming flexibility
 
 		/**
 		 * Set username
-		 * @param u Username
+		 * @param {string} u Username
+		 * @function
 		 */
 		function setUsername(u) {
-			username = u;
+			this.username = u;
 		}
 
 		/**
@@ -367,10 +368,11 @@ module.exports = {
 
 		/**
 		 * Set password
-		 * @param p Password
+		 * @param {string} p Password
+		 * @function
 		 */
 		function setPassword(p) {
-			password = p;
+			this.password = p;
 		}
 
 		/**
@@ -378,8 +380,8 @@ module.exports = {
 		 * @private
 		 */
 		function getBasicAuthHeader() {
-			return username && password
-				? 'Basic ' + (buffer.Buffer.from ? buffer.Buffer.from(username + ':' + password) : new buffer.Buffer(username + ':' + password)).toString('base64')
+			return this.username && this.password
+				? 'Basic ' + (buffer.Buffer.from ? buffer.Buffer.from(this.username + ':' + this.password) : new buffer.Buffer(this.username + ':' + this.password)).toString('base64')
 				: null;
 		}
 
@@ -391,10 +393,11 @@ module.exports = {
 
 		/**
 		 * Set auth token
-		 * @param t Auth token
+		 * @param {string} t Auth token
+		 * @function
 		 */
 		function setAuthToken(t) {
-			authToken = t;
+			this.authToken = t;
 		}
 
 		/**
@@ -402,8 +405,8 @@ module.exports = {
 		 * @private
 		 */
 		function getBearerTokenHeader() {
-			return authToken
-				? 'Bearer ' + authToken
+			return this.authToken
+				? 'Bearer ' + this.authToken
 				: null;
 		}
 
@@ -420,11 +423,11 @@ module.exports = {
 		var cookies = null;
 
 		/**
-		 * Call parameters
+		 * Request parameters
 		 * @param {object} data Data
 		 * @private
 		 */
-		function callParams(data) {
+		function reqParams(data) {
 			var p = '';
 			if (!data) return p;
 			var n = 0;
@@ -444,25 +447,25 @@ module.exports = {
 		}
 
 		/**
-		 * Call
+		 * Request
 		 * @param {string} path Path
 		 * @param {object} data Data
 		 * @param {function} callback Callback
 		 * @param {function} error Error handler
 		 * @private
 		 */
-		function call(path, data, callback, error) {
+		function req(path, data, callback, error) {
 			var p = path || '/';
 			p = (approot !== '' ? '/' + approot : '') + p;
 			var m = data ? 'POST' : 'GET';
 			var h = {};
 			if (data)
 				h['Content-Type'] = 'application/x-www-form-urlencoded; charset=utf-8';
-			var b = getBearerTokenHeader();
+			var b = getBearerTokenHeader.call(this);
 			if (b) {
 				h['X-Simplicite-Authorization'] = b;
 			} else {
-				b = getBasicAuthHeader();
+				b = getBasicAuthHeader.call(this);
 				if (b)
 					h.Authorization = b;
 			}
@@ -492,7 +495,7 @@ module.exports = {
 		 * @param {string} error.message Error message
 		 * @param {number} status Error status
 		 */
-		function _getError(error, status) {
+		function getError(error, status) {
 			return typeof error === 'string' ? { message: error, status: status } : error;
 		}
 
@@ -505,10 +508,10 @@ module.exports = {
 		function parse(res, status) {
 			try {
 				if (status !== 200)
-					return { type: 'error', response: _getError('HTTP status: ' + status, status) };
+					return { type: 'error', response: getError('HTTP status: ' + status, status) };
 				return JSON.parse(res);
 			} catch (e) {
-				return { type: 'error', response: _getError('Parsing error: ' + e.message, status) };
+				return { type: 'error', response: getError('Parsing error: ' + e.message, status) };
 			}
 		}
 
@@ -532,7 +535,7 @@ module.exports = {
 		function _getHealth(callback, opts) {
 			var self = this;
 			opts = opts || {};
-			call(healthpath, undefined, function(res, status) {
+			req.call(self, healthpath, undefined, function(res, status) {
 				debugHandler('[simplicite._getHealth] HTTP status = ' + status + ', response = ' + res);
 				var health = parse(res, status);
 				if (health.type === 'error') {
@@ -564,6 +567,24 @@ module.exports = {
 		//var pcspath = '/' + (ui ? 'ui' : 'api') + '/json/pcs';
 
 		/**
+		 * Clear
+		 * @private
+		 */
+		function clear() {
+			this.username = undefined;
+			this.password = undefined;
+			this.authToken = undefined;
+			this.sessionId = undefined;
+			this.cookies = undefined;
+
+			this.appinfo = undefined;
+			this.sysinfo = undefined;
+			this.userinfo = undefined;
+			this.grant = undefined;
+			businessObjectCache = {};
+		}
+
+		/**
 		 * Login
 		 * @param {function} callback Callback (called upon success)
 		 * @param {object} opts Options
@@ -572,7 +593,13 @@ module.exports = {
 		function _login(callback, opts) {
 			var self = this;
 			opts = opts || {};
-			call(apppath + '?action=session', undefined, function(res, status) {
+			if (opts.username || opts.login) {
+				clear();
+				self.username = opts.username || opts.login;
+				if (opts.password || opts.pwd)
+					self.password = opts.password || opts.pwd;	
+			}
+			req.call(self, apppath + '?action=session', undefined, function(res, status) {
 				debugHandler('[simplicite.login] HTTP status = ' + status + ', response = ' + res);
 				var r = parse(res, status);
 				if (r.type === 'error') {
@@ -603,24 +630,13 @@ module.exports = {
 		function _logout(callback, opts) {
 			var self = this;
 			opts = opts || {};
-			call(apppath + '?action=logout', undefined, function(res, status) {
+			req.call(self, apppath + '?action=logout', undefined, function(res, status) {
 				debugHandler('[simplicite.logout] HTTP status = ' + status + ', response = ' + res);
 				var r = parse(res, status);
 				if (r.type === 'error') {
 					(opts.error ? opts.error : errorHandler).call(self, r.response);
 				} else {
-					self.username = null;
-					self.password = null;
-					self.authToken = null;
-					self.sessionId = null;
-					self.cookies = null;
-
-					self.appinfo = undefined;
-					self.sysinfo = undefined;
-					self.userinfo = undefined;
-					self.grant = undefined;
-					self.businessObjectCache = {};
-
+					clear.call(self);
 					if (callback)
 						callback.call(self, r.response);
 				}
@@ -641,7 +657,7 @@ module.exports = {
 			var p = '';
 			if (opts.inlinePicture)
 				p += '&inline_picture=' + opts.inlinePicture;
-			call(apppath + '?action=getgrant' + p, undefined, function(res, status) {
+			req.call(self, apppath + '?action=getgrant' + p, undefined, function(res, status) {
 				debugHandler('[simplicite.getGrant] HTTP status = ' + status + ', response = ' + res);
 				var r = parse(res, status);
 				if (r.type === 'error') {
@@ -676,7 +692,7 @@ module.exports = {
 		/*function _setPassword(callback, password, opts) {
 			var self = this;
 			opts = opts || {};
-			call(apppath + '?action=setpassword&password=' + password, undefined, function(res, status) {
+			req.call(self, apppath + '?action=setpassword&password=' + password, undefined, function(res, status) {
 				debugHandler('[simplicite.setPassword] HTTP status = ' + status + ', response = ' + res);
 				var r = parse(res, status);
 				if (r.type === 'error') {
@@ -699,7 +715,7 @@ module.exports = {
 		function _getAppInfo(callback, opts) {
 			var self = this;
 			opts = opts || {};
-			call(apppath + '?action=getinfo', undefined, function(res, status) {
+			req.call(self, apppath + '?action=getinfo', undefined, function(res, status) {
 				debugHandler('[simplicite.getAppInfo] HTTP status = ' + status + ', response = ' + res);
 				var r = parse(res, status);
 				if (r.type === 'error') {
@@ -723,7 +739,7 @@ module.exports = {
 		function _getSysInfo(callback, opts) {
 			var self = this;
 			opts = opts || {};
-			call(apppath + '?action=sysinfo', undefined, function(res, status) {
+			req.call(self, apppath + '?action=sysinfo', undefined, function(res, status) {
 				debugHandler('[simplicite.getSysInfo] HTTP status = ' + status + ', response = ' + res);
 				var r = parse(res, status);
 				if (r.type === 'error') {
@@ -748,7 +764,7 @@ module.exports = {
 		function _getUserInfo(callback, userlogin, opts) {
 			var self = this;
 			opts = opts || {};
-			call(apppath + '?action=userinfo' + (userlogin ? '&login=' + userlogin: ''), undefined, function(res, status) {
+			req.call(self, apppath + '?action=userinfo' + (userlogin ? '&login=' + userlogin: ''), undefined, function(res, status) {
 				debugHandler('[simplicite.getUserInfo] HTTP status = ' + status + ', response = ' + res);
 				var r = parse(res, status);
 				if (r.type === 'error') {
@@ -775,7 +791,7 @@ module.exports = {
 			var p = '';
 			if (opts.inlineImages)
 				p += '&inline_images=' + opts.inlineImages;
-			call(apppath + '?action=news' + p, undefined, function(res, status) {
+			req.call(self, apppath + '?action=news' + p, undefined, function(res, status) {
 				debugHandler('[simplicite.getNews] HTTP status = ' + status + ', response = ' + res);
 				var r = parse(res, status);
 				if (r.type === 'error') {
@@ -828,7 +844,7 @@ module.exports = {
 					p += '&context=' + opts.context;
 				if (opts.contextParam)
 					p += '&contextparam=' + opts.contextParam;
-				call(path + '&action=metadata' + p, undefined, function(res, status) {
+				req.call(self, path + '&action=metadata' + p, undefined, function(res, status) {
 					debugHandler('[simplicite.BusinessObject.getMetaData] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
@@ -857,7 +873,7 @@ module.exports = {
 					p += '&context=' + opts.context;
 				if (opts.reset)
 					p += '&reset=' + opts.reset;
-				call(path + '&action=filters' + p, undefined, function(res, status) {
+				req.call(self, path + '&action=filters' + p, undefined, function(res, status) {
 					debugHandler('[simplicite.BusinessObject.getFilters] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
@@ -917,7 +933,7 @@ module.exports = {
 					p += '&page=' + (opts.page - 1);
 				if (opts.metadata===true) p += "&_md=true";
 				if (opts.visible===true) p += "&_visible=true";
-				call(path + '&action=search' + p, callParams(self.filters), function(res, status) {
+				req.call(self, path + '&action=search' + p, reqParams(self.filters), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.search] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
@@ -948,7 +964,7 @@ module.exports = {
 				if (filters)
 					self.filters = filters;
 				opts = opts || {};
-				call(path + '&action=count', callParams(self.filters), function(res, status) {
+				req.call(self, path + '&action=count', reqParams(self.filters), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.getCount] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
@@ -987,7 +1003,7 @@ module.exports = {
 				}
 				if (opts.metadata) p += "&_md=true";
 				if (opts.social) p += "&_social=true";
-				call(path + '&action=get&' + self.metadata.rowidfield + '=' + rowId + p, undefined, function(res, status) {
+				req.call(self, path + '&action=get&' + self.metadata.rowidfield + '=' + rowId + p, undefined, function(res, status) {
 					debugHandler('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
@@ -1064,7 +1080,7 @@ module.exports = {
 				var self = this;
 				opts = opts || {};
 				var p = _getOptions(opts);
-				call(path + '&action=populate&' + self.metadata.rowidfield + '=' + rowId + p, undefined, function(res, status) {
+				req.call(self, path + '&action=populate&' + self.metadata.rowidfield + '=' + rowId + p, undefined, function(res, status) {
 					debugHandler('[simplicite.BusinessObject.populate] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
@@ -1108,7 +1124,7 @@ module.exports = {
 					self.item = item;
 				opts = opts || {};
 				var p = _getOptions(opts);
-				call(path + '&action=create' + p, callParams(self.item), function(res, status) {
+				req.call(self, path + '&action=create' + p, reqParams(self.item), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.create] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
@@ -1136,7 +1152,7 @@ module.exports = {
 					self.item = item;
 				opts = opts || {};
 				var p = _getOptions(opts);
-				call(path + '&action=update' + p, callParams(self.item), function(res, status) {
+				req.call(self, path + '&action=update' + p, reqParams(self.item), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.update] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
@@ -1163,7 +1179,7 @@ module.exports = {
 				if (item)
 					self.item = item;
 				opts = opts || {};
-				call(path + '&action=delete&' + self.metadata.rowidfield + '=' + self.item[self.metadata.rowidfield], undefined, function(res, status) {
+				req.call(self, path + '&action=delete&' + self.metadata.rowidfield + '=' + self.item[self.metadata.rowidfield], undefined, function(res, status) {
 					debugHandler('[simplicite.BusinessObject.del] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
@@ -1188,7 +1204,7 @@ module.exports = {
 			function _action(callback, action, opts) {
 				var self = this;
 				opts = opts || {};
-				call(path + '&action=' + action, undefined, function(res, status) {
+				req.call(self, path + '&action=' + action, undefined, function(res, status) {
 					debugHandler('[simplicite.BusinessObject.action(' + action + ')] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
@@ -1215,7 +1231,7 @@ module.exports = {
 				opts = opts || {};
 				if (opts.filters)
 					self.filters = opts.filters;
-				call(path + '&action=crosstab&crosstab=' + crosstab, callParams(self.filters), function(res, status) {
+				req.call(self, path + '&action=crosstab&crosstab=' + crosstab, reqParams(self.filters), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.crosstab(' + crosstab + ')] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
@@ -1247,7 +1263,7 @@ module.exports = {
 					p += '&all=' + opts.all;
 				if (opts.mailing)
 					p += '&mailing=' + opts.mailing;
-				call(path + '&action=print&printtemplate=' + prt + p, undefined, function(res, status) {
+				req.call(self, path + '&action=print&printtemplate=' + prt + p, undefined, function(res, status) {
 					debugHandler('[simplicite.BusinessObject.print(' + prt + ')] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
@@ -1275,7 +1291,7 @@ module.exports = {
 				opts = opts || {};
 				var p = { name: param };
 				if (value) p.value = value;
-				call(path + '&action=setparameter', callParams(p), function(res, status) {
+				req.call(self, path + '&action=setparameter', reqParams(p), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.setParameter(' + p.name + ')] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
@@ -1301,7 +1317,7 @@ module.exports = {
 				var self = this;
 				opts = opts || {};
 				var p = { name: param };
-				call(path + '&action=getparameter', callParams(p), function(res, status) {
+				req.call(self, path + '&action=getparameter', reqParams(p), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.getParameter(' + p.name + ')] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
@@ -1537,18 +1553,20 @@ module.exports = {
 				root: approot
 			},
 			setUsername: setUsername,
+			setLogin: setUsername, // Naming flexibility
 			setPassword: setPassword,
 			setAuthToken: setAuthToken,
+			setToken: setAuthToken, // Naming flexibility
 			info: infoHandler,
 			warn: warnHandler,
 			error: errorHandler,
 			debug: debugHandler,
-			_getError: _getError,
+			getError: getError,
 			_getHealth: _getHealth,
 			getHealth: function(opts) {
 				var d = Q.defer();
 				opts = opts || {};
-				opts.error = function(e) { var err = this._getError(e); err._scope = this; d.reject(err); };
+				opts.error = function(e) { var err = this.getError(e); err._scope = this; d.reject(err); };
 				this._getHealth(function(health) { health = health || {}; health._scope = this; d.resolve(health); }, opts);
 				return d.promise;
 			},

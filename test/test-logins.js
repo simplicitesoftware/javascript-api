@@ -1,12 +1,12 @@
+var debug = true;
+
 var app = require('../src/simplicite').session({
 	url: process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080/simplicite',
 	debug: false
 });
 
-var debug = true;
-
-app.setUsername(process.env.TEST_SIMPLICITE_USERNAME || 'designer');
-app.setPassword(process.env.TEST_SIMPLICITE_PASSWORD || 'designer');
+app.setUsername('admin');
+app.setPassword('simplicite');
 app.login().then(function(res) {
 	if (debug) console.log(res);
 	console.log('Logged in as ' + res.login);
@@ -17,9 +17,7 @@ app.login().then(function(res) {
 	}).then(function(res) {
 		if (debug) console.log(res);
 		console.log('Logged out');
-		app.setUsername('website');
-		app.setPassword('simplicite');
-		return app.login().then(function(res) {
+		return app.login({ username: 'website', password: 'simplicite' }).then(function(res) {
 			if (debug) console.log(res);
 			console.log('Logged in as ' + res.login);
 			return app.getGrant({ inlinePicture: false }).then(function(grant) {

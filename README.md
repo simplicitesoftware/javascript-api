@@ -91,6 +91,15 @@ Generate documentation:
 npm run jsdoc
 ```
 
+Publish
+-------
+
+This is only done by Simplicit&eacute; Software.
+
+```bash
+npm publish
+```
+
 License
 -------
 
