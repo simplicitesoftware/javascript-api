@@ -7,6 +7,7 @@ var app = require('../src/simplicite').session({
 
 app.setUsername('admin');
 app.setPassword('simplicite');
+
 app.login().then(function(res) {
 	if (debug) console.log(res);
 	console.log('Logged in as ' + res.login);
@@ -30,6 +31,6 @@ app.login().then(function(res) {
 			});
 		});
 	});
-}).fail(function(e) {
+}).catch(function(e) {
 	console.error('Login failed (status: ' + e.status + ', message: ' + e.message + ')');
 });

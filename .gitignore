@@ -2,4 +2,6 @@
 .tern-project
 node_modules
 doc
+**.bak
+**.new
 **/Thumbs.db

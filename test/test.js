@@ -10,8 +10,8 @@ var app = require('../src/simplicite').session({
 	debug: debug
 }), sys, usr;
 
-// Using promise-style functions
-app.login().then(function(res) {
+// Call login to get auth token
+app.login().then(function(res) { 
 	if (debug) console.log(res);
 	console.log('Logged in as ' + res.login);
 	return app.getGrant({ inlinePicture: true }).then(function(grant) {
@@ -80,6 +80,6 @@ app.login().then(function(res) {
 		if (debug) console.log(res);
 		console.log('Logged out');
 	});
-}).fail(function(e) {
+}).catch(function(e) {
 	console.error('Login failed (status: ' + e.status + ', message: ' + e.message + ')');
 });

@@ -6,6 +6,6 @@ var app = require('../src/simplicite').session({
 app.getHealth().then(function(health) {
 	delete health._scope; // Clean scope from response
 	console.log(health);
-}).fail(function(e) {
+}).catch(function(e) {
 	console.error(e);
 });
