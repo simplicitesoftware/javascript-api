@@ -7,7 +7,6 @@ var app = require('../src/simplicite').session({
 
 app.setUsername('admin');
 app.setPassword('simplicite');
-
 app.login().then(function(res) {
 	if (debug) console.log(res);
 	console.log('Logged in as ' + res.login);
