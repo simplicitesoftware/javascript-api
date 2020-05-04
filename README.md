@@ -30,14 +30,9 @@ npm install
 Basic usage:
 
 ```javascript
-const app = require('simplicite').session({
-	url: '<my instance base URL>',
-	username: '<my username>',
-	password: '<my password>'
-});
-let obj;
-app.login().then(function() {
-	obj = app.getBusinessObject('MyObject');
+const app = require('simplicite').session({ url: '<my instance base URL>' });
+app.login({ username: '<my username>', password: '<my password>' }).then(function() {
+	let obj = app.getBusinessObject('MyObject');
 	app.search().then(function(res) {
 		// Do something with search result (available both as res and as obj.list)
 		// Etc.
@@ -67,13 +62,13 @@ Minify
 Install _Uglify-JS_:
 
 ```bash
-npm install uglify-js -g
+[sudo] npm install -g uglify-js
 ```
 
-Minify:
+Build (this generates the minified `dist/simplicite.min.js` file):
 
 ```bash
-npm run minify
+npm run build
 ```
 
 Documentation
@@ -82,7 +77,7 @@ Documentation
 Install _JSDoc_:
 
 ```bash
-npm install -g jsdoc
+[sudo] npm install -g jsdoc
 ```
 
 Generate documentation:

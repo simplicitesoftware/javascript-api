@@ -282,6 +282,19 @@ module.exports = {
 		};
 
 		params = params || {};
+
+		/**
+		 * Debug
+		 * @private
+		 */
+		var debug = params.debug || false;
+
+		/**
+		 * Timeout
+		 * @private
+		 */
+		var timeout = params.timeout || 30;
+
 		if (params.url) {
 			try {
 				params.scheme = params.url.replace(/:.*$/, '');
@@ -303,53 +316,15 @@ module.exports = {
 			}
 		}
 
-		/**
-		 * Scheme
-		 * @private
-		 */
 		var scheme = params.scheme || (params.port === 443 ? 'https' : 'http');
 		if (scheme !== 'http' && scheme !== 'https') {
 			console.error('Incorrect scheme [' + params.scheme + ']');
 			return;
 		}
-
-		/**
-		 * Host
-		 * @private
-		 */
 		var host = params.host || 'localhost';
-
-		/**
-		 * Port
-		 * @private
-		 */
 		var port = params.port || 8080;
-
-		/**
-		 * Application root
-		 * @private
-		 */
 		var approot = params.root || '';
-
 		debugHandler('[simplicite] Base URL = ' + scheme + '://' + host + ':' + port + (approot !== '' ? '/' + approot : ''));
-
-		/**
-		 * Debug
-		 * @private
-		 */
-		var debug = params.debug || false;
-
-		/**
-		 * Timeout
-		 * @private
-		 */
-		var timeout = params.timeout || 30;
-
-		/**
-		 * Username
-		 * @private
-		 */
-		var username = params.username || params.login; // naming flexibility
 
 		/**
 		 * Set username
@@ -359,12 +334,6 @@ module.exports = {
 		function setUsername(u) {
 			this.username = u;
 		}
-
-		/**
-		 * Password
-		 * @private
-		 */
-		var password = params.password || params.pwd; // naming flexibility
 
 		/**
 		 * Set password
@@ -386,12 +355,6 @@ module.exports = {
 		}
 
 		/**
-		 * Auth token
-		 * @private
-		 */
-		var authToken = params.authToken || params.authtoken || params.token; // naming flexibility
-
-		/**
 		 * Set auth token
 		 * @param {string} t Auth token
 		 * @function
@@ -411,12 +374,6 @@ module.exports = {
 		}
 
 		/**
-		 * Session ID
-		 * @private
-		 */
-		var sessionId = null;
-
-		/**
 		 * Cookies
 		 * @private
 		 */
@@ -433,15 +390,18 @@ module.exports = {
 			var n = 0;
 			for (var i in data) {
 				var d = data[i] || '';
-				if (d.id && d.content) // Document ?
+				if (d.id && d.content) { // Document ?
+					if (d.content.startsWith('data:')) // Flexibility = extract content fron data URL
+						d.content = d.content.replace(/data:.*;base64,/, d.content);
 					p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent('id|' + d.id + '|name|' + d.name + '|content|' + d.content);
-				else if (d.object && d.row_id) // Object ?
+				} else if (d.object && d.row_id) { // Object ?
 					p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent('object|' + d.object + '|row_id|' + d.row_id);
-				else if (d.sort) // Array ?
+				} else if (d.sort) { // Array ?
 					for (var j = 0; j < d.length; j++)
 						p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent(d[j]);
-				else
+				} else {
 					p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent(d);
+				}
 			}
 			return p;
 		}
@@ -463,11 +423,14 @@ module.exports = {
 				h['Content-Type'] = 'application/x-www-form-urlencoded; charset=utf-8';
 			var b = getBearerTokenHeader.call(this);
 			if (b) {
+				debugHandler('[simplicite.res] Using bearer token header = ' + b);
 				h['X-Simplicite-Authorization'] = b;
 			} else {
 				b = getBasicAuthHeader.call(this);
-				if (b)
+				if (b) {
+					debugHandler('[simplicite.res] Using basic auth header = ' + b);
 					h.Authorization = b;
+				}
 			}
 			if (cookies)
 				h.Cookie = cookies;
@@ -822,7 +785,9 @@ module.exports = {
 		 * @exports simplicite.session.businessobject
 		 */
 		function getBusinessObject(name, instance) {
-			instance = instance || 'node_' + name;
+			var session = this;
+
+			instance = instance || 'js_' + name;
 
 			var cacheKey = name + ':' + instance;
 			var obj = businessObjectCache[cacheKey];
@@ -844,7 +809,7 @@ module.exports = {
 					p += '&context=' + opts.context;
 				if (opts.contextParam)
 					p += '&contextparam=' + opts.contextParam;
-				req.call(self, path + '&action=metadata' + p, undefined, function(res, status) {
+				req.call(session, path + '&action=metadata' + p, undefined, function(res, status) {
 					debugHandler('[simplicite.BusinessObject.getMetaData] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
@@ -873,7 +838,7 @@ module.exports = {
 					p += '&context=' + opts.context;
 				if (opts.reset)
 					p += '&reset=' + opts.reset;
-				req.call(self, path + '&action=filters' + p, undefined, function(res, status) {
+				req.call(session, path + '&action=filters' + p, undefined, function(res, status) {
 					debugHandler('[simplicite.BusinessObject.getFilters] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
@@ -933,7 +898,7 @@ module.exports = {
 					p += '&page=' + (opts.page - 1);
 				if (opts.metadata===true) p += "&_md=true";
 				if (opts.visible===true) p += "&_visible=true";
-				req.call(self, path + '&action=search' + p, reqParams(self.filters), function(res, status) {
+				req.call(session, path + '&action=search' + p, reqParams(self.filters), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.search] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
@@ -964,7 +929,7 @@ module.exports = {
 				if (filters)
 					self.filters = filters;
 				opts = opts || {};
-				req.call(self, path + '&action=count', reqParams(self.filters), function(res, status) {
+				req.call(session, path + '&action=count', reqParams(self.filters), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.getCount] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
@@ -1003,7 +968,7 @@ module.exports = {
 				}
 				if (opts.metadata) p += "&_md=true";
 				if (opts.social) p += "&_social=true";
-				req.call(self, path + '&action=get&' + self.metadata.rowidfield + '=' + rowId + p, undefined, function(res, status) {
+				req.call(session, path + '&action=get&' + self.metadata.rowidfield + '=' + rowId + p, undefined, function(res, status) {
 					debugHandler('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
@@ -1080,7 +1045,7 @@ module.exports = {
 				var self = this;
 				opts = opts || {};
 				var p = _getOptions(opts);
-				req.call(self, path + '&action=populate&' + self.metadata.rowidfield + '=' + rowId + p, undefined, function(res, status) {
+				req.call(session, path + '&action=populate&' + self.metadata.rowidfield + '=' + rowId + p, undefined, function(res, status) {
 					debugHandler('[simplicite.BusinessObject.populate] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
@@ -1124,7 +1089,7 @@ module.exports = {
 					self.item = item;
 				opts = opts || {};
 				var p = _getOptions(opts);
-				req.call(self, path + '&action=create' + p, reqParams(self.item), function(res, status) {
+				req.call(session, path + '&action=create' + p, reqParams(self.item), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.create] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
@@ -1152,7 +1117,7 @@ module.exports = {
 					self.item = item;
 				opts = opts || {};
 				var p = _getOptions(opts);
-				req.call(self, path + '&action=update' + p, reqParams(self.item), function(res, status) {
+				req.call(session, path + '&action=update' + p, reqParams(self.item), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.update] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
@@ -1179,7 +1144,7 @@ module.exports = {
 				if (item)
 					self.item = item;
 				opts = opts || {};
-				req.call(self, path + '&action=delete&' + self.metadata.rowidfield + '=' + self.item[self.metadata.rowidfield], undefined, function(res, status) {
+				req.call(session, path + '&action=delete&' + self.metadata.rowidfield + '=' + self.item[self.metadata.rowidfield], undefined, function(res, status) {
 					debugHandler('[simplicite.BusinessObject.del] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
@@ -1204,7 +1169,7 @@ module.exports = {
 			function _action(callback, action, opts) {
 				var self = this;
 				opts = opts || {};
-				req.call(self, path + '&action=' + action, undefined, function(res, status) {
+				req.call(session, path + '&action=' + action, undefined, function(res, status) {
 					debugHandler('[simplicite.BusinessObject.action(' + action + ')] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
@@ -1231,7 +1196,7 @@ module.exports = {
 				opts = opts || {};
 				if (opts.filters)
 					self.filters = opts.filters;
-				req.call(self, path + '&action=crosstab&crosstab=' + crosstab, reqParams(self.filters), function(res, status) {
+				req.call(session, path + '&action=crosstab&crosstab=' + crosstab, reqParams(self.filters), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.crosstab(' + crosstab + ')] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
@@ -1263,7 +1228,7 @@ module.exports = {
 					p += '&all=' + opts.all;
 				if (opts.mailing)
 					p += '&mailing=' + opts.mailing;
-				req.call(self, path + '&action=print&printtemplate=' + prt + p, undefined, function(res, status) {
+				req.call(session, path + '&action=print&printtemplate=' + prt + p, undefined, function(res, status) {
 					debugHandler('[simplicite.BusinessObject.print(' + prt + ')] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
@@ -1291,7 +1256,7 @@ module.exports = {
 				opts = opts || {};
 				var p = { name: param };
 				if (value) p.value = value;
-				req.call(self, path + '&action=setparameter', reqParams(p), function(res, status) {
+				req.call(session, path + '&action=setparameter', reqParams(p), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.setParameter(' + p.name + ')] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
@@ -1317,7 +1282,7 @@ module.exports = {
 				var self = this;
 				opts = opts || {};
 				var p = { name: param };
-				req.call(self, path + '&action=getparameter', reqParams(p), function(res, status) {
+				req.call(session, path + '&action=getparameter', reqParams(p), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.getParameter(' + p.name + ')] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
 					if (r.type === 'error') {
@@ -1546,6 +1511,9 @@ module.exports = {
 
 		return {
 			constants: constants,
+			username: params.username || params.login, // naming flexibility
+			password: params.password || params.pwd, // naming flexibility
+			authToken: params.authToken || params.authtoken || params.token, // naming flexibility
 			parameters: {
 				scheme: scheme,
 				host: host,

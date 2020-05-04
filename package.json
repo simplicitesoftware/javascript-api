@@ -18,9 +18,8 @@
     "xhr-request": "latest"
   },
   "scripts": {
-    "minify": "uglifyjs src/simplicite.js -o dist/simplicite.min.js",
+    "build": "uglifyjs src/simplicite.js -o dist/simplicite.min.js",
     "jsdoc": "jsdoc -d doc src/simplicite.js",
-    "test-health": "node test/test-health.js",
     "test": "node test/test.js"
   },
   "files": [
