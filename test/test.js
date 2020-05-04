@@ -5,8 +5,8 @@ var app = require('../src/simplicite').session({
 	host: process.env.TEST_SIMPLICITE_HOST || 'localhost',
 	port: parseInt(process.env.TEST_SIMPLICITE_PORT) || 8080,
 	root: process.env.TEST_SIMPLICITE_ROOT || '/simplicite',
-	username: process.env.TEST_SIMPLICITE_USERNAME || 'designer',
-	password: process.env.TEST_SIMPLICITE_PASSWORD || 'designer',
+	username: 'designer',
+	password: process.env.TEST_SIMPLICITE_DESIGNER_PASSWORD || 'designer',
 	debug: debug
 }), sys, usr;
 
@@ -65,7 +65,8 @@ app.login().then(function(res) {
 	if (debug) console.log(item);
 	console.log('Created new item!');
 	return sys.del(item);
-}).then(function() {
+}).then(function(res) {
+	if (debug) console.log(res);
 	console.log('Deleted item!');
 	usr = app.getBusinessObject('User');
 	return usr.search(null, { inlineThumbs: true });

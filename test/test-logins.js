@@ -5,8 +5,8 @@ var app = require('../src/simplicite').session({
 	debug: false
 });
 
-app.setUsername(process.env.TEST_SIMPLICITE_USERNAME || 'website');
-app.setPassword(process.env.TEST_SIMPLICITE_PASSWORD || 'simplicite');
+app.setUsername('designer');
+app.setPassword(process.env.TEST_SIMPLICITE_DESIGNER_PASSWORD || 'designer');
 
 app.login().then(function(res) {
 	if (debug) console.log(res);
@@ -19,7 +19,10 @@ app.login().then(function(res) {
 }).then(function(res) {
 	if (debug) console.log(res);
 	console.log('Logged out');
-	return app.login({ username: 'admin', password: 'simplicite' });
+	return app.login({
+		username: process.env.TEST_SIMPLICITE_USERNAME || 'website',
+		password: process.env.TEST_SIMPLICITE_PASSWORD || 'simplicite'
+	});
 }).then(function(res) {
 	if (debug) console.log(res);
 	console.log('Logged in as ' + res.login);

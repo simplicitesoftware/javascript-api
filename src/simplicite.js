@@ -390,10 +390,10 @@ module.exports = {
 			var n = 0;
 			for (var i in data) {
 				var d = data[i] || '';
-				if (d.id && d.content) { // Document ?
+				if (d.name && d.content) { // Document ?
 					if (d.content.startsWith('data:')) // Flexibility = extract content fron data URL
-						d.content = d.content.replace(/data:.*;base64,/, d.content);
-					p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent('id|' + d.id + '|name|' + d.name + '|content|' + d.content);
+						d.content = d.content.replace(/data:.*;base64,/, '');
+					p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent('id|' + (d.id ? d.id : '0') + '|name|' + d.name + '|content|' + d.content);
 				} else if (d.object && d.row_id) { // Object ?
 					p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent('object|' + d.object + '|row_id|' + d.row_id);
 				} else if (d.sort) { // Array ?
@@ -1095,7 +1095,7 @@ module.exports = {
 					if (r.type === 'error') {
 						(opts.error ? opts.error : errorHandler).call(self, r.response);
 					} else {
-						self.item = r.response;
+						self.item = r.response.data ? r.response.data : r.response;
 						if (callback)
 							callback.call(self, self.item);
 					}
@@ -1123,7 +1123,7 @@ module.exports = {
 					if (r.type === 'error') {
 						(opts.error ? opts.error : errorHandler).call(self, r.response);
 					} else {
-						self.item = r.response;
+						self.item = r.response.data ? r.response.data : r.response;
 						if (callback)
 							callback.call(self, self.item);
 					}
@@ -1151,8 +1151,9 @@ module.exports = {
 						(opts.error ? opts.error : errorHandler).call(self, r.response);
 					} else {
 						self.item = undefined;
+						delete r.response.undoredo;
 						if (callback)
-							callback.call(self);
+							callback.call(self, r.response);
 					}
 				}, function(e) {
 					(opts.error ? opts.error : errorHandler).call(self, e);
@@ -1445,7 +1446,7 @@ module.exports = {
 					var d = Q.defer();
 					if (opts === undefined) opts = {};
 					opts.error = function(e) { d.reject(e); };
-					this._del(function() { d.resolve(); }, itm, opts);
+					this._del(function(r) { d.resolve(r); }, itm, opts);
 					return d.promise;
 				},
 
