@@ -328,20 +328,20 @@ module.exports = {
 
 		/**
 		 * Set username
-		 * @param {string} u Username
+		 * @param {string} usr Username
 		 * @function
 		 */
-		function setUsername(u) {
-			this.username = u;
+		function setUsername(usr) {
+			this.username = usr;
 		}
 
 		/**
 		 * Set password
-		 * @param {string} p Password
+		 * @param {string} pwd Password
 		 * @function
 		 */
-		function setPassword(p) {
-			this.password = p;
+		function setPassword(pwd) {
+			this.password = pwd;
 		}
 
 		/**
