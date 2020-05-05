@@ -1,5 +1,6 @@
 .vscode
 .tern-project
+.scannerwork
 node_modules
 doc
 **.bak
