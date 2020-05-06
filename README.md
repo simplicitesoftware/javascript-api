@@ -50,11 +50,11 @@ For more advanced examples, check these repositories:
 	- [Node.js&reg; demo](https://github.com/simplicitesoftware/nodejs-demo)
 - **Client-side**:
 	- [Plain web demo](https://github.com/simplicitesoftware/web-demo)
+	- [Vue.js&reg; demo](https://github.com/simplicitesoftware/vue-demo)
 	- [React&reg; demo](https://github.com/simplicitesoftware/react-demo)
-	- [Angular demo](https://github.com/simplicitesoftware/angular-demo)
-	- [Vue.js demo](https://github.com/simplicitesoftware/vue-demo)
+	- [Angular&reg; demo](https://github.com/simplicitesoftware/angular-demo)
 - **Native**:
-	- [React Native&reg; demo](https://github.com/simplicitesoftware/react-native-demo)
+	- [ReactNative&reg; demo](https://github.com/simplicitesoftware/react-native-demo)
 
 Minify
 ------

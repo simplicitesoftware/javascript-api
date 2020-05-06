@@ -1,8 +1,8 @@
 /**
  * Simplicite(R) platform Javascript API (for node.js and browser).
- * @module simplicite
- * @version 1.0.12
- * @license Apache-2.0
+ * @module $(jq -r '.name' package.json)
+ * @version $(jq -r '.version' package.json)
+ * @license $(jq -r '.license' package.json)
  */
 module.exports = {
 	/**
@@ -362,7 +362,7 @@ module.exports = {
 		 * @function
 		 */
 		function setAuthToken(t) {
-			this.authToken = t;
+			this.authtoken = t;
 		}
 
 		/**
@@ -370,8 +370,8 @@ module.exports = {
 		 * @private
 		 */
 		function getBearerTokenHeader() {
-			return this.authToken
-				? 'Bearer ' + this.authToken
+			return this.authtoken
+				? 'Bearer ' + this.authtoken
 				: null;
 		}
 
@@ -538,8 +538,8 @@ module.exports = {
 		function clear() {
 			this.username = undefined;
 			this.password = undefined;
-			this.authToken = undefined;
-			this.sessionId = undefined;
+			this.authtoken = undefined;
+			this.sessionid = undefined;
 			this.cookies = undefined;
 
 			this.appinfo = undefined;
@@ -570,14 +570,14 @@ module.exports = {
 				if (r.type === 'error') {
 					(opts.error ? opts.error : errorHandler).call(self, r.response);
 				} else {
-					self.sessionId = r.response.id;
-					debugHandler('[simplicite.login] Session ID = ' + self.sessionId);
+					self.sessionid = r.response.id;
+					debugHandler('[simplicite.login] Session ID = ' + self.sessionid);
 					self.username = r.response.login;
 					if (self.username)
 						debugHandler('[simplicite.login] Username = ' + self.username);
-					self.authToken = r.response.authtoken;
-					if (self.authToken)
-						debugHandler('[simplicite.login] Auth token = ' + self.authToken);
+					self.authtoken = r.response.authtoken;
+					if (self.authtoken)
+						debugHandler('[simplicite.login] Auth token = ' + self.authtoken);
 					if (callback)
 						callback.call(self, r.response);
 				}
@@ -1516,7 +1516,7 @@ module.exports = {
 			constants: constants,
 			username: params.username || params.login, // naming flexibility
 			password: params.password || params.pwd, // naming flexibility
-			authToken: params.authToken || params.authtoken || params.token, // naming flexibility
+			authtoken: params.authtoken || params.authToken || params.token, // naming flexibility
 			parameters: {
 				scheme: scheme,
 				host: host,
