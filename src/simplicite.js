@@ -1,8 +1,8 @@
 /**
  * Simplicite(R) platform Javascript API (for node.js and browser).
- * @module $(jq -r '.name' package.json)
- * @version $(jq -r '.version' package.json)
- * @license $(jq -r '.license' package.json)
+ * @module simplicite
+ * @version 1.0.13
+ * @license Apache-2.0
  */
 module.exports = {
 	/**
