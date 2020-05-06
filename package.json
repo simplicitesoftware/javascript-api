@@ -1,6 +1,6 @@
 {
   "name": "simplicite",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "Simplicite(R) platform Javascript API (for node.js and browser)",
   "repository": {
     "type": "git",
@@ -18,7 +18,7 @@
     "xhr-request": "latest"
   },
   "scripts": {
-    "build": "sed -i \"s/\\(@module \\).*$/\\1$(jq -r '.name' package.json)/;s/\\(@version \\).*$/\\1$(jq -r '.version' package.json)/;s/\\(@license \\).*$/\\1$(jq -r '.license' package.json)/\" src/simplicite.js && uglifyjs src/simplicite.js --comments -o dist/simplicite.min.js",
+    "build": "uglifyjs src/simplicite.js --comments -o dist/simplicite.min.js",
     "jsdoc": "jsdoc -d doc src/simplicite.js",
     "test": "node test/test.js"
   },

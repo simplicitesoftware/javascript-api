@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API (for node.js and browser).
  * @module simplicite
- * @version 1.0.13
+ * @version 1.0.14
  * @license Apache-2.0
  */
 module.exports = {
@@ -14,10 +14,38 @@ module.exports = {
 		var request = require('xhr-request');
 		var buffer = require('buffer');
 
-		var infoHandler = params.infoHandler || function(msg) { console.log('INFO - ' + msg); };
-		var warnHandler = params.warnHandler || function(msg) { console.log('WARN - ' + msg); };
-		var errorHandler = params.errorHandler || function(msg) { console.log('ERROR - ' + msg); };
-		var debugHandler = params.debugHandler || function(msg) { if (debug) console.log('DEBUG - ' + msg); };
+		/**
+		 * Info handler
+		 * @private
+		 */
+		var infoHandler = params.infoHandler || function(msg) {
+			console.log('INFO - ' + msg);
+		};
+
+		/**
+		 * Warning handler
+		 * @private
+		 */
+		var warnHandler = params.warnHandler || function(msg) {
+			console.log('WARN - ' + msg);
+		};
+
+		/**
+		 * Error handler
+		 * @private
+		 */
+		var errorHandler = params.errorHandler || function(msg) {
+			console.log('ERROR - ' + msg);
+		};
+
+		/**
+		 * Debug handler
+		 * @private
+		 */
+		var debugHandler = params.debugHandler || function(msg) {
+			if (debug)
+				console.log('DEBUG - ' + msg);
+		};
 
 		/**
 		 * Constants
@@ -258,28 +286,83 @@ module.exports = {
 			 */
 			TYPE_GEOCOORDS: 25,
 
+			/**
+			 * Not visible
+			 * @const {number}
+			 */
 			VIS_NOT: 0,
+			/**
+			 * Hiiden (same as not visible)
+			 * @const {number}
+			 */
+			VIS_HIDDEN: 0,
+			/**
+			 * Visible on lists only
+			 * @const {number}
+			 */
 			VIS_LIST: 1,
+			/**
+			 * Visible on forms only
+			 * @const {number}
+			 */
 			VIS_FORM: 2,
+			/**
+			 * Visible on both lists and forms only
+			 * @const {number}
+			 */
 			VIS_BOTH: 3,
 
+			/**
+			 * No search
+			 * @const {number}
+			 */
 			SEARCH_NONE: 0,
+			/**
+			 * Simple search
+			 * @const {number}
+			 */
 			SEARCH_MONO: 1,
+			/**
+			 * Multiple search (checkboxes)
+			 * @const {number}
+			 */
 			SEARCH_MULTI_CHECK: 2,
+			/**
+			 * Multiple search (listbox)
+			 * @const {number}
+			 */
 			SEARCH_MULTI_LIST: 3,
+			/**
+			 * Search by period (date/time)
+			 * @const {number}
+			 */
+			SEARCH_PERIOD: 4,
 
-			RENDERING_DEFAULT: '',
-			RENDERING_SELECTBOX: 'SB',
-			RENDERING_HORIZCHECKBOX: 'HCB',
-			RENDERING_VERTCHECKBOX: 'VCB',
-			RENDERING_HORIZRADIOBUTTON: 'HRB',
-			RENDERING_VERTRADIOBUTTON: 'VRB',
-
+			/**
+			 * True
+			 * @constant {string}
+			 */
 			TRUE: '1',
+			/**
+			 * False
+			 * @constant {string}
+			 */
 			FALSE: '0',
 
+			/**
+			 * Fatal error level
+			 * @const {number}
+			 */
 			ERRLEVEL_FATAL: 1,
+			/**
+			 * Error level
+			 * @const {number}
+			 */
 			ERRLEVEL_ERROR: 2,
+			/**
+			 * Warning level
+			 * @const {number}
+			 */
 			ERRLEVEL_WARNING: 3
 		};
 
@@ -308,10 +391,12 @@ module.exports = {
 				} else {
 					params.host = u[0];
 					params.port = parseInt(u[1].replace(/\/.*$/, ''), 10);
-					if (isNaN(params.port)) throw new Error('Incorrect port');
+					if (isNaN(params.port))
+						throw new Error('Incorrect port');
 					params.root = u[1].replace(new RegExp('^' + params.port + '[\/]{0,1}'), '');
 				}
-				if (params.root === '/') params.root = '';
+				if (params.root === '/')
+					params.root = '';
 			} catch (e) {
 				console.error('Unable to parse URL [' + params.url + ']: ' + e.message);
 				return;
@@ -325,8 +410,16 @@ module.exports = {
 		}
 		var host = params.host || 'localhost';
 		var port = params.port || 8080;
-		var approot = params.root || '';
-		debugHandler('[simplicite] Base URL = ' + scheme + '://' + host + ':' + port + (approot !== '' ? '/' + approot : ''));
+		var root = params.root || '';
+		if (root === '/')
+			root = '';
+
+		var url = scheme + '://' + host;
+		if ((scheme === 'http' && port != 80) || (scheme === 'https' && port != 443))
+			url += ':' + port;
+		if (root !== '')
+			url += root.startsWith('/') ? root : '/' + root;
+		debugHandler('[simplicite] Base URL = ' + url);
 
 		/**
 		 * Set username
@@ -417,8 +510,6 @@ module.exports = {
 		 * @private
 		 */
 		function req(path, data, callback, error) {
-			var p = path || '/';
-			p = (approot !== '' ? '/' + approot : '') + p;
 			var m = data ? 'POST' : 'GET';
 			var h = {};
 			if (data)
@@ -436,7 +527,7 @@ module.exports = {
 			}
 			if (cookies)
 				h.Cookie = cookies;
-			request(scheme + '://' + host + ':' + port + p, {
+			request(url + (path || '/'), {
 					method: m,
 					headers: h,
 					timeout: timeout * 1000,
@@ -525,11 +616,17 @@ module.exports = {
 		 */
 		var objpath = '/' + (ui ? 'ui' : 'api') + '/json/obj';
 
-		/* TODO:
+		/*
 		 * Business processes services path
 		 * @private
 		 */
 		//var pcspath = '/' + (ui ? 'ui' : 'api') + '/json/pcs';
+
+		/*
+		 * External object services path
+		 * @private
+		 */
+		//var pcspath = '/' + (ui ? 'ui' : 'api') + '/ext';
 
 		/**
 		 * Clear
@@ -633,7 +730,7 @@ module.exports = {
 						self.grant.picture.url = self.documentURL('User', 'usr_image_id', self.grant.userid, self.grant.picture.id);
 						self.grant.picture.thumbnailurl = self.grant.picture.url + '&thumbnail=true';
 					}*/
-					self.grant.getUserID = function() { return this.userid; };
+					self.grant.getUserId = function() { return this.userid; };
 					self.grant.getLogin = function() { return this.login; };
 					self.grant.getLang = function() { return this.lang; };
 					self.grant.getEmail = function() { return this.email; };
@@ -648,28 +745,28 @@ module.exports = {
 			});
 		}
 
-		/*
-		 * TODO: Set password
+		/**
+		 * Change password
 		 * @param {function} callback Callback (called upon success)
 		 * @param {object} opts Options
 		 * @function
 		 */
-		/*function _setPassword(callback, password, opts) {
+		function _changePassword(callback, password, opts) {
 			var self = this;
 			opts = opts || {};
 			req.call(self, apppath + '?action=setpassword&password=' + password, undefined, function(res, status) {
-				debugHandler('[simplicite.setPassword] HTTP status = ' + status + ', response = ' + res);
+				debugHandler('[simplicite.changePassword] HTTP status = ' + status + ', response = ' + res);
 				var r = parse(res, status);
 				if (r.type === 'error') {
 					(opts.error ? opts.error : errorHandler).call(self, r.response);
 				} else {
 					if (callback)
-						callback.call(self, self.appinfo);
+						callback.call(self, self.r.response);
 				}
 			}, function(e) {
 				(opts.error ? opts.error : errorHandler).call(self, e);
 			});
-		}*/
+		}
 
 		/**
 		 * Get application info
@@ -1302,6 +1399,8 @@ module.exports = {
 
 			obj = {
 				metadata: { name: name, instance: instance, rowidfield: 'row_id' },
+				item: {},
+				list: [],
 				_getMetaData: _getMetaData,
 				getMetaData: function(opts) {
 					var d = Q.defer();
@@ -1499,14 +1598,12 @@ module.exports = {
 		}
 
 		function getBusinessProcess(name) {
-			// TODO: implement processes services
 			return {
 				metadata: { name: name }
 			};
 		}
 
 		function getExternalObject(name) {
-			// TODO: implement external objects services
 			return {
 				metadata: { name: name }
 			};
@@ -1521,7 +1618,8 @@ module.exports = {
 				scheme: scheme,
 				host: host,
 				port: port,
-				root: approot
+				root: root,
+				url: url
 			},
 			setUsername: setUsername,
 			setLogin: setUsername, // Naming flexibility
@@ -1563,6 +1661,14 @@ module.exports = {
 				opts = opts || {};
 				opts.error = function(e) { d.reject(e); };
 				this._getGrant(function(grant) { d.resolve(grant); }, opts);
+				return d.promise;
+			},
+			_changePassword: _changePassword,
+			changePassword: function(opts) {
+				var d = Q.defer();
+				opts = opts || {};
+				opts.error = function(e) { d.reject(e); };
+				this._changePassword(function(res) { d.resolve(res); }, opts);
 				return d.promise;
 			},
 			_getAppInfo: _getAppInfo,

@@ -1,11 +1,17 @@
-var app = require('../src/simplicite').session({
-	url: process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080/simplicite',
-	debug: false
-});
+const assert = require('assert').strict;
 
-app.getHealth().then(function(health) {
+const debug = process.env.TEST_SIMPLICITE_DEBUG == 'true';
+const app = require('../src/simplicite').session({
+	url: process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080',
+	debug: debug
+});
+if (debug) console.log(app.parameters);
+
+app.getHealth().then(health => {
 	delete health._scope; // Clean scope from response
-	console.log(health);
-}).catch(function(err) {
+	if (debug) console.log(health);
+	assert.ok(health.platform.status == 'OK');
+	console.log('Status = ' + health.platform.status);
+}).catch(err => {
 	console.error(err);
 });
