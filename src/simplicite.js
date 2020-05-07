@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API (for node.js and browser).
  * @module simplicite
- * @version 1.0.14
+ * @version 1.0.15
  * @license Apache-2.0
  */
 module.exports = {
@@ -629,8 +629,8 @@ module.exports = {
 		//var pcspath = '/' + (ui ? 'ui' : 'api') + '/ext';
 
 		/**
-		 * Clear
-		 * @private
+		 * Clears all data (credentials, objects, ...)
+		 * @function
 		 */
 		function clear() {
 			this.username = undefined;
@@ -703,6 +703,8 @@ module.exports = {
 						callback.call(self, r.response);
 				}
 			}, function(e) {
+				if (e.status === 401) // Removes (expired or deleted) token if any
+					self.authtoken = undefined;
 				(opts.error ? opts.error : errorHandler).call(self, e);
 			});
 		}
@@ -1639,6 +1641,7 @@ module.exports = {
 				this._getHealth(function(health) { health = health || {}; health._scope = this; d.resolve(health); }, opts);
 				return d.promise;
 			},
+			clear: clear,
 			_login: _login,
 			login: function(opts) {
 				var d = Q.defer();
