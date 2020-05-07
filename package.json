@@ -20,7 +20,7 @@
   "scripts": {
     "build": "uglifyjs src/simplicite.js --comments -o dist/simplicite.min.js",
     "jsdoc": "jsdoc -d doc src/simplicite.js",
-    "test": "node test/test.js"
+    "test": "jest --coverage -- test/simplicite.test.js"
   },
   "files": [
     "src",

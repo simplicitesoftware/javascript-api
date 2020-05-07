@@ -71,6 +71,31 @@ Build (this generates the minified `dist/simplicite.min.js` file):
 npm run build
 ```
 
+Test
+----
+
+Install _Jest_:
+
+```bash
+[sudo] npm install -g jest
+```
+
+Set the environment variables for your Simplicité instance:
+
+- `TEST_SIMPLICITE_SCHEME`
+- `TEST_SIMPLICITE_HOST`
+- `TEST_SIMPLICITE_PORT`
+- `TEST_SIMPLICITE_ROOT`
+- `TEST_SIMPLICITE_DESIGNER_PASSWORD`
+- `TEST_SIMPLICITE_USERNAME`
+- `TEST_SIMPLICITE_PASSWORD`
+
+Run tests (this generates the `coverage` folder):
+
+```bash
+npm run test
+```
+
 Documentation
 -------------
 
