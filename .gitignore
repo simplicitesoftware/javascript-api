@@ -1,9 +1,10 @@
 .vscode
 .tern-project
-.scannerwork
 node_modules
 doc
+.scannerwork
 **.bak
 **.new
 **.tmp
 **/Thumbs.db
+**/.DS_Store
