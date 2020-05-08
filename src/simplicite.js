@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API (for node.js and browser).
  * @module simplicite
- * @version 1.0.15
+ * @version 1.0.16
  * @license Apache-2.0
  */
 module.exports = {

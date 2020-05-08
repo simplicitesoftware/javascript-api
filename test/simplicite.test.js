@@ -59,7 +59,6 @@ test('Logins', () => {
 test('Objects', () => {
 	var sys, usr;
 	var sysId = "2", sysCodeFilter = '%TIMEOUT%', sysCode = `TEST_${Date.now()}`, sysValue = 'Test';
-	console.log(sysCode);
 
 	return app.login({ username: designerUsername, password: designerPassword }).then(res => {
 		expect(res.login).toBe('designer');
