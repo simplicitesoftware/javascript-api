@@ -398,14 +398,14 @@ module.exports = {
 				if (params.root === '/')
 					params.root = '';
 			} catch (e) {
-				console.error('Unable to parse URL [' + params.url + ']: ' + e.message);
+				errorHandler('Unable to parse URL [' + params.url + ']: ' + e.message);
 				return;
 			}
 		}
 
 		var scheme = params.scheme || (params.port === 443 ? 'https' : 'http');
 		if (scheme !== 'http' && scheme !== 'https') {
-			console.error('Incorrect scheme [' + params.scheme + ']');
+			errorHandler('Incorrect scheme [' + params.scheme + ']');
 			return;
 		}
 		var host = params.host || 'localhost';
@@ -992,14 +992,13 @@ module.exports = {
 			 */
 			function _search(callback, filters, opts) {
 				var self = this;
-				if (filters)
-					self.filters = filters;
 				opts = opts || {};
 				var p = _getOptions(opts);
 				if (opts.page > 0)
 					p += '&page=' + (opts.page - 1);
 				if (opts.metadata===true) p += "&_md=true";
 				if (opts.visible===true) p += "&_visible=true";
+				self.filters = filters || {};
 				req.call(session, path + '&action=search' + p, reqParams(self.filters), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.search] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
@@ -1028,9 +1027,8 @@ module.exports = {
 			 */
 			function _getCount(callback, filters, opts) {
 				var self = this;
-				if (filters)
-					self.filters = filters;
 				opts = opts || {};
+				self.filters = filters || {};
 				req.call(session, path + '&action=count', reqParams(self.filters), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.getCount] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
@@ -1172,10 +1170,11 @@ module.exports = {
 			function _save(callback, item, opts) {
 				if (item)
 					this.item = item;
-				if (this.item[this.metadata.rowidfield] === constants.DEFAULT_ROW_ID)
-					this.create(callback, item, opts);
+				var rowId = this.item[this.metadata.rowidfield];
+				if (!rowId || rowId === constants.DEFAULT_ROW_ID)
+					_create.call(this, callback, item, opts);
 				else
-					this.update(callback, item, opts);
+					_update.call(this, callback, item, opts);
 			}
 
 			/**

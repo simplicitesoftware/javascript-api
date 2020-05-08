@@ -58,7 +58,8 @@ test('Logins', () => {
 
 test('Objects', () => {
 	var sys, usr;
-	var sysId = "2", sysCode = 'TEST', sysValue = 'Test';
+	var sysId = "2", sysCodeFilter = '%TIMEOUT%', sysCode = `TEST_${Date.now()}`, sysValue = 'Test';
+	console.log(sysCode);
 
 	return app.login({ username: designerUsername, password: designerPassword }).then(res => {
 		expect(res.login).toBe('designer');
@@ -77,19 +78,25 @@ test('Objects', () => {
 		return sys.getMetaData();
 	}).then(metadata => {
 		expect(metadata.name).toBe('SystemParam');
+		expect(sys.getName()).toBe('SystemParam');
 		return sys.action('getVersion');
 	}).then(result => {
 		expect(result).not.toBeUndefined();
-		return sys.getCount({ sys_code: '%TIMEOUT%' });
+		return sys.getCount({ sys_code: sysCodeFilter });
 	}).then(count => {
 		expect(count >= 0).toBe(true);
-		return sys.search({ sys_code: '%TIMEOUT%' });
+		return sys.search({ sys_code: sysCodeFilter });
 	}).then(list => {
 		expect(list.length);
-		/*for (var i = 0; i < list.length; i++) {
+		for (var i = 0; i < list.length; i++) {
 			var item = list[i];
-			console.log('- item[' + i + ']: ' + item.row_id + ' ' + item.sys_code + ' ' + item.sys_value);
-		}*/
+			expect(item.row_id).not.toBe(app.constants.DEFAULT_ROW_ID);
+			expect(!!item.sys_code).not.toBe(false);
+			expect(!!item.sys_value).not.toBe(false);
+		}
+		return sys.getFilters();
+	}).then(filters => {
+		expect(filters.sys_code).toBe(sysCodeFilter);
 		return sys.get(sysId);
 	}).then(item => {
 		expect(item.row_id).toBe(sysId);
@@ -104,6 +111,20 @@ test('Objects', () => {
 		expect(sysId).not.toBe(app.constants.DEFAULT_ROW_ID);
 		expect(item.sys_code).toBe(sysCode);
 		expect(item.sys_value).toBe(sysValue);
+		return sys.getForUpdate(item.row_id);
+	}).then(item => {
+		expect(item.row_id).toBe(sysId);
+		item.sys_value += ' updated';
+		return sys.update(item);
+	}).then(item => {
+		expect(item.sys_value).toBe(sysValue + ' updated');
+		item.sys_value += ' again';
+		return sys.save(item);
+	}).then(item => {
+		expect(item.sys_value).toBe(sysValue + ' updated again');
+		return sys.getForDelete(item.row_id);
+	}).then(item => {
+		expect(item.row_id).toBe(sysId);
 		return sys.del(item);
 	}).then(res => {
 		expect(res.row_id).toBe(sysId);
@@ -118,7 +139,7 @@ test('Objects', () => {
 		expect(tree.item.row_id).toBe(app.grant.getUserId()+'');
 		return app.logout();
 	}).then(res => {
-		expect(res.result);
+		expect(res.result).not.toBeUndefined();
 	}).catch(err => {
 		expect(err).toBeNull(); // Force test failure
 	});
@@ -149,7 +170,7 @@ test('Image', () => {
 		expect(res.row_id).toBe(rowId);
 		return app.logout();
 	}).then(res => {
-		expect(res.result).not.toBeNull();
+		expect(res.result).not.toBeUndefined();
 	}).catch(err => {
 		expect(err).toBeNull(); // Force test failure
 	});
