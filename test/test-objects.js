@@ -19,6 +19,7 @@ app.login().then(res => {
 	if (debug) console.log(res);
 	assert.ok(res.login == 'designer');
 	console.log('Logged in as ' + res.login);
+	console.log(app.grant);
 	return app.getGrant({ inlinePicture: true });
 }).then(grant => {
 	if (debug) console.log(grant);

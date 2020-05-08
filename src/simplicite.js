@@ -469,12 +469,6 @@ module.exports = {
 		}
 
 		/**
-		 * Cookies
-		 * @private
-		 */
-		var cookies = null;
-
-		/**
 		 * Request parameters
 		 * @param {object} data Data
 		 * @private
@@ -525,8 +519,6 @@ module.exports = {
 					h.Authorization = b;
 				}
 			}
-			if (cookies)
-				h.Cookie = cookies;
 			request(url + (path || '/'), {
 					method: m,
 					headers: h,
@@ -637,12 +629,13 @@ module.exports = {
 			this.password = undefined;
 			this.authtoken = undefined;
 			this.sessionid = undefined;
-			this.cookies = undefined;
+
+			this.grant = undefined;
 
 			this.appinfo = undefined;
 			this.sysinfo = undefined;
 			this.userinfo = undefined;
-			this.grant = undefined;
+
 			businessObjectCache = {};
 		}
 
@@ -675,6 +668,14 @@ module.exports = {
 					self.authtoken = r.response.authtoken;
 					if (self.authtoken)
 						debugHandler('[simplicite.login] Auth token = ' + self.authtoken);
+					// Minimal grant from session data
+					self.grant = {
+						login: r.response.login,
+						userid: r.response.userid,
+						firstname: r.response.firstanme,
+						lastname: r.response.lastname,
+						email: r.response.email
+					};
 					if (callback)
 						callback.call(self, r.response);
 				}
