@@ -504,18 +504,19 @@ module.exports = {
 		 * @private
 		 */
 		function req(path, data, callback, error) {
+			var self = this;
 			var m = data ? 'POST' : 'GET';
 			var h = {};
 			if (data)
 				h['Content-Type'] = 'application/x-www-form-urlencoded; charset=utf-8';
 			var b = getBearerTokenHeader.call(this);
 			if (b) {
-				debugHandler('[simplicite.res] Using bearer token header = ' + b);
+				debugHandler('[simplicite.req] Using bearer token header = ' + b);
 				h['X-Simplicite-Authorization'] = b;
 			} else {
 				b = getBasicAuthHeader.call(this);
 				if (b) {
-					debugHandler('[simplicite.res] Using basic auth header = ' + b);
+					debugHandler('[simplicite.req] Using basic auth header = ' + b);
 					h.Authorization = b;
 				}
 			}
@@ -528,11 +529,11 @@ module.exports = {
 				}, function (err, dat, res) {
 					if (err) {
 						if (error)
-							error.call(this, err);
+							error.call(self, err);
 						else
 							throw err;
 					} else if (callback) {
-						callback.call(this, dat, res.statusCode);
+						callback.call(self, dat, res.statusCode);
 					}
 				});
 		}

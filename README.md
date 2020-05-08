@@ -82,13 +82,15 @@ Install _Jest_:
 
 Set the environment variables for your Simplicité instance:
 
-- `TEST_SIMPLICITE_SCHEME`
-- `TEST_SIMPLICITE_HOST`
-- `TEST_SIMPLICITE_PORT`
-- `TEST_SIMPLICITE_ROOT`
-- `TEST_SIMPLICITE_DESIGNER_PASSWORD`
-- `TEST_SIMPLICITE_USERNAME`
-- `TEST_SIMPLICITE_PASSWORD`
+- `TEST_SIMPLICITE_SCHEME` defaults to `'http'`
+- `TEST_SIMPLICITE_HOST` defaults to `'localhost'`
+- `TEST_SIMPLICITE_PORT` defaults to `8080`
+- `TEST_SIMPLICITE_ROOT` defaults to `''` (root webapp)
+- `TEST_SIMPLICITE_URL` defaults to `http://localhost:8080`
+- `TEST_SIMPLICITE_ADMIN_SERNAME` defaults to `'designer'`
+- `TEST_SIMPLICITE_ADMIN_PASSWORD` defaults to `'designer'`
+- `TEST_SIMPLICITE_USERNAME` defaults to `'website'`
+- `TEST_SIMPLICITE_PASSWORD` defaults to `'simplicite'`
 
 Run tests (this generates the `coverage` folder):
 

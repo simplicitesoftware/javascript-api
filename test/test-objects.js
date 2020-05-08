@@ -1,29 +1,32 @@
 const assert = require('assert').strict;
 
+const adminUsername = process.env.TEST_SIMPLICITE_ADMIN_USERNAME || 'designer';
+const adminPassword = process.env.TEST_SIMPLICITE_ADMIN_PASSWORD || 'designer';
+
 const debug = process.env.TEST_SIMPLICITE_DEBUG == 'true';
 const app = require('../src/simplicite').session({
 	scheme: process.env.TEST_SIMPLICITE_SCHEME || 'http',
 	host: process.env.TEST_SIMPLICITE_HOST || 'localhost',
 	port: parseInt(process.env.TEST_SIMPLICITE_PORT) || 8080,
 	root: process.env.TEST_SIMPLICITE_ROOT || '',
-	username: 'designer',
-	password: process.env.TEST_SIMPLICITE_DESIGNER_PASSWORD || 'designer',
+	username: adminUsername,
+	password: adminPassword,
 	debug: debug
 });
 if (debug) console.log(app.parameters);
 
-var sys, usr;
-var sysId = 2, sysCode = 'TEST', sysValue = 'Test';
+let sys, usr;
+let sysId = "2", sysCodeFilter = '%TIMEOUT%', sysCode = 'TEST_' + Date.now(), sysValue = 'Test';
 
 app.login().then(res => { 
 	if (debug) console.log(res);
-	assert.ok(res.login == 'designer');
+	assert.ok(res.login == adminUsername);
 	console.log('Logged in as ' + res.login);
 	console.log(app.grant);
 	return app.getGrant({ inlinePicture: true });
 }).then(grant => {
 	if (debug) console.log(grant);
-	assert.ok(grant.login == 'designer');
+	assert.ok(grant.login == adminUsername);
 	assert.ok(app.grant.getLogin() == grant.login);
 	console.log('Hello ' + app.grant.getFirstName() + ' ' + app.grant.getLastName() + ' (' + app.grant.getLogin() + ')');
 	if (app.grant.hasResponsibility('ADMIN'))
@@ -55,18 +58,18 @@ app.login().then(res => {
 	if (debug) console.log(result);
 	assert.ok(result);
 	console.log('Version: ' + result);
-	return sys.getCount({ sys_code: '%TIMEOUT%' });
+	return sys.getCount({ sys_code: sysCodeFilter });
 }).then(count => {
 	if (debug) console.log(count);
 	assert.ok(count >= 0);
 	console.log('Count system param: ' + count);
-	return sys.search({ sys_code: '%TIMEOUT%' });
+	return sys.search({ sys_code: sysCodeFilter });
 }).then(list => {
 	if (debug) console.log(list);
 	assert.ok(list.length);
 	console.log('Found ' + list.length + '  system params');
-	for (var i = 0; i < list.length; i++) {
-		var item = list[i];
+	for (let i = 0; i < list.length; i++) {
+		let item = list[i];
 		console.log('- item[' + i + ']: ' + item.row_id + ' ' + item.sys_code + ' ' + item.sys_value);
 	}
 	return sys.get(sysId);
