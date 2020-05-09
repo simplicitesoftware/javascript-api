@@ -56,29 +56,8 @@ For more advanced examples, check these repositories:
 - **Native**:
 	- [ReactNative&reg; demo](https://github.com/simplicitesoftware/react-native-demo)
 
-Minify
-------
-
-Install _Uglify-JS_:
-
-```bash
-[sudo] npm install -g uglify-js
-```
-
-Build (this generates the minified `dist/simplicite.min.js` file):
-
-```bash
-npm run build
-```
-
 Test
 ----
-
-Install _Jest_:
-
-```bash
-[sudo] npm install -g jest
-```
 
 Set the environment variables for your Simplicité instance:
 
@@ -92,20 +71,29 @@ Set the environment variables for your Simplicité instance:
 - `TEST_SIMPLICITE_USERNAME` defaults to `'website'`
 - `TEST_SIMPLICITE_PASSWORD` defaults to `'simplicite'`
 
-Run tests (this generates the `coverage` folder):
+Run the unit tests, this generates the `coverage` folder:
 
 ```bash
 npm run test
 ```
 
-Documentation
--------------
+Build
+-----
 
-Install _JSDoc_:
+Check syntax and rules:
 
 ```bash
-[sudo] npm install -g jsdoc
+npm run lint
 ```
+
+Generates the minified `dist/simplicite.min.js` file:
+
+```bash
+npm run build
+```
+
+Documentation
+-------------
 
 Generate documentation:
 
@@ -116,7 +104,7 @@ npm run jsdoc
 Publish
 -------
 
-This is only done by Simplicit&eacute; Software.
+Publish to npm repository:
 
 ```bash
 npm publish
