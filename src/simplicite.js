@@ -383,17 +383,17 @@ module.exports = {
 		if (params.url) {
 			try {
 				params.scheme = params.url.replace(/:.*$/, '');
-				var u = params.url.replace(new RegExp('^' + params.scheme + ':\/\/'), '').split(':');
+				var u = params.url.replace(new RegExp('^' + params.scheme + '://'), '').split(':');
 				if (u.length === 1) {
 					params.host = u[0].replace(/\/.*$/, '');
 					params.port = params.scheme === 'http' ? 80 : 443;
-					params.root = u[0].replace(new RegExp('^' + params.host + '[\/]{0,1}'), '');
+					params.root = u[0].replace(new RegExp('^' + params.host + '/?'), '');
 				} else {
 					params.host = u[0];
 					params.port = parseInt(u[1].replace(/\/.*$/, ''), 10);
 					if (isNaN(params.port))
 						throw new Error('Incorrect port');
-					params.root = u[1].replace(new RegExp('^' + params.port + '[\/]{0,1}'), '');
+					params.root = u[1].replace(new RegExp('^' + params.port + '/?'), '');
 				}
 				if (params.root === '/')
 					params.root = '';
@@ -521,21 +521,21 @@ module.exports = {
 				}
 			}
 			request(url + (path || '/'), {
-					method: m,
-					headers: h,
-					timeout: timeout * 1000,
-					withCredentials: true,
-					body: data
-				}, function (err, dat, res) {
-					if (err) {
-						if (error)
-							error.call(self, err);
-						else
-							throw err;
-					} else if (callback) {
-						callback.call(self, dat, res.statusCode);
-					}
-				});
+				method: m,
+				headers: h,
+				timeout: timeout * 1000,
+				withCredentials: true,
+				body: data
+			}, function (err, dat, res) {
+				if (err) {
+					if (error)
+						error.call(self, err);
+					else
+						throw err;
+				} else if (callback) {
+					callback.call(self, dat, res.statusCode);
+				}
+			});
 		}
 
 		/**
@@ -980,7 +980,7 @@ module.exports = {
 				if (!io)
 					io = options.inlineObjects;
 				if (io)
-					opts += "&inline_objects=" + (io.join ? io.join(",") : io);
+					opts += '&inline_objects=' + (io.join ? io.join(',') : io);
 				return opts;
 			}
 
@@ -997,8 +997,8 @@ module.exports = {
 				var p = _getOptions(opts);
 				if (opts.page > 0)
 					p += '&page=' + (opts.page - 1);
-				if (opts.metadata===true) p += "&_md=true";
-				if (opts.visible===true) p += "&_visible=true";
+				if (opts.metadata===true) p += '&_md=true';
+				if (opts.visible===true) p += '&_visible=true';
 				self.filters = filters || {};
 				req.call(session, path + '&action=search' + p, reqParams(self.filters), function(res, status) {
 					debugHandler('[simplicite.BusinessObject.search] HTTP status = ' + status + ', response = ' + res);
@@ -1067,8 +1067,8 @@ module.exports = {
 						p += '&fields=' + opts.fields[i].replace('.', '__');
 					}
 				}
-				if (opts.metadata) p += "&_md=true";
-				if (opts.social) p += "&_social=true";
+				if (opts.metadata) p += '&_md=true';
+				if (opts.social) p += '&_social=true';
 				req.call(session, path + '&action=get&' + self.metadata.rowidfield + '=' + rowId + p, undefined, function(res, status) {
 					debugHandler('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response = ' + res);
 					var r = parse(res, status);
@@ -1407,7 +1407,7 @@ module.exports = {
 				_getMetaData: _getMetaData,
 				getMetaData: function(opts) {
 					var d = Q.defer();
-					this._getMetaData(function(metadata) { d.resolve(metadata); }, params);
+					this._getMetaData(function(metadata) { d.resolve(metadata); }, opts);
 					return d.promise;
 				},
 				getName: function() { return this.metadata.name; },

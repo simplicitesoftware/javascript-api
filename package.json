@@ -1,6 +1,6 @@
 {
   "name": "simplicite",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "description": "Simplicite(R) platform Javascript API (for node.js and browser)",
   "repository": {
     "type": "git",
@@ -17,7 +17,14 @@
     "buffer": "latest",
     "xhr-request": "latest"
   },
+  "dev-dependencies": {
+    "uglify-js": "latest",
+    "jsdoc": "latest",
+    "jest": "latest",
+    "eslint": "latest"
+  },
   "scripts": {
+    "lint": "eslint src/simplicite.js",
     "build": "uglifyjs src/simplicite.js --comments -o dist/simplicite.min.js",
     "jsdoc": "jsdoc -d doc src/simplicite.js",
     "test": "jest --coverage -- test/simplicite.test.js"
