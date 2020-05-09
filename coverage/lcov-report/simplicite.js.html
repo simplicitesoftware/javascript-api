@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">59.11% </span>
+                <span class="strong">59.05% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>438/741</span>
+                <span class='fraction'>437/740</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">44.95% </span>
+                <span class="strong">44.72% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>89/198</span>
+                <span class='fraction'>89/199</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">62.96% </span>
+                <span class="strong">62.9% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>413/656</span>
+                <span class='fraction'>412/655</span>
             </div>
         
             
@@ -1772,7 +1772,8 @@
 <a name='L1713'></a><a href='#L1713'>1713</a>
 <a name='L1714'></a><a href='#L1714'>1714</a>
 <a name='L1715'></a><a href='#L1715'>1715</a>
-<a name='L1716'></a><a href='#L1716'>1716</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L1716'></a><a href='#L1716'>1716</a>
+<a name='L1717'></a><a href='#L1717'>1717</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2301,14 +2302,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">33x</span>
+<span class="cline-any cline-yes">33x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">33x</span>
-<span class="cline-any cline-yes">33x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -3490,7 +3492,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * Simplicite(R) platform Javascript API (for node.js and browser).
  * @module simplicite
- * @version 1.0.17
+ * @version 1.1.0
  * @license Apache-2.0
  */
 module.exports = {
@@ -3500,7 +3502,7 @@ module.exports = {
 	 */
 	session: function(params) {
 		var Q = require('q');
-		var request = require('xhr-request');
+		var axios = require('axios');
 		var buffer = require('buffer');
 &nbsp;
 		/**
@@ -3994,7 +3996,7 @@ module.exports = {
 		 */
 		function req(path, data, callback, error) {
 			var self = this;
-			var m = data ? 'POST' : 'GET';
+			var m = data ? 'post' : 'get';
 			var h = {};
 			if (data)
 				h['Content-Type'] = 'application/x-www-form-urlencoded; charset=utf-8';
@@ -4009,21 +4011,22 @@ module.exports = {
 					h.Authorization = b;
 				}
 			}
-			request(url + (path || <span class="branch-1 cbranch-no" title="branch not covered" >'/')</span>, {
+			axios.request({
+				baseURL: url,
+				url: path || <span class="branch-1 cbranch-no" title="branch not covered" >'/',</span>
 				method: m,
 				headers: h,
 				timeout: timeout * 1000,
 				withCredentials: true,
-				body: data
-			}, function (err, dat, res) {
-				<span class="missing-if-branch" title="if path not taken" >I</span>if (err) {
-<span class="cstat-no" title="statement not covered" >					if (error)</span>
-<span class="cstat-no" title="statement not covered" >						error.call(self, err);</span>
-					else
-<span class="cstat-no" title="statement not covered" >						throw err;</span>
-				} else <span class="missing-if-branch" title="else path not taken" >E</span>if (callback) {
-					callback.call(self, dat, res.statusCode);
-				}
+				data: data
+			}).then(function (res) {
+				<span class="missing-if-branch" title="else path not taken" >E</span>if (callback)
+					callback.call(self, res.data, res.status);
+			}).catch(<span class="fstat-no" title="function not covered" >fu</span>nction(err) {
+<span class="cstat-no" title="statement not covered" >				if (error)</span>
+<span class="cstat-no" title="statement not covered" >					error.call(self, err);</span>
+				else
+<span class="cstat-no" title="statement not covered" >					throw err;</span>
 			});
 		}
 &nbsp;
@@ -4047,7 +4050,7 @@ module.exports = {
 			try {
 				<span class="missing-if-branch" title="if path not taken" >I</span>if (status !== 200)
 <span class="cstat-no" title="statement not covered" >					return { type: 'error', response: getError('HTTP status: ' + status, status) };</span>
-				return JSON.parse(res);
+				return typeof res === 'object' ? res : <span class="branch-1 cbranch-no" title="branch not covered" >JSON.parse(res);</span>
 			} catch (e) {
 <span class="cstat-no" title="statement not covered" >				return { type: 'error', response: getError('Parsing error: ' + e.message, status) };</span>
 			}
@@ -5209,7 +5212,7 @@ module.exports = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Sat May 09 2020 19:19:53 GMT+0200 (GMT+02:00)
+                at Sat May 09 2020 22:32:03 GMT+0200 (GMT+02:00)
             </div>
         </div>
         <script src="prettify.js"></script>

@@ -1,6 +1,6 @@
 {
   "name": "simplicite",
-  "version": "1.0.17",
+  "version": "1.1.0",
   "description": "Simplicite(R) platform Javascript API (for node.js and browser)",
   "repository": {
     "type": "git",
@@ -15,7 +15,7 @@
   "dependencies": {
     "q": "latest",
     "buffer": "latest",
-    "xhr-request": "latest"
+    "axios": "latest"
   },
   "dev-dependencies": {
     "uglify-js": "latest",

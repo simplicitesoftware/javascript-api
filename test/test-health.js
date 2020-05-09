@@ -13,5 +13,6 @@ app.getHealth().then(health => {
 	assert.ok(health.platform.status == 'OK');
 	console.log('Status = ' + health.platform.status);
 }).catch(err => {
+	delete err._scope; // Clean scope from response
 	console.error(err);
 });

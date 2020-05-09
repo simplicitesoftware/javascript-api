@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API (for node.js and browser).
  * @module simplicite
- * @version 1.0.17
+ * @version 1.1.0
  * @license Apache-2.0
  */
 module.exports = {
@@ -11,7 +11,7 @@ module.exports = {
 	 */
 	session: function(params) {
 		var Q = require('q');
-		var request = require('xhr-request');
+		var axios = require('axios');
 		var buffer = require('buffer');
 
 		/**
@@ -505,7 +505,7 @@ module.exports = {
 		 */
 		function req(path, data, callback, error) {
 			var self = this;
-			var m = data ? 'POST' : 'GET';
+			var m = data ? 'post' : 'get';
 			var h = {};
 			if (data)
 				h['Content-Type'] = 'application/x-www-form-urlencoded; charset=utf-8';
@@ -520,21 +520,22 @@ module.exports = {
 					h.Authorization = b;
 				}
 			}
-			request(url + (path || '/'), {
+			axios.request({
+				baseURL: url,
+				url: path || '/',
 				method: m,
 				headers: h,
 				timeout: timeout * 1000,
 				withCredentials: true,
-				body: data
-			}, function (err, dat, res) {
-				if (err) {
-					if (error)
-						error.call(self, err);
-					else
-						throw err;
-				} else if (callback) {
-					callback.call(self, dat, res.statusCode);
-				}
+				data: data
+			}).then(function (res) {
+				if (callback)
+					callback.call(self, res.data, res.status);
+			}).catch(function(err) {
+				if (error)
+					error.call(self, err);
+				else
+					throw err;
 			});
 		}
 
@@ -558,7 +559,7 @@ module.exports = {
 			try {
 				if (status !== 200)
 					return { type: 'error', response: getError('HTTP status: ' + status, status) };
-				return JSON.parse(res);
+				return typeof res === 'object' ? res : JSON.parse(res);
 			} catch (e) {
 				return { type: 'error', response: getError('Parsing error: ' + e.message, status) };
 			}
