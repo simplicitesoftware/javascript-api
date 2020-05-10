@@ -8,8 +8,11 @@ const app = require('../src/simplicite-new').session({
 	url: process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080',
 	debug: debug
 });
+
+// Test logger
 app.log(app.parameters);
 
+// Test default handlers
 app.info("INFO message");
 app.info({ type: "INFO", message: "Info message" });
 app.warn("WARN message");
@@ -28,6 +31,31 @@ app.getHealth().then(health => {
 	app.debug(res);
 	assert.ok(res.login == adminUsername);
 	app.log('Logged in as ' + res.login);
+	return app.getGrant();
+}).then(grant => {
+	app.debug(grant);
+	assert.ok(grant.login == adminUsername);
+	app.log('Grant: ' + grant.getFirstName() + ' ' + grant.getLastName() + ' (' + grant.getLogin() + ')');
+	return app.getAppInfo();
+}).then(appinfo => {
+	app.debug(appinfo);
+	assert.ok(appinfo.version);
+	console.log('Application: ' + appinfo.version + ', title ' + appinfo.title);
+	return app.getSysInfo();
+}).then(sysinfo => {
+	app.debug(sysinfo);
+	assert.ok(sysinfo.heapmaxsize);
+	app.log('Memory: ' + sysinfo.heapmaxsize);
+	return app.getUserInfo(adminUsername);
+}).then(userinfo => {
+	app.debug(userinfo);
+	assert.ok(userinfo.login == adminUsername);
+	app.log('User info login: ' + userinfo.login);
+	return app.getNews();
+}).then(news => {
+	app.debug(news);
+	assert.ok(news);
+	app.log('Nb news: ' + news.length);
 	obj = app.getBusinessObject(objName);
 	return obj.getMetaData();
 }).then(md => {

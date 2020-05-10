@@ -741,8 +741,8 @@ function _login(callback, opts) {
 			self.password = opts.password || opts.pwd;	
 	}
 	req.call(self, apppath + '?action=session', undefined, function(res, status) {
-		self.debug('[simplicite.login] HTTP status = ' + status + ', response = ' + res);
 		var r = parse(res, status);
+		self.debug('[simplicite.login] HTTP status = ' + status + ', response type = ' + r.type);
 		if (r.type === 'error') {
 			(opts.error ? opts.error : error).call(self, r.response);
 		} else {
@@ -793,8 +793,8 @@ function _logout(callback, opts) {
 	var self = this;
 	opts = opts || {};
 	req.call(self, apppath + '?action=logout', undefined, function(res, status) {
-		self.debug('[simplicite.logout] HTTP status = ' + status + ', response = ' + res);
 		var r = parse(res, status);
+		self.debug('[simplicite.logout] HTTP status = ' + status + ', response type = ' + r.type);
 		if (r.type === 'error') {
 			(opts.error ? opts.error : error).call(self, r.response);
 		} else {
@@ -842,8 +842,8 @@ function _getGrant(callback, opts) {
 	if (opts.inlinePicture)
 		p += '&inline_picture=' + opts.inlinePicture;
 	req.call(self, apppath + '?action=getgrant' + p, undefined, function(res, status) {
-		self.debug('[simplicite.getGrant] HTTP status = ' + status + ', response = ' + res);
 		var r = parse(res, status);
+		self.debug('[simplicite.getGrant] HTTP status = ' + status + ', response type = ' + r.type);
 		if (r.type === 'error') {
 			(opts.error ? opts.error : error).call(self, r.response);
 		} else {
@@ -877,6 +877,195 @@ function getGrant(opts) {
 	opts = opts || {};
 	opts.error = function(e) { d.reject(e); };
 	_getGrant.call(this, function(grant) { d.resolve(grant); }, opts);
+	return d.promise;
+}
+
+/**
+ * Change password
+ * @param {function} callback Callback (called upon success)
+ * @param {object} opts Options
+ * @private
+ */
+function _changePassword(callback, password, opts) {
+	var self = this;
+	opts = opts || {};
+	req.call(self, apppath + '?action=setpassword&password=' + password, undefined, function(res, status) {
+		var r = parse(res, status);
+		self.debug('[simplicite.changePassword] HTTP status = ' + status + ', response type = ' + r.type);
+		if (r.type === 'error') {
+			(opts.error ? opts.error : error).call(self, r.response);
+		} else {
+			if (callback)
+				callback.call(self, self.r.response);
+		}
+	}, function(e) {
+		(opts.error ? opts.error : error).call(self, e);
+	});
+}
+
+/**
+ * Change password
+ * @param {object} opts Options
+ * @function
+ */
+function changePassword(opts) {
+	var d = Q.defer();
+	opts = opts || {};
+	opts.error = function(e) { d.reject(e); };
+	_changePassword.call(this, function(res) { d.resolve(res); }, opts);
+	return d.promise;
+}
+
+/**
+ * Get application info
+ * @param {function} callback Callback (called upon success)
+ * @param {object} opts Options
+ * @function
+ */
+function _getAppInfo(callback, opts) {
+	var self = this;
+	opts = opts || {};
+	req.call(self, apppath + '?action=getinfo', undefined, function(res, status) {
+		var r = parse(res, status);
+		self.debug('[simplicite.getAppInfo] HTTP status = ' + status + ', response type = ' + r.type);
+		if (r.type === 'error') {
+			(opts.error ? opts.error : error).call(self, r.response);
+		} else {
+			self.appinfo = r.response;
+			if (callback)
+				callback.call(self, self.appinfo);
+		}
+	}, function(e) {
+		(opts.error ? opts.error : error).call(self, e);
+	});
+}
+
+/**
+ * Get application info
+ * @param {object} opts Options
+ * @function
+ */
+function getAppInfo(opts) {
+	var d = Q.defer();
+	opts = opts || {};
+	opts.error = function(e) { d.reject(e); };
+	_getAppInfo.call(this, function(appinfo) { d.resolve(appinfo); }, opts);
+	return d.promise;
+}
+
+/**
+ * Get system info
+ * @param {function} callback Callback (called upon success)
+ * @param {object} opts Options
+ * @private
+ */
+function _getSysInfo(callback, opts) {
+	var self = this;
+	opts = opts || {};
+	req.call(self, apppath + '?action=sysinfo', undefined, function(res, status) {
+		var r = parse(res, status);
+		self.debug('[simplicite.getSysInfo] HTTP status = ' + status + ', response type = ' + r.type);
+		if (r.type === 'error') {
+			(opts.error ? opts.error : error).call(self, r.response);
+		} else {
+			self.sysinfo = r.response;
+			if (callback)
+				callback.call(self, self.sysinfo);
+		}
+	}, function(e) {
+		(opts.error ? opts.error : error).call(self, e);
+	});
+}
+
+/**
+ * Get system info
+ * @param {object} opts Options
+ * @function
+ */
+function getSysInfo(opts) {
+	var d = Q.defer();
+	opts = opts || {};
+	opts.error = function(e) { d.reject(e); };
+	_getSysInfo.call(this, function(sysinfo) { d.resolve(sysinfo); }, opts);
+	return d.promise;
+}
+
+/**
+ * Get user info
+ * @param {function} callback Callback (called upon success)
+ * @param {string} userlogin User login
+ * @param {object} opts Options
+ * @private
+ */
+function _getUserInfo(callback, userlogin, opts) {
+	var self = this;
+	opts = opts || {};
+	req.call(self, apppath + '?action=userinfo' + (userlogin ? '&login=' + userlogin: ''), undefined, function(res, status) {
+		var r = parse(res, status);
+		self.debug('[simplicite.getUserInfo] HTTP status = ' + status + ', response type = ' + r.type);
+		if (r.type === 'error') {
+			(opts.error ? opts.error : error).call(self, r.response);
+		} else {
+			self.userinfo = r.response;
+			if (callback)
+				callback.call(self, self.userinfo);
+		}
+	}, function(e) {
+		(opts.error ? opts.error : error).call(self, e);
+	});
+}
+
+/**
+ * Get user info
+ * @param {string} userlogin User login
+ * @param {object} opts Options
+ * @function
+ */
+function getUserInfo(userlogin, opts) {
+	var d = Q.defer();
+	if (opts === undefined) opts = {};
+	opts.error = function(e) { d.reject(e); };
+	_getUserInfo.call(this, function(userinfo) { d.resolve(userinfo); }, userlogin, opts);
+	return d.promise;
+}
+
+/**
+ * Get news
+ * @param {function} callback Callback (called upon success)
+ * @param {object} opts Options
+ * @private
+ */
+function _getNews(callback, opts) {
+	var self = this;
+	opts = opts || {};
+	var p = '';
+	if (opts.inlineImages)
+		p += '&inline_images=' + opts.inlineImages;
+	req.call(self, apppath + '?action=news' + p, undefined, function(res, status) {
+		var r = parse(res, status);
+		self.debug('[simplicite.getNews] HTTP status = ' + status + ', response type = ' + r.type);
+		if (r.type === 'error') {
+			(opts.error ? opts.error : error).call(self, r.response);
+		} else {
+			self.news = r.response;
+			if (callback)
+				callback.call(self, self.news);
+		}
+	}, function(e) {
+		(opts.error ? opts.error : error).call(self, e);
+	});
+}
+
+/**
+ * Get news
+ * @param {object} opts Options
+ * @function
+ */
+function getNews(opts) {
+	var d = Q.defer();
+	opts = opts || {};
+	opts.error = function(e) { d.reject(e); };
+	_getNews.call(this, function(news) { d.resolve(news); }, opts);
 	return d.promise;
 }
 
@@ -1015,8 +1204,8 @@ function BusinessObject(session, name, instance) {
 		if (opts.contextParam)
 			p += '&contextparam=' + opts.contextParam;
 		req.call(self.session, self.path + '&action=metadata' + p, undefined, function(res, status) {
-			this.debug('[simplicite.BusinessObject.getMetaData] HTTP status = ' + status + ', response = ' + res);
 			var r = parse(res, status);
+			this.debug('[simplicite.BusinessObject.getMetaData] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
 				(opts.error ? opts.error : error).call(self, r.response);
 			} else {
@@ -1150,6 +1339,12 @@ module.exports = {
 	getHealth: getHealth,
 	login: login,
 	logout: logout,
+	getGrant: getGrant,
+	changePassword: changePassword,
+	getAppInfo: getAppInfo,
+	getSysInfo: getSysInfo,
+	getUserInfo: getUserInfo,
+	getNews: getNews,
 	getBusinessObject: getBusinessObject,
 	getBusinessProcess: getBusinessProcess,
 	getExternalObject: getExternalObject,
