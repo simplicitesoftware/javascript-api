@@ -62,6 +62,19 @@ app.getHealth().then(health => {
 	app.debug(md);
 	assert.ok(md.name == objName);
 	app.log('Name: ' + md.name + ', instance name: ' + md.instance + ', label: ' + md.label);
+	assert.ok(obj.getName() == objName);
+	app.log('Name: ' + obj.getName() + ', instance name: ' + obj.getInstance() + ', label: ' + obj.getLabel());
+	assert.ok(obj.getFields().length > 0);
+	app.log('Number of fields: ' + obj.getFields().length + ', number of links: ' + obj.getLinks().length);
+	assert.ok(obj.getRowIdField().name == app.constants.DEFAULT_ROW_ID_NAME);
+	let f = obj.getField('sys_code');
+	assert.ok(f.name == 'sys_code');
+	app.log('Code field: ' + obj.getField('sys_code').label);
+	f = obj.getField('sys_value');
+	assert.ok(f.name == 'sys_value');
+	app.log('Value field: ' + obj.getField('sys_value').label);
+	assert.ok(obj.isRowIdField(f) == false);
+	assert.ok(obj.isTimestampField(f) == false);
 	return app.logout();
 }).then(res => {
 	app.debug(res);

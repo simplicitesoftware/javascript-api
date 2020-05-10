@@ -1080,7 +1080,7 @@ var businessObjectCache = {};
  * Get business object cache key
  * @param {string} name Business object name
  * @param {string} instance Optional business object instance name
- * @return Business object cache key
+ * @returns Business object cache key
  * @function
  */
 function getBusinessObjectCacheKey(name, instance) {
@@ -1231,47 +1231,140 @@ function BusinessObject(session, name, instance) {
 
 	/**
 	 * Get name
-	 * @return {string} Name
+	 * @returns {string} Name
 	 * @function
 	 */
 	this.getName = function() {
-		return metadata.name;
+		return this.metadata.name;
 	};
 
 	/**
 	 * Get instance name
-	 * @return {string} Instance name
+	 * @returns {string} Instance name
 	 * @function
 	 */
 	this.getInstance = function() {
-		return metadata.instance;
+		return this.metadata.instance;
 	};
 
 	/**
 	 * Get display label
-	 * @return {string} Display label
+	 * @returns {string} Display label
 	 * @function
 	 */
 	this.getLabel = function() {
-		return metadata.label;
+		return this.metadata.label;
 	};
 
 	/**
 	 * Get help
-	 * @return {string} Help
+	 * @returns {string} Help
 	 * @function
 	 */
 	this.getHelp = function() {
-		return metadata.help;
+		return this.metadata.help;
 	};
 
 	/**
 	 * Get all fields definitions
-	 * @return {Array} Fields definitions
+	 * @returns {Array} Array of field definitions
 	 * @function
 	 */
 	this.getFields = function() {
-		return metadata.fields;
+		return this.metadata.fields;
+	};
+
+	/**
+	 * Get a field definition
+	 * @param {string} fieldName Field name
+	 * @returns {Object} Field definition
+	 * @function
+	 */
+	this.getField = function(fieldname) {
+		var n = 0;
+		var fs = this.getFields();
+		while (n < fs.length && fs[n].name !== fieldname) n++;
+		if (n < fs.length)
+			return fs[n];
+	};
+
+	/**
+	 * Get row ID field name
+	 * @returns {string} Row ID field name
+	 * @function
+	 */
+	this.getRowIdFieldName = function() {
+		return this.metadata.rowidfield;
+	};
+
+	/**
+	 * Get row ID field definition
+	 * @returns {Object} Row ID field definition
+	 * @function
+	 */
+	this.getRowIdField = function() {
+		return this.getField(this.getRowIdFieldName());
+	};
+
+	/**
+	 * Get links
+	 * @returns {Array} Array of links
+	 * @function
+	 */
+	this.getLinks = function() {
+		return this.metadata.links;
+	};
+
+	/**
+	 * Get list value of field fro code
+	 * @param {Object} field Field definition
+	 * @param {string} code Code
+	 * @returns {string} Value
+	 * @function
+	 */
+	this.getValueForCode = function(field, code) {
+		var n = 0;
+		var l = field.listOfValues;
+		if (l === undefined)
+			return code;
+		while (n < l.length && l[n].code !== code) n++;
+		return n === l.length ? code : l[n].value;
+	};
+
+	/**
+	 * Get list value for code
+	 * @param {list} list List of values
+	 * @param {string} code Code
+	 * @returns {string} Value
+	 * @function
+	 */
+	this.getListValue = function(list, code) {
+		for (var i = 0; i < list.length; i++) {
+			var l = list[i];
+			if (l.code === code)
+				return l.value;
+		}
+	};
+
+	/**
+	 * Is the field the row ID field?
+	 * @param {Object} field Field definition
+	 * @returns True if the field is the row ID field
+	 * @function
+	 */
+	this.isRowIdField = function(field) {
+		return !field.ref && field.name === this.metadata.rowidfield;
+	};
+
+	/**
+	 * Is the field a timestamp field?
+	 * @param {Object} field Field definition
+	 * @returns True if the field is a timestamp field
+	 * @function
+	 */
+	this.isTimestampField = function(field) {
+		var n = field.name;
+		return !field.ref && (n === 'created_by' || n === 'created_dt' || n === 'updated_by' || n === 'updated_dt');
 	};
 }
 
@@ -1279,7 +1372,7 @@ function BusinessObject(session, name, instance) {
  * Get business object
  * @param {string} name Business object name
  * @param {string} instance Optional business object instance name
- * @return {BusinessObject} Business object
+ * @returns {BusinessObject} Business object
  * @function
  */
 function getBusinessObject(name, instance) {
