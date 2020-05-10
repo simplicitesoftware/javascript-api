@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: simplicite-new.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: simplicite-new.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Simplicite(R) platform Javascript API (for node.js and browser).
+ * @module simplicite
+ * @version 1.1.0
+ * @license Apache-2.0
+ */
+var Q = require('q');
+var axios = require('axios');
+var buffer = require('buffer');
+
+/**
+ * Info handler
+ * @private
+ */
+var infoHandler = params.infoHandler || function(msg) {
+	console.log('INFO - ' + msg);
+};
+
+/**
+ * Warning handler
+ * @private
+ */
+var warnHandler = params.warnHandler || function(msg) {
+	console.log('WARN - ' + msg);
+};
+
+/**
+ * Error handler
+ * @private
+ */
+var errorHandler = params.errorHandler || function(msg) {
+	console.log('ERROR - ' + msg);
+};
+
+/**
+ * Debug handler
+ * @private
+ */
+var debugHandler = params.debugHandler || function(msg) {
+	if (debug)
+		console.log('DEBUG - ' + msg);
+};
+
+/**
+ * Constants
+ * @constant
+*/
+var constants = {
+	/**
+	 * Default row ID field name
+	 * @const {string}
+	 */
+	DEFAULT_ROW_ID_NAME: 'row_id',
+
+	/**
+	 * Default row ID value
+	 * @const {string}
+	 */
+	DEFAULT_ROW_ID: '0',
+
+	/**
+	 * Default context
+	 * @const {number}
+	 */
+	CONTEXT_NONE: 0,
+	/**
+	 * Search context
+	 * @const {number}
+	 */
+	CONTEXT_SEARCH: 1,
+	/**
+	 * List context
+	 * @const {number}
+	 */
+	CONTEXT_LIST: 2,
+	/**
+	 * Creation context
+	 * @const {number}
+	 */
+	CONTEXT_CREATE: 3,
+	/**
+	 * Copy context
+	 * @const {number}
+	 */
+	CONTEXT_COPY: 4,
+	/**
+	 * Update context
+	 * @const {number}
+	 */
+	CONTEXT_UPDATE: 5,
+	/**
+	 * Delete context
+	 * @const {number}
+	 */
+	CONTEXT_DELETE: 6,
+	/**
+	 * Chart context
+	 * @const {number}
+	 */
+	CONTEXT_GRAPH: 7,
+	/**
+	 * Pivot table context
+	 * @const {number}
+	 */
+	CONTEXT_CROSSTAB: 8,
+	/**
+	 * Publication context
+	 * @const {number}
+	 */
+	CONTEXT_PRINTTMPL: 9,
+	/**
+	 * Bulk update context
+	 * @const {number}
+	 */
+	CONTEXT_UPDATEALL: 10,
+	/**
+	 * Reference selection context
+	 * @const {number}
+	 */
+	CONTEXT_REFSELECT: 11,
+	/**
+	 * Datamap selection context
+	 * @const {number}
+	 */
+	CONTEXT_DATAMAPSELECT: 12,
+	/**
+	 * Pre validation context
+	 * @const {number}
+	 */
+	CONTEXT_PREVALIDATE: 13,
+	/**
+	 * Post validation context
+	 * @const {number}
+	 */
+	CONTEXT_POSTVALIDATE: 14,
+	/**
+	 * State transition context
+	 * @const {number}
+	 */
+	CONTEXT_STATETRANSITION: 15,
+	/**
+	 * Export context
+	 * @const {number}
+	 */
+	CONTEXT_EXPORT: 16,
+	/**
+	 * Import context
+	 * @const {number}
+	 */
+	CONTEXT_IMPORT: 17,
+	/**
+	 * Association context
+	 * @const {number}
+	 */
+	CONTEXT_ASSOCIATE: 18,
+	/**
+	 * Panle list context
+	 * @const {number}
+	 */
+	CONTEXT_PANELLIST: 19,
+
+	/**
+	 * Foreign key (reference) type
+	 * @const {number}
+	 */
+	TYPE_ID: 0,
+	/**
+	 * Integer type
+	 * @const {number}
+	 */
+	TYPE_INT: 1,
+	/**
+	 * Decimal type
+	 * @const {number}
+	 */
+	TYPE_FLOAT: 2,
+	/**
+	 * Short string type
+	 * @const {number}
+	 */
+	TYPE_STRING: 3,
+	/**
+	 * Date type
+	 * @const {number}
+	 */
+	TYPE_DATE: 4,
+	/**
+	 * Date and time type
+	 * @const {number}
+	 */
+	TYPE_DATETIME: 5,
+	/**
+	 * Time type
+	 * @const {number}
+	 */
+	TYPE_TIME: 6,
+	/**
+	 * Simple enumeration type
+	 * @const {number}
+	 */
+	TYPE_ENUM: 7,
+	/**
+	 * Boolean type
+	 * @const {number}
+	 */
+	TYPE_BOOLEAN: 8,
+	/**
+	 * Password type
+	 * @const {number}
+	 */
+	TYPE_PASSWORD: 9,
+	/**
+	 * URL type
+	 * @const {number}
+	 */
+	TYPE_URL: 10,
+	/**
+	 * HTML content type
+	 * @const {number}
+	 */
+	TYPE_HTML: 11,
+	/**
+	 * Email type
+	 * @const {number}
+	 */
+	TYPE_EMAIL: 12,
+	/**
+	 * Long string type
+	 * @const {number}
+	 */
+	TYPE_LONG_STRING: 13,
+	/**
+	 * Multiple enumeration type
+	 * @const {number}
+	 */
+	TYPE_ENUM_MULTI: 14,
+	/**
+	 * Validated string type
+	 * @const {number}
+	 */
+	TYPE_REGEXP: 15,
+	/**
+	 * Document type
+	 * @const {number}
+	 */
+	TYPE_DOC: 17,
+	/**
+	 * Decimal type
+	 * @const {number}
+	 * @deprecated
+	 */
+	TYPE_FLOAT_EMPTY: 18,
+	/**
+	 * External file type
+	 * @const {number}
+	 * @deprecated
+	 */
+	TYPE_EXTFILE: 19,
+	/**
+	 * Image type
+	 * @const {number}
+	 */
+	TYPE_IMAGE: 20,
+	/**
+	 * Notepad type
+	 * @const {number}
+	 */
+	TYPE_NOTEPAD: 21,
+	/**
+	 * Phone number type
+	 * @const {number}
+	 */
+	TYPE_PHONENUM: 22,
+	/**
+	 * RGB color type
+	 * @const {number}
+	 */
+	TYPE_COLOR: 23,
+	/**
+	 * Object type
+	 * @const {number}
+	 */
+	TYPE_OBJECT: 24,
+	/**
+	 * Geocoordinates type
+	 * @const {number}
+	 */
+	TYPE_GEOCOORDS: 25,
+
+	/**
+	 * Not visible
+	 * @const {number}
+	 */
+	VIS_NOT: 0,
+	/**
+	 * Hiiden (same as not visible)
+	 * @const {number}
+	 */
+	VIS_HIDDEN: 0,
+	/**
+	 * Visible on lists only
+	 * @const {number}
+	 */
+	VIS_LIST: 1,
+	/**
+	 * Visible on forms only
+	 * @const {number}
+	 */
+	VIS_FORM: 2,
+	/**
+	 * Visible on both lists and forms only
+	 * @const {number}
+	 */
+	VIS_BOTH: 3,
+
+	/**
+	 * No search
+	 * @const {number}
+	 */
+	SEARCH_NONE: 0,
+	/**
+	 * Simple search
+	 * @const {number}
+	 */
+	SEARCH_MONO: 1,
+	/**
+	 * Multiple search (checkboxes)
+	 * @const {number}
+	 */
+	SEARCH_MULTI_CHECK: 2,
+	/**
+	 * Multiple search (listbox)
+	 * @const {number}
+	 */
+	SEARCH_MULTI_LIST: 3,
+	/**
+	 * Search by period (date/time)
+	 * @const {number}
+	 */
+	SEARCH_PERIOD: 4,
+
+	/**
+	 * True
+	 * @constant {string}
+	 */
+	TRUE: '1',
+	/**
+	 * False
+	 * @constant {string}
+	 */
+	FALSE: '0',
+
+	/**
+	 * Fatal error level
+	 * @const {number}
+	 */
+	ERRLEVEL_FATAL: 1,
+	/**
+	 * Error level
+	 * @const {number}
+	 */
+	ERRLEVEL_ERROR: 2,
+	/**
+	 * Warning level
+	 * @const {number}
+	 */
+	ERRLEVEL_WARNING: 3
+};
+
+/**
+ * Debug
+ * @private
+ */
+var debug = params.debug || false;
+
+/**
+ * Timeout
+ * @private
+ */
+var timeout = params.timeout || 30;
+
+/**
+ * Username
+ * @var
+ */
+var username;
+
+/**
+ * Password
+ * @var
+ */
+var password;
+
+/**
+ * Auth token
+ * @var
+ */
+var authtoken;
+ 
+/**
+ * Parameters
+ * @constant
+ */
+var parameters;
+
+/**
+ * Simplicite application session
+ * @function
+ */
+function session(params) {
+	params = params || {};
+
+	username = params.username || params.login; // naming flexibility
+	password = params.password || params.pwd; // naming flexibility
+	authtoken = params.authtoken || params.authToken || params.token; // naming flexibility
+
+	if (params.url) {
+		try {
+			params.scheme = params.url.replace(/:.*$/, '');
+			var u = params.url.replace(new RegExp('^' + params.scheme + '://'), '').split(':');
+			if (u.length === 1) {
+				params.host = u[0].replace(/\/.*$/, '');
+				params.port = params.scheme === 'http' ? 80 : 443;
+				params.root = u[0].replace(new RegExp('^' + params.host + '/?'), '');
+			} else {
+				params.host = u[0];
+				params.port = parseInt(u[1].replace(/\/.*$/, ''), 10);
+				if (isNaN(params.port))
+					throw new Error('Incorrect port');
+				params.root = u[1].replace(new RegExp('^' + params.port + '/?'), '');
+			}
+			if (params.root === '/')
+				params.root = '';
+		} catch (e) {
+			errorHandler('Unable to parse URL [' + params.url + ']: ' + e.message);
+			return;
+		}
+	}
+	
+	var scheme = params.scheme || (params.port === 443 ? 'https' : 'http');
+	if (scheme !== 'http' &amp;&amp; scheme !== 'https') {
+		errorHandler('Incorrect scheme [' + params.scheme + ']');
+		return;
+	}
+	var host = params.host || 'localhost';
+	var port = params.port || 8080;
+	var root = params.root || '';
+	if (root === '/')
+		root = '';
+	
+	var url = scheme + '://' + host;
+	if ((scheme === 'http' &amp;&amp; port != 80) || (scheme === 'https' &amp;&amp; port != 443))
+		url += ':' + port;
+	if (root !== '')
+		url += root.startsWith('/') ? root : '/' + root;
+	debugHandler('[simplicite] Base URL = ' + url);
+
+	parameters = {
+		scheme: scheme,
+		host: host,
+		port: port,
+		root: root,
+		url: url
+	};
+}
+
+/**
+ * Set username
+ * @param {string} usr Username
+ * @function
+ */
+function setUsername(usr) {
+	this.username = usr;
+}
+
+/**
+ * Set password
+ * @param {string} pwd Password
+ * @function
+ */
+function setPassword(pwd) {
+	this.password = pwd;
+}
+
+/**
+ * Basic HTTP authorization header
+ * @private
+ */
+function getBasicAuthHeader() {
+	return this.username &amp;&amp; this.password
+		? 'Basic ' + (buffer.Buffer.from ? buffer.Buffer.from(this.username + ':' + this.password) : new buffer.Buffer(this.username + ':' + this.password)).toString('base64')
+		: null;
+}
+
+/**
+ * Set auth token
+ * @param {string} t Auth token
+ * @function
+ */
+function setAuthToken(t) {
+	this.authtoken = t;
+}
+
+/**
+ * Get bearer token header
+ * @private
+ */
+function getBearerTokenHeader() {
+	return this.authtoken
+		? 'Bearer ' + this.authtoken
+		: null;
+}
+
+/**
+ * Request parameters
+ * @param {object} data Data
+ * @private
+ */
+function reqParams(data) {
+	var p = '';
+	if (!data) return p;
+	var n = 0;
+	for (var i in data) {
+		var d = data[i] || '';
+		if (d.name &amp;&amp; d.content) { // Document ?
+			if (d.content.startsWith('data:')) // Flexibility = extract content fron data URL
+				d.content = d.content.replace(/data:.*;base64,/, '');
+			p += (n++ !== 0 ? '&amp;' : '') + i + '=' + encodeURIComponent('id|' + (d.id ? d.id : '0') + '|name|' + d.name + '|content|' + d.content);
+		} else if (d.object &amp;&amp; d.row_id) { // Object ?
+			p += (n++ !== 0 ? '&amp;' : '') + i + '=' + encodeURIComponent('object|' + d.object + '|row_id|' + d.row_id);
+		} else if (d.sort) { // Array ?
+			for (var j = 0; j &lt; d.length; j++)
+				p += (n++ !== 0 ? '&amp;' : '') + i + '=' + encodeURIComponent(d[j]);
+		} else {
+			p += (n++ !== 0 ? '&amp;' : '') + i + '=' + encodeURIComponent(d);
+		}
+	}
+	return p;
+}
+
+/**
+ * Request
+ * @param {string} path Path
+ * @param {object} data Data
+ * @param {function} callback Callback
+ * @param {function} error Error handler
+ * @private
+ */
+function req(path, data, callback, error) {
+	var self = this;
+	var m = data ? 'post' : 'get';
+	var h = {};
+	if (data)
+		h['Content-Type'] = 'application/x-www-form-urlencoded; charset=utf-8';
+	var b = getBearerTokenHeader.call(this);
+	if (b) {
+		debugHandler('[simplicite.req] Using bearer token header = ' + b);
+		h['X-Simplicite-Authorization'] = b;
+	} else {
+		b = getBasicAuthHeader.call(this);
+		if (b) {
+			debugHandler('[simplicite.req] Using basic auth header = ' + b);
+			h.Authorization = b;
+		}
+	}
+	axios.request({
+		baseURL: url,
+		url: path || '/',
+		method: m,
+		headers: h,
+		timeout: timeout * 1000,
+		withCredentials: true,
+		data: data
+	}).then(function (res) {
+		if (callback)
+			callback.call(self, res.data, res.status);
+	}).catch(function(err) {
+		if (error)
+			error.call(self, err);
+		else
+			throw err;
+	});
+}
+
+/**
+ * Get error object
+ * @param {object} error Error
+ * @param {string} error.message Error message
+ * @param {number} status Error status
+ * @function
+ */
+function getError(error, status) {
+	return typeof error === 'string' ? { message: error, status: status } : error;
+}
+
+/**
+ * Parse result
+ * @param {object} res Response to parse
+ * @param {number} status HTTP status
+ * @private
+ */
+function parse(res, status) {
+	try {
+		if (status !== 200)
+			return { type: 'error', response: getError('HTTP status: ' + status, status) };
+		return typeof res === 'object' ? res : JSON.parse(res);
+	} catch (e) {
+		return { type: 'error', response: getError('Parsing error: ' + e.message, status) };
+	}
+}
+
+/**
+ * Is used within generic UI?
+ * @constant
+ */
+var ui = typeof window !== 'undefined' &amp;&amp; typeof window.$ui !== 'undefined';
+
+/**
+ * Health check service path
+ * @private
+ */
+var healthpath = (ui ? '/ui/' : '') + '/health?format=json';
+
+/**
+ * Get health check (no need to be authenticated)
+ * @param {function} callback Callback (called upon success)
+ * @param {object} opts Options
+ * @private
+ */
+function _getHealth(callback, opts) {
+	var self = this;
+	opts = opts || {};
+	req.call(self, healthpath, undefined, function(res, status) {
+		debugHandler('[simplicite._getHealth] HTTP status = ' + status + ', response = ' + res);
+		var health = parse(res, status);
+		if (health.type === 'error') {
+			(opts.error ? opts.error : errorHandler).call(self, health.response);
+		} else if (callback) {
+			callback.call(self, health);
+		}
+	}, function(e) {
+		(opts.error ? opts.error : errorHandler).call(self, e);
+	});
+}
+
+/**
+ * Get health check (no need to be authenticated)
+ * @param {object} opts Options
+ * @function
+ */
+function getHealth(opts) {
+	var d = Q.defer();
+	opts = opts || {};
+	opts.error = function(e) { var err = getError(e); err._scope = this; d.reject(err); };
+	_getHealth(function(health) { health = health || {}; health._scope = this; d.resolve(health); }, opts);
+	return d.promise;
+}
+
+/**
+ * Application services path
+ * @private
+ */
+var apppath = '/' + (ui ? 'ui' : 'api') + '/json/app';
+
+/**
+ * Business object services path
+ * @private
+ */
+var objpath = '/' + (ui ? 'ui' : 'api') + '/json/obj';
+
+/**
+ * Business processes services path
+ * @private
+ */
+var pcspath = '/' + (ui ? 'ui' : 'api') + '/json/pcs';
+
+/**
+ * External object services path
+ * @private
+ */
+var extpath = '/' + (ui ? 'ui' : 'api') + '/ext';
+
+/**
+ * Clears all data (credentials, objects, ...)
+ * @function
+ */
+function clear() {
+	this.username = undefined;
+	this.password = undefined;
+	this.authtoken = undefined;
+	this.sessionid = undefined;
+
+	this.grant = undefined;
+
+	this.appinfo = undefined;
+	this.sysinfo = undefined;
+	this.userinfo = undefined;
+
+	businessObjectCache = {};
+}
+
+/**
+ * Login
+ * @param {function} callback Callback (called upon success)
+ * @param {object} opts Options
+ * @private
+ */
+function _login(callback, opts) {
+	var self = this;
+	opts = opts || {};
+	if (opts.username || opts.login) {
+		clear();
+		self.username = opts.username || opts.login;
+		if (opts.password || opts.pwd)
+			self.password = opts.password || opts.pwd;	
+	}
+	req.call(self, apppath + '?action=session', undefined, function(res, status) {
+		debugHandler('[simplicite.login] HTTP status = ' + status + ', response = ' + res);
+		var r = parse(res, status);
+		if (r.type === 'error') {
+			(opts.error ? opts.error : errorHandler).call(self, r.response);
+		} else {
+			self.sessionid = r.response.id;
+			debugHandler('[simplicite.login] Session ID = ' + self.sessionid);
+			self.username = r.response.login;
+			if (self.username)
+				debugHandler('[simplicite.login] Username = ' + self.username);
+			self.authtoken = r.response.authtoken;
+			if (self.authtoken)
+				debugHandler('[simplicite.login] Auth token = ' + self.authtoken);
+			// Minimal grant from session data
+			self.grant = {
+				login: r.response.login,
+				userid: r.response.userid,
+				firstname: r.response.firstanme,
+				lastname: r.response.lastname,
+				email: r.response.email
+			};
+			if (callback)
+				callback.call(self, r.response);
+		}
+	}, function(e) {
+		(opts.error ? opts.error : errorHandler).call(self, e);
+	});
+}
+
+/**
+ * Login
+ * @param {object} opts Options
+ * @function
+ */
+function login(opts) {
+	var d = Q.defer();
+	opts = opts || {};
+	opts.error = function(e) { d.reject(e); };
+	_login(function(res) { d.resolve(res); }, opts);
+	return d.promise;
+}
+
+/**
+ * Logout
+ * @param {function} callback Callback (called upon success)
+ * @param {object} opts Options
+ * @private
+ */
+function _logout(callback, opts) {
+	var self = this;
+	opts = opts || {};
+	req.call(self, apppath + '?action=logout', undefined, function(res, status) {
+		debugHandler('[simplicite.logout] HTTP status = ' + status + ', response = ' + res);
+		var r = parse(res, status);
+		if (r.type === 'error') {
+			(opts.error ? opts.error : errorHandler).call(self, r.response);
+		} else {
+			clear.call(self);
+			if (callback)
+				callback.call(self, r.response);
+		}
+	}, function(e) {
+		if (e.status === 401) // Removes (expired or deleted) token if any
+			self.authtoken = undefined;
+		(opts.error ? opts.error : errorHandler).call(self, e);
+	});
+}
+
+/**
+ * Logout
+ * @param {function} callback Callback (called upon success)
+ * @param {object} opts Options
+ * @function
+ */
+function logout(opts) {
+	var d = Q.defer();
+	opts = opts || {};
+	opts.error = function(e) { d.reject(e); };
+	_logout(function(res) { d.resolve(res); }, opts);
+	return d.promise;
+}
+
+/**
+ * Grant
+ * @var
+ */
+var grant = {};
+
+/**
+ * Get user (grant)
+ * @param {function} callback Callback (called upon success)
+ * @param {object} opts Options
+ * @private
+ */
+function _getGrant(callback, opts) {
+	var self = this;
+	opts = opts || {};
+	var p = '';
+	if (opts.inlinePicture)
+		p += '&amp;inline_picture=' + opts.inlinePicture;
+	req.call(self, apppath + '?action=getgrant' + p, undefined, function(res, status) {
+		debugHandler('[simplicite.getGrant] HTTP status = ' + status + ', response = ' + res);
+		var r = parse(res, status);
+		if (r.type === 'error') {
+			(opts.error ? opts.error : errorHandler).call(self, r.response);
+		} else {
+			self.grant = r.response;
+			/*if (self.grant.picture) {
+				self.grant.picture.url = self.documentURL('User', 'usr_image_id', self.grant.userid, self.grant.picture.id);
+				self.grant.picture.thumbnailurl = self.grant.picture.url + '&amp;thumbnail=true';
+			}*/
+			self.grant.getUserId = function() { return this.userid; };
+			self.grant.getLogin = function() { return this.login; };
+			self.grant.getLang = function() { return this.lang; };
+			self.grant.getEmail = function() { return this.email; };
+			self.grant.getFirstName = function() { return this.firstname; };
+			self.grant.getLastName = function() { return this.lastname; };
+			self.grant.hasResponsibility = function(group) { return this.responsibilities &amp;&amp; this.responsibilities.indexOf(group) !== -1; };
+			if (callback)
+				callback.call(self, self.grant);
+		}
+	}, function(e) {
+		(opts.error ? opts.error : errorHandler).call(self, e);
+	});
+}
+
+/**
+ * Get user (grant)
+ * @param {object} opts Options
+ * @function
+ */
+function getGrant(opts) {
+	var d = Q.defer();
+	opts = opts || {};
+	opts.error = function(e) { d.reject(e); };
+	_getGrant(function(grant) { d.resolve(grant); }, opts);
+	return d.promise;
+}
+
+/**
+ * Business objects cache
+ * @type {object}
+ * @private
+ */
+var businessObjectCache = {};
+
+/**
+ * Get business object cache key
+ * @param {string} name Business object name
+ * @param {string} instance Optional business object instance name
+ * @return Business object cache key
+ * @function
+ */
+function getBusinessObjectCacheKey(name, instance) {
+	return name + ':' + (instance || 'js_' + name);
+}
+
+/**
+ * Business object meta data.
+ * &lt;br/>&lt;span style="color: red;">You &lt;strong>should never&lt;/strong> instanciate this class directly
+ * but rather use it from the &lt;code>metadata&lt;/code> variable of your &lt;code>BusinessObject&lt;/code> instances&lt;/span>.
+ * @param {string} name Business object name
+ * @param {string} instance Optional business object instance name
+ * @class
+ */
+class BusinessObjectMetadata {
+	constructor(name, instance) {
+		/**
+		 * Name
+		 * @constant
+		 */
+		this.name = name;
+
+		/**
+		 * Instance name
+		 * @constant
+		 */
+		this.instance = instance;
+
+		/**
+		 * Row ID field name
+		 * @var
+		 */
+		this.rowidfield = constants.DEFAULT_ROW_ID_NAME;
+
+		/**
+		 * Display label
+		 * @var
+		 */
+		this.label = name;
+
+		/**
+		 * Help
+		 * @var
+		 */
+		this.help = '';
+
+		/**
+		 * Fields definitions
+		 * @var
+		 */
+		this.fields = [];
+	}
+}
+
+/**
+ * Business object.
+ * &lt;br/>&lt;span style="color: red;">Note that you &lt;strong>should never&lt;/strong> instanciate this class directly
+ * but rather call &lt;code>getBusinessObject&lt;/code> to get a cached instance&lt;/span>.
+ * @param {object} session Session
+ * @param {string} name Business object name
+ * @param {string} instance Optional business object instance name
+ * @class
+ */
+function BusinessObject(session, name, instance) {
+	instance = instance || 'js_' + name;
+
+	/**
+	 * Session
+	 * @constant
+	 */
+	this.session = session;
+
+	/**
+	 * Object metadata
+	 * @var
+	 */
+	this.metadata = new BusinessObjectMetadata(name, instance);
+
+	/**
+	 * cache key
+	 * @constant
+	 */
+	this.cacheKey = getBusinessObjectCacheKey(name, instance);
+
+	/**
+	 * Path
+	 * @constant
+	 */
+	this.path = objpath + '?object=' + name + '&amp;inst=' + instance;
+
+	/**
+	 * Current item
+	 * @var
+	 */
+	this.item = {};
+
+	/**
+	 * Current filters
+	 * @var
+	 */
+	this.filters = {};
+
+	/**
+	 * Current lits
+	 */
+	this.list = [];
+
+	/**
+	 * Get meta data
+	 * @param {function} callback Callback (called upon success)
+	 * @param {object} opts Options
+	 * @private
+	 */
+	function _getMetaData(callback, opts) {
+		var self = this;
+		opts = opts || {};
+		var p = '';
+		if (opts.context)
+			p += '&amp;context=' + opts.context;
+		if (opts.contextParam)
+			p += '&amp;contextparam=' + opts.contextParam;
+		req.call(self.session, path + '&amp;action=metadata' + p, undefined, function(res, status) {
+			debugHandler('[simplicite.BusinessObject.getMetaData] HTTP status = ' + status + ', response = ' + res);
+			var r = parse(res, status);
+			if (r.type === 'error') {
+				(opts.error ? opts.error : errorHandler).call(self, r.response);
+			} else {
+				self.metadata = r.response;
+				if (callback)
+					callback.call(self, self.metadata);
+			}
+		}, function(e) {
+			(opts.error ? opts.error : errorHandler).call(self, e);
+		});
+	}
+
+	/**
+	 * Get meta data
+	 * @param {object} opts Options
+	 * @function
+	 */
+	this.getMetaData = function(opts) {
+		var d = Q.defer();
+		_getMetaData(function(metadata) { d.resolve(metadata); }, opts);
+		return d.promise;
+	};
+
+	/**
+	 * Get name
+	 * @return Name
+	 * @function
+	 */
+	this.getName = function() {
+		return metadata.name;
+	};
+
+	/**
+	 * Get instance name
+	 * @return Instance name
+	 * @function
+	 */
+	this.getInstance = function() {
+		return metadata.instance;
+	};
+
+	/**
+	 * Get display label
+	 * @return Display label
+	 * @function
+	 */
+	this.getLabel = function() {
+		return metadata.label;
+	};
+
+	/**
+	 * Get help
+	 * @return Help
+	 * @function
+	 */
+	this.getHelp = function() {
+		return metadata.help;
+	};
+
+	/**
+	 * Get all fields definitions
+	 * @return Fields definitions
+	 * @function
+	 */
+	this.getFields = function() {
+		return metadata.fields;
+	};
+}
+
+/**
+ * Get business object
+ * @param {string} name Business object name
+ * @param {string} instance Optional business object instance name
+ * @function
+ */
+function getBusinessObject(name, instance) {
+	var cacheKey = getBusinessObjectCacheKey(name, instance);
+
+	var obj = businessObjectCache[cacheKey];
+	if (!obj) {
+		obj = new BusinessObject(this, name, instance);
+		businessObjectCache[cacheKey] = obj;
+	}
+
+	return obj;
+}
+
+/**
+ * Get a business process
+ * @param {string} name Business process name
+ * @function
+ */
+function getBusinessProcess(name) {
+	return {
+		metadata: { name: name }
+	};
+}
+
+/**
+ * Get an external object
+ * @param {string} External object name
+ * @function
+ */
+function getExternalObject(name) {
+	return {
+		metadata: { name: name }
+	};
+}
+
+module.exports = {
+	constants: constants,
+	session: session,
+	username: username,
+	password: password,
+	authtoken: authtoken,
+	parameters: parameters,
+	setUsername: setUsername,
+	setLogin: setUsername, // Naming flexibility
+	setPassword: setPassword,
+	setAuthToken: setAuthToken,
+	setToken: setAuthToken, // Naming flexibility
+	info: infoHandler,
+	warn: warnHandler,
+	error: errorHandler,
+	debug: debugHandler,
+	getError: getError,
+	getHealth: getHealth,
+	clear: clear,
+	login: login,
+	logout: logout,
+	getBusinessObject: getBusinessObject,
+	getBusinessProcess: getBusinessProcess,
+	getExternalObject: getExternalObject,
+	BusinessObject: BusinessObject,
+	BusinessObjectMetadata: BusinessObjectMetadata
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-simplicite.html">simplicite</a></li></ul><h3>Classes</h3><ul><li><a href="module-simplicite-BusinessObject.html">BusinessObject</a></li><li><a href="module-simplicite-BusinessObjectMetadata.html">BusinessObjectMetadata</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Sun May 10 2020 15:51:57 GMT+0200 (GMT+02:00)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
