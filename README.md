@@ -21,40 +21,17 @@ or in **native** JavaScript-based mobile frameworks.
 
 > **Note**: for browser compatibility reasons this module is implemented in ES5
 
-To install it:
+Install
+-------
 
 ```bash
 npm install
 ```
 
-Basic usage:
+Usage
+-----
 
-```javascript
-const app = require('simplicite').session({ url: '<my instance base URL>' });
-app.login({ username: '<my username>', password: '<my password>' }).then(function() {
-	let obj = app.getBusinessObject('MyObject');
-	app.search().then(function(res) {
-		// Do something with search result (available both as res and as obj.list)
-		// Etc.
-	});
-}).fail(function(reason) {
-	console.error('Login failed (status: ' + reason.status + ', message: ' + reason.message + ')');
-});
-```
-
-Check `test*.js` for other examples of basic usage.
-
-For more advanced examples, check these repositories:
-
-- **Server-side**:
-	- [Node.js&reg; demo](https://github.com/simplicitesoftware/nodejs-demo)
-- **Client-side**:
-	- [Plain web demo](https://github.com/simplicitesoftware/web-demo)
-	- [Vue.js&reg; demo](https://github.com/simplicitesoftware/vue-demo)
-	- [React&reg; demo](https://github.com/simplicitesoftware/react-demo)
-	- [Angular&reg; demo](https://github.com/simplicitesoftware/angular-demo)
-- **Native**:
-	- [ReactNative&reg; demo](https://github.com/simplicitesoftware/react-native-demo)
+See [the JSDoc documentation](https://simplicitesoftware.github.io/nodejs-api/) for details.
 
 Test
 ----
