@@ -45,31 +45,16 @@
     <section>
         <article><p><img src="https://www.simplicite.io/resources/logos/logo250.png" alt="Simplicité Software"></p>
 <hr>
-<p><a href="https://www.simplicite.io"><img src="https://img.shields.io/badge/author-Simplicite_Software-blue.svg?style=flat-square" alt="Author"></a> <img src="https://img.shields.io/badge/license-Apache--2.0-orange.svg?style=flat-square" alt="License"> <a href="https://gitter.im/simplicite/Lobby"><img src="https://badges.gitter.im/org.png" alt="Gitter chat"></a></p>
-<p><a href="https://sonarcloud.io/dashboard?id=simplicitesoftware_nodejs-api"><img src="https://sonarcloud.io/api/project_badges/measure?project=simplicitesoftware_nodejs-api&amp;metric=alert_status" alt="Quality Gate Status"></a></p>
-<h1>Simplicité® node.js® &amp; browser JavaScript API</h1>
-<p><a href="https://nodei.co/npm/simplicite/"><img src="https://nodei.co/npm/simplicite.png?downloads=true&amp;downloadRank=true" alt="NPM"></a></p>
-<h2>Introduction</h2>
-<p>This is the node.js® &amp; browser <strong>JavaScript API</strong> for the <a href="http://www.simplicitesoftware.com">Simplicité® platform</a>.</p>
-<p>It can be used in <strong>server-side</strong> node applications, in a <strong>client-side</strong> web applications
-(e.g. by building a bundle with <a href="http://browserify.org">browserify</a> and/or by using various dedicated frameworks)
-or in <strong>native</strong> JavaScript-based mobile frameworks.</p>
-<blockquote>
-<p><strong>Note</strong>: for browser compatibility reasons this module is implemented in ES5</p>
-</blockquote>
-<p>To install it:</p>
-<pre class="prettyprint source lang-bash"><code>npm install
-</code></pre>
-<p>Basic usage:</p>
+<p>This is the node.js® &amp; browser <strong>JavaScript module</strong> for the <a href="http://www.simplicitesoftware.com">Simplicité® platform</a>.</p>
 <pre class="prettyprint source lang-javascript"><code>const app = require('simplicite').session({ url: '&lt;my instance base URL>' });
 app.login({ username: '&lt;my username>', password: '&lt;my password>' }).then(function() {
 	let obj = app.getBusinessObject('MyObject');
-	app.search().then(function(res) {
-		// Do something with search result (available both as res and as obj.list)
-		// Etc.
-	});
-}).fail(function(reason) {
-	console.error('Login failed (status: ' + reason.status + ', message: ' + reason.message + ')');
+	return app.search();
+}).then(function(res) {
+	// Do something with search result (available both as res and as obj.list)
+	// Etc.
+}).catch(function(err) {
+	console.error(err.message);
 });
 </code></pre>
 <p>Check <code>test*.js</code> for other examples of basic usage.</p>
@@ -93,49 +78,7 @@ app.login({ username: '&lt;my username>', password: '&lt;my password>' }).then(f
 <li><a href="https://github.com/simplicitesoftware/react-native-demo">ReactNative® demo</a></li>
 </ul>
 </li>
-</ul>
-<h2>Test</h2>
-<p>Set the environment variables for your Simplicité instance:</p>
-<ul>
-<li><code>TEST_SIMPLICITE_SCHEME</code> defaults to <code>'http'</code></li>
-<li><code>TEST_SIMPLICITE_HOST</code> defaults to <code>'localhost'</code></li>
-<li><code>TEST_SIMPLICITE_PORT</code> defaults to <code>8080</code></li>
-<li><code>TEST_SIMPLICITE_ROOT</code> defaults to <code>''</code> (root webapp)</li>
-<li><code>TEST_SIMPLICITE_URL</code> defaults to <code>http://localhost:8080</code></li>
-<li><code>TEST_SIMPLICITE_ADMIN_SERNAME</code> defaults to <code>'designer'</code></li>
-<li><code>TEST_SIMPLICITE_ADMIN_PASSWORD</code> defaults to <code>'designer'</code></li>
-<li><code>TEST_SIMPLICITE_USERNAME</code> defaults to <code>'website'</code></li>
-<li><code>TEST_SIMPLICITE_PASSWORD</code> defaults to <code>'simplicite'</code></li>
-</ul>
-<p>Run the unit tests, this generates the <code>coverage</code> folder:</p>
-<pre class="prettyprint source lang-bash"><code>npm run test
-</code></pre>
-<h2>Build</h2>
-<p>Check syntax and rules:</p>
-<pre class="prettyprint source lang-bash"><code>npm run lint
-</code></pre>
-<p>Generates the minified <code>dist/simplicite.min.js</code> file:</p>
-<pre class="prettyprint source lang-bash"><code>npm run build
-</code></pre>
-<h2>Documentation</h2>
-<p>Generate documentation:</p>
-<pre class="prettyprint source lang-bash"><code>npm run jsdoc
-</code></pre>
-<h2>Publish</h2>
-<p>Publish to npm repository:</p>
-<pre class="prettyprint source lang-bash"><code>npm publish
-</code></pre>
-<h2>License</h2>
-<p>Copyright Simplicité Software</p>
-<p>Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at</p>
-<p><a href="http://www.apache.org/licenses/LICENSE-2.0"></a></p>
-<p>Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.</p></article>
+</ul></article>
     </section>
 
 
@@ -152,7 +95,7 @@ limitations under the License.</p></article>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Sun May 10 2020 15:51:57 GMT+0200 (GMT+02:00)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Sun May 10 2020 16:08:11 GMT+0200 (GMT+02:00)
 </footer>
 
 <script> prettyPrint(); </script>
