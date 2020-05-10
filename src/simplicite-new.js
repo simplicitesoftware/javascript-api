@@ -1,35 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>JSDoc: Source: simplicite-new.js</title>
-
-    <script src="scripts/prettify/prettify.js"> </script>
-    <script src="scripts/prettify/lang-css.js"> </script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
-</head>
-
-<body>
-
-<div id="main">
-
-    <h1 class="page-title">Source: simplicite-new.js</h1>
-
-    
-
-
-
-    
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>/**
+/**
  * **Simplicite(R) platform** Javascript API (for node.js and browser).
  * @module simplicite
- * @version 1.1.0
+ * @version 1.1.1
  * @license Apache-2.0
  */
 var Q = require('q');
@@ -490,7 +462,7 @@ function session(params) {
 	}
 	
 	var scheme = params.scheme || (params.port === 443 ? 'https' : 'http');
-	if (scheme !== 'http' &amp;&amp; scheme !== 'https') {
+	if (scheme !== 'http' && scheme !== 'https') {
 		error('Incorrect scheme [' + params.scheme + ']');
 		return;
 	}
@@ -501,7 +473,7 @@ function session(params) {
 		root = '';
 	
 	var url = scheme + '://' + host;
-	if ((scheme === 'http' &amp;&amp; port != 80) || (scheme === 'https' &amp;&amp; port != 443))
+	if ((scheme === 'http' && port != 80) || (scheme === 'https' && port != 443))
 		url += ':' + port;
 	if (root !== '')
 		url += root.startsWith('/') ? root : '/' + root;
@@ -541,7 +513,7 @@ function setPassword(pwd) {
  * @private
  */
 function getBasicAuthHeader() {
-	return this.username &amp;&amp; this.password
+	return this.username && this.password
 		? 'Basic ' + (buffer.Buffer.from ? buffer.Buffer.from(this.username + ':' + this.password) : new buffer.Buffer(this.username + ':' + this.password)).toString('base64')
 		: null;
 }
@@ -576,17 +548,17 @@ function reqParams(data) {
 	var n = 0;
 	for (var i in data) {
 		var d = data[i] || '';
-		if (d.name &amp;&amp; d.content) { // Document ?
+		if (d.name && d.content) { // Document ?
 			if (d.content.startsWith('data:')) // Flexibility = extract content fron data URL
 				d.content = d.content.replace(/data:.*;base64,/, '');
-			p += (n++ !== 0 ? '&amp;' : '') + i + '=' + encodeURIComponent('id|' + (d.id ? d.id : '0') + '|name|' + d.name + '|content|' + d.content);
-		} else if (d.object &amp;&amp; d.row_id) { // Object ?
-			p += (n++ !== 0 ? '&amp;' : '') + i + '=' + encodeURIComponent('object|' + d.object + '|row_id|' + d.row_id);
+			p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent('id|' + (d.id ? d.id : '0') + '|name|' + d.name + '|content|' + d.content);
+		} else if (d.object && d.row_id) { // Object ?
+			p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent('object|' + d.object + '|row_id|' + d.row_id);
 		} else if (d.sort) { // Array ?
-			for (var j = 0; j &lt; d.length; j++)
-				p += (n++ !== 0 ? '&amp;' : '') + i + '=' + encodeURIComponent(d[j]);
+			for (var j = 0; j < d.length; j++)
+				p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent(d[j]);
 		} else {
-			p += (n++ !== 0 ? '&amp;' : '') + i + '=' + encodeURIComponent(d);
+			p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent(d);
 		}
 	}
 	return p;
@@ -667,7 +639,7 @@ function parse(res, status) {
  * Is used within generic UI?
  * @constant
  */
-var ui = typeof window !== 'undefined' &amp;&amp; typeof window.$ui !== 'undefined';
+var ui = typeof window !== 'undefined' && typeof window.$ui !== 'undefined';
 
 /**
  * Health check service path
@@ -868,7 +840,7 @@ function _getGrant(callback, opts) {
 	opts = opts || {};
 	var p = '';
 	if (opts.inlinePicture)
-		p += '&amp;inline_picture=' + opts.inlinePicture;
+		p += '&inline_picture=' + opts.inlinePicture;
 	req.call(self, apppath + '?action=getgrant' + p, undefined, function(res, status) {
 		self.debug('[simplicite.getGrant] HTTP status = ' + status + ', response = ' + res);
 		var r = parse(res, status);
@@ -878,7 +850,7 @@ function _getGrant(callback, opts) {
 			self.grant = r.response;
 			/*if (self.grant.picture) {
 				self.grant.picture.url = self.documentURL('User', 'usr_image_id', self.grant.userid, self.grant.picture.id);
-				self.grant.picture.thumbnailurl = self.grant.picture.url + '&amp;thumbnail=true';
+				self.grant.picture.thumbnailurl = self.grant.picture.url + '&thumbnail=true';
 			}*/
 			self.grant.getUserId = function() { return this.userid; };
 			self.grant.getLogin = function() { return this.login; };
@@ -886,7 +858,7 @@ function _getGrant(callback, opts) {
 			self.grant.getEmail = function() { return this.email; };
 			self.grant.getFirstName = function() { return this.firstname; };
 			self.grant.getLastName = function() { return this.lastname; };
-			self.grant.hasResponsibility = function(group) { return this.responsibilities &amp;&amp; this.responsibilities.indexOf(group) !== -1; };
+			self.grant.hasResponsibility = function(group) { return this.responsibilities && this.responsibilities.indexOf(group) !== -1; };
 			if (callback)
 				callback.call(self, self.grant);
 		}
@@ -928,8 +900,8 @@ function getBusinessObjectCacheKey(name, instance) {
 
 /**
  * Business object meta data.
- * &lt;br/>&lt;span style="color: red;">You **should never** instanciate this class directly
- * but rather use it from the `metadata` variable of your `BusinessObject` instances&lt;/span>.
+ * <br/><span style="color: red;">You **should never** instanciate this class directly
+ * but rather use it from the `metadata` variable of your `BusinessObject` instances</span>.
  * @param {string} name Business object name
  * @param {string} instance Optional business object instance name
  * @class
@@ -976,8 +948,8 @@ class BusinessObjectMetadata {
 
 /**
  * Business object.
- * &lt;br/>&lt;span style="color: red;">Note that you &lt;strong>should never&lt;/strong> instanciate this class directly
- * but rather call &lt;code>getBusinessObject&lt;/code> to get a cached instance&lt;/span>.
+ * <br/><span style="color: red;">Note that you <strong>should never</strong> instanciate this class directly
+ * but rather call <code>getBusinessObject</code> to get a cached instance</span>.
  * @param {object} session Session
  * @param {string} name Business object name
  * @param {string} instance Optional business object instance name
@@ -1008,7 +980,7 @@ function BusinessObject(session, name, instance) {
 	 * Path
 	 * @constant {string}
 	 */
-	this.path = objpath + '?object=' + name + '&amp;inst=' + instance;
+	this.path = objpath + '?object=' + name + '&inst=' + instance;
 
 	/**
 	 * Current item
@@ -1039,10 +1011,10 @@ function BusinessObject(session, name, instance) {
 		opts = opts || {};
 		var p = '';
 		if (opts.context)
-			p += '&amp;context=' + opts.context;
+			p += '&context=' + opts.context;
 		if (opts.contextParam)
-			p += '&amp;contextparam=' + opts.contextParam;
-		req.call(self.session, self.path + '&amp;action=metadata' + p, undefined, function(res, status) {
+			p += '&contextparam=' + opts.contextParam;
+		req.call(self.session, self.path + '&action=metadata' + p, undefined, function(res, status) {
 			this.debug('[simplicite.BusinessObject.getMetaData] HTTP status = ' + status + ', response = ' + res);
 			var r = parse(res, status);
 			if (r.type === 'error') {
@@ -1184,26 +1156,3 @@ module.exports = {
 	BusinessObject: BusinessObject,
 	BusinessObjectMetadata: BusinessObjectMetadata
 };
-</code></pre>
-        </article>
-    </section>
-
-
-
-
-</div>
-
-<nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-simplicite.html">simplicite</a></li></ul><h3>Classes</h3><ul><li><a href="module-simplicite-BusinessObject.html">BusinessObject</a></li><li><a href="module-simplicite-BusinessObjectMetadata.html">BusinessObjectMetadata</a></li></ul>
-</nav>
-
-<br class="clear">
-
-<footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Sun May 10 2020 18:47:28 GMT+0200 (GMT+02:00)
-</footer>
-
-<script> prettyPrint(); </script>
-<script src="scripts/linenumber.js"> </script>
-</body>
-</html>
