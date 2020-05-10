@@ -3,9 +3,11 @@
 
 This is the node.js&reg; &amp; browser **JavaScript module** for the [Simplicit&eacute;&reg; platform](http://www.simplicitesoftware.com).
 
+It uses promises, basic usage is something like:
 
 ```javascript
 const app = require('simplicite').session({ url: '<my instance base URL>' });
+
 app.login({ username: '<my username>', password: '<my password>' }).then(function() {
 	let obj = app.getBusinessObject('MyObject');
 	return app.search();
@@ -17,7 +19,8 @@ app.login({ username: '<my username>', password: '<my password>' }).then(functio
 });
 ```
 
-Check `test*.js` for other examples of basic usage.
+Check the [GitHub repository](https://github.com/simplicitesoftware/nodejs-api) `test/test*.js`
+files for other examples of basic usage.
 
 For more advanced examples, check these repositories:
 
