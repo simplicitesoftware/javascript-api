@@ -1,5 +1,6 @@
 /**
- * **Simplicite(R) platform** Javascript API (for node.js and browser).
+ * Simplicite(R) platform Javascript API 
+ * client module (for node.js and browser).
  * @module simplicite
  * @version 1.1.1
  * @license Apache-2.0
@@ -694,17 +695,17 @@ var apppath = '/' + (ui ? 'ui' : 'api') + '/json/app';
  */
 var objpath = '/' + (ui ? 'ui' : 'api') + '/json/obj';
 
-/**
+/*
  * Business processes services path
  * @private
- */
 var pcspath = '/' + (ui ? 'ui' : 'api') + '/json/pcs';
+ */
 
-/**
+/*
  * External object services path
  * @private
- */
 var extpath = '/' + (ui ? 'ui' : 'api') + '/ext';
+ */
 
 /**
  * Clears all data (credentials, objects, ...)
@@ -827,7 +828,7 @@ function logout(opts) {
  * Grant
  * @var
  */
-var grant = {};
+var grant;
 
 /**
  * Get user (grant)
@@ -853,11 +854,14 @@ function _getGrant(callback, opts) {
 				self.grant.picture.thumbnailurl = self.grant.picture.url + '&thumbnail=true';
 			}*/
 			self.grant.getUserId = function() { return this.userid; };
-			self.grant.getLogin = function() { return this.login; };
+			self.grant.getLUsername = function() { return this.login; };
+			self.grant.getLogin = self.grant.getLUsername; // Naming flexibility
 			self.grant.getLang = function() { return this.lang; };
 			self.grant.getEmail = function() { return this.email; };
-			self.grant.getFirstName = function() { return this.firstname; };
-			self.grant.getLastName = function() { return this.lastname; };
+			self.grant.getFirstname = function() { return this.firstname; };
+			self.grant.getFirstName = self.grant.getFirstname;
+			self.grant.getLastname = function() { return this.lastname; };
+			self.grant.getLastName = self.grant.getLastname; // Naming flexibility
 			self.grant.hasResponsibility = function(group) { return this.responsibilities && this.responsibilities.indexOf(group) !== -1; };
 			if (callback)
 				callback.call(self, self.grant);
@@ -868,7 +872,7 @@ function _getGrant(callback, opts) {
 }
 
 /**
- * Get user (grant)
+ * Get grant (current user data)
  * @param {object} opts Options
  * @function
  */
@@ -920,7 +924,7 @@ function changePassword(opts) {
  * Get application info
  * @param {function} callback Callback (called upon success)
  * @param {object} opts Options
- * @function
+ * @private
  */
 function _getAppInfo(callback, opts) {
 	var self = this;
@@ -1144,228 +1148,398 @@ class BusinessObjectMetadata {
  * @param {string} instance Optional business object instance name
  * @class
  */
-function BusinessObject(session, name, instance) {
-	instance = instance || 'js_' + name;
+class BusinessObject {
+	constructor(session, name, instance) {
+		instance = instance || 'js_' + name;
 
-	/**
-	 * Session
-	 * @private
-	 */
-	this.session = session;
+		/**
+		 * Session
+		 * @private
+		 */
+		this.session = session;
 
-	/**
-	 * Object metadata
-	 * @var {BusinessObjectMetadata}
-	 */
-	this.metadata = new BusinessObjectMetadata(name, instance);
+		/**
+		 * Object metadata
+		 * @var {BusinessObjectMetadata}
+		 */
+		this.metadata = new BusinessObjectMetadata(name, instance);
 
-	/**
-	 * cache key
-	 * @constant {string}
-	 */
-	this.cacheKey = getBusinessObjectCacheKey(name, instance);
+		/**
+		 * cache key
+		 * @constant {string}
+		 */
+		this.cacheKey = getBusinessObjectCacheKey(name, instance);
 
-	/**
-	 * Path
-	 * @constant {string}
-	 */
-	this.path = objpath + '?object=' + name + '&inst=' + instance;
+		/**
+		 * Path
+		 * @constant {string}
+		 */
+		this.path = objpath + '?object=' + name + '&inst=' + instance;
 
-	/**
-	 * Current item
-	 * @var {Object}
-	 */
-	this.item = {};
+		/**
+		 * Current item
+		 * @var {Object}
+		 */
+		this.item = {};
 
-	/**
-	 * Current filters
-	 * @var {Object}
-	 */
-	this.filters = {};
+		/**
+		 * Current filters
+		 * @var {Object}
+		 */
+		this.filters = {};
 
-	/**
-	 * Current list
-	 * @var {Object[]}
-	 */
-	this.list = [];
+		/**
+		 * Current list
+		 * @var {Object[]}
+		 */
+		this.list = [];
 
-	/**
-	 * Get meta data
-	 * @param {function} callback Callback (called upon success)
-	 * @param {object} opts Options
-	 * @private
-	 */
-	function _getMetaData(callback, opts) {
-		var self = this;
-		opts = opts || {};
-		var p = '';
-		if (opts.context)
-			p += '&context=' + opts.context;
-		if (opts.contextParam)
-			p += '&contextparam=' + opts.contextParam;
-		req.call(self.session, self.path + '&action=metadata' + p, undefined, function(res, status) {
-			var r = parse(res, status);
-			this.debug('[simplicite.BusinessObject.getMetaData] HTTP status = ' + status + ', response type = ' + r.type);
-			if (r.type === 'error') {
-				(opts.error ? opts.error : error).call(self, r.response);
-			} else {
-				self.metadata = r.response;
-				if (callback)
-					callback.call(self, self.metadata);
-			}
-		}, function(e) {
-			(opts.error ? opts.error : error).call(self, e);
-		});
-	}
-
-	/**
-	 * Get meta data
-	 * @param {object} opts Options
-	 * @function
-	 */
-	this.getMetaData = function(opts) {
-		var d = Q.defer();
-		_getMetaData.call(this, function(metadata) { d.resolve(metadata); }, opts);
-		return d.promise;
-	};
-
-	/**
-	 * Get name
-	 * @returns {string} Name
-	 * @function
-	 */
-	this.getName = function() {
-		return this.metadata.name;
-	};
-
-	/**
-	 * Get instance name
-	 * @returns {string} Instance name
-	 * @function
-	 */
-	this.getInstance = function() {
-		return this.metadata.instance;
-	};
-
-	/**
-	 * Get display label
-	 * @returns {string} Display label
-	 * @function
-	 */
-	this.getLabel = function() {
-		return this.metadata.label;
-	};
-
-	/**
-	 * Get help
-	 * @returns {string} Help
-	 * @function
-	 */
-	this.getHelp = function() {
-		return this.metadata.help;
-	};
-
-	/**
-	 * Get all fields definitions
-	 * @returns {Array} Array of field definitions
-	 * @function
-	 */
-	this.getFields = function() {
-		return this.metadata.fields;
-	};
-
-	/**
-	 * Get a field definition
-	 * @param {string} fieldName Field name
-	 * @returns {Object} Field definition
-	 * @function
-	 */
-	this.getField = function(fieldname) {
-		var n = 0;
-		var fs = this.getFields();
-		while (n < fs.length && fs[n].name !== fieldname) n++;
-		if (n < fs.length)
-			return fs[n];
-	};
-
-	/**
-	 * Get row ID field name
-	 * @returns {string} Row ID field name
-	 * @function
-	 */
-	this.getRowIdFieldName = function() {
-		return this.metadata.rowidfield;
-	};
-
-	/**
-	 * Get row ID field definition
-	 * @returns {Object} Row ID field definition
-	 * @function
-	 */
-	this.getRowIdField = function() {
-		return this.getField(this.getRowIdFieldName());
-	};
-
-	/**
-	 * Get links
-	 * @returns {Array} Array of links
-	 * @function
-	 */
-	this.getLinks = function() {
-		return this.metadata.links;
-	};
-
-	/**
-	 * Get list value of field fro code
-	 * @param {Object} field Field definition
-	 * @param {string} code Code
-	 * @returns {string} Value
-	 * @function
-	 */
-	this.getValueForCode = function(field, code) {
-		var n = 0;
-		var l = field.listOfValues;
-		if (l === undefined)
-			return code;
-		while (n < l.length && l[n].code !== code) n++;
-		return n === l.length ? code : l[n].value;
-	};
-
-	/**
-	 * Get list value for code
-	 * @param {list} list List of values
-	 * @param {string} code Code
-	 * @returns {string} Value
-	 * @function
-	 */
-	this.getListValue = function(list, code) {
-		for (var i = 0; i < list.length; i++) {
-			var l = list[i];
-			if (l.code === code)
-				return l.value;
+		/**
+		 * Get meta data
+		 * @param {function} callback Callback (called upon success)
+		 * @param {object} opts Options
+		 * @private
+		 */
+		function _getMetaData(callback, opts) {
+			var self = this;
+			opts = opts || {};
+			var p = '';
+			if (opts.context)
+				p += '&context=' + opts.context;
+			if (opts.contextParam)
+				p += '&contextparam=' + opts.contextParam;
+			req.call(self.session, self.path + '&action=metadata' + p, undefined, function(res, status) {
+				var r = parse(res, status);
+				this.debug('[simplicite.BusinessObject.getMetaData] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(opts.error ? opts.error : error).call(self, r.response);
+				} else {
+					self.metadata = r.response;
+					if (callback)
+						callback.call(self, self.metadata);
+				}
+			}, function(e) {
+				(opts.error ? opts.error : error).call(self, e);
+			});
 		}
-	};
 
-	/**
-	 * Is the field the row ID field?
-	 * @param {Object} field Field definition
-	 * @returns True if the field is the row ID field
-	 * @function
-	 */
-	this.isRowIdField = function(field) {
-		return !field.ref && field.name === this.metadata.rowidfield;
-	};
+		/**
+		 * Get meta data
+		 * @param {object} opts Options
+		 * @function
+		 */
+		this.getMetaData = function(opts) {
+			var d = Q.defer();
+			_getMetaData.call(this, function(metadata) { d.resolve(metadata); }, opts);
+			return d.promise;
+		};
 
-	/**
-	 * Is the field a timestamp field?
-	 * @param {Object} field Field definition
-	 * @returns True if the field is a timestamp field
-	 * @function
-	 */
-	this.isTimestampField = function(field) {
-		var n = field.name;
-		return !field.ref && (n === 'created_by' || n === 'created_dt' || n === 'updated_by' || n === 'updated_dt');
-	};
+		/**
+		 * Get name
+		 * @returns {string} Name
+		 * @function
+		 */
+		this.getName = function() {
+			return this.metadata.name;
+		};
+
+		/**
+		 * Get instance name
+		 * @returns {string} Instance name
+		 * @function
+		 */
+		this.getInstance = function() {
+			return this.metadata.instance;
+		};
+
+		/**
+		 * Get display label
+		 * @returns {string} Display label
+		 * @function
+		 */
+		this.getLabel = function() {
+			return this.metadata.label;
+		};
+
+		/**
+		 * Get help
+		 * @returns {string} Help
+		 * @function
+		 */
+		this.getHelp = function() {
+			return this.metadata.help;
+		};
+
+		/**
+		 * Get all fields definitions
+		 * @returns {Array} Array of field definitions
+		 * @function
+		 */
+		this.getFields = function() {
+			return this.metadata.fields;
+		};
+
+		/**
+		 * Get a field definition
+		 * @param {string} fieldName Field name
+		 * @returns {Object} Field definition
+		 * @function
+		 */
+		this.getField = function(fieldname) {
+			var n = 0;
+			var fs = this.getFields();
+			while (n < fs.length && fs[n].name !== fieldname) n++;
+			if (n < fs.length)
+				return fs[n];
+		};
+
+		/**
+		 * Get row ID field name
+		 * @returns {string} Row ID field name
+		 * @function
+		 */
+		this.getRowIdFieldName = function() {
+			return this.metadata.rowidfield;
+		};
+
+		/**
+		 * Get row ID field definition
+		 * @returns {Object} Row ID field definition
+		 * @function
+		 */
+		this.getRowIdField = function() {
+			return this.getField(this.getRowIdFieldName());
+		};
+
+		/**
+		 * Get links
+		 * @returns {Array} Array of links
+		 * @function
+		 */
+		this.getLinks = function() {
+			return this.metadata.links;
+		};
+
+		/**
+		 * Get list value of field fro code
+		 * @param {Object} field Field definition
+		 * @param {string} code Code
+		 * @returns {string} Value
+		 * @function
+		 */
+		this.getValueForCode = function(field, code) {
+			var n = 0;
+			var l = field.listOfValues;
+			if (l === undefined)
+				return code;
+			while (n < l.length && l[n].code !== code) n++;
+			return n === l.length ? code : l[n].value;
+		};
+
+		/**
+		 * Get list value for code
+		 * @param {list} list List of values
+		 * @param {string} code Code
+		 * @returns {string} Value
+		 * @function
+		 */
+		this.getListValue = function(list, code) {
+			for (var i = 0; i < list.length; i++) {
+				var l = list[i];
+				if (l.code === code)
+					return l.value;
+			}
+		};
+
+		/**
+		 * Is the field the row ID field?
+		 * @param {Object} field Field definition
+		 * @returns True if the field is the row ID field
+		 * @function
+		 */
+		this.isRowIdField = function(field) {
+			return !field.ref && field.name === this.metadata.rowidfield;
+		};
+
+		/**
+		 * Is the field a timestamp field?
+		 * @param {Object} field Field definition
+		 * @returns True if the field is a timestamp field
+		 * @function
+		 */
+		this.isTimestampField = function(field) {
+			var n = field.name;
+			return !field.ref && (n === 'created_by' || n === 'created_dt' || n === 'updated_by' || n === 'updated_dt');
+		};
+
+		/**
+		 * Get current filters
+		 * @param {function} callback Callback (called upon success)
+		 * @param {object} opts Options
+		 * @private
+		 */
+		function _getFilters(callback, opts) {
+			var self = this;
+			opts = opts || {};
+			var p = '';
+			if (opts.context)
+				p += '&context=' + opts.context;
+			if (opts.reset)
+				p += '&reset=' + opts.reset;
+			req.call(self.session, self.path + '&action=filters' + p, undefined, function(res, status) {
+				var r = parse(res, status);
+				this.debug('[simplicite.BusinessObject.getFilters] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(opts.error ? opts.error : error).call(self, r.response);
+				} else {
+					self.item = r.response;
+					if (callback)
+						callback.call(self, self.filters);
+				}
+			}, function(e) {
+				(opts.error ? opts.error : error).call(self, e);
+			});
+		}
+
+		/**
+		 * Get current filters
+		 * @param {object} opts Options
+		 * @function
+		 */
+		this.getFilters =function(opts) {
+			var d = Q.defer();
+			opts = opts || {};
+			opts.error = function(e) { d.reject(e); };
+			_getFilters.call(this, function(filters) { d.resolve(filters); }, opts);
+			return d.promise;
+		};
+
+		/**
+		 * Build options parameters
+		 * @param {object} options Options
+		 * @private
+		 */
+		function _getOptions(options) {
+			var opts = '';
+			if (options.context)
+				opts += '&context=' + options.context;
+			var id = options.inlineDocs;
+			if (!id)
+				id = options.inlineDocuments;
+			if (id)
+				opts += '&inline_documents=' + (id.join ? id.join(',') : id);
+			var it = options.inlineThumbs;
+			if (!it)
+				it = options.inlineThumbnails;
+			if (it)
+				opts += '&inline_thumbnails=' + (it.join ? it.join(',') : it);
+			var io = options.inlineObjs;
+			if (!io)
+				io = options.inlineObjects;
+			if (io)
+				opts += '&inline_objects=' + (io.join ? io.join(',') : io);
+			return opts;
+		}
+
+		/**
+		 * Count
+		 * @param {function} callback Callback (called upon success)
+		 * @param {object} filters Filters (defaults to current filters)
+		 * @param {object} opts Options
+		 * @private
+		 */
+		function _count(callback, filters, opts) {
+			var self = this;
+			opts = opts || {};
+			self.filters = filters || {};
+			req.call(self.session, self.path + '&action=count', reqParams(self.filters), function(res, status) {
+				var r = parse(res, status);
+				this.debug('[simplicite.BusinessObject.getCount] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(opts.error ? opts.error : error).call(self, r.response);
+				} else {
+					self.count = r.response.count;
+					self.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
+					self.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
+					self.list = [];
+					if (callback)
+						callback.call(self, self.count);
+				}
+			}, function(e) {
+				(opts.error ? opts.error : error).call(self, e);
+			});
+		}
+
+		/**
+		 * Count
+		 * @param {object} filters Filters (defaults to current filters)
+		 * @param {object} opts Options
+		 * @function
+		 */
+		this.count = function(filters, opts) {
+			var d = Q.defer();
+			opts = opts || {};
+			opts.error = function(e) { d.reject(e); };
+			_count.call(this, function(count) { d.resolve(count); }, filters, opts);
+			return d.promise;
+		};
+
+		/**
+		 * Count, **deprecated**: use `count` instead
+		 * @deprecated
+		 * @function
+		 */
+		this.getCount = this.count;
+
+		/**
+		 * Search
+		 * @param {function} callback Callback (called upon success)
+		 * @param {object} filters Filters (defaults to current filters)
+		 * @param {object} opts Options
+		 * @private
+		 */
+		function _search(callback, filters, opts) {
+			var self = this;
+			opts = opts || {};
+			var p = _getOptions(opts);
+			if (opts.page > 0)
+				p += '&page=' + (opts.page - 1);
+			if (opts.metadata===true) p += '&_md=true';
+			if (opts.visible===true) p += '&_visible=true';
+			self.filters = filters || {};
+			req.call(self.session, self.path + '&action=search' + p, reqParams(self.filters), function(res, status) {
+				var r = parse(res, status);
+				this.debug('[simplicite.BusinessObject.search] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(opts.error ? opts.error : error).call(self, r.response);
+				} else {
+					if (res.meta) self.metadata = r.response.meta;
+					self.count = r.response.count;
+					self.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
+					self.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
+					self.list = r.response.list;
+					if (callback)
+						callback.call(self, self.list);
+				}
+			}, function(e) {
+				(opts.error ? opts.error : error).call(self, e);
+			});
+		}
+
+		/**
+		 * Search
+		 * @param {object} filters Filters (defaults to current filters)
+		 * @param {object} opts Options
+		 * @function
+		 */
+		this.search = function(filters, opts) {
+			var d = Q.defer();
+			opts = opts || {};
+			opts.error = function(e) { d.reject(e); };
+			_search.call(this, function(list) { d.resolve(list); }, filters, opts);
+			return d.promise;
+		};
+	}
 }
 
 /**
@@ -1433,6 +1607,7 @@ module.exports = {
 	login: login,
 	logout: logout,
 	getGrant: getGrant,
+	grant: grant,
 	changePassword: changePassword,
 	getAppInfo: getAppInfo,
 	getSysInfo: getSysInfo,

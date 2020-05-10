@@ -19,8 +19,11 @@ app.warn("WARN message");
 app.error("ERROR message");
 app.debug("DEBUG message");
 
-let objName = 'SystemParam';
-let obj;
+const sysName = 'SystemParam', sysId = "2",
+	sysCodeName = 'sys_code', sysCode = 'TEST_' + Date.now(),
+	sysValueName = 'sys_value', sysValue = 'Test',
+	sysCodeFilter = '%TIMEOUT%', sysFilters = { sys_code: sysCodeFilter };
+let sys;
 
 app.getHealth().then(health => {
 	app.debug(health);
@@ -56,25 +59,42 @@ app.getHealth().then(health => {
 	app.debug(news);
 	assert.ok(news);
 	app.log('Nb news: ' + news.length);
-	obj = app.getBusinessObject(objName);
-	return obj.getMetaData();
+	sys = app.getBusinessObject(sysName);
+	return sys.getMetaData();
 }).then(md => {
 	app.debug(md);
-	assert.ok(md.name == objName);
+	assert.ok(md.name == sysName);
 	app.log('Name: ' + md.name + ', instance name: ' + md.instance + ', label: ' + md.label);
-	assert.ok(obj.getName() == objName);
-	app.log('Name: ' + obj.getName() + ', instance name: ' + obj.getInstance() + ', label: ' + obj.getLabel());
-	assert.ok(obj.getFields().length > 0);
-	app.log('Number of fields: ' + obj.getFields().length + ', number of links: ' + obj.getLinks().length);
-	assert.ok(obj.getRowIdField().name == app.constants.DEFAULT_ROW_ID_NAME);
-	let f = obj.getField('sys_code');
-	assert.ok(f.name == 'sys_code');
-	app.log('Code field: ' + obj.getField('sys_code').label);
-	f = obj.getField('sys_value');
-	assert.ok(f.name == 'sys_value');
-	app.log('Value field: ' + obj.getField('sys_value').label);
-	assert.ok(obj.isRowIdField(f) == false);
-	assert.ok(obj.isTimestampField(f) == false);
+	assert.ok(sys.getName() == sysName);
+	app.log('Name: ' + sys.getName() + ', instance name: ' + sys.getInstance() + ', label: ' + sys.getLabel());
+	assert.ok(sys.getFields().length > 0);
+	app.log('Number of fields: ' + sys.getFields().length + ', number of links: ' + sys.getLinks().length);
+	assert.ok(sys.getRowIdField().name == app.constants.DEFAULT_ROW_ID_NAME);
+	let f = sys.getField(sysCodeName);
+	assert.ok(f.name == sysCodeName);
+	app.log('Code field: ' + sys.getField(sysCodeName).label);
+	f = sys.getField(sysValueName);
+	assert.ok(f.name == sysValueName);
+	app.log('Value field: ' + sys.getField(sysValueName).label);
+	assert.ok(sys.isRowIdField(f) == false);
+	assert.ok(sys.isTimestampField(f) == false);
+	return sys.count(sysFilters);
+}).then(count => {
+	app.debug(count);
+	assert.ok(count >= 0);
+	app.log('Count: ' + count);
+	return sys.search(sysFilters);
+}).then(list => {
+	app.debug(list);
+	assert.ok(list.length);
+	app.log('Found ' + list.length + ' items');
+	for (let i = 0; i < list.length; i++) {
+		let item = list[i];
+		app.log('- item[' + i + ']: ' + item.row_id + ' ' + item.sys_code + ' ' + item.sys_value);
+	}
+	return sys.getFilters();
+}).then(filters => {
+	app.debug(filters);
 	return app.logout();
 }).then(res => {
 	app.debug(res);
