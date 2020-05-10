@@ -8,13 +8,14 @@ It uses promises, basic usage is something like:
 ```javascript
 const app = require('simplicite').session({ url: '<my instance base URL>' });
 
-app.login({ username: '<my username>', password: '<my password>' }).then(function() {
+app.login({ username: '<my username>', password: '<my password>' }).then(res => {
+	console.log('Hello ' + res.login + '!');
 	let obj = app.getBusinessObject('MyObject');
 	return app.search();
-}).then(function(res) {
-	// Do something with search result (available both as res and as obj.list)
+}).then(list => {
+	// Do something with the search results list
 	// Etc.
-}).catch(function(err) {
+}).catch(err => {
 	console.error(err.message);
 });
 ```
