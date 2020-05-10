@@ -1093,7 +1093,7 @@ function getBusinessObjectCacheKey(name, instance) {
 
 /**
  * Business object meta data.
- * <br/><span style="color: red;">You <strong>should never</trong> instanciate this class directly
+ * <br/><span style="color: red;">You <strong>should never</strong> instanciate this class directly
  * but rather use it from the <code>metadata</code> variable of your <code>BusinessObject</code> instances</span>.
  * @param {string} name Business object name
  * @param {string} instance Optional business object instance name
