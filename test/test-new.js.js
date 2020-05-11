@@ -19,11 +19,11 @@ app.warn("WARN message");
 app.error("ERROR message");
 app.debug("DEBUG message");
 
-const sysName = 'SystemParam', sysId = "2",
+const sysName = 'SystemParam',
 	sysCodeName = 'sys_code', sysCode = 'TEST_' + Date.now(),
 	sysValueName = 'sys_value', sysValue = 'Test',
 	sysCodeFilter = '%TIMEOUT%', sysFilters = { sys_code: sysCodeFilter };
-let sys;
+let sys, sysId = '2';
 
 app.getHealth().then(health => {
 	app.debug(health);
@@ -95,6 +95,54 @@ app.getHealth().then(health => {
 	return sys.getFilters();
 }).then(filters => {
 	app.debug(filters);
+	assert.ok(filters[sysCodeName] == sysCodeFilter);
+	app.log('Filter: ' + filters[sysCodeName]);
+	return sys.get(sysId);
+}).then(item => {
+	app.debug(item);
+	assert.ok(item.row_id == sysId);
+	app.log('Got item: ' + item.row_id + ' ' + item.sys_code + ' ' + item.sys_value);
+	return sys.getForCreate();
+}).then(item => {
+	app.debug(item);
+	assert.ok(item.row_id == app.constants.DEFAULT_ROW_ID);
+	app.log('Got new item for creation');
+	item.sys_code = sysCode;
+	item.sys_value = sysValue;
+	return sys.create(item);
+}).then(item => {
+	app.debug(item);
+	sysId = item.row_id;
+	assert.ok(sysId != app.constants.DEFAULT_ROW_ID);
+	assert.ok(item.sys_code == sysCode);
+	assert.ok(item.sys_value == sysValue);
+	app.log('Created new item with row ID: ' + sysId);
+	return sys.getForUpdate(sysId);
+}).then(item => {
+	app.debug(item);
+	assert.ok(item.row_id == sysId);
+	assert.ok(item.sys_code == sysCode);
+	assert.ok(item.sys_value == sysValue);
+	app.log('Got item for update with row ID: ' + item.row_id);
+	item.sys_value = sysValue + ' updated';
+	return sys.update(item);
+}).then(item => {
+	app.debug(item);
+	assert.ok(sysId != app.constants.DEFAULT_ROW_ID);
+	assert.ok(item.sys_code == sysCode);
+	assert.ok(item.sys_value == sysValue + ' updated');
+	app.log('Updated item with row ID: ' + item.row_id);
+	return sys.getForDelete(sysId);
+}).then(item => {
+	app.debug(item);
+	assert.ok(item.row_id == sysId);
+	assert.ok(item.sys_code == sysCode);
+	app.log('Got item for deletion with row ID: ' + item.row_id);
+	return sys.del(item);
+}).then(res => {
+	app.debug(res);
+	assert.ok(res.row_id == sysId);
+	app.log('Deleted item with row ID: ' + sysId);
 	return app.logout();
 }).then(res => {
 	app.debug(res);

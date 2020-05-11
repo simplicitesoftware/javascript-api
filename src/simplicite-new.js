@@ -1,6 +1,5 @@
 /**
- * Simplicite(R) platform Javascript API 
- * client module (for node.js and browser).
+ * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
  * @version 1.1.1
  * @license Apache-2.0
@@ -524,8 +523,8 @@ function getBasicAuthHeader() {
  * @param {string} t Auth token
  * @function
  */
-function setAuthToken(t) {
-	this.authtoken = t;
+function setAuthToken(tkn) {
+	this.authtoken = tkn;
 }
 
 /**
@@ -658,12 +657,13 @@ function _getHealth(callback, opts) {
 	var self = this;
 	opts = opts || {};
 	req.call(self, healthpath, undefined, function(res, status) {
-		self.debug('[simplicite._getHealth] HTTP status = ' + status + ', response = ' + res);
-		var health = parse(res, status);
-		if (health.type === 'error') {
-			(opts.error ? opts.error : error).call(self, health.response);
-		} else if (callback) {
-			callback.call(self, health);
+		var r = parse(res, status);
+		self.debug('[simplicite._getHealth] HTTP status = ' + status + ', response type = ' + res);
+		if (r.type === 'error') {
+			(opts.error ? opts.error : error).call(self, r.response);
+		} else {
+			if (callback)
+				callback.call(self, r);
 		}
 	}, function(e) {
 		(opts.error ? opts.error : error).call(self, e);
@@ -1537,6 +1537,579 @@ class BusinessObject {
 			opts = opts || {};
 			opts.error = function(e) { d.reject(e); };
 			_search.call(this, function(list) { d.resolve(list); }, filters, opts);
+			return d.promise;
+		};
+
+		/**
+		 * Get
+		 * @param {function} callback Callback (called upon success)
+		 * @param {string} rowId Row ID
+		 * @param {object} opts Options
+		 * @private
+		 */
+		function _get(callback, rowId, opts) {
+			var self = this;
+			opts = opts || {};
+			var p = _getOptions(opts);
+			var tv = opts.treeView;
+			if (tv)
+				p += '&treeview=' + tv;
+			if (opts.fields) {
+				for (var i = 0; i < opts.fields.length; i++) {
+					p += '&fields=' + opts.fields[i].replace('.', '__');
+				}
+			}
+			if (opts.metadata) p += '&_md=true';
+			if (opts.social) p += '&_social=true';
+			req.call(self.session, self.path + '&action=get&' + self.metadata.rowidfield + '=' + rowId + p, undefined, function(res, status) {
+				var r = parse(res, status);
+				this.debug('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(opts.error ? opts.error : error).call(self, r.response);
+				} else {
+					self.item = tv ? r.response.item : r.response;
+					if (callback)
+						callback.call(self, tv ? r.response : self.item);
+				}
+			}, function(e) {
+				(opts.error ? opts.error : error).call(self, e);
+			});
+		}
+
+		/**
+		 * Get
+		 * @param {string} rowId Row ID
+		 * @param {object} opts Options
+		 * @function
+		 */
+		this.get = function(rowId, opts) {
+			var d = Q.defer();
+			opts = opts || {};
+			opts.error = function(e) { d.reject(e); };
+			_get.call(this, function(itm) { d.resolve(itm); }, rowId, opts);
+			return d.promise;
+		};
+
+		/**
+		 * Get for create
+		 * @param {function} callback Callback (called upon success)
+		 * @param {object} opts Options
+		 * @private
+		 */
+		function _getForCreate(callback, opts) {
+			opts = opts || {};
+			opts.context = constants.CONTEXT_CREATE;
+			_get.call(this, callback, this.session.constants.DEFAULT_ROW_ID, opts);
+		}
+
+		/**
+		 * Get for create
+		 * @param {object} opts Options
+		 * @function
+		 */
+		this.getForCreate = function(opts) {
+			var d = Q.defer();
+			opts = opts || {};
+			opts.error = function(e) { d.reject(e); };
+			_getForCreate.call(this, function(itm) { d.resolve(itm); }, opts);
+			return d.promise;
+		};
+
+		/**
+		 * Get for update
+		 * @param {function} callback Callback (called upon success)
+		 * @param {string} rowId Row ID
+		 * @param {object} opts Options
+		 * @private
+		 */
+		function _getForUpdate(callback, rowId, opts) {
+			opts = opts || {};
+			opts.context = constants.CONTEXT_UPDATE;
+			_get.call(this, callback, rowId, opts);
+		}
+
+		/**
+		 * Get for update
+		 * @param {string} rowId Row ID
+		 * @param {object} opts Options
+		 * @function
+		 */
+		this.getForUpdate = function(rowId, opts) {
+			var d = Q.defer();
+			opts = opts || {};
+			opts.error = function(e) { d.reject(e); };
+			_getForUpdate.call(this, function(itm) { d.resolve(itm); }, rowId, opts);
+			return d.promise;
+		};
+
+		/**
+		 * Get for copy
+		 * @param {function} callback Callback (called upon success)
+		 * @param {string} rowId Row ID to copy
+		 * @param {object} opts Options
+		 * @private
+		 */
+		function _getForCopy(callback, rowId, opts) {
+			opts = opts || {};
+			opts.context = constants.CONTEXT_COPY;
+			_get.call(this, callback, rowId, opts);
+		}
+
+		/**
+		 * Get for copy
+		 * @param {string} rowId Row ID to copy
+		 * @param {object} opts Options
+		 * @function
+		 */
+		this.getForCopy = function(rowId, opts) {
+			var d = Q.defer();
+			opts = opts || {};
+			opts.error = function(e) { d.reject(e); };
+			_getForCopy.call(this, function(itm) { d.resolve(itm); }, rowId, opts);
+			return d.promise;
+		};
+
+		/**
+		 * Get for delete
+		 * @param {function} callback Callback (called upon success)
+		 * @param {string} rowId Row ID
+		 * @param {object} opts Options
+		 * @private
+		 */
+		function _getForDelete(callback, rowId, opts) {
+			opts = opts || {};
+			opts.context = constants.CONTEXT_CREATE;
+			_get.call(this, callback, rowId, opts);
+		}
+
+		/**
+		 * Get for delete
+		 * @param {string} rowId Row ID
+		 * @param {object} opts Options
+		 * @function
+		 */
+		this.getForDelete = function(rowId, opts) {
+			var d = Q.defer();
+			opts = opts || {};
+			opts.error = function(e) { d.reject(e); };
+			_getForDelete.call(this, function(itm) { d.resolve(itm); }, rowId, opts);
+			return d.promise;
+		};
+
+		/**
+		 * Get current item's row ID value
+		 * @returns Current item's row ID value
+		 * @function
+		 */
+		this.getRowId = function() {
+			if (this.item)
+				return this.item[this.getRowIdFieldName()];
+		};
+
+		/**
+		 * Populate
+		 * @param {function} callback Callback (called upon success)
+		 * @param {string} rowId Row ID
+		 * @param {object} opts Options
+		 * @private
+		 */
+		function _populate(callback, rowId, opts) {
+			var self = this;
+			opts = opts || {};
+			var p = _getOptions(opts);
+			req.call(self.session, self.path + '&action=populate&' + self.metadata.rowidfield + '=' + rowId + p, undefined, function(res, status) {
+				var r = parse(res, status);
+				this.debug('[simplicite.BusinessObject.populate] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(opts.error ? opts.error : error).call(self, r.response);
+				} else {
+					self.item = r.response;
+					if (callback)
+						callback.call(self, self.item);
+				}
+			}, function(e) {
+				(opts.error ? opts.error : error).call(self, e);
+			});
+		}
+
+		/**
+		 * Populate
+		 * @param {string} rowId Row ID
+		 * @param {object} opts Options
+		 * @function
+		 */
+		this.populate = function(itm, opts) {
+			var d = Q.defer();
+			opts = opts || {};
+			opts.error = function(e) { d.reject(e); };
+			_populate.call(this, function(i) { d.resolve(i); }, itm, opts);
+			return d.promise;
+		};
+
+		/**
+		 * Save
+		 * @param {function} callback Callback (called upon success)
+		 * @param {object} item Item (defaults to current item)
+		 * @param {object} opts Options
+		 * @private
+		 */
+		function _save(callback, item, opts) {
+			if (item)
+				this.item = item;
+			var rowId = this.item[this.metadata.rowidfield];
+			if (!rowId || rowId === constants.DEFAULT_ROW_ID)
+				_create.call(this, callback, item, opts);
+			else
+				_update.call(this, callback, item, opts);
+		}
+		
+		/**
+		 * Save
+		 * @param {object} item Item (defaults to current item)
+		 * @param {object} opts Options
+		 * @function
+		 */
+		this.save = function(itm, opts) {
+			var d = Q.defer();
+			opts = opts || {};
+			opts.error = function(e) { d.reject(e); };
+			_save.call(this, function(i) { d.resolve(i); }, itm, opts);
+			return d.promise;
+		};
+
+		/**
+		 * Create (create or update)
+		 * @param {function} callback Callback (called upon success)
+		 * @param {object} item Item (defaults to current item)
+		 * @param {object} opts Options
+		 * @private
+		 */
+		function _create(callback, item, opts) {
+			var self = this;
+			if (item)
+				self.item = item;
+			opts = opts || {};
+			var p = _getOptions(opts);
+			req.call(self.session, self.path + '&action=create' + p, reqParams(self.item), function(res, status) {
+				var r = parse(res, status);
+				this.debug('[simplicite.BusinessObject.create] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(opts.error ? opts.error : error).call(self, r.response);
+				} else {
+					self.item = r.response.data ? r.response.data : r.response;
+					if (callback)
+						callback.call(self, self.item);
+				}
+			}, function(e) {
+				(opts.error ? opts.error : error).call(self, e);
+			});
+		}
+
+		/**
+		 * Create (create or update)
+		 * @param {object} item Item (defaults to current item)
+		 * @param {object} opts Options
+		 * @function
+		 */
+		this.create = function(itm, opts) {
+			itm.row_id = this.session.constants.DEFAULT_ROW_ID;
+			var d = Q.defer();
+			opts = opts || {};
+			opts.error = function(e) { d.reject(e); };
+			_create.call(this, function(i) { d.resolve(i); }, itm, opts);
+			return d.promise;
+		};
+
+		/**
+		 * Update
+		 * @param {function} callback Callback (called upon success)
+		 * @param {object} item Item (defaults to current item)
+		 * @param {object} opts Options
+		 * @private
+		 */
+		function _update(callback, item, opts) {
+			var self = this;
+			if (item)
+				self.item = item;
+			opts = opts || {};
+			var p = _getOptions(opts);
+			req.call(self.session, self.path + '&action=update' + p, reqParams(self.item), function(res, status) {
+				var r = parse(res, status);
+				this.debug('[simplicite.BusinessObject.update] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(opts.error ? opts.error : error).call(self, r.response);
+				} else {
+					self.item = r.response.data ? r.response.data : r.response;
+					if (callback)
+						callback.call(self, self.item);
+				}
+			}, function(e) {
+				(opts.error ? opts.error : error).call(self, e);
+			});
+		}
+
+		/**
+		 * Update
+		 * @param {object} item Item (defaults to current item)
+		 * @param {object} opts Options
+		 * @function
+		 */
+		this.update = function(itm, opts) {
+			var d = Q.defer();
+			opts = opts || {};
+			opts.error = function(e) { d.reject(e); };
+			_update.call(this, function(i) { d.resolve(i); }, itm, opts);
+			return d.promise;
+		};
+
+		/**
+		 * Delete
+		 * @param {function} callback Callback (called upon success)
+		 * @param {object} item Item (defaults to current item)
+		 * @param {object} opts Options
+		 * @private
+		 */
+		function _del(callback, item, opts) {
+			var self = this;
+			if (item)
+				self.item = item;
+			opts = opts || {};
+			req.call(self.session, self.path + '&action=delete&' + self.metadata.rowidfield + '=' + self.item[self.metadata.rowidfield], undefined, function(res, status) {
+				var r = parse(res, status);
+				this.debug('[simplicite.BusinessObject.del] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(opts.error ? opts.error : error).call(self, r.response);
+				} else {
+					self.item = undefined;
+					delete r.response.undoredo;
+					if (callback)
+						callback.call(self, r.response);
+				}
+			}, function(e) {
+				(opts.error ? opts.error : error).call(self, e);
+			});
+		}
+
+		/**
+		 * Delete
+		 * @param {object} item Item (defaults to current item)
+		 * @param {object} opts Options
+		 * @function
+		 */
+		this.del = function(itm, opts) {
+			var d = Q.defer();
+			opts = opts || {};
+			opts.error = function(e) { d.reject(e); };
+			_del.call(this, function(r) { d.resolve(r); }, itm, opts);
+			return d.promise;
+		};
+
+		/**
+		 * Invoke a custom action
+		 * @param {function} callback Callback (called upon success)
+		 * @param {string} action Action name
+		 * @param {object} opts Options
+		 * @private
+		 */
+		function _action(callback, action, opts) {
+			var self = this;
+			opts = opts || {};
+			req.call(self.session, self.path + '&action=' + action, undefined, function(res, status) {
+				var r = parse(res, status);
+				this.debug('[simplicite.BusinessObject.action(' + action + ')] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(opts.error ? opts.error : error).call(self, r.response);
+				} else {
+					var result = r.response.result;
+					if (callback)
+						callback.call(self, result);
+				}
+			}, function(e) {
+				(opts.error ? opts.error : error).call(self, e);
+			});
+		}
+
+		/**
+		 * Invoke a custom action
+		 * @param {string} action Action name
+		 * @param {object} opts Options
+		 * @function
+		 */
+		this.action = function(act, opts) {
+			var d = Q.defer();
+			opts = opts || {};
+			opts.error = function(e) { d.reject(e); };
+			_action.call(this, function(res) { d.resolve(res); }, act, opts);
+			return d.promise;
+		};
+
+		/**
+		 * Build a pivot table
+		 * @param {function} callback Callback (called upon success)
+		 * @param {string} crosstab Pivot table name
+		 * @param {object} opts Options
+		 * @private
+		 */
+		function _crosstab(callback, crosstab, opts) {
+			var self = this;
+			opts = opts || {};
+			if (opts.filters)
+				self.filters = opts.filters;
+			req.call(self.session, self.path + '&action=crosstab&crosstab=' + crosstab, reqParams(self.filters), function(res, status) {
+				var r = parse(res, status);
+				this.debug('[simplicite.BusinessObject.crosstab(' + crosstab + ')] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(opts.error ? opts.error : error).call(self, r.response);
+				} else {
+					self.crosstabdata = r.response;
+					if (callback)
+						callback.call(self, self.crosstabdata);
+				}
+			}, function(e) {
+				(opts.error ? opts.error : error).call(self, e);
+			});
+		}
+
+		/**
+		 * Build a pivot table
+		 * @param {string} crosstab Pivot table name
+		 * @param {object} opts Options
+		 * @function
+		 */
+		this.crosstab = function(ctb, opts) {
+			var d = Q.defer();
+			opts = opts || {};
+			opts.error = function(e) { d.reject(e); };
+			_crosstab.call(this, function(res) { d.resolve(res); }, ctb, opts);
+			return d.promise;
+		};
+
+		/**
+		 * Build a custom publication
+		 * @param {function} callback Callback (called upon success)
+		 * @param {string} prt Publication name
+		 * @param {object} opts Options
+		 * @private
+		 */
+		function _print(callback, prt, opts) {
+			var self = this;
+			opts = opts || {};
+			if (opts.filters)
+				self.filters = opts.filters;
+			var p = '';
+			if (opts.all)
+				p += '&all=' + opts.all;
+			if (opts.mailing)
+				p += '&mailing=' + opts.mailing;
+			req.call(self.session, self.path + '&action=print&printtemplate=' + prt + p, undefined, function(res, status) {
+				var r = parse(res, status);
+				this.debug('[simplicite.BusinessObject.print(' + prt + ')] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(opts.error ? opts.error : error).call(self, r.response);
+				} else {
+					var result = r.response.result;
+					if (callback)
+						callback.call(self, result);
+				}
+			}, function(e) {
+				(opts.error ? opts.error : error).call(self, e);
+			});
+		}
+
+		/**
+		 * Build a custom publication
+		 * @param {string} prt Publication name
+		 * @param {object} opts Options
+		 * @function
+		 */
+		this.print = function(pt, opts) {
+			var d = Q.defer();
+			opts = opts || {};
+			opts.error = function(e) { d.reject(e); };
+			_print.call(this, function(res) { d.resolve(res); }, pt, opts);
+			return d.promise;
+		};
+
+		/**
+		 * Set an object parameter
+		 * @param {function} callback Callback (called upon success)
+		 * @param {string} param Parameter name
+		 * @param {string} value Parameter value
+		 * @param {object} opts Options
+		 * @private
+		 */
+		function _setParameter(callback, param, value, opts) {
+			var self = this;
+			opts = opts || {};
+			var p = { name: param };
+			if (value) p.value = value;
+			req.call(self.session, self.path + '&action=setparameter', reqParams(p), function(res, status) {
+				var r = parse(res, status);
+				this.debug('[simplicite.BusinessObject.setParameter(' + p.name + ')] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(opts.error ? opts.error : error).call(self, r.response);
+				} else {
+					var result = r.response.result;
+					if (callback)
+						callback.call(self, result);
+				}
+			}, function(e) {
+				(opts.error ? opts.error : error).call(self, e);
+			});
+		}
+
+		/**
+		 * Set an object parameter
+		 * @param {string} param Parameter name
+		 * @param {string} value Parameter value
+		 * @param {object} opts Options
+		 * @function
+		 */
+		this.setParameter = function(param, value, opts) {
+			var d = Q.defer();
+			opts = opts || {};
+			opts.error = function(e) { d.reject(e); };
+			_setParameter.call(this, function() { d.resolve(); }, param, value, opts);
+			return d.promise;
+		};
+
+		/**
+		 * Get an object parameter
+		 * @param {function} callback Callback (called upon success)
+		 * @param {string} param Parameter name
+		 * @param {object} opts Options
+		 * @private
+		 */
+		function _getParameter(callback, param, opts) {
+			var self = this;
+			opts = opts || {};
+			var p = { name: param };
+			req.call(self.session, self.path + '&action=getparameter', reqParams(p), function(res, status) {
+				var r = parse(res, status);
+				this.debug('[simplicite.BusinessObject.getParameter(' + p.name + ')] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(opts.error ? opts.error : error).call(self, r.response);
+				} else {
+					var result = r.response.result;
+					if (callback)
+						callback.call(self, result);
+				}
+			}, function(e) {
+				(opts.error ? opts.error : error).call(self, e);
+			});
+		}
+
+		/**
+		 * Get an object parameter
+		 * @param {string} param Parameter name
+		 * @param {object} opts Options
+		 * @function
+		 */
+		this.getParameter = function(param, opts) {
+			var d = Q.defer();
+			opts = opts || {};
+			opts.error = function(e) { d.reject(e); };
+			_getParameter.call(this, function(value) { d.resolve(value); }, param, opts);
 			return d.promise;
 		};
 	}

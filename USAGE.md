@@ -1,7 +1,7 @@
 ![Simplicit&eacute; Software](https://www.simplicite.io/resources/logos/logo250.png)
 * * *
 
-This is the node.js&reg; &amp; browser **JavaScript module** for the [Simplicit&eacute;&reg; platform](http://www.simplicitesoftware.com).
+This is the node.js&reg; &amp; browser **JavaScript API client module** for the [Simplicit&eacute;&reg; platform](http://www.simplicitesoftware.com).
 
 It uses promises, basic usage is something like:
 
