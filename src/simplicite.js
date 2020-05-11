@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 1.1.1
+ * @version 1.1.2
  * @license Apache-2.0
  */
 var Q = require('q');
@@ -446,11 +446,11 @@ function session(params) {
 	if (params.errorHandler) error = params.errorHandler;
 	if (params.debugHandler) debug = params.debugHandler;
 
-	username = params.username || params.login; // naming flexibility
-	password = params.password || params.pwd; // naming flexibility
-	authtoken = params.authtoken || params.authToken || params.token; // naming flexibility
+	this.username = params.username || params.login; // naming flexibility
+	this.password = params.password || params.pwd; // naming flexibility
+	this.authtoken = params.authtoken || params.authToken || params.token; // naming flexibility
 
-	timeout = params.timeout;
+	this.timeout = params.timeout;
 
 	if (params.url) {
 		try {
