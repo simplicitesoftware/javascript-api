@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 1.1.2
+ * @version 1.1.3
  * @license Apache-2.0
  */
 var Q = require('q');
@@ -583,10 +583,10 @@ function reqParams(data) {
  * @param {string} path Path
  * @param {object} data Data
  * @param {function} callback Callback
- * @param {function} error Error handler
+ * @param {function} errorHandler Error handler
  * @private
  */
-function req(path, data, callback, error) {
+function req(path, data, callback, errorHandler) {
 	var self = this;
 	var m = data ? 'post' : 'get';
 	var h = {};
@@ -615,8 +615,8 @@ function req(path, data, callback, error) {
 		if (callback)
 			callback.call(self, res.data, res.status);
 	}).catch(function(err) {
-		if (error)
-			error.call(self, err);
+		if (errorHandler)
+			errorHandler.call(self, err);
 		else
 			throw err;
 	});
@@ -902,20 +902,21 @@ function getGrant(opts) {
 	var d = Q.defer();
 	opts = opts || {};
 	opts.error = function(e) { d.reject(e); };
-	_getGrant.call(this, function(grant) { d.resolve(grant); }, opts);
+	_getGrant.call(this, function(grt) { d.resolve(grt); }, opts);
 	return d.promise;
 }
 
 /**
  * Change password
+ * @param {string} pwd Password
  * @param {function} callback Callback (called upon success)
  * @param {object} opts Options
  * @private
  */
-function _changePassword(callback, password, opts) {
+function _changePassword(callback, pwd, opts) {
 	var self = this;
 	opts = opts || {};
-	req.call(self, apppath + '?action=setpassword&password=' + password, undefined, function(res, status) {
+	req.call(self, apppath + '?action=setpassword&password=' + pwd, undefined, function(res, status) {
 		var r = parse(res, status);
 		self.debug('[simplicite.changePassword] HTTP status = ' + status + ', response type = ' + r.type);
 		if (r.type === 'error') {
@@ -931,15 +932,16 @@ function _changePassword(callback, password, opts) {
 
 /**
  * Change password
+ * @param {string} pwd Password
  * @param {object} opts Options
  * @param {function} opts.error <strong>Optional</strong> error handler function
  * @function
  */
-function changePassword(opts) {
+function changePassword(pwd, opts) {
 	var d = Q.defer();
 	opts = opts || {};
 	opts.error = function(e) { d.reject(e); };
-	_changePassword.call(this, function(res) { d.resolve(res); }, opts);
+	_changePassword.call(this, function(res) { d.resolve(res); }, pwd, opts);
 	return d.promise;
 }
 
@@ -977,7 +979,7 @@ function getAppInfo(opts) {
 	var d = Q.defer();
 	opts = opts || {};
 	opts.error = function(e) { d.reject(e); };
-	_getAppInfo.call(this, function(appinfo) { d.resolve(appinfo); }, opts);
+	_getAppInfo.call(this, function(inf) { d.resolve(inf); }, opts);
 	return d.promise;
 }
 
@@ -1015,7 +1017,7 @@ function getSysInfo(opts) {
 	var d = Q.defer();
 	opts = opts || {};
 	opts.error = function(e) { d.reject(e); };
-	_getSysInfo.call(this, function(sysinfo) { d.resolve(sysinfo); }, opts);
+	_getSysInfo.call(this, function(inf) { d.resolve(inf); }, opts);
 	return d.promise;
 }
 
@@ -1055,7 +1057,7 @@ function getUserInfo(userlogin, opts) {
 	var d = Q.defer();
 	if (opts === undefined) opts = {};
 	opts.error = function(e) { d.reject(e); };
-	_getUserInfo.call(this, function(userinfo) { d.resolve(userinfo); }, userlogin, opts);
+	_getUserInfo.call(this, function(inf) { d.resolve(inf); }, userlogin, opts);
 	return d.promise;
 }
 
@@ -1097,7 +1099,7 @@ function getNews(opts) {
 	var d = Q.defer();
 	opts = opts || {};
 	opts.error = function(e) { d.reject(e); };
-	_getNews.call(this, function(news) { d.resolve(news); }, opts);
+	_getNews.call(this, function(nws) { d.resolve(nws); }, opts);
 	return d.promise;
 }
 
@@ -1169,19 +1171,19 @@ function BusinessObjectMetadata (name, instance) {
  * Business object.
  * <br/><span style="color: red;">ou <strong>should never</strong> instanciate this class directly
  * but rather call <code>getBusinessObject</code> to get a cached instance</span>.
- * @param {object} session Session
+ * @param {object} ses Session
  * @param {string} name Business object name
  * @param {string} instance <strong>Optional</strong> business object instance name
  * @class
  */
-function BusinessObject(session, name, instance) {
+function BusinessObject(ses, name, instance) {
 	instance = instance || 'js_' + name;
 
 	/**
 	 * Session
 	 * @private
 	 */
-	this.session = session;
+	this.session = ses;
 
 	/**
 	 * Object metadata

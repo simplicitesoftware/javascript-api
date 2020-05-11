@@ -4,7 +4,7 @@ const adminUsername = process.env.TEST_SIMPLICITE_ADMIN_USERNAME || 'designer';
 const adminPassword = process.env.TEST_SIMPLICITE_ADMIN_PASSWORD || 'designer';
 
 const debug = true;
-const app = require('../src/simplicite-new').session({
+const app = require('../src/simplicite').session({
 	url: process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080',
 	debug: debug
 });
