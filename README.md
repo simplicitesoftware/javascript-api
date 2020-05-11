@@ -31,7 +31,7 @@ npm install
 Usage
 -----
 
-See the [JSDoc documentation](https://simplicitesoftware.github.io/nodejs-api/) for details.
+See the [documentation](https://simplicitesoftware.github.io/nodejs-api/) for details.
 
 Test
 ----
