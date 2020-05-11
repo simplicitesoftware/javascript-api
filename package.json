@@ -13,20 +13,22 @@
     "lowcode"
   ],
   "dependencies": {
-    "q": "latest",
+    "axios": "latest",
     "buffer": "latest",
-    "axios": "latest"
+    "docdash": "^1.2.0",
+    "q": "latest"
   },
   "devDependencies": {
     "uglify-js": "latest",
     "jsdoc": "latest",
+    "docdash": "latest",
     "jest": "latest",
     "eslint": "latest"
   },
   "scripts": {
     "lint": "eslint src/simplicite.js",
     "build": "uglifyjs src/simplicite.js --comments -o dist/simplicite.min.js",
-    "jsdoc": "jsdoc -d docs src/simplicite-new.js USAGE.md",
+    "doc": "jsdoc -t node_modules/docdash -d docs src/simplicite.js USAGE.md",
     "test": "jest --coverage -- test/simplicite.test.js"
   },
   "files": [

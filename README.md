@@ -75,7 +75,7 @@ Documentation
 Generate documentation:
 
 ```bash
-npm run jsdoc
+npm run doc
 ```
 
 Publish
