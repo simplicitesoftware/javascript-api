@@ -1383,14 +1383,14 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Get a field definition
-	 * @param {string} name Field name
+	 * @param {string} fieldName Field name
 	 * @returns {Object} Field definition
 	 * @function
 	 */
-	this.getField = function(name) {
+	this.getField = function(fieldName) {
 		var n = 0;
 		var fs = this.getFields();
-		while (n < fs.length && fs[n].name !== name) n++;
+		while (n < fs.length && fs[n].name !== fieldName) n++;
 		if (n < fs.length)
 			return fs[n];
 	};
