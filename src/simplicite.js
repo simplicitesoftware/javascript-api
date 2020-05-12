@@ -814,7 +814,7 @@ function Session(params) {
 	 * @type Grant
 	 * @var
 	 */
-	this.grant;
+	this.grant = undefined;
 
 	/**
 	 * Get user (grant)
