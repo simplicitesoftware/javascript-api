@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 1.1.4
+ * @version 1.1.5
  * @license Apache-2.0
  */
 var Q = require('q');
@@ -428,6 +428,7 @@ function Session(params) {
 
 	/**
 	 * Timeout (seconds)
+	 * @type number
 	 * @default 30
 	 * @var
 	 */
@@ -476,6 +477,7 @@ function Session(params) {
 
 	/**
 	 * Parameters
+	 * @type Object
 	 * @constant
 	 */
 	this.parameters = {
@@ -493,6 +495,7 @@ function Session(params) {
 
 	/**
 	 * Username
+	 * @type string
 	 * @var
 	 */
 	this.username = params.username || params.login; // naming flexibility
@@ -508,6 +511,7 @@ function Session(params) {
 
 	/**
 	 * Password
+	 * @type string
 	 * @var
 	 */
 	this.password = params.password || params.pwd; // naming flexibility
@@ -523,6 +527,7 @@ function Session(params) {
 
 	/**
 	 * Auth token
+	 * @type string
 	 * @var
 	 */
 	this.authtoken = params.authtoken || params.authToken || params.token; // naming flexibility
@@ -806,9 +811,10 @@ function Session(params) {
 
 	/**
 	 * Grant
+	 * @type Grant
 	 * @var
 	 */
-	this.grant = {};
+	this.grant;
 
 	/**
 	 * Get user (grant)
@@ -828,21 +834,7 @@ function Session(params) {
 			if (r.type === 'error') {
 				(opts.error ? opts.error : self.error).call(self, r.response);
 			} else {
-				self.grant = r.response;
-				/*if (self.grant.picture) {
-					self.grant.picture.url = self.documentURL('User', 'usr_image_id', self.grant.userid, self.grant.picture.id);
-					self.grant.picture.thumbnailurl = self.grant.picture.url + '&thumbnail=true';
-				}*/
-				self.grant.getUserId = function() { return this.userid; };
-				self.grant.getLUsername = function() { return this.login; };
-				self.grant.getLogin = self.grant.getLUsername; // Naming flexibility
-				self.grant.getLang = function() { return this.lang; };
-				self.grant.getEmail = function() { return this.email; };
-				self.grant.getFirstname = function() { return this.firstname; };
-				self.grant.getFirstName = self.grant.getFirstname;
-				self.grant.getLastname = function() { return this.lastname; };
-				self.grant.getLastName = self.grant.getLastname; // Naming flexibility
-				self.grant.hasResponsibility = function(group) { return this.responsibilities && this.responsibilities.indexOf(group) !== -1; };
+				self.grant = Object.assign(new Grant(), r.response);
 				if (callback)
 					callback.call(self, self.grant);
 			}
@@ -1104,6 +1096,104 @@ function Session(params) {
 }
 
 /**
+ * Grant (user).
+ * <br/><span style="color: red;">You <strong>should never</strong> instanciate this class directly
+ * but rather use it from the <code>data</code> variable got using <code>getGrant</code></span>.
+ * @class
+ */
+function Grant () {
+	/**
+	 * Get user ID
+	 * @returns User ID
+	 * @function
+	 */
+	this.getUserId = function () {
+		return this.userid;
+	};
+
+	/**
+	 * Get username
+	 * @returns Username
+	 * @function
+	 */
+	this.getUsername = function() {
+		return this.login;
+	};
+
+	/**
+	 * Alias to <code>getUsername</code>
+	 * @function
+	 */
+	this.getLogin = this.getUsername; // Naming flexibility
+
+	/**
+	 * Get language
+	 * @returns Language
+	 * @function
+	 */
+	this.getLang = function() {
+		return this.lang;
+	};
+	
+	/**
+	 * Get email address
+	 * @returns Email address
+	 * @function
+	 */
+	this.getEmail = function() {
+		return this.email;
+	};
+	
+	/**
+	 * Get first name
+	 * @returns Fiest name
+	 */
+	this.getFirstname = function() {
+		return this.firstname;
+	};
+	
+	/**
+	 * Alias to <code>getFirstname</code>
+	 * @function
+	 */
+	this.getFirstName = this.getFirstname; // Naming flexibility
+	
+	/**
+	 * Get last name
+	 * @returns Last name
+	 * @function
+	 */
+	this.getLastname = function() {
+		return this.lastname;
+	};
+	
+	/**
+	 * Alias to <code>getLastname</code>
+	 * @function
+	 */
+	this.getLastName = this.getLastname; // Naming flexibility
+	
+	/**
+	 * Get picture data URL
+	 * @returns Picture data URL
+	 * @function
+	 */
+	this.getPictureURL = function() {
+		if (this.picture)
+			return 'data:' + this.picture.mime + ';base64,' + this.picture.content;
+	};
+
+	/**
+	 * Has responsibility
+	 * @param {string} group Group name
+	 * @returns True if user has a responsibility on the specified group
+	 */
+	this.hasResponsibility = function(group) {
+		return this.responsibilities && this.responsibilities.indexOf(group) !== -1;
+	};
+}
+
+/**
  * Business object meta data.
  * <br/><span style="color: red;">You <strong>should never</strong> instanciate this class directly
  * but rather use it from the <code>metadata</code> variable of your <code>BusinessObject</code> instances</span>.
@@ -1293,14 +1383,14 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Get a field definition
-	 * @param {string} fieldName Field name
+	 * @param {string} name Field name
 	 * @returns {Object} Field definition
 	 * @function
 	 */
-	this.getField = function(fieldname) {
+	this.getField = function(name) {
 		var n = 0;
 		var fs = this.getFields();
-		while (n < fs.length && fs[n].name !== fieldname) n++;
+		while (n < fs.length && fs[n].name !== name) n++;
 		if (n < fs.length)
 			return fs[n];
 	};
@@ -1333,19 +1423,58 @@ function BusinessObject(ses, name, instance) {
 	};
 
 	/**
-	 * Get list value of field fro code
-	 * @param {Object} field Field definition
+	 * Get field label
+	 * @param {(string|Object)} field Field name or definition
+	 * @returns {string} Value
+	 * @function
+	 */
+	this.getFieldLabel = function(field) {
+		if (typeof field === 'string')
+			field = this.getField(field);
+		if (field)
+			return field.label;
+	};
+
+	/**
+	 * Get value of field for item (or current item)
+	 * @param {(string|Object)} field Field name or definition
+	 * @param {Object} [item] Item (defautls to current item)
+	 * @returns {string} Value
+	 * @function
+	 */
+	this.getFieldValue = function(field, item) {
+		if (!item)
+			item = this.item;
+		if (field && item) {
+			return item[typeof field === 'string' ? field : field.name];
+		}
+	};
+
+	/**
+	 * Get list value of field for item (or current item)
+	 * @param {(string|Object)} field Field name or definition
 	 * @param {string} code Code
 	 * @returns {string} Value
 	 * @function
 	 */
-	this.getValueForCode = function(field, code) {
-		var n = 0;
-		var l = field.listOfValues;
-		if (l === undefined)
-			return code;
-		while (n < l.length && l[n].code !== code) n++;
-		return n === l.length ? code : l[n].value;
+	this.getFieldListValue = function(field, item) {
+		if (typeof field === 'string')
+			field = this.getField(field);
+		var val = this.getFieldValue(field, item);
+		return field && field.listOfValues ? this.getListValue(field.listOfValues, val) : val;
+	};
+
+	/**
+	 * Get data URL of field for item (or current item)
+	 * @param {(string|Object)} field Field name or definition
+	 * @param {Object} [item] Item (defautls to current item)
+	 * @returns Field data URL
+	 * @function
+	 */
+	this.getFieldDataURL = function(field, item) {
+		var val = this.getFieldValue(field, item);
+		if (val && val.mime) // Inlined image
+			return 'data:' + val.mime + ';base64,' + (val.content || val.thumbnail);
 	};
 
 	/**
@@ -1356,11 +1485,14 @@ function BusinessObject(ses, name, instance) {
 	 * @function
 	 */
 	this.getListValue = function(list, code) {
-		for (var i = 0; i < list.length; i++) {
-			var l = list[i];
-			if (l.code === code)
-				return l.value;
+		if (list) {
+			for (var i = 0; i < list.length; i++) {
+				var l = list[i];
+				if (l.code === code)
+					return l.value;
+			}
 		}
+		return code;
 	};
 
 	/**
@@ -1438,19 +1570,13 @@ function BusinessObject(ses, name, instance) {
 		var opts = '';
 		if (options.context)
 			opts += '&context=' + options.context;
-		var id = options.inlineDocs;
-		if (!id)
-			id = options.inlineDocuments;
+		var id = options.inlineDocs || options.inlineDocuments || options.inlineImages; // Naming flexibility
 		if (id)
 			opts += '&inline_documents=' + (id.join ? id.join(',') : id);
-		var it = options.inlineThumbs;
-		if (!it)
-			it = options.inlineThumbnails;
+		var it = options.inlineThumbs || options.inlineThumbnails;  // Naming flexibility
 		if (it)
 			opts += '&inline_thumbnails=' + (it.join ? it.join(',') : it);
-		var io = options.inlineObjs;
-		if (!io)
-			io = options.inlineObjects;
+		var io = options.inlineObjs || options.inlineObjects;  // Naming flexibility
 		if (io)
 			opts += '&inline_objects=' + (io.join ? io.join(',') : io);
 		return opts;
@@ -2202,6 +2328,7 @@ function BusinessObject(ses, name, instance) {
 module.exports = {
 	session: session,
 	Session: Session,
+	Grant: Grant,
 	BusinessObject: BusinessObject,
 	BusinessObjectMetadata: BusinessObjectMetadata
 };

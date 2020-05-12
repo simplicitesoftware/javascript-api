@@ -3,7 +3,7 @@ const assert = require('assert').strict;
 const adminUsername = process.env.TEST_SIMPLICITE_ADMIN_USERNAME || 'designer';
 const adminPassword = process.env.TEST_SIMPLICITE_ADMIN_PASSWORD || 'designer';
 
-const debug = true;
+const debug = false;
 const app = require('../src/simplicite').session({
 	url: process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080',
 	debug: debug
@@ -25,6 +25,9 @@ const sysName = 'SystemParam',
 	sysCodeFilter = '%TIMEOUT%', sysFilters = { sys_code: sysCodeFilter };
 let sys, sysId = '2';
 
+const usrName = 'User';
+let usr;
+
 app.getHealth().then(health => {
 	app.debug(health);
 	assert.ok(health.platform.status == 'OK');
@@ -34,11 +37,12 @@ app.getHealth().then(health => {
 	app.debug(res);
 	assert.ok(res.login == adminUsername);
 	app.log('Logged in as ' + res.login);
-	return app.getGrant();
+	return app.getGrant({ inlinePicture: true });
 }).then(grant => {
 	app.debug(grant);
 	assert.ok(grant.login == adminUsername);
-	app.log('Grant: ' + grant.getFirstName() + ' ' + grant.getLastName() + ' (' + grant.getLogin() + ')');
+	app.log('Grant: ' + app.grant.getFirstName() + ' ' + app.grant.getLastName() + ' (' + app.grant.getLogin() + ', ID ' + app.grant.getUserId() + ')');
+	app.log('Picture URL: ' + app.grant.getPictureURL().substr(0, 80) + '...');
 	return app.getAppInfo();
 }).then(appinfo => {
 	app.debug(appinfo);
@@ -143,6 +147,32 @@ app.getHealth().then(health => {
 	app.debug(res);
 	assert.ok(res.row_id == sysId);
 	app.log('Deleted item with row ID: ' + sysId);
+	usr = app.getBusinessObject(usrName);
+	return usr.getMetaData();
+}).then(md => {
+	app.debug(md);
+	assert.ok(md.name == usrName);
+	return usr.search({ usr_login: app.grant.getLogin() }, { inlineDocuments: [ 'usr_image_id' ] });
+}).then(list => {
+	app.debug(list);
+	assert.ok(list.length == 1);
+	assert.ok(list[0].usr_login == app.grant.getLogin());
+	assert.ok(list[0].usr_image_id.mime && list[0].usr_image_id.content);
+	app.log('Got users list for current user (with picture): ' + usr.getFieldValue('usr_login', list[0]));
+	let m = usr.getField('row_module_id__mdl_name');
+	app.log(usr.getFieldLabel(m) + ": " + usr.getFieldValue(m, list[0]))
+	var s = usr.getFieldListValue('usr_active', list[0]);
+	app.log('Status: ' + s + ' (code: ' + list[0].usr_active + ')');
+	assert.ok(s != list[0].usr_active);
+	var u = usr.getFieldDataURL('usr_image_id', list[0]);
+	app.log('Picture URL: ' + u.substr(0, 80) + '...');
+	assert.ok(u == app.grant.getPictureURL());
+	return usr.get(app.grant.getUserId(), { treeView: 'TreeUser' });
+}).then(tree => {
+	app.debug(tree);
+	assert.ok(tree.object == 'User');
+	assert.ok(tree.item.row_id == app.grant.getUserId());
+	app.log('Got user treeview');
 	return app.logout();
 }).then(res => {
 	app.debug(res);
