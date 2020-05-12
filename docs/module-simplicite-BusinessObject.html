@@ -61,7 +61,7 @@
 
     
 
-    <h4 class="name" id="BusinessObject"><span class="type-signature"></span>new BusinessObject<span class="signature">(ses, name, instance)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="BusinessObject"><span class="type-signature"></span>new BusinessObject<span class="signature">(ses, name, instance<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
 
     
 
@@ -141,6 +141,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -166,6 +168,14 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -188,6 +198,14 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             
             </td>
 
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
             
 
             
@@ -212,10 +230,20 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><strong>Optional</strong> business object instance name</td>
+            <td class="description last">Business object instance name, defaults to <code>js_&lt;object name&gt;</code></td>
         </tr>
 
     
@@ -708,7 +736,7 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
     
 
-    <h4 class="name" id="action"><span class="type-signature"></span>action<span class="signature">(action, opts)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="action"><span class="type-signature"></span>action<span class="signature">(action, rowId<span class="signature-attributes">opt</span>, opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
 
     
 
@@ -720,7 +748,7 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line2009">line 2009</a>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line2010">line 2010</a>
     </li></ul></dd>
     
 
@@ -786,6 +814,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -811,10 +841,51 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
             <td class="description last">Action name</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>rowId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Row ID</td>
         </tr>
 
     
@@ -834,6 +905,16 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -850,6 +931,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
         <th>Type</th>
 
+        
+        <th>Attributes</th>
         
 
         
@@ -876,10 +959,20 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><strong>Optional</strong> error handler function</td>
+            <td class="description last">Error handler function</td>
         </tr>
 
     
@@ -916,7 +1009,7 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
     
 
-    <h4 class="name" id="count"><span class="type-signature"></span>count<span class="signature">(filters, opts)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="count"><span class="type-signature"></span>count<span class="signature">(filters<span class="signature-attributes">opt</span>, opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
 
     
 
@@ -994,6 +1087,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -1019,10 +1114,20 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last">Filters (defaults to current filters)</td>
+            <td class="description last">Filters, defaults to current filters if not set</td>
         </tr>
 
     
@@ -1042,6 +1147,16 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -1058,6 +1173,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
         <th>Type</th>
 
+        
+        <th>Attributes</th>
         
 
         
@@ -1084,10 +1201,20 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><strong>Optional</strong> error handler function</td>
+            <td class="description last">Error handler function</td>
         </tr>
 
     
@@ -1124,7 +1251,7 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
     
 
-    <h4 class="name" id="create"><span class="type-signature"></span>create<span class="signature">(item, opts)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="create"><span class="type-signature"></span>create<span class="signature">(item, opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
 
     
 
@@ -1202,6 +1329,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -1227,6 +1356,14 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -1250,6 +1387,16 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -1266,6 +1413,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
         <th>Type</th>
 
+        
+        <th>Attributes</th>
         
 
         
@@ -1292,10 +1441,20 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><strong>Optional</strong> error handler function</td>
+            <td class="description last">Error handler function</td>
         </tr>
 
     
@@ -1332,7 +1491,7 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
     
 
-    <h4 class="name" id="crosstab"><span class="type-signature"></span>crosstab<span class="signature">(crosstab, opts)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="crosstab"><span class="type-signature"></span>crosstab<span class="signature">(crosstab, opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
 
     
 
@@ -1344,7 +1503,7 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line2052">line 2052</a>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line2053">line 2053</a>
     </li></ul></dd>
     
 
@@ -1410,6 +1569,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -1435,6 +1596,14 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -1458,6 +1627,16 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -1474,6 +1653,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
         <th>Type</th>
 
+        
+        <th>Attributes</th>
         
 
         
@@ -1500,10 +1681,20 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><strong>Optional</strong> filters</td>
+            <td class="description last">Filters, by default current filters are used</td>
         </tr>
 
     
@@ -1523,10 +1714,20 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><strong>Optional</strong> error handler function</td>
+            <td class="description last">Error handler function</td>
         </tr>
 
     
@@ -1563,7 +1764,7 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
     
 
-    <h4 class="name" id="del"><span class="type-signature"></span>del<span class="signature">(item, opts)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="del"><span class="type-signature"></span>del<span class="signature">(item, opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
 
     
 
@@ -1641,6 +1842,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -1666,6 +1869,14 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -1689,6 +1900,16 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -1705,6 +1926,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
         <th>Type</th>
 
+        
+        <th>Attributes</th>
         
 
         
@@ -1731,10 +1954,20 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><strong>Optional</strong> error handler function</td>
+            <td class="description last">Error handler function</td>
         </tr>
 
     
@@ -1771,7 +2004,7 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
     
 
-    <h4 class="name" id="get"><span class="type-signature"></span>get<span class="signature">(rowId, opts)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="get"><span class="type-signature"></span>get<span class="signature">(rowId, opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
 
     
 
@@ -1849,6 +2082,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -1874,6 +2109,14 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -1897,6 +2140,16 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -1914,7 +2167,11 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -1939,10 +2196,26 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
 
+                
+
+                
+                </td>
             
 
-            <td class="description last"><strong>Optional</strong> refresh meta data?</td>
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last">Refresh meta data?</td>
         </tr>
 
     
@@ -1962,10 +2235,24 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
 
+                
+
+                
+                </td>
             
 
-            <td class="description last"><strong>Optional</strong> return only these fields</td>
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">List of field names to return, all fields are returned by default</td>
         </tr>
 
     
@@ -1985,10 +2272,24 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
 
+                
+
+                
+                </td>
             
 
-            <td class="description last"><strong>Optional</strong> return named tree view</td>
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">Return the named tree view structure</td>
         </tr>
 
     
@@ -2008,10 +2309,24 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
 
+                
+
+                
+                </td>
             
 
-            <td class="description last"><strong>Optional</strong> error handler function</td>
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">Error handler function</td>
         </tr>
 
     
@@ -2404,7 +2719,7 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
     
 
-    <h4 class="name" id="getFilters"><span class="type-signature"></span>getFilters<span class="signature">(opts)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="getFilters"><span class="type-signature"></span>getFilters<span class="signature">(opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
 
     
 
@@ -2482,6 +2797,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -2507,6 +2824,16 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -2523,6 +2850,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
         <th>Type</th>
 
+        
+        <th>Attributes</th>
         
 
         
@@ -2549,17 +2878,27 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><strong>Optional</strong> context</td>
+            <td class="description last">Context</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>rest</code></td>
+                <td class="name"><code>reset</code></td>
             
 
             <td class="type">
@@ -2572,10 +2911,20 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><strong>Optional</strong> reset filters?</td>
+            <td class="description last">Reset filters?</td>
         </tr>
 
     
@@ -2595,10 +2944,20 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><strong>Optional</strong> error handler function</td>
+            <td class="description last">Error handler function</td>
         </tr>
 
     
@@ -2635,7 +2994,7 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
     
 
-    <h4 class="name" id="getForCopy"><span class="type-signature"></span>getForCopy<span class="signature">(rowId, opts)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="getForCopy"><span class="type-signature"></span>getForCopy<span class="signature">(rowId, opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
 
     
 
@@ -2713,6 +3072,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -2738,6 +3099,14 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -2761,6 +3130,16 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -2778,7 +3157,11 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -2803,10 +3186,26 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
 
+                
+
+                
+                </td>
             
 
-            <td class="description last"><strong>Optional</strong> refresh meta data?</td>
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last">Refresh meta data?</td>
         </tr>
 
     
@@ -2826,10 +3225,24 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
 
+                
+
+                
+                </td>
             
 
-            <td class="description last"><strong>Optional</strong> error handler function</td>
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">Error handler function</td>
         </tr>
 
     
@@ -2866,7 +3279,7 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
     
 
-    <h4 class="name" id="getForCreate"><span class="type-signature"></span>getForCreate<span class="signature">(opts)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="getForCreate"><span class="type-signature"></span>getForCreate<span class="signature">(opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
 
     
 
@@ -2944,6 +3357,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -2969,6 +3384,16 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -2986,7 +3411,11 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -3011,10 +3440,26 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
 
+                
+
+                
+                </td>
             
 
-            <td class="description last"><strong>Optional</strong> refresh meta data?</td>
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last">Refresh meta data?</td>
         </tr>
 
     
@@ -3034,10 +3479,24 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
 
+                
+
+                
+                </td>
             
 
-            <td class="description last"><strong>Optional</strong> error handler function</td>
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">Error handler function</td>
         </tr>
 
     
@@ -3074,7 +3533,7 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
     
 
-    <h4 class="name" id="getForDelete"><span class="type-signature"></span>getForDelete<span class="signature">(rowId, opts)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="getForDelete"><span class="type-signature"></span>getForDelete<span class="signature">(rowId, opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
 
     
 
@@ -3152,6 +3611,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -3177,6 +3638,14 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -3200,6 +3669,16 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -3217,7 +3696,11 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -3242,10 +3725,26 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
 
+                
+
+                
+                </td>
             
 
-            <td class="description last"><strong>Optional</strong> refresh meta data?</td>
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last">Refresh meta data?</td>
         </tr>
 
     
@@ -3265,10 +3764,24 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
 
+                
+
+                
+                </td>
             
 
-            <td class="description last"><strong>Optional</strong> error handler function</td>
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">Error handler function</td>
         </tr>
 
     
@@ -3305,7 +3818,7 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
     
 
-    <h4 class="name" id="getForUpdate"><span class="type-signature"></span>getForUpdate<span class="signature">(rowId, opts)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="getForUpdate"><span class="type-signature"></span>getForUpdate<span class="signature">(rowId, opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
 
     
 
@@ -3383,6 +3896,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -3408,6 +3923,14 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -3431,6 +3954,16 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -3448,7 +3981,11 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -3473,10 +4010,26 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
 
+                
+
+                
+                </td>
             
 
-            <td class="description last"><strong>Optional</strong> refresh meta data?</td>
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last">Refresh meta data?</td>
         </tr>
 
     
@@ -3496,10 +4049,24 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
 
+                
+
+                
+                </td>
             
 
-            <td class="description last"><strong>Optional</strong> error handler function</td>
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">Error handler function</td>
         </tr>
 
     
@@ -4153,7 +4720,7 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
     
 
-    <h4 class="name" id="getMetaData"><span class="type-signature"></span>getMetaData<span class="signature">(opts)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="getMetaData"><span class="type-signature"></span>getMetaData<span class="signature">(opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
 
     
 
@@ -4231,6 +4798,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -4256,6 +4825,16 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -4272,6 +4851,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
         <th>Type</th>
 
+        
+        <th>Attributes</th>
         
 
         
@@ -4298,10 +4879,20 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><strong>Optional</strong> context</td>
+            <td class="description last">Context</td>
         </tr>
 
     
@@ -4321,10 +4912,20 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><strong>Optional</strong> context parameter</td>
+            <td class="description last">Context parameter</td>
         </tr>
 
     
@@ -4344,10 +4945,20 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><strong>Optional</strong> error handler function</td>
+            <td class="description last">Error handler function</td>
         </tr>
 
     
@@ -4493,7 +5104,7 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
     
 
-    <h4 class="name" id="getParameter"><span class="type-signature"></span>getParameter<span class="signature">(param, opts)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="getParameter"><span class="type-signature"></span>getParameter<span class="signature">(param, opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
 
     
 
@@ -4505,7 +5116,7 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line2184">line 2184</a>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line2185">line 2185</a>
     </li></ul></dd>
     
 
@@ -4571,6 +5182,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -4596,6 +5209,14 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -4619,6 +5240,16 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -4635,6 +5266,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
         <th>Type</th>
 
+        
+        <th>Attributes</th>
         
 
         
@@ -4661,10 +5294,20 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><strong>Optional</strong> error handler function</td>
+            <td class="description last">Error handler function</td>
         </tr>
 
     
@@ -5489,7 +6132,7 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
     
 
-    <h4 class="name" id="populate"><span class="type-signature"></span>populate<span class="signature">(rowId, opts)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="populate"><span class="type-signature"></span>populate<span class="signature">(rowId, opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
 
     
 
@@ -5567,6 +6210,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -5592,6 +6237,14 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -5615,6 +6268,16 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -5631,6 +6294,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
         <th>Type</th>
 
+        
+        <th>Attributes</th>
         
 
         
@@ -5657,10 +6322,20 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><strong>Optional</strong> error handler function</td>
+            <td class="description last">Error handler function</td>
         </tr>
 
     
@@ -5697,7 +6372,7 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
     
 
-    <h4 class="name" id="print"><span class="type-signature"></span>print<span class="signature">(prt, opts)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="print"><span class="type-signature"></span>print<span class="signature">(prt, opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
 
     
 
@@ -5709,7 +6384,7 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line2099">line 2099</a>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line2100">line 2100</a>
     </li></ul></dd>
     
 
@@ -5775,6 +6450,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -5800,6 +6477,14 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -5823,6 +6508,16 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -5839,6 +6534,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
         <th>Type</th>
 
+        
+        <th>Attributes</th>
         
 
         
@@ -5865,10 +6562,20 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><strong>Optional</strong> error handler function</td>
+            <td class="description last">Error handler function</td>
         </tr>
 
     
@@ -5905,7 +6612,7 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
     
 
-    <h4 class="name" id="save"><span class="type-signature"></span>save<span class="signature">(item, opts)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="save"><span class="type-signature"></span>save<span class="signature">(item, opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
 
     
 
@@ -5983,6 +6690,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -6008,6 +6717,14 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -6031,6 +6748,16 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -6047,6 +6774,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
         <th>Type</th>
 
+        
+        <th>Attributes</th>
         
 
         
@@ -6073,10 +6802,20 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><strong>Optional</strong> error handler function</td>
+            <td class="description last">Error handler function</td>
         </tr>
 
     
@@ -6113,7 +6852,7 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
     
 
-    <h4 class="name" id="search"><span class="type-signature"></span>search<span class="signature">(filters, opts)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="search"><span class="type-signature"></span>search<span class="signature">(filters<span class="signature-attributes">opt</span>, opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
 
     
 
@@ -6191,6 +6930,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -6216,10 +6957,20 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last">Filters (defaults to current filters)</td>
+            <td class="description last">Filters, defaults to current filters if not set</td>
         </tr>
 
     
@@ -6239,6 +6990,16 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -6256,7 +7017,11 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -6281,10 +7046,24 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
 
+                
+
+                
+                </td>
             
 
-            <td class="description last"><strong>Optional</strong> page number</td>
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">Page number, a non paginated list is returned if not set</td>
         </tr>
 
     
@@ -6304,10 +7083,26 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
 
+                
+
+                
+                </td>
             
 
-            <td class="description last"><strong>Optional</strong> refresh meta data?</td>
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last">Refresh meta data?</td>
         </tr>
 
     
@@ -6327,10 +7122,24 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
 
+                
+
+                
+                </td>
             
 
-            <td class="description last"><strong>Optional</strong> only visible fields?</td>
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">Return only visible fields?</td>
         </tr>
 
     
@@ -6350,10 +7159,24 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
 
+                
+
+                
+                </td>
             
 
-            <td class="description last"><strong>Optional</strong> error handler function</td>
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">Error handler function</td>
         </tr>
 
     
@@ -6390,7 +7213,7 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
     
 
-    <h4 class="name" id="setParameter"><span class="type-signature"></span>setParameter<span class="signature">(param, value, opts)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="setParameter"><span class="type-signature"></span>setParameter<span class="signature">(param, value, opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
 
     
 
@@ -6402,7 +7225,7 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line2143">line 2143</a>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line2144">line 2144</a>
     </li></ul></dd>
     
 
@@ -6468,6 +7291,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -6493,6 +7318,14 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -6515,6 +7348,14 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             
             </td>
 
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
             
 
             
@@ -6539,6 +7380,16 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -6555,6 +7406,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
         <th>Type</th>
 
+        
+        <th>Attributes</th>
         
 
         
@@ -6581,10 +7434,20 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><strong>Optional</strong> error handler function</td>
+            <td class="description last">Error handler function</td>
         </tr>
 
     
@@ -6621,7 +7484,7 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
     
 
-    <h4 class="name" id="update"><span class="type-signature"></span>update<span class="signature">(item, opts)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="update"><span class="type-signature"></span>update<span class="signature">(item, opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
 
     
 
@@ -6699,6 +7562,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -6724,6 +7589,14 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -6747,6 +7620,16 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -6763,6 +7646,8 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 
         <th>Type</th>
 
+        
+        <th>Attributes</th>
         
 
         
@@ -6789,10 +7674,20 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><strong>Optional</strong> error handler function</td>
+            <td class="description last">Error handler function</td>
         </tr>
 
     
@@ -6844,7 +7739,7 @@ but rather call <code>getBusinessObject</code> to get a cached instance</span>.
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.4</a> on Tue May 12 2020 10:32:44 GMT+0200 (GMT+02:00) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.4</a> on Tue May 12 2020 11:32:02 GMT+0200 (GMT+02:00) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

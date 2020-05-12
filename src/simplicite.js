@@ -424,15 +424,15 @@ var debug = function(arg) {
  * @param {string} params.host Hostname or IP address (e.g. <code>'myhost.mydomain.com'</code>) of the Simplicite application (not needed if <code>url</code> is set)
  * @param {number} params.port Port (e.g. <code>443</code>) of the Simplicite application (not needed if <code>url</code> is set)
  * @param {string} params.root Root context URL (e.g. <code>'/myapp'</code>) the Simplicite application (not needed if <code>url</code> is set)
- * @param {string} params.username <strong>Optional</strong> username
- * @param {string} params.password <strong>Optional</strong> password
- * @param {string} params.authtoken² <strong>Optional</strong> auth token (if set, username and password are not needed)
- * @param {boolean} params.debug <strong>Optional</strong> debug mode? (defaults to <code>false</code>)
- * @param {function} params.debugHandler <strong>Optional</strong> debug handler function
- * @param {function} params.infoHandler <strong>Optional</strong> info handler function
- * @param {function} params.warningHandler <strong>Optional</strong> warning handler function
- * @param {function} params.errorHandler <strong>Optional</strong> error handler function
- * @param {function} params.logHandler <strong>Optional</strong> log handler function
+ * @param {string} [params.username] Username
+ * @param {string} [params.password] Password
+ * @param {string} [params.authtoken] Auth token (if set, username and password are not needed)
+ * @param {boolean} [params.debug=false] Debug mode?
+ * @param {function} [params.debugHandler] Debug handler function
+ * @param {function} [params.infoHandler] Info handler function
+ * @param {function} [params.warningHandler] Warning handler function
+ * @param {function} [params.errorHandler] Error handler function
+ * @param {function} [params.logHandler] Log handler function
  * @function
  */
 function session(params) {
@@ -534,7 +534,7 @@ function getBasicAuthHeader() {
 
 /**
  * Set auth token
- * @param {string} t Auth token
+ * @param {string} tkn Auth token
  * @function
  */
 function setAuthToken(tkn) {
@@ -581,9 +581,9 @@ function reqParams(data) {
 /**
  * Request
  * @param {string} path Path
- * @param {object} data Data
- * @param {function} callback Callback
- * @param {function} errorHandler Error handler
+ * @param {object} [data] Data
+ * @param {function} [callback] Callback
+ * @param {function} [errorHandler] Error handler
  * @private
  */
 function req(path, data, callback, errorHandler) {
@@ -624,9 +624,9 @@ function req(path, data, callback, errorHandler) {
 
 /**
  * Get error object
- * @param {object} err Error
+ * @param {(string|object)} err Error
  * @param {string} err.message Error message
- * @param {number} status Error status
+ * @param {number} [status] Error status
  * @function
  */
 function getError(err, status) {
@@ -636,7 +636,7 @@ function getError(err, status) {
 /**
  * Parse result
  * @param {object} res Response to parse
- * @param {number} status HTTP status
+ * @param {number} [status=200] HTTP status
  * @private
  */
 function parse(res, status) {
@@ -664,7 +664,7 @@ var healthpath = (ui ? '/ui/' : '') + '/health?format=json';
 /**
  * Get health check (no need to be authenticated)
  * @param {function} callback Callback (called upon success)
- * @param {object} opts Options
+ * @param {object} [opts] Options
  * @private
  */
 function _getHealth(callback, opts) {
@@ -686,9 +686,9 @@ function _getHealth(callback, opts) {
 
 /**
  * Get health check (no need to be authenticated)
- * @param {object} opts Options
- * @param {boolean} opts.full <strong>Optional</strong> full health check? (defaults to <code>false</code>)
- * @param {function} opts.error <strong>Optional</strong> error handler function
+ * @param {object} [opts] Options
+ * @param {boolean} [opts.full=false] Full health check?
+ * @param {function} [opts.error] Error handler function
  * @function
  */
 function getHealth(opts) {
@@ -745,7 +745,7 @@ function clear() {
 /**
  * Login
  * @param {function} callback Callback (called upon success)
- * @param {object} opts Options
+ * @param {object} [opts] Options
  * @private
  */
 function _login(callback, opts) {
@@ -789,10 +789,10 @@ function _login(callback, opts) {
 
 /**
  * Login
- * @param {object} opts Options
- * @param {string} opts.username <strong>Optional</strong> username
- * @param {string} opts.password <strong>Optional</strong> password
- * @param {function} opts.error <strong>Optional</strong> error handler function
+ * @param {object} [opts] Options
+ * @param {string} [opts.username] Username
+ * @param {string} [opts.password] Password
+ * @param {function} [opts.error] Error handler function
  * @function
  */
 function login(opts) {
@@ -806,7 +806,7 @@ function login(opts) {
 /**
  * Logout
  * @param {function} callback Callback (called upon success)
- * @param {object} opts Options
+ * @param {object} [opts] Options
  * @private
  */
 function _logout(callback, opts) {
@@ -832,8 +832,8 @@ function _logout(callback, opts) {
 /**
  * Logout
  * @param {function} callback Callback (called upon success)
- * @param {object} opts Options
- * @param {function} opts.error <strong>Optional</strong> error handler function
+ * @param {object} [opts] Options
+ * @param {function} [opts.error] Error handler function
  * @function
  */
 function logout(opts) {
@@ -853,7 +853,7 @@ var grant;
 /**
  * Get user (grant)
  * @param {function} callback Callback (called upon success)
- * @param {object} opts Options
+ * @param {object} [opts] Options
  * @private
  */
 function _getGrant(callback, opts) {
@@ -893,9 +893,9 @@ function _getGrant(callback, opts) {
 
 /**
  * Get grant (current user data)
- * @param {object} opts Options
- * @param {boolean} opts.inlinePicture <strong>Optional</strong> inline user picture?
- * @param {function} opts.error <strong>Optional</strong> error handler function
+ * @param {object} [opts] Options
+ * @param {boolean} [opts.inlinePicture=false] Inline user picture?
+ * @param {function} [opts.error] Error handler function
  * @function
  */
 function getGrant(opts) {
@@ -910,7 +910,7 @@ function getGrant(opts) {
  * Change password
  * @param {string} pwd Password
  * @param {function} callback Callback (called upon success)
- * @param {object} opts Options
+ * @param {object} [opts] Options
  * @private
  */
 function _changePassword(callback, pwd, opts) {
@@ -933,8 +933,8 @@ function _changePassword(callback, pwd, opts) {
 /**
  * Change password
  * @param {string} pwd Password
- * @param {object} opts Options
- * @param {function} opts.error <strong>Optional</strong> error handler function
+ * @param {object} [opts] Options
+ * @param {function} [opts.error] Error handler function
  * @function
  */
 function changePassword(pwd, opts) {
@@ -948,7 +948,7 @@ function changePassword(pwd, opts) {
 /**
  * Get application info
  * @param {function} callback Callback (called upon success)
- * @param {object} opts Options
+ * @param {object} [opts] Options
  * @private
  */
 function _getAppInfo(callback, opts) {
@@ -971,8 +971,8 @@ function _getAppInfo(callback, opts) {
 
 /**
  * Get application info
- * @param {object} opts Options
- * @param {function} opts.error <strong>Optional</strong> error handler function
+ * @param {object} [opts] Options
+ * @param {function} [opts.error] Error handler function
  * @function
  */
 function getAppInfo(opts) {
@@ -986,7 +986,7 @@ function getAppInfo(opts) {
 /**
  * Get system info
  * @param {function} callback Callback (called upon success)
- * @param {object} opts Options
+ * @param {object} [opts] Options
  * @private
  */
 function _getSysInfo(callback, opts) {
@@ -1009,8 +1009,8 @@ function _getSysInfo(callback, opts) {
 
 /**
  * Get system info
- * @param {object} opts Options
- * @param {function} opts.error <strong>Optional</strong> error handler function
+ * @param {object} [opts] Options
+ * @param {function} [opts.error] Error handler function
  * @function
  */
 function getSysInfo(opts) {
@@ -1025,7 +1025,7 @@ function getSysInfo(opts) {
  * Get user info
  * @param {function} callback Callback (called upon success)
  * @param {string} userlogin User login
- * @param {object} opts Options
+ * @param {object} [opts] Options
  * @private
  */
 function _getUserInfo(callback, userlogin, opts) {
@@ -1049,8 +1049,8 @@ function _getUserInfo(callback, userlogin, opts) {
 /**
  * Get user info
  * @param {string} userlogin User login
- * @param {object} opts Options
- * @param {function} opts.error <strong>Optional</strong> error handler function
+ * @param {object} [opts] Options
+ * @param {function} [opts.error] Error handler function
  * @function
  */
 function getUserInfo(userlogin, opts) {
@@ -1064,7 +1064,7 @@ function getUserInfo(userlogin, opts) {
 /**
  * Get news
  * @param {function} callback Callback (called upon success)
- * @param {object} opts Options
+ * @param {object} [opts] Options
  * @private
  */
 function _getNews(callback, opts) {
@@ -1090,9 +1090,9 @@ function _getNews(callback, opts) {
 
 /**
  * Get news
- * @param {object} opts Options
- * @param {boolean} opts.inlineImages <strong>Optional</strong> Inline news images?
- * @param {function} opts.error <strong>Optional</strong> error handler function
+ * @param {object} [opts] Options
+ * @param {boolean} [opts.inlineImages=false] Inline news images?
+ * @param {function} [opts.error] Error handler function
  * @function
  */
 function getNews(opts) {
@@ -1113,7 +1113,7 @@ var businessObjectCache = {};
 /**
  * Get business object cache key
  * @param {string} name Business object name
- * @param {string} instance <strong>Optional</strong> business object instance name
+ * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
  * @returns Business object cache key
  * @function
  */
@@ -1126,7 +1126,7 @@ function getBusinessObjectCacheKey(name, instance) {
  * <br/><span style="color: red;">You <strong>should never</strong> instanciate this class directly
  * but rather use it from the <code>metadata</code> variable of your <code>BusinessObject</code> instances</span>.
  * @param {string} name Business object name
- * @param {string} instance <strong>Optional</strong> business object instance name
+ * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
  * @class
  */
 function BusinessObjectMetadata (name, instance) {
@@ -1173,7 +1173,7 @@ function BusinessObjectMetadata (name, instance) {
  * but rather call <code>getBusinessObject</code> to get a cached instance</span>.
  * @param {object} ses Session
  * @param {string} name Business object name
- * @param {string} instance <strong>Optional</strong> business object instance name
+ * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
  * @class
  */
 function BusinessObject(ses, name, instance) {
@@ -1224,7 +1224,7 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Get meta data
 	 * @param {function} callback Callback (called upon success)
-	 * @param {object} opts Options
+	 * @param {object} [opts] Options
 	 * @private
 	 */
 	function _getMetaData(callback, opts) {
@@ -1252,10 +1252,10 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Get meta data
-	 * @param {object} opts Options
-	 * @param {number} opts.context <strong>Optional</strong> context
-	 * @param {string} opts.contextParam <strong>Optional</strong> context parameter
-	 * @param {function} opts.error <strong>Optional</strong> error handler function
+	 * @param {object} [opts] Options
+	 * @param {number} [opts.context] Context
+	 * @param {string} [opts.contextParam] Context parameter
+	 * @param {function} [opts.error] Error handler function
 	 * @function
 	 */
 	this.getMetaData = function(opts) {
@@ -1405,7 +1405,7 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Get current filters
 	 * @param {function} callback Callback (called upon success)
-	 * @param {object} opts Options
+	 * @param {object} [opts] Options
 	 * @private
 	 */
 	function _getFilters(callback, opts) {
@@ -1433,10 +1433,10 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Get current filters
-	 * @param {object} opts Options
-	 * @param {number} opts.context <strong>Optional</strong> context
-	 * @param {boolean} opts.rest <strong>Optional</strong> reset filters?
-	 * @param {function} opts.error <strong>Optional</strong> error handler function
+	 * @param {object} [opts] Options
+	 * @param {number} [opts.context] Context
+	 * @param {boolean} [opts.reset] Reset filters?
+	 * @param {function} [opts.error] Error handler function
 	 * @function
 	 */
 	this.getFilters =function(opts) {
@@ -1477,8 +1477,8 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Count
 	 * @param {function} callback Callback (called upon success)
-	 * @param {object} filters Filters (defaults to current filters)
-	 * @param {object} opts Options
+	 * @param {object} [filters] Filters, defaults to current filters if not set
+	 * @param {object} [opts] Options
 	 * @private
 	 */
 	function _count(callback, filters, opts) {
@@ -1505,9 +1505,9 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Count
-	 * @param {object} filters Filters (defaults to current filters)
-	 * @param {object} opts Options
-	 * @param {function} opts.error <strong>Optional</strong> error handler function
+	 * @param {object} [filters] Filters, defaults to current filters if not set
+	 * @param {object} [opts] Options
+	 * @param {function} [opts.error] Error handler function
 	 * @function
 	 */
 	this.count = function(filters, opts) {
@@ -1528,8 +1528,8 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Search
 	 * @param {function} callback Callback (called upon success)
-	 * @param {object} filters Filters (defaults to current filters)
-	 * @param {object} opts Options
+	 * @param {object} [filters] Filters, defaults to current filters if not set
+	 * @param {object} [opts] Options
 	 * @private
 	 */
 	function _search(callback, filters, opts) {
@@ -1563,12 +1563,12 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Search
-	 * @param {object} filters Filters (defaults to current filters)
-	 * @param {object} opts Options
-	 * @param {number} opts.page <strong>Optional</strong> page number
-	 * @param {boolean} opts.metadata <strong>Optional</strong> refresh meta data?
-	 * @param {boolean} opts.visible <strong>Optional</strong> only visible fields?
-	 * @param {function} opts.error <strong>Optional</strong> error handler function
+	 * @param {object} [filters] Filters, defaults to current filters if not set
+	 * @param {object} [opts] Options
+	 * @param {number} [opts.page] Page number, a non paginated list is returned if not set
+	 * @param {boolean} [opts.metadata=false] Refresh meta data?
+	 * @param {boolean} [opts.visible] Return only visible fields?
+	 * @param {function} [opts.error] Error handler function
 	 * @function
 	 */
 	this.search = function(filters, opts) {
@@ -1583,7 +1583,7 @@ function BusinessObject(ses, name, instance) {
 	 * Get
 	 * @param {function} callback Callback (called upon success)
 	 * @param {string} rowId Row ID
-	 * @param {object} opts Options
+	 * @param {object} [opts] Options
 	 * @private
 	 */
 	function _get(callback, rowId, opts) {
@@ -1623,11 +1623,11 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Get
 	 * @param {string} rowId Row ID
-	 * @param {object} opts Options
-	 * @param {boolean} opts.metadata <strong>Optional</strong> refresh meta data?
-	 * @param {string[]} opts.fields <strong>Optional</strong> return only these fields
-	 * @param {string} opts.treeview <strong>Optional</strong> return named tree view
-	 * @param {function} opts.error <strong>Optional</strong> error handler function
+	 * @param {object} [opts] Options
+	 * @param {boolean} [opts.metadata=false] Refresh meta data?
+	 * @param {string[]} [opts.fields] List of field names to return, all fields are returned by default
+	 * @param {string} [opts.treeview] Return the named tree view structure
+	 * @param {function} [opts.error] Error handler function
 	 * @function
 	 */
 	this.get = function(rowId, opts) {
@@ -1641,7 +1641,7 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Get for create
 	 * @param {function} callback Callback (called upon success)
-	 * @param {object} opts Options
+	 * @param {object} [opts] Options
 	 * @private
 	 */
 	function _getForCreate(callback, opts) {
@@ -1654,9 +1654,9 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Get for create
-	 * @param {object} opts Options
-	 * @param {boolean} opts.metadata <strong>Optional</strong> refresh meta data?
-	 * @param {function} opts.error <strong>Optional</strong> error handler function
+	 * @param {object} [opts] Options
+	 * @param {boolean} [opts.metadata=false] Refresh meta data?
+	 * @param {function} [opts.error] Error handler function
 	 * @function
 	 */
 	this.getForCreate = function(opts) {
@@ -1671,7 +1671,7 @@ function BusinessObject(ses, name, instance) {
 	 * Get for update
 	 * @param {function} callback Callback (called upon success)
 	 * @param {string} rowId Row ID
-	 * @param {object} opts Options
+	 * @param {object} [opts] Options
 	 * @private
 	 */
 	function _getForUpdate(callback, rowId, opts) {
@@ -1685,9 +1685,9 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Get for update
 	 * @param {string} rowId Row ID
-	 * @param {object} opts Options
-	 * @param {boolean} opts.metadata <strong>Optional</strong> refresh meta data?
-	 * @param {function} opts.error <strong>Optional</strong> error handler function
+	 * @param {object} [opts] Options
+	 * @param {boolean} [opts.metadata=false] Refresh meta data?
+	 * @param {function} [opts.error] Error handler function
 	 * @function
 	 */
 	this.getForUpdate = function(rowId, opts) {
@@ -1702,7 +1702,7 @@ function BusinessObject(ses, name, instance) {
 	 * Get for copy
 	 * @param {function} callback Callback (called upon success)
 	 * @param {string} rowId Row ID to copy
-	 * @param {object} opts Options
+	 * @param {object} [opts] Options
 	 * @private
 	 */
 	function _getForCopy(callback, rowId, opts) {
@@ -1716,9 +1716,9 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Get for copy
 	 * @param {string} rowId Row ID to copy
-	 * @param {object} opts Options
-	 * @param {boolean} opts.metadata <strong>Optional</strong> refresh meta data?
-	 * @param {function} opts.error <strong>Optional</strong> error handler function
+	 * @param {object} [opts] Options
+	 * @param {boolean} [opts.metadata=false] Refresh meta data?
+	 * @param {function} [opts.error] Error handler function
 	 * @function
 	 */
 	this.getForCopy = function(rowId, opts) {
@@ -1733,7 +1733,7 @@ function BusinessObject(ses, name, instance) {
 	 * Get for delete
 	 * @param {function} callback Callback (called upon success)
 	 * @param {string} rowId Row ID
-	 * @param {object} opts Options
+	 * @param {object} [opts] Options
 	 * @private
 	 */
 	function _getForDelete(callback, rowId, opts) {
@@ -1747,9 +1747,9 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Get for delete
 	 * @param {string} rowId Row ID
-	 * @param {object} opts Options
-	 * @param {boolean} opts.metadata <strong>Optional</strong> refresh meta data?
-	 * @param {function} opts.error <strong>Optional</strong> error handler function
+	 * @param {object} [opts] Options
+	 * @param {boolean} [opts.metadata=false] Refresh meta data?
+	 * @param {function} [opts.error] Error handler function
 	 * @function
 	 */
 	this.getForDelete = function(rowId, opts) {
@@ -1774,7 +1774,7 @@ function BusinessObject(ses, name, instance) {
 	 * Populate
 	 * @param {function} callback Callback (called upon success)
 	 * @param {string} rowId Row ID
-	 * @param {object} opts Options
+	 * @param {object} [opts] Options
 	 * @private
 	 */
 	function _populate(callback, rowId, opts) {
@@ -1799,8 +1799,8 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Populate
 	 * @param {string} rowId Row ID
-	 * @param {object} opts Options
-	 * @param {function} opts.error <strong>Optional</strong> error handler function
+	 * @param {object} [opts] Options
+	 * @param {function} [opts.error] Error handler function
 	 * @function
 	 */
 	this.populate = function(itm, opts) {
@@ -1815,7 +1815,7 @@ function BusinessObject(ses, name, instance) {
 	 * Save
 	 * @param {function} callback Callback (called upon success)
 	 * @param {object} item Item (defaults to current item)
-	 * @param {object} opts Options
+	 * @param {object} [opts] Options
 	 * @private
 	 */
 	function _save(callback, item, opts) {
@@ -1831,8 +1831,8 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Save
 	 * @param {object} item Item (defaults to current item)
-	 * @param {object} opts Options
-	 * @param {function} opts.error <strong>Optional</strong> error handler function
+	 * @param {object} [opts] Options
+	 * @param {function} [opts.error] Error handler function
 	 * @function
 	 */
 	this.save = function(itm, opts) {
@@ -1847,7 +1847,7 @@ function BusinessObject(ses, name, instance) {
 	 * Create (create or update)
 	 * @param {function} callback Callback (called upon success)
 	 * @param {object} item Item (defaults to current item)
-	 * @param {object} opts Options
+	 * @param {object} [opts] Options
 	 * @private
 	 */
 	function _create(callback, item, opts) {
@@ -1874,8 +1874,8 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Create (create or update)
 	 * @param {object} item Item (defaults to current item)
-	 * @param {object} opts Options
-	 * @param {function} opts.error <strong>Optional</strong> error handler function
+	 * @param {object} [opts] Options
+	 * @param {function} [opts.error] Error handler function
 	 * @function
 	 */
 	this.create = function(itm, opts) {
@@ -1891,7 +1891,7 @@ function BusinessObject(ses, name, instance) {
 	 * Update
 	 * @param {function} callback Callback (called upon success)
 	 * @param {object} item Item (defaults to current item)
-	 * @param {object} opts Options
+	 * @param {object} [opts] Options
 	 * @private
 	 */
 	function _update(callback, item, opts) {
@@ -1918,8 +1918,8 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Update
 	 * @param {object} item Item (defaults to current item)
-	 * @param {object} opts Options
-	 * @param {function} opts.error <strong>Optional</strong> error handler function
+	 * @param {object} [opts] Options
+	 * @param {function} [opts.error] Error handler function
 	 * @function
 	 */
 	this.update = function(itm, opts) {
@@ -1934,7 +1934,7 @@ function BusinessObject(ses, name, instance) {
 	 * Delete
 	 * @param {function} callback Callback (called upon success)
 	 * @param {object} item Item (defaults to current item)
-	 * @param {object} opts Options
+	 * @param {object} [opts] Options
 	 * @private
 	 */
 	function _del(callback, item, opts) {
@@ -1961,8 +1961,8 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Delete
 	 * @param {object} item Item (defaults to current item)
-	 * @param {object} opts Options
-	 * @param {function} opts.error <strong>Optional</strong> error handler function
+	 * @param {object} [opts] Options
+	 * @param {function} [opts.error] Error handler function
 	 * @function
 	 */
 	this.del = function(itm, opts) {
@@ -1977,8 +1977,8 @@ function BusinessObject(ses, name, instance) {
 	 * Invoke a custom action
 	 * @param {function} callback Callback (called upon success)
 	 * @param {string} action Action name
-	 * @param {string} rowId <strong>Optional</strong> row ID
-	 * @param {object} opts Options
+	 * @param {string} [rowId] Row ID
+	 * @param {object} [opts] Options
 	 * @private
 	 */
 	function _action(callback, action, rowId, opts) {
@@ -2002,8 +2002,9 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Invoke a custom action
 	 * @param {string} action Action name
-	 * @param {object} opts Options
-	 * @param {function} opts.error <strong>Optional</strong> error handler function
+	 * @param {string} [rowId] Row ID
+	 * @param {object} [opts] Options
+	 * @param {function} [opts.error] Error handler function
 	 * @function
 	 */
 	this.action = function(act, opts) {
@@ -2018,7 +2019,7 @@ function BusinessObject(ses, name, instance) {
 	 * Build a pivot table
 	 * @param {function} callback Callback (called upon success)
 	 * @param {string} crosstab Pivot table name
-	 * @param {object} opts Options
+	 * @param {object} [opts] Options
 	 * @private
 	 */
 	function _crosstab(callback, crosstab, opts) {
@@ -2044,9 +2045,9 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Build a pivot table
 	 * @param {string} crosstab Pivot table name
-	 * @param {object} opts Options
-	 * @param {Object} opts.filters <strong>Optional</strong> filters
-	 * @param {function} opts.error <strong>Optional</strong> error handler function
+	 * @param {object} [opts] Options
+	 * @param {Object} [opts.filters] Filters, by default current filters are used
+	 * @param {function} [opts.error] Error handler function
 	 * @function
 	 */
 	this.crosstab = function(ctb, opts) {
@@ -2061,7 +2062,7 @@ function BusinessObject(ses, name, instance) {
 	 * Build a custom publication
 	 * @param {function} callback Callback (called upon success)
 	 * @param {string} prt Publication name
-	 * @param {object} opts Options
+	 * @param {object} [opts] Options
 	 * @private
 	 */
 	function _print(callback, prt, opts) {
@@ -2092,8 +2093,8 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Build a custom publication
 	 * @param {string} prt Publication name
-	 * @param {object} opts Options
-	 * @param {function} opts.error <strong>Optional</strong> error handler function
+	 * @param {object} [opts] Options
+	 * @param {function} [opts.error] Error handler function
 	 * @function
 	 */
 	this.print = function(pt, opts) {
@@ -2109,7 +2110,7 @@ function BusinessObject(ses, name, instance) {
 	 * @param {function} callback Callback (called upon success)
 	 * @param {string} param Parameter name
 	 * @param {string} value Parameter value
-	 * @param {object} opts Options
+	 * @param {object} [opts] Options
 	 * @private
 	 */
 	function _setParameter(callback, param, value, opts) {
@@ -2136,8 +2137,8 @@ function BusinessObject(ses, name, instance) {
 	 * Set an object parameter
 	 * @param {string} param Parameter name
 	 * @param {string} value Parameter value
-	 * @param {object} opts Options
-	 * @param {function} opts.error <strong>Optional</strong> error handler function
+	 * @param {object} [opts] Options
+	 * @param {function} [opts.error] Error handler function
 	 * @function
 	 */
 	this.setParameter = function(param, value, opts) {
@@ -2152,7 +2153,7 @@ function BusinessObject(ses, name, instance) {
 	 * Get an object parameter
 	 * @param {function} callback Callback (called upon success)
 	 * @param {string} param Parameter name
-	 * @param {object} opts Options
+	 * @param {object} [opts] Options
 	 * @private
 	 */
 	function _getParameter(callback, param, opts) {
@@ -2177,8 +2178,8 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Get an object parameter
 	 * @param {string} param Parameter name
-	 * @param {object} opts Options
-	 * @param {function} opts.error <strong>Optional</strong> error handler function
+	 * @param {object} [opts] Options
+	 * @param {function} [opts.error] Error handler function
 	 * @function
 	 */
 	this.getParameter = function(param, opts) {
@@ -2193,7 +2194,7 @@ function BusinessObject(ses, name, instance) {
 /**
  * Get business object
  * @param {string} name Business object name
- * @param {string} instance Optional business object instance name
+ * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
  * @returns {BusinessObject} Business object
  * @function
  */
