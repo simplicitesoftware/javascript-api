@@ -22,7 +22,7 @@ img {
 
 a,
 a:active {
-  color: #606;
+  color: #094e93;
   text-decoration: none;
 }
 
@@ -88,7 +88,7 @@ h4 {
 
 h4.name {
   color: #fff;
-  background: #6d426d;
+  background: #2e76bd;
   box-shadow: 0 .25em .5em #d3d3d3;
   border-top: 1px solid #d3d3d3;
   border-bottom: 1px solid #d3d3d3;
@@ -97,11 +97,11 @@ h4.name {
 }
 
 h4.name a {
-  color: #fc83ff;
+  color: #98cbff;
 }
 
 h4.name a:hover {
-  border-bottom-color: #fc83ff;
+  border-bottom-color: #98cbff;
 }
 
 h5, .container-overview .subsection-title {
@@ -262,7 +262,7 @@ nav ul a:active {
 
 nav a:hover,
 nav a:active {
-  color: #606;
+  color: #094e93;
 }
 
 nav > ul {
@@ -270,7 +270,7 @@ nav > ul {
 }
 
 nav > ul > li > a {
-  color: #606;
+  color: #094e93;
   margin-top: 10px;
 }
 
@@ -292,7 +292,7 @@ nav h2 {
 
 nav > h2 > a {
    margin: 10px 0 -10px;
-   color: #606 !important;
+   color: #094e93 !important;
 }
 
 footer {
@@ -326,7 +326,7 @@ footer {
 }
 
 .type-signature {
-  color: #CA79CA
+  color: #edb8b8
 }
 
 .type-signature:last-child {
@@ -338,7 +338,7 @@ footer {
 }
 
 .signature {
-    color: #fc83ff;
+    color: #98cbff;
 }
 
 .details {
@@ -510,7 +510,7 @@ thead tr, thead tr {
 }
 
 span.param-type, .params td .param-type, .param-type dd {
-   color: #606;
+   color: #094e93;
   font-family: Consolas, Monaco, 'Andale Mono', monospace
 }
 

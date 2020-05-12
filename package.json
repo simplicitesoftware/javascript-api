@@ -21,6 +21,7 @@
   "devDependencies": {
     "uglify-js": "latest",
     "jsdoc": "latest",
+    "replace": "latest",
     "docdash": "latest",
     "jest": "latest",
     "eslint": "latest"
@@ -28,7 +29,7 @@
   "scripts": {
     "lint": "eslint src/simplicite.js",
     "build": "uglifyjs src/simplicite.js --comments -o dist/simplicite.min.js",
-    "doc": "jsdoc -t node_modules/docdash -d docs src/simplicite.js USAGE.md",
+    "doc": "jsdoc -t node_modules/docdash -d docs src/simplicite.js USAGE.md && replace '#fc83ff' '#98cbff' docs/styles/jsdoc.css && replace '#6d426d' '#2e76bd' docs/styles/jsdoc.css && replace '#CA79CA' '#edb8b8' docs/styles/jsdoc.css && replace '#606' '#094e93' docs/styles/jsdoc.css",
     "test": "jest --coverage -- test/simplicite.test.js"
   },
   "files": [
