@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 1.1.5
+ * @version 1.1.6
  * @license Apache-2.0
  */
 var Q = require('q');
@@ -489,7 +489,8 @@ function Session(params) {
 		healthpath: (this.endpoint == 'ui' ? '/ui/' : '') + '/health?format=json',
 		apppath: '/' + this.endpoint + '/json/app',
 		objpath: '/' + this.endpoint + '/json/obj',
-		pcspath: '/' + this.endpoint + '/json/pcs',
+		/*apppath: '/' + this.endpoint + '/rest',
+		objpath: '/' + this.endpoint + '/rest',*/
 		extpath: '/' + this.endpoint + '/ext'
 	};
 
@@ -868,7 +869,7 @@ function Session(params) {
 	function _changePassword(callback, pwd, opts) {
 		var self = this;
 		opts = opts || {};
-		self.req.call(self, self.parameters.apppath + '?action=setpassword&password=' + pwd, undefined, function(res, status) {
+		self.req.call(self, self.parameters.apppath + '?action=setpassword&password=' + encodeURIComponent(pwd), undefined, function(res, status) {
 			var r = self.parse(res, status);
 			self.debug('[simplicite.changePassword] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
@@ -974,46 +975,6 @@ function Session(params) {
 	};
 
 	/**
-	 * Get user info
-	 * @param {function} callback Callback (called upon success)
-	 * @param {string} userlogin User login
-	 * @param {object} [opts] Options
-	 * @private
-	 */
-	function _getUserInfo(callback, userlogin, opts) {
-		var self = this;
-		opts = opts || {};
-		self.req.call(self, self.parameters.apppath + '?action=userinfo' + (userlogin ? '&login=' + userlogin: ''), undefined, function(res, status) {
-			var r = self.parse(res, status);
-			self.debug('[simplicite.getUserInfo] HTTP status = ' + status + ', response type = ' + r.type);
-			if (r.type === 'error') {
-				(opts.error ? opts.error : self.error).call(self, r.response);
-			} else {
-				self.userinfo = r.response;
-				if (callback)
-					callback.call(self, self.userinfo);
-			}
-		}, function(e) {
-			(opts.error ? opts.error : self.error).call(self, e);
-		});
-	}
-
-	/**
-	 * Get user info
-	 * @param {string} username Username
-	 * @param {object} [opts] Options
-	 * @param {function} [opts.error] Error handler function
-	 * @function
-	 */
-	this.getUserInfo = function(username, opts) {
-		var d = Q.defer();
-		if (opts === undefined) opts = {};
-		opts.error = function(e) { d.reject(e); };
-		_getUserInfo.call(this, function(inf) { d.resolve(inf); }, username, opts);
-		return d.promise;
-	};
-
-	/**
 	 * Get news
 	 * @param {function} callback Callback (called upon success)
 	 * @param {object} [opts] Options
@@ -1024,7 +985,7 @@ function Session(params) {
 		opts = opts || {};
 		var p = '';
 		if (opts.inlineImages)
-			p += '&inline_images=' + opts.inlineImages;
+			p += '&inline_images=' + !!opts.inlineImages;
 		self.req.call(self, self.parameters.apppath + '?action=news' + p, undefined, function(res, status) {
 			var r = self.parse(res, status);
 			self.debug('[simplicite.getNews] HTTP status = ' + status + ', response type = ' + r.type);
@@ -1056,6 +1017,51 @@ function Session(params) {
 	};
 
 	/**
+	 * Index search
+	 * @param {function} callback Callback (called upon success)
+	 * @param {string} request Index search request
+	 * @param {string} [object] Object
+	 * @private
+	 */
+	function _indexSearch(callback, request, object, opts) {
+		var self = this;
+		opts = opts || {};
+		var p = '';
+		if (opts.metadata===true) p += '&_md=true';
+		if (opts.context) p += '&context=' + encodeURIComponent(opts.context);
+		self.req.call(self, self.parameters.apppath + '?action=indexsearch&request=' + encodeURIComponent(request ? request : '') + (object ? '&object=' + encodeURIComponent(object) : '') + p, undefined, function(res, status) {
+			var r = self.parse(res, status);
+			self.debug('[simplicite.indexSearch] HTTP status = ' + status + ', response type = ' + r.type);
+			if (r.type === 'error') {
+				(opts.error ? opts.error : self.error).call(self, r.response);
+			} else {
+				if (callback)
+					callback.call(self, r.response);
+			}
+		}, function(e) {
+			(opts.error ? opts.error : self.error).call(self, e);
+		});
+	}
+
+	/**
+	 * Index search
+	 * @param {string} request Index search request
+	 * @param {string} [object] Object
+	 * @param {object} [opts] Options
+	 * @param {boolean} [opts.metadata=false] Add meta data for each result
+	 * @param {number} [opts.context] Context
+	 * @param {function} [opts.error] Error handler function
+	 * @function
+	 */
+	this.indexSearch = function(request, object, opts) {
+		var d = Q.defer();
+		if (opts === undefined) opts = {};
+		opts.error = function(e) { d.reject(e); };
+		_indexSearch.call(this, function(srs) { d.resolve(srs); }, request, object, opts);
+		return d.promise;
+	};
+
+	/**
 	 * Get business object
 	 * @param {string} name Business object name
 	 * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
@@ -1070,17 +1076,6 @@ function Session(params) {
 			businessObjectCache[cacheKey] = obj;
 		}
 		return obj;
-	};
-
-	/**
-	 * Get a business process
-	 * @param {string} name Business process name
-	 * @function
-	 */
-	this.getBusinessProcess = function(name) {
-		return {
-			metadata: { name: name }
-		};
 	};
 
 	/**
@@ -1273,7 +1268,7 @@ function BusinessObject(ses, name, instance) {
 	 * Path
 	 * @constant {string}
 	 */
-	this.path = this.session.parameters.objpath + '?object=' + name + '&inst=' + instance;
+	this.path = this.session.parameters.objpath + '?object=' + encodeURIComponent(name) + '&inst=' + encodeURIComponent(instance);
 
 	/**
 	 * Current item
@@ -1303,10 +1298,8 @@ function BusinessObject(ses, name, instance) {
 		var self = this;
 		opts = opts || {};
 		var p = '';
-		if (opts.context)
-			p += '&context=' + opts.context;
-		if (opts.contextParam)
-			p += '&contextparam=' + opts.contextParam;
+		if (opts.context) p += '&context=' + encodeURIComponent(opts.context);
+		if (opts.contextParam) p += '&contextparam=' + encodeURIComponent(opts.contextParam);
 		self.session.req.call(self.session, self.path + '&action=metadata' + p, undefined, function(res, status) {
 			var r = self.session.parse(res, status);
 			this.debug('[simplicite.BusinessObject.getMetaData] HTTP status = ' + status + ', response type = ' + r.type);
@@ -1527,7 +1520,7 @@ function BusinessObject(ses, name, instance) {
 		opts = opts || {};
 		var p = '';
 		if (opts.context)
-			p += '&context=' + opts.context;
+			p += '&context=' + encodeURIComponent(opts.context);
 		if (opts.reset)
 			p += '&reset=' + !!opts.reset;
 		self.session.req.call(self.session, self.path + '&action=filters' + p, undefined, function(res, status) {
@@ -1569,16 +1562,16 @@ function BusinessObject(ses, name, instance) {
 	function _getOptions(options) {
 		var opts = '';
 		if (options.context)
-			opts += '&context=' + options.context;
+			opts += '&context=' + encodeURIComponent(options.context);
 		var id = options.inlineDocs || options.inlineDocuments || options.inlineImages; // Naming flexibility
 		if (id)
-			opts += '&inline_documents=' + (id.join ? id.join(',') : id);
+			opts += '&inline_documents=' + encodeURIComponent(id.join ? id.join(',') : id);
 		var it = options.inlineThumbs || options.inlineThumbnails;  // Naming flexibility
 		if (it)
-			opts += '&inline_thumbnails=' + (it.join ? it.join(',') : it);
+			opts += '&inline_thumbnails=' + encodeURIComponent(it.join ? it.join(',') : it);
 		var io = options.inlineObjs || options.inlineObjects;  // Naming flexibility
 		if (io)
-			opts += '&inline_objects=' + (io.join ? io.join(',') : io);
+			opts += '&inline_objects=' + encodeURIComponent(io.join ? io.join(',') : io);
 		return opts;
 	}
 
@@ -1726,15 +1719,15 @@ function BusinessObject(ses, name, instance) {
 		var p = _getOptions(opts);
 		var tv = opts.treeView;
 		if (tv)
-			p += '&treeview=' + tv;
+			p += '&treeview=' + encodeURIComponent(tv);
 		if (opts.fields) {
 			for (var i = 0; i < opts.fields.length; i++) {
-				p += '&fields=' + opts.fields[i].replace('.', '__');
+				p += '&fields=' + encodeURIComponent(opts.fields[i].replace('.', '__'));
 			}
 		}
 		if (opts.metadata) p += '&_md=true';
 		if (opts.social) p += '&_social=true';
-		self.session.req.call(self.session, self.path + '&action=get&' + self.metadata.rowidfield + '=' + rowId + p, undefined, function(res, status) {
+		self.session.req.call(self.session, self.path + '&action=get&' + self.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, function(res, status) {
 			var r = self.session.parse(res, status);
 			this.debug('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
@@ -1915,7 +1908,7 @@ function BusinessObject(ses, name, instance) {
 		var self = this;
 		opts = opts || {};
 		var p = _getOptions(opts);
-		self.session.req.call(self.session, self.path + '&action=populate&' + self.metadata.rowidfield + '=' + rowId + p, undefined, function(res, status) {
+		self.session.req.call(self.session, self.path + '&action=populate&' + self.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, function(res, status) {
 			var r = self.session.parse(res, status);
 			this.debug('[simplicite.BusinessObject.populate] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
@@ -2076,7 +2069,7 @@ function BusinessObject(ses, name, instance) {
 		if (item)
 			self.item = item;
 		opts = opts || {};
-		self.session.req.call(self.session, self.path + '&action=delete&' + self.metadata.rowidfield + '=' + self.item[self.metadata.rowidfield], undefined, function(res, status) {
+		self.session.req.call(self.session, self.path + '&action=delete&' + self.metadata.rowidfield + '=' + encodeURIComponent(self.item[self.metadata.rowidfield]), undefined, function(res, status) {
 			var r = self.session.parse(res, status);
 			this.debug('[simplicite.BusinessObject.del] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
@@ -2118,7 +2111,7 @@ function BusinessObject(ses, name, instance) {
 	function _action(callback, action, rowId, opts) {
 		var self = this;
 		opts = opts || {};
-		self.session.req.call(self.session, self.path + '&action=' + action + (opts.rowId ? '&row_id=' + rowId : ''), undefined, function(res, status) {
+		self.session.req.call(self.session, self.path + '&action=' + encodeURIComponent(action) + (opts.rowId ? '&row_id=' + encodeURIComponent(rowId) : ''), undefined, function(res, status) {
 			var r = self.session.parse(res, status);
 			this.debug('[simplicite.BusinessObject.action(' + action + ')] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
@@ -2161,7 +2154,7 @@ function BusinessObject(ses, name, instance) {
 		opts = opts || {};
 		if (opts.filters)
 			self.filters = opts.filters;
-		self.session.req.call(self.session, self.path + '&action=crosstab&crosstab=' + crosstab, _getReqParams(self.filters), function(res, status) {
+		self.session.req.call(self.session, self.path + '&action=crosstab&crosstab=' + encodeURIComponent(crosstab), _getReqParams(self.filters), function(res, status) {
 			var r = self.session.parse(res, status);
 			this.debug('[simplicite.BusinessObject.crosstab(' + crosstab + ')] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
@@ -2206,10 +2199,10 @@ function BusinessObject(ses, name, instance) {
 			self.filters = opts.filters;
 		var p = '';
 		if (opts.all)
-			p += '&all=' + opts.all;
+			p += '&all=' + !!opts.all;
 		if (opts.mailing)
-			p += '&mailing=' + opts.mailing;
-		self.session.req.call(self.session, self.path + '&action=print&printtemplate=' + prt + p, undefined, function(res, status) {
+			p += '&mailing=' + !!opts.mailing;
+		self.session.req.call(self.session, self.path + '&action=print&printtemplate=' + encodeURIComponent(prt) + p, undefined, function(res, status) {
 			var r = self.session.parse(res, status);
 			this.debug('[simplicite.BusinessObject.print(' + prt + ')] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {

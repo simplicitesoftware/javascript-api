@@ -53,11 +53,15 @@ app.getHealth().then(health => {
 	app.debug(sysinfo);
 	assert.ok(sysinfo.heapmaxsize);
 	app.log('Memory: ' + sysinfo.heapmaxsize);
-	return app.getUserInfo(adminUsername);
-}).then(userinfo => {
-	app.debug(userinfo);
-	assert.ok(userinfo.login == adminUsername);
-	app.log('User info login: ' + userinfo.login);
+	return app.indexSearch(sysCodeName, 'Field');
+}).then(results => {
+	app.debug(results);
+	assert.ok(results.length > 0);
+	app.log('Found ' + results.length + ' results');
+	for (let i = 0; i < results.length; i++) {
+		let result = results[i];
+		app.log('- Result[' + i + ']: ' + result.object + '(' + result.row_id + ') = ' + result.key);
+	}
 	return app.getNews();
 }).then(news => {
 	app.debug(news);
