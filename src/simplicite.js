@@ -489,8 +489,6 @@ function Session(params) {
 		healthpath: (this.endpoint == 'ui' ? '/ui/' : '') + '/health?format=json',
 		apppath: '/' + this.endpoint + '/json/app',
 		objpath: '/' + this.endpoint + '/json/obj',
-		/*apppath: '/' + this.endpoint + '/rest',
-		objpath: '/' + this.endpoint + '/rest',*/
 		extpath: '/' + this.endpoint + '/ext'
 	};
 
