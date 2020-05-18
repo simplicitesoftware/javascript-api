@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 1.1.6
+ * @version 1.1.7
  * @license Apache-2.0
  */
 var Q = require('q');
@@ -428,9 +428,8 @@ function Session(params) {
 
 	/**
 	 * Timeout (seconds)
-	 * @type number
 	 * @default 30
-	 * @var
+	 * @member {number}
 	 */
 	this.timeout = params.timeout || 30;
 
@@ -477,8 +476,7 @@ function Session(params) {
 
 	/**
 	 * Parameters
-	 * @type Object
-	 * @constant
+	 * @constant {Object}
 	 */
 	this.parameters = {
 		scheme: scheme,
@@ -494,8 +492,7 @@ function Session(params) {
 
 	/**
 	 * Username
-	 * @type string
-	 * @var
+	 * @member {string}
 	 */
 	this.username = params.username || params.login; // naming flexibility
 
@@ -510,8 +507,7 @@ function Session(params) {
 
 	/**
 	 * Password
-	 * @type string
-	 * @var
+	 * @member {string}
 	 */
 	this.password = params.password || params.pwd; // naming flexibility
 
@@ -526,8 +522,7 @@ function Session(params) {
 
 	/**
 	 * Auth token
-	 * @type string
-	 * @var
+	 * @member {string}
 	 */
 	this.authtoken = params.authtoken || params.authToken || params.token; // naming flexibility
 
@@ -542,7 +537,7 @@ function Session(params) {
 
 	/**
 	 * Business objects cache
-	 * @type {object}
+	 * @type {Object}
 	 * @private
 	 */
 	var businessObjectCache = {};
@@ -634,10 +629,12 @@ function Session(params) {
 			if (callback)
 				callback.call(self, res.data, res.status);
 		}).catch(function(err) {
+			var s = err.response && err.response.status ? err.response.status : undefined;
+			var e = err.response && err.response.data ? err.response.data : err;
 			if (errorHandler)
-				errorHandler.call(self, err);
+				errorHandler.call(self, self.getError.call(self, e, s));
 			else
-				throw err;
+				throw e;
 		});
 	};
 
@@ -649,7 +646,7 @@ function Session(params) {
 	 * @private
 	 */
 	this.getError = function(err, status) {
-		return typeof err === 'string' ? { message: err, status: status } : err;
+		return typeof err === 'string' ? { message: err, status: status || 200 } : err;
 	};
 
 	/**
@@ -762,7 +759,7 @@ function Session(params) {
 	this.login = function(opts) {
 		var d = Q.defer();
 		opts = opts || {};
-		opts.error = function(e) { d.reject(e); };
+		opts.error = opts.error || function(e) { d.reject(e); };
 		_login.call(this, function(res) { d.resolve(res); }, opts);
 		return d.promise;
 	};
@@ -803,15 +800,14 @@ function Session(params) {
 	this.logout = function(opts) {
 		var d = Q.defer();
 		opts = opts || {};
-		opts.error = function(e) { d.reject(e); };
+		opts.error = opts.error || function(e) { d.reject(e); };
 		_logout.call(this, function(res) { d.resolve(res); }, opts);
 		return d.promise;
 	};
 
 	/**
 	 * Grant
-	 * @type Grant
-	 * @var
+	 * @member {Grant}
 	 */
 	this.grant = undefined;
 
@@ -852,7 +848,7 @@ function Session(params) {
 	this.getGrant = function(opts) {
 		var d = Q.defer();
 		opts = opts || {};
-		opts.error = function(e) { d.reject(e); };
+		opts.error = opts.error || function(e) { d.reject(e); };
 		_getGrant.call(this, function(grt) { d.resolve(grt); }, opts);
 		return d.promise;
 	};
@@ -891,7 +887,7 @@ function Session(params) {
 	this.changePassword = function(pwd, opts) {
 		var d = Q.defer();
 		opts = opts || {};
-		opts.error = function(e) { d.reject(e); };
+		opts.error = opts.error || function(e) { d.reject(e); };
 		_changePassword.call(this, function(res) { d.resolve(res); }, pwd, opts);
 		return d.promise;
 	};
@@ -929,7 +925,7 @@ function Session(params) {
 	this.getAppInfo = function(opts) {
 		var d = Q.defer();
 		opts = opts || {};
-		opts.error = function(e) { d.reject(e); };
+		opts.error = opts.error || function(e) { d.reject(e); };
 		_getAppInfo.call(this, function(inf) { d.resolve(inf); }, opts);
 		return d.promise;
 	};
@@ -967,7 +963,7 @@ function Session(params) {
 	this.getSysInfo = function(opts) {
 		var d = Q.defer();
 		opts = opts || {};
-		opts.error = function(e) { d.reject(e); };
+		opts.error = opts.error || function(e) { d.reject(e); };
 		_getSysInfo.call(this, function(inf) { d.resolve(inf); }, opts);
 		return d.promise;
 	};
@@ -1009,7 +1005,7 @@ function Session(params) {
 	this.getNews = function(opts) {
 		var d = Q.defer();
 		opts = opts || {};
-		opts.error = function(e) { d.reject(e); };
+		opts.error = opts.error || function(e) { d.reject(e); };
 		_getNews.call(this, function(nws) { d.resolve(nws); }, opts);
 		return d.promise;
 	};
@@ -1053,8 +1049,8 @@ function Session(params) {
 	 */
 	this.indexSearch = function(request, object, opts) {
 		var d = Q.defer();
-		if (opts === undefined) opts = {};
-		opts.error = function(e) { d.reject(e); };
+		opts = opts || {};
+		opts.error = opts.error || function(e) { d.reject(e); };
 		_indexSearch.call(this, function(srs) { d.resolve(srs); }, request, object, opts);
 		return d.promise;
 	};
@@ -1209,25 +1205,25 @@ function BusinessObjectMetadata (name, instance) {
 
 	/**
 	 * Row ID field name
-	 * @var {string}
+	 * @member {string}
 	 */
 	this.rowidfield = constants.DEFAULT_ROW_ID_NAME;
 
 	/**
 	 * Display label
-	 * @var {string}
+	 * @member {string}
 	 */
 	this.label = name;
 
 	/**
 	 * Help
-	 * @var {string}
+	 * @member {string}
 	 */
 	this.help = '';
 
 	/**
 	 * Fields definitions
-	 * @var {Array}
+	 * @member {Array}
 	 */
 	this.fields = [];
 }
@@ -1252,7 +1248,7 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Object metadata
-	 * @var {BusinessObjectMetadata}
+	 * @member {BusinessObjectMetadata}
 	 */
 	this.metadata = new BusinessObjectMetadata(name, instance);
 
@@ -1270,19 +1266,19 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Current item
-	 * @var {Object}
+	 * @member {Object}
 	 */
 	this.item = {};
 
 	/**
 	 * Current filters
-	 * @var {Object}
+	 * @member {Object}
 	 */
 	this.filters = {};
 
 	/**
 	 * Current list
-	 * @var {Object[]}
+	 * @member {Object[]}
 	 */
 	this.list = [];
 
@@ -1547,7 +1543,7 @@ function BusinessObject(ses, name, instance) {
 	this.getFilters =function(opts) {
 		var d = Q.defer();
 		opts = opts || {};
-		opts.error = function(e) { d.reject(e); };
+		opts.error = opts.error || function(e) { d.reject(e); };
 		_getFilters.call(this, function(filters) { d.resolve(filters); }, opts);
 		return d.promise;
 	};
@@ -1638,7 +1634,7 @@ function BusinessObject(ses, name, instance) {
 	this.count = function(filters, opts) {
 		var d = Q.defer();
 		opts = opts || {};
-		opts.error = function(e) { d.reject(e); };
+		opts.error = opts.error || function(e) { d.reject(e); };
 		_count.call(this, function(count) { d.resolve(count); }, filters, opts);
 		return d.promise;
 	};
@@ -1699,7 +1695,7 @@ function BusinessObject(ses, name, instance) {
 	this.search = function(filters, opts) {
 		var d = Q.defer();
 		opts = opts || {};
-		opts.error = function(e) { d.reject(e); };
+		opts.error = opts.error || function(e) { d.reject(e); };
 		_search.call(this, function(list) { d.resolve(list); }, filters, opts);
 		return d.promise;
 	};
@@ -1758,7 +1754,7 @@ function BusinessObject(ses, name, instance) {
 	this.get = function(rowId, opts) {
 		var d = Q.defer();
 		opts = opts || {};
-		opts.error = function(e) { d.reject(e); };
+		opts.error = opts.error || function(e) { d.reject(e); };
 		_get.call(this, function(itm) { d.resolve(itm); }, rowId, opts);
 		return d.promise;
 	};
@@ -1787,7 +1783,7 @@ function BusinessObject(ses, name, instance) {
 	this.getForCreate = function(opts) {
 		var d = Q.defer();
 		opts = opts || {};
-		opts.error = function(e) { d.reject(e); };
+		opts.error = opts.error || function(e) { d.reject(e); };
 		_getForCreate.call(this, function(itm) { d.resolve(itm); }, opts);
 		return d.promise;
 	};
@@ -1818,7 +1814,7 @@ function BusinessObject(ses, name, instance) {
 	this.getForUpdate = function(rowId, opts) {
 		var d = Q.defer();
 		opts = opts || {};
-		opts.error = function(e) { d.reject(e); };
+		opts.error = opts.error || function(e) { d.reject(e); };
 		_getForUpdate.call(this, function(itm) { d.resolve(itm); }, rowId, opts);
 		return d.promise;
 	};
@@ -1849,7 +1845,7 @@ function BusinessObject(ses, name, instance) {
 	this.getForCopy = function(rowId, opts) {
 		var d = Q.defer();
 		opts = opts || {};
-		opts.error = function(e) { d.reject(e); };
+		opts.error = opts.error || function(e) { d.reject(e); };
 		_getForCopy.call(this, function(itm) { d.resolve(itm); }, rowId, opts);
 		return d.promise;
 	};
@@ -1880,7 +1876,7 @@ function BusinessObject(ses, name, instance) {
 	this.getForDelete = function(rowId, opts) {
 		var d = Q.defer();
 		opts = opts || {};
-		opts.error = function(e) { d.reject(e); };
+		opts.error = opts.error || function(e) { d.reject(e); };
 		_getForDelete.call(this, function(itm) { d.resolve(itm); }, rowId, opts);
 		return d.promise;
 	};
@@ -1931,7 +1927,7 @@ function BusinessObject(ses, name, instance) {
 	this.populate = function(itm, opts) {
 		var d = Q.defer();
 		opts = opts || {};
-		opts.error = function(e) { d.reject(e); };
+		opts.error = opts.error || function(e) { d.reject(e); };
 		_populate.call(this, function(i) { d.resolve(i); }, itm, opts);
 		return d.promise;
 	};
@@ -1963,7 +1959,7 @@ function BusinessObject(ses, name, instance) {
 	this.save = function(itm, opts) {
 		var d = Q.defer();
 		opts = opts || {};
-		opts.error = function(e) { d.reject(e); };
+		opts.error = opts.error || function(e) { d.reject(e); };
 		_save.call(this, function(i) { d.resolve(i); }, itm, opts);
 		return d.promise;
 	};
@@ -2007,7 +2003,7 @@ function BusinessObject(ses, name, instance) {
 		itm.row_id = this.session.constants.DEFAULT_ROW_ID;
 		var d = Q.defer();
 		opts = opts || {};
-		opts.error = function(e) { d.reject(e); };
+		opts.error = opts.error || function(e) { d.reject(e); };
 		_create.call(this, function(i) { d.resolve(i); }, itm, opts);
 		return d.promise;
 	};
@@ -2050,7 +2046,7 @@ function BusinessObject(ses, name, instance) {
 	this.update = function(itm, opts) {
 		var d = Q.defer();
 		opts = opts || {};
-		opts.error = function(e) { d.reject(e); };
+		opts.error = opts.error || function(e) { d.reject(e); };
 		_update.call(this, function(i) { d.resolve(i); }, itm, opts);
 		return d.promise;
 	};
@@ -2093,7 +2089,7 @@ function BusinessObject(ses, name, instance) {
 	this.del = function(itm, opts) {
 		var d = Q.defer();
 		opts = opts || {};
-		opts.error = function(e) { d.reject(e); };
+		opts.error = opts.error || function(e) { d.reject(e); };
 		_del.call(this, function(r) { d.resolve(r); }, itm, opts);
 		return d.promise;
 	};
@@ -2135,7 +2131,7 @@ function BusinessObject(ses, name, instance) {
 	this.action = function(act, opts) {
 		var d = Q.defer();
 		opts = opts || {};
-		opts.error = function(e) { d.reject(e); };
+		opts.error = opts.error || function(e) { d.reject(e); };
 		_action.call(this, function(res) { d.resolve(res); }, act, opts);
 		return d.promise;
 	};
@@ -2178,7 +2174,7 @@ function BusinessObject(ses, name, instance) {
 	this.crosstab = function(ctb, opts) {
 		var d = Q.defer();
 		opts = opts || {};
-		opts.error = function(e) { d.reject(e); };
+		opts.error = opts.error || function(e) { d.reject(e); };
 		_crosstab.call(this, function(res) { d.resolve(res); }, ctb, opts);
 		return d.promise;
 	};
@@ -2225,7 +2221,7 @@ function BusinessObject(ses, name, instance) {
 	this.print = function(pt, opts) {
 		var d = Q.defer();
 		opts = opts || {};
-		opts.error = function(e) { d.reject(e); };
+		opts.error = opts.error || function(e) { d.reject(e); };
 		_print.call(this, function(res) { d.resolve(res); }, pt, opts);
 		return d.promise;
 	};
@@ -2269,7 +2265,7 @@ function BusinessObject(ses, name, instance) {
 	this.setParameter = function(param, value, opts) {
 		var d = Q.defer();
 		opts = opts || {};
-		opts.error = function(e) { d.reject(e); };
+		opts.error = opts.error || function(e) { d.reject(e); };
 		_setParameter.call(this, function() { d.resolve(); }, param, value, opts);
 		return d.promise;
 	};
@@ -2310,7 +2306,7 @@ function BusinessObject(ses, name, instance) {
 	this.getParameter = function(param, opts) {
 		var d = Q.defer();
 		opts = opts || {};
-		opts.error = function(e) { d.reject(e); };
+		opts.error = opts.error || function(e) { d.reject(e); };
 		_getParameter.call(this, function(value) { d.resolve(value); }, param, opts);
 		return d.promise;
 	};

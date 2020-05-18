@@ -11,40 +11,44 @@ const app = require('../src/simplicite').session({
 	url: process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080',
 	debug: false
 });
-if (debug) console.log(app.parameters);
+app.debug(app.parameters);
 
 app.setUsername(adminUsername);
 app.setPassword(adminPassword);
-
 app.login().then(res => {
-	if (debug) console.log(res);
+	app.debug(res);
 	console.log('Logged in as ' + res.login);
 	assert.ok(res.login == adminUsername);
 	return app.getGrant({ inlinePicture: false });
 }).then(grant => {
-	if (debug) console.log(grant);
+	app.debug(grant);
 	assert.ok(grant.getLogin() == adminUsername);
 	console.log('Hello ' + grant.getFirstName() + ' ' + grant.getLastName() + ' (' + grant.getLogin() + ')');
 	return app.logout();
 }).then(res => {
-	if (debug) console.log(res);
+	app.debug(res);
 	assert.ok(res.result);
 	console.log('Logged out');
 	return app.login({ username: testUsername, password: testPassword });
 }).then(res => {
-	if (debug) console.log(res);
+	app.debug(res);
 	assert.ok(res.login == testUsername);
 	console.log('Logged in as ' + res.login);
 	return app.getGrant({ inlinePicture: false });
 }).then(grant => {
-	if (debug) console.log(grant);
+	app.debug(grant);
 	assert.ok(grant.getLogin() == testUsername);
 	console.log('Hello ' + grant.getFirstName() + ' ' + grant.getLastName() + ' (' + grant.getLogin() + ')');
 	return app.logout();
 }).then(res => {
-	if (debug) console.log(res);
+	app.debug(res);
 	assert.ok(res.result);
 	console.log('Logged out');
+	return app.login({ username: 'unknown', password: 'unknown', error: err => {
+		app.debug(err);
+		console.log('Status: ' + err.status + ', message: ' + err.message);
+		assert.ok(err.status == 401);
+	}});	
 }).catch(err => {
 	console.error(err);
 });
