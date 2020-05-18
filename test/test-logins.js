@@ -13,6 +13,9 @@ const app = require('../src/simplicite').session({
 });
 app.debug(app.parameters);
 
+//app.login({ username: 'unknown', password: 'unknown' }).catch(err => { console.log(err); });
+app.login({ token: 'unknown' }).catch(err => { console.log(err); });
+/*
 app.setUsername(adminUsername);
 app.setPassword(adminPassword);
 app.login().then(res => {
@@ -52,3 +55,4 @@ app.login().then(res => {
 }).catch(err => {
 	console.error(err);
 });
+*/

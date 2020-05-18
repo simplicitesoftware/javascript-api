@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 1.1.7
+ * @version 1.1.9
  * @license Apache-2.0
  */
 var Q = require('q');
@@ -646,7 +646,12 @@ function Session(params) {
 	 * @private
 	 */
 	this.getError = function(err, status) {
-		return typeof err === 'string' ? { message: err, status: status || 200 } : err;
+		if (typeof err === 'string') // plain text error
+			return { message: err, status: status || 200 };
+		else if (err.response) // wrapped error
+			return typeof err.response === 'string' ? { message: err.response, status: status || 200 } : err.response;
+		else
+			return err;
 	};
 
 	/**
