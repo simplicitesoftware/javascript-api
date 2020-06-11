@@ -6,16 +6,26 @@ const adminPassword = process.env.TEST_SIMPLICITE_ADMIN_PASSWORD || 'designer';
 const testUsername = process.env.TEST_SIMPLICITE_USERNAME || 'website';
 const testPassword = process.env.TEST_SIMPLICITE_PASSWORD || 'simplicite';
 
+function myErrorHandler(err) {
+	console.log("ERROR:");
+	console.log(err);
+}
+
 const debug = process.env.TEST_SIMPLICITE_DEBUG == 'true';
 const app = require('../src/simplicite').session({
 	url: process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080',
+	//errorHandler: myErrorHandler,
 	debug: false
 });
 app.debug(app.parameters);
 
-//app.login({ username: 'unknown', password: 'unknown' }).catch(err => { console.log(err); });
-app.login({ token: 'unknown' }).catch(err => { console.log(err); });
-/*
+//app.login({ username: 'unknown', password: 'unknown' }).catch(myErrorHandler);
+//app.login({ username: 'unknown', password: 'unknown', error: myErrorHandler });
+//app.login({ username: 'unknown', password: 'unknown' });
+//app.login({ token: 'unknown', error: myErrorHandler });
+//app.login({ token: 'unknown' }).catch(myErrorHandler);
+//app.login({ token: 'unknown' });
+
 app.setUsername(adminUsername);
 app.setPassword(adminPassword);
 app.login().then(res => {
@@ -55,4 +65,3 @@ app.login().then(res => {
 }).catch(err => {
 	console.error(err);
 });
-*/

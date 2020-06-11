@@ -110,6 +110,9 @@ app.getHealth().then(health => {
 	app.debug(item);
 	assert.ok(item.row_id == sysId);
 	app.log('Got item: ' + item.row_id + ' ' + item.sys_code + ' ' + item.sys_value);
+	sys.create({ sys_code: '', sys_value: '' }, { error: function(err) {
+		app.log('Invalid create error caught: ' + JSON.stringify(err));
+	}});
 	return sys.getForCreate();
 }).then(item => {
 	app.debug(item);
@@ -132,6 +135,10 @@ app.getHealth().then(health => {
 	assert.ok(item.sys_code == sysCode);
 	assert.ok(item.sys_value == sysValue);
 	app.log('Got item for update with row ID: ' + item.row_id);
+	item.sys_value = '';
+	sys.update(item, { error: function(err) {
+		app.log('Invalid update error caught: ' + JSON.stringify(err));
+	}});
 	item.sys_value = sysValue + ' updated';
 	return sys.update(item);
 }).then(item => {
@@ -183,5 +190,5 @@ app.getHealth().then(health => {
 	assert.ok(res.result);
 	app.log('Logged out');
 }).catch(err => {
-	app.error(err);
+	app.log('Unexepcted error caught: ' + JSON.stringify(err));
 });
