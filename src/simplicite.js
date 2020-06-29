@@ -331,7 +331,28 @@ var constants = {
 	 * Warning level
 	 * @const {number}
 	 */
-	ERRLEVEL_WARNING: 3
+	ERRLEVEL_WARNING: 3,
+
+	/**
+	 * Image resource type
+	 * @const {number}
+	 */
+	RESOURCE_TYPE_IMAGE: 'IMG',
+	/**
+	 * Icon resource type
+	 * @const {number}
+	 */
+	RESOURCE_TYPE_ICON: 'ICO',
+	/**
+	 * Stylesheet resource type
+	 * @const {number}
+	 */
+	RESOURCE_TYPE_STYLESHEET: 'CSS',
+	/**
+	 * Javascript resource type
+	 * @const {number}
+	 */
+	RESOURCE_TYPE_JAVASCRIPT: 'JS'
 };
 
 /**
@@ -487,7 +508,8 @@ function Session(params) {
 		healthpath: (this.endpoint == 'ui' ? '/ui/' : '') + '/health?format=json',
 		apppath: '/' + this.endpoint + '/json/app',
 		objpath: '/' + this.endpoint + '/json/obj',
-		extpath: '/' + this.endpoint + '/ext'
+		extpath: '/' + this.endpoint + '/ext',
+		respath: '/resource'
 	};
 
 	/**
@@ -1087,6 +1109,20 @@ function Session(params) {
 			metadata: { name: name }
 		};
 	};
+
+	/**
+	 * Get a resource URL
+	 * @param {string} code Resource code
+	 * @param {string} [type=IMG] Resource type (IMG=image (default), ICO=Icon, CSS=stylesheet, JS=Javascript, HTML=HTML) 
+	 * @param {string} [object] Object name (not required for global resources)
+	 * @param {string} [objId] Object ID (not required for global resources)
+	 * @function
+	 */
+	this.getResourceURL = function(code, type, object, objId) {
+		return this.parameters.url + this.parameters.respath + '?code=' + encodeURIComponent(code) + '&type=' + encodeURIComponent(type || 'IMG')
+			+ (object ? '&object=' + encodeURIComponent(object) : '')
+			+ (objId ? '&objid=' + encodeURIComponent(objId): '');
+	};
 }
 
 /**
@@ -1181,6 +1217,7 @@ function Grant () {
 	 * Has responsibility
 	 * @param {string} group Group name
 	 * @returns True if user has a responsibility on the specified group
+	 * @function
 	 */
 	this.hasResponsibility = function(group) {
 		return this.responsibilities && this.responsibilities.indexOf(group) !== -1;
@@ -2314,6 +2351,16 @@ function BusinessObject(ses, name, instance) {
 		opts.error = opts.error || function(e) { d.reject(e); };
 		_getParameter.call(this, function(value) { d.resolve(value); }, param, opts);
 		return d.promise;
+	};
+
+	/**
+	 * Get an object resource URL
+	 * @param {string} code Resource code
+	 * @param {string} [type=IMG] Resource type (IMG=image (default), ICO=Icon, CSS=stylesheet, JS=Javascript, HTML=HTML)
+	 * @function
+	 */
+	this.getResourceURL = function(code, type) {
+		return this.session.getResourceURL(code, type, this.metadata.name, this.metadata.id);
 	};
 }
 

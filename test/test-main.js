@@ -43,6 +43,9 @@ app.getHealth().then(health => {
 	assert.ok(grant.login == adminUsername);
 	app.log('Grant: ' + app.grant.getFirstName() + ' ' + app.grant.getLastName() + ' (' + app.grant.getLogin() + ', ID ' + app.grant.getUserId() + ')');
 	app.log('Picture URL: ' + app.grant.getPictureURL().substr(0, 80) + '...');
+	app.log('Resource URL: ' + app.getResourceURL('TEST'));
+	app.log('Resource URL: ' + app.getResourceURL('TEST', app.constants.RESOURCE_TYPE_ICON));
+	app.log('Resource URL: ' + app.getResourceURL('TEST', app.constants.RESOURCE_TYPE_JAVASCRIPT, sysName, 1));
 	return app.getAppInfo();
 }).then(appinfo => {
 	app.debug(appinfo);
@@ -86,6 +89,8 @@ app.getHealth().then(health => {
 	app.log('Value field: ' + sys.getField(sysValueName).label);
 	assert.ok(sys.isRowIdField(f) == false);
 	assert.ok(sys.isTimestampField(f) == false);
+	app.log('Resource URL: ' + sys.getResourceURL('TEST'));
+	app.log('Resource URL: ' + sys.getResourceURL('TEST', app.constants.RESOURCE_TYPE_ICON));
 	return sys.count(sysFilters);
 }).then(count => {
 	app.debug(count);
