@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 1.1.9
+ * @version 1.1.11
  * @license Apache-2.0
  */
 var Q = require('q');
@@ -2244,9 +2244,9 @@ function BusinessObject(ses, name, instance) {
 			if (r.type === 'error') {
 				(opts.error ? opts.error : self.session.error).call(self, r.response);
 			} else {
-				var result = r.response.result;
+				var content = r.response.content;
 				if (callback)
-					callback.call(self, result);
+					callback.call(self, content);
 			}
 		}, function(e) {
 			(opts.error ? opts.error : self.session.error).call(self, e);

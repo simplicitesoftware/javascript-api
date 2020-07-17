@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1593448612990" clover="3.2.0">
-  <project timestamp="1593448612990" name="All files">
+<coverage generated="1594995316096" clover="3.2.0">
+  <project timestamp="1594995316096" name="All files">
     <metrics statements="772" coveredstatements="495" conditionals="661" coveredconditionals="268" methods="210" coveredmethods="94" elements="1643" coveredelements="857" complexity="0" loc="772" ncloc="772" packages="1" files="1" classes="1"/>
     <file name="simplicite.js" path="D:\dev\git\github\nodejs-api\src\simplicite.js">
       <metrics statements="772" coveredstatements="495" conditionals="661" coveredconditionals="268" methods="210" coveredmethods="94"/>
@@ -446,17 +446,17 @@
       <line num="1621" count="7" type="cond" truecount="1" falsecount="1"/>
       <line num="1622" count="7" type="stmt"/>
       <line num="1623" count="7" type="stmt"/>
-      <line num="1624" count="53" type="cond" truecount="2" falsecount="0"/>
-      <line num="1625" count="53" type="cond" truecount="4" falsecount="0"/>
+      <line num="1624" count="54" type="cond" truecount="2" falsecount="0"/>
+      <line num="1625" count="54" type="cond" truecount="4" falsecount="0"/>
       <line num="1626" count="1" type="cond" truecount="1" falsecount="1"/>
       <line num="1627" count="1" type="stmt"/>
       <line num="1628" count="1" type="cond" truecount="2" falsecount="2"/>
-      <line num="1629" count="52" type="cond" truecount="2" falsecount="2"/>
+      <line num="1629" count="53" type="cond" truecount="2" falsecount="2"/>
       <line num="1630" count="0" type="cond" truecount="0" falsecount="2"/>
-      <line num="1631" count="52" type="cond" truecount="1" falsecount="1"/>
+      <line num="1631" count="53" type="cond" truecount="1" falsecount="1"/>
       <line num="1632" count="0" type="stmt"/>
       <line num="1633" count="0" type="cond" truecount="0" falsecount="2"/>
-      <line num="1635" count="52" type="cond" truecount="2" falsecount="0"/>
+      <line num="1635" count="53" type="cond" truecount="2" falsecount="0"/>
       <line num="1638" count="7" type="stmt"/>
       <line num="1648" count="1" type="stmt"/>
       <line num="1649" count="1" type="cond" truecount="1" falsecount="1"/>
