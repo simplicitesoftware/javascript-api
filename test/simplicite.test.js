@@ -13,6 +13,8 @@ const testPassword = process.env.TEST_SIMPLICITE_PASSWORD || 'simplicite';
 const app = require('../src/simplicite').session({ url: url });
 // or const app = require('../src/simplicite').session({ scheme: scheme, host: host, port: port, root: root });
 
+jest.setTimeout(30000);
+
 test('Params', () => {
 	expect(app.parameters.scheme).toBe(scheme);
 	expect(app.parameters.host).toBe(host);
