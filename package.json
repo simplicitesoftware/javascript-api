@@ -23,12 +23,12 @@
     "@babel/core": "latest",
     "@babel/node": "latest",
     "@babel/preset-env": "latest",
-    "uglify-js": "latest",
+    "docdash": "latest",
+    "eslint": "^7.4.0",
+    "jest": "^26.1.0",
     "jsdoc": "latest",
     "replace": "latest",
-    "docdash": "latest",
-    "jest": "latest",
-    "eslint": "latest"
+    "uglify-js": "^3.10.0"
   },
   "scripts": {
     "lint": "eslint src/simplicite.js",
