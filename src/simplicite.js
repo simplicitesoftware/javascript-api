@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 1.1.11
+ * @version 1.1.12
  * @license Apache-2.0
  */
 var Q = require('q');
@@ -2147,7 +2147,7 @@ function BusinessObject(ses, name, instance) {
 	function _action(callback, action, rowId, opts) {
 		var self = this;
 		opts = opts || {};
-		self.session.req.call(self.session, self.path + '&action=' + encodeURIComponent(action) + (opts.rowId ? '&row_id=' + encodeURIComponent(rowId) : ''), undefined, function(res, status) {
+		self.session.req.call(self.session, self.path + '&action=' + encodeURIComponent(action) + (rowId ? '&' + self.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : ''), undefined, function(res, status) {
 			var r = self.session.parse(res, status);
 			this.debug('[simplicite.BusinessObject.action(' + action + ')] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
@@ -2170,11 +2170,11 @@ function BusinessObject(ses, name, instance) {
 	 * @param {function} [opts.error] Error handler function
 	 * @function
 	 */
-	this.action = function(act, opts) {
+	this.action = function(action, rowId, opts) {
 		var d = Q.defer();
 		opts = opts || {};
 		opts.error = opts.error || function(e) { d.reject(e); };
-		_action.call(this, function(res) { d.resolve(res); }, act, opts);
+		_action.call(this, function(res) { d.resolve(res); }, action, rowId, opts);
 		return d.promise;
 	};
 
@@ -2225,10 +2225,11 @@ function BusinessObject(ses, name, instance) {
 	 * Build a custom publication
 	 * @param {function} callback Callback (called upon success)
 	 * @param {string} prt Publication name
+	 * @param {string} [rowId] Row ID
 	 * @param {object} [opts] Options
 	 * @private
 	 */
-	function _print(callback, prt, opts) {
+	function _print(callback, prt, rowId, opts) {
 		var self = this;
 		opts = opts || {};
 		if (opts.filters)
@@ -2238,7 +2239,7 @@ function BusinessObject(ses, name, instance) {
 			p += '&all=' + !!opts.all;
 		if (opts.mailing)
 			p += '&mailing=' + !!opts.mailing;
-		self.session.req.call(self.session, self.path + '&action=print&printtemplate=' + encodeURIComponent(prt) + p, undefined, function(res, status) {
+		self.session.req.call(self.session, self.path + '&action=print&printtemplate=' + encodeURIComponent(prt) + (rowId ? '&' + self.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : '') + p, undefined, function(res, status) {
 			var r = self.session.parse(res, status);
 			this.debug('[simplicite.BusinessObject.print(' + prt + ')] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
@@ -2256,15 +2257,16 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Build a custom publication
 	 * @param {string} prt Publication name
+	 * @param {string} [rowId] Row ID
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
 	 * @function
 	 */
-	this.print = function(pt, opts) {
+	this.print = function(pt, rowId, opts) {
 		var d = Q.defer();
 		opts = opts || {};
 		opts.error = opts.error || function(e) { d.reject(e); };
-		_print.call(this, function(res) { d.resolve(res); }, pt, opts);
+		_print.call(this, function(res) { d.resolve(res); }, pt, rowId, opts);
 		return d.promise;
 	};
 

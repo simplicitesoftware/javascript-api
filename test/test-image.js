@@ -33,7 +33,7 @@ app.login().then(res => {
 	assert.ok(rowId != app.constants.DEFAULT_ROW_ID);
 	assert.ok(item.appObj1Code == code);
 	assert.ok(item.appObj1Picture && item.appObj1Picture != app.constants.DEFAULT_ROW_ID);
-	console.log("Created with document ID =" + item.appObj1Picture);
+	console.log('Created with document ID = ' + item.appObj1Picture);
 	return obj.get(rowId, { inlineDocuments: true, inlineThumbnails: true });
 }).then(item => {
 	if (debug) console.log('GET: ' + JSON.stringify(item, null, 2));
@@ -42,7 +42,7 @@ app.login().then(res => {
 }).then(res => {
 	if (debug) console.log('DELETE: ' + JSON.stringify(res, null, 2));
 	assert.ok(res.row_id == rowId);
-	console.log("Deleted");
+	console.log('Deleted');
 	return app.logout();
 }).then(res => {
 	if (debug) console.log(res);

@@ -53,16 +53,15 @@ test('Logins', () => {
 		expect(res.result).not.toBeUndefined();
 		expect(app.username).toBeUndefined();
 		expect(app.password).toBeUndefined();
-		expect(app.athtoken).toBeUndefined();
+		expect(app.authtoken).toBeUndefined();
 	}).catch(err => {
 		expect(err).toBeNull(); // Force test failure
 	});
 });
 
-
 test('Objects', () => {
 	let sys, usr;
-	let sysId = "2", sysCodeFilter = '%TIMEOUT%', sysCode = 'TEST_' + Date.now(), sysValue = 'Test';
+	let sysId = '2', sysCodeFilter = '%TIMEOUT%', sysCode = 'TEST_' + Date.now(), sysValue = 'Test';
 
 	return app.login({ username: adminUsername, password: adminPassword }).then(res => {
 		expect(res.login).toBe(adminUsername);
@@ -136,6 +135,9 @@ test('Objects', () => {
 	}).then(list => {
 		expect(list[0].usr_login).toBe(app.grant.getLogin());
 		expect(list[0].usr_image_id.thumbnail).not.toBeUndefined();
+		return usr.print('User-VCARD', list[0].row_id);
+	}).then(content => {
+		expect(content).not.toBeUndefined();
 		return usr.get(app.grant.getUserId(), { treeView: 'TreeUser' });
 	}).then(tree => {
 		expect(tree.object).toBe('User');
@@ -158,7 +160,7 @@ test('Image', () => {
 		return obj.getForCreate();
 	}).then(item => {
 		expect(item.row_id).toBe(app.constants.DEFAULT_ROW_ID);
-		item.appObj1Code = "TEST";
+		item.appObj1Code = 'TEST';
 		item.appObj1Picture = { name: 'test.png', content: img };
 		return obj.create(item);
 	}).then(item => {

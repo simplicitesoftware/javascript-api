@@ -13,11 +13,11 @@ const app = require('../src/simplicite').session({
 app.log(app.parameters);
 
 // Test default handlers
-app.info("INFO message");
-app.info({ type: "INFO", message: "Info message" });
-app.warn("WARN message");
-app.error("ERROR message");
-app.debug("DEBUG message");
+app.info('INFO message');
+app.info({ type: 'INFO', message: 'Info message' });
+app.warn('WARN message');
+app.error('ERROR message');
+app.debug('DEBUG message');
 
 const sysName = 'SystemParam',
 	sysCodeName = 'sys_code', sysCode = 'TEST_' + Date.now(),
@@ -176,13 +176,17 @@ app.getHealth().then(health => {
 	assert.ok(list[0].usr_image_id.mime && list[0].usr_image_id.content);
 	app.log('Got users list for current user (with picture): ' + usr.getFieldValue('usr_login', list[0]));
 	let m = usr.getField('row_module_id__mdl_name');
-	app.log(usr.getFieldLabel(m) + ": " + usr.getFieldValue(m, list[0]))
+	app.log(usr.getFieldLabel(m) + ': ' + usr.getFieldValue(m, list[0]));
 	var s = usr.getFieldListValue('usr_active', list[0]);
 	app.log('Status: ' + s + ' (code: ' + list[0].usr_active + ')');
 	assert.ok(s != list[0].usr_active);
 	var u = usr.getFieldDataURL('usr_image_id', list[0]);
 	app.log('Picture URL: ' + u.substr(0, 80) + '...');
 	assert.ok(u == app.grant.getPictureURL());
+	return usr.print('User-VCARD', list[0].row_id);
+}).then(content => {
+	app.log('Publication content:\n' + content);
+	assert.ok(!!content);
 	return usr.get(app.grant.getUserId(), { treeView: 'TreeUser' });
 }).then(tree => {
 	app.debug(tree);
