@@ -24,11 +24,11 @@
     "@babel/node": "latest",
     "@babel/preset-env": "latest",
     "docdash": "latest",
-    "eslint": "^7.4.0",
-    "jest": "^26.1.0",
+    "eslint": "latest",
+    "jest": "latest",
     "jsdoc": "latest",
     "replace": "latest",
-    "uglify-js": "^3.10.0"
+    "uglify-js": "latest"
   },
   "scripts": {
     "lint": "eslint src/simplicite.js",
