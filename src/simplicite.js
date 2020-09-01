@@ -372,11 +372,11 @@ function session(params) {
  * @param {string} params.host Hostname or IP address (e.g. <code>'myhost.mydomain.com'</code>) of the Simplicite application (not needed if <code>url</code> is set)
  * @param {number} params.port Port (e.g. <code>443</code>) of the Simplicite application (not needed if <code>url</code> is set)
  * @param {string} params.root Root context URL (e.g. <code>'/myapp'</code>) the Simplicite application (not needed if <code>url</code> is set)
- * @param {string} [params.username] Username
- * @param {string} [params.password] Password
- * @param {string} [params.authtoken] Auth token (if set, username and password are not needed)
+ * @param {boolean} [params.endpoint='api'] Endpoint (<code>'api'|'ui'|'public'</code>)
+ * @param {string} [params.username] Username (not needed for public endpoint)
+ * @param {string} [params.password] Password (not needed for public endpoint)
+ * @param {string} [params.authtoken] Auth token (if set, username and password are not needed; not needed for public endpoint)
  * @param {boolean} [params.debug=false] Debug mode?
- * @param {boolean} [params.endpoint='api'] Endpoing (<code>'api'|'ui'</code>)
  * @param {function} [params.debugHandler] Debug handler function
  * @param {function} [params.infoHandler] Info handler function
  * @param {function} [params.warningHandler] Warning handler function
@@ -495,6 +495,8 @@ function Session(params) {
 		url += root.startsWith('/') ? root : '/' + root;
 	this.debug('[simplicite] Base URL = ' + url);
 
+	var ep = this.endpoint == "public" ? '' : '/' + this.endpoint;
+
 	/**
 	 * Parameters
 	 * @constant {Object}
@@ -505,10 +507,10 @@ function Session(params) {
 		port: port,
 		root: root,
 		url: url,
-		healthpath: (this.endpoint == 'ui' ? '/ui/' : '') + '/health?format=json',
-		apppath: '/' + this.endpoint + '/json/app',
-		objpath: '/' + this.endpoint + '/json/obj',
-		extpath: '/' + this.endpoint + '/ext',
+		healthpath: (ep == '/ui' ? ep : '') + '/health?format=json',
+		apppath: ep + '/json/app',
+		objpath: ep + '/json/obj',
+		extpath: ep + '/ext',
 		respath: '/resource'
 	};
 
