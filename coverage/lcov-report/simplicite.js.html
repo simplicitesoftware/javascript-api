@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">63.46% </span>
+                <span class="strong">63.51% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>535/843</span>
+                <span class='fraction'>536/844</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">41.93% </span>
+                <span class="strong">41.95% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>278/663</span>
+                <span class='fraction'>279/665</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">66.58% </span>
+                <span class="strong">66.62% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>514/772</span>
+                <span class='fraction'>515/773</span>
             </div>
         
             
@@ -2432,7 +2432,9 @@
 <a name='L2373'></a><a href='#L2373'>2373</a>
 <a name='L2374'></a><a href='#L2374'>2374</a>
 <a name='L2375'></a><a href='#L2375'>2375</a>
-<a name='L2376'></a><a href='#L2376'>2376</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L2376'></a><a href='#L2376'>2376</a>
+<a name='L2377'></a><a href='#L2377'>2377</a>
+<a name='L2378'></a><a href='#L2378'>2378</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2927,6 +2929,8 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -4810,7 +4814,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 1.1.12
+ * @version 1.1.13
  * @license Apache-2.0
  */
 var Q = require('q');
@@ -5181,11 +5185,11 @@ function session(params) {
  * @param {string} params.host Hostname or IP address (e.g. &lt;code&gt;'myhost.mydomain.com'&lt;/code&gt;) of the Simplicite application (not needed if &lt;code&gt;url&lt;/code&gt; is set)
  * @param {number} params.port Port (e.g. &lt;code&gt;443&lt;/code&gt;) of the Simplicite application (not needed if &lt;code&gt;url&lt;/code&gt; is set)
  * @param {string} params.root Root context URL (e.g. &lt;code&gt;'/myapp'&lt;/code&gt;) the Simplicite application (not needed if &lt;code&gt;url&lt;/code&gt; is set)
- * @param {string} [params.username] Username
- * @param {string} [params.password] Password
- * @param {string} [params.authtoken] Auth token (if set, username and password are not needed)
+ * @param {boolean} [params.endpoint='api'] Endpoint (&lt;code&gt;'api'|'ui'|'public'&lt;/code&gt;)
+ * @param {string} [params.username] Username (not needed for public endpoint)
+ * @param {string} [params.password] Password (not needed for public endpoint)
+ * @param {string} [params.authtoken] Auth token (if set, username and password are not needed; not needed for public endpoint)
  * @param {boolean} [params.debug=false] Debug mode?
- * @param {boolean} [params.endpoint='api'] Endpoing (&lt;code&gt;'api'|'ui'&lt;/code&gt;)
  * @param {function} [params.debugHandler] Debug handler function
  * @param {function} [params.infoHandler] Info handler function
  * @param {function} [params.warningHandler] Warning handler function
@@ -5304,6 +5308,8 @@ function Session(params) {
 <span class="cstat-no" title="statement not covered" >		url += root.startsWith('/') ? root : '/' + root;</span>
 	this.debug('[simplicite] Base URL = ' + url);
 &nbsp;
+	var ep = this.endpoint == 'public' ? <span class="branch-0 cbranch-no" title="branch not covered" >'' </span>: '/' + this.endpoint;
+&nbsp;
 	/**
 	 * Parameters
 	 * @constant {Object}
@@ -5314,10 +5320,10 @@ function Session(params) {
 		port: port,
 		root: root,
 		url: url,
-		healthpath: (this.endpoint == 'ui' ? <span class="branch-0 cbranch-no" title="branch not covered" >'/ui/' </span>: '') + '/health?format=json',
-		apppath: '/' + this.endpoint + '/json/app',
-		objpath: '/' + this.endpoint + '/json/obj',
-		extpath: '/' + this.endpoint + '/ext',
+		healthpath: (ep == '/ui' ? <span class="branch-0 cbranch-no" title="branch not covered" >ep </span>: '') + '/health?format=json',
+		apppath: ep + '/json/app',
+		objpath: ep + '/json/obj',
+		extpath: ep + '/ext',
 		respath: '/resource'
 	};
 &nbsp;
@@ -7189,7 +7195,7 @@ module.exports = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Fri Jul 17 2020 19:00:15 GMT+0200 (GMT+02:00)
+                at Tue Sep 01 2020 21:47:38 GMT+0200 (GMT+02:00)
             </div>
         </div>
         <script src="prettify.js"></script>
