@@ -495,7 +495,7 @@ function Session(params) {
 		url += root.startsWith('/') ? root : '/' + root;
 	this.debug('[simplicite] Base URL = ' + url);
 
-	var ep = this.endpoint == "public" ? '' : '/' + this.endpoint;
+	var ep = this.endpoint == 'public' ? '' : '/' + this.endpoint;
 
 	/**
 	 * Parameters
