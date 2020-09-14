@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>Home - Documentation</title>
+    <title>ExternalObjectMetadata - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -32,74 +32,271 @@
 
 <div id="main">
     
+    <h1 class="page-title">ExternalObjectMetadata</h1>
+    
 
     
 
 
 
+
+<section>
+
+<header>
+    
+        <h2>
+            <span class="ancestors"><a href="module-simplicite.html">simplicite</a>~</span>
+        
+        ExternalObjectMetadata
+        </h2>
+        
+    
+</header>
+
+<article>
+    
+        <div class="container-overview">
+        
+            
+
+    
+
+    <h4 class="name" id="ExternalObjectMetadata"><span class="type-signature"></span>new ExternalObjectMetadata<span class="signature">(name)</span><span class="type-signature"></span></h4>
+
     
 
 
-    <section class="package">
-        <h3> </h3>		
-    </section>
 
 
+<dl class="details">
 
-
-
-
-
-
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line2376">line 2376</a>
+    </li></ul></dd>
+    
 
     
 
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
 
 
-    <section class="readme usertext">
-        <article><p><img src="https://www.simplicite.io/resources/logos/logo250.png" alt="Simplicité Software"></p>
-<hr>
-<p>This is the node.js® &amp; browser <strong>JavaScript API client module</strong> for the <a href="http://www.simplicitesoftware.com">Simplicité® platform</a>.</p>
-<p>It uses promises, basic usage is something like:</p>
-<pre class="prettyprint source lang-javascript"><code>const app = require('simplicite').session({ url: '&lt;my instance base URL>' });
-
-app.login({ username: '&lt;my username>', password: '&lt;my password>' }).then(res => {
-	console.log('Hello ' + res.login + '!');
-	let obj = app.getBusinessObject('MyObject');
-	return app.search();
-}).then(list => {
-	// Do something with the search results list
-	// Etc.
-}).catch(err => {
-	console.error(err.message);
-});
-</code></pre>
-<p>Check the <a href="https://github.com/simplicitesoftware/nodejs-api">GitHub repository</a> <code>test/test*.js</code>
-files for other examples of basic usage.</p>
-<p>For more advanced examples, check these repositories:</p>
-<ul>
-<li><strong>Server-side</strong>:
-<ul>
-<li><a href="https://github.com/simplicitesoftware/nodejs-demo">Node.js® demo</a></li>
-</ul>
-</li>
-<li><strong>Client-side</strong>:
-<ul>
-<li><a href="https://github.com/simplicitesoftware/web-demo">Plain web demo</a></li>
-<li><a href="https://github.com/simplicitesoftware/vue-demo">Vue.js® demo</a></li>
-<li><a href="https://github.com/simplicitesoftware/react-demo">React® demo</a></li>
-<li><a href="https://github.com/simplicitesoftware/angular-demo">Angular® demo</a></li>
-</ul>
-</li>
-<li><strong>Native</strong>:
-<ul>
-<li><a href="https://github.com/simplicitesoftware/react-native-demo">ReactNative® demo</a></li>
-</ul>
-</li>
-</ul></article>
-    </section>
 
 
+
+<div class="description usertext">
+    External object meta data.
+<br/><span style="color: red;">You <strong>should never</strong> instanciate this class directly
+but rather use it from the <code>metadata</code> variable of your <code>ExternalObject</code> instances</span>.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Business object name</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        </div>
+    
+
+    
+
+    
+
+    
+    
+    
+
+     
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id="name"><span class="type-signature">(constant) </span>name<span class="type-signature"> :string</span></h4>
+
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line2381">line 2381</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    Name
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">string</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+        
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 

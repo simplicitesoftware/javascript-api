@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 1.1.13
+ * @version 1.1.14
  * @license Apache-2.0
  */
 var Q = require('q');
@@ -651,7 +651,7 @@ function Session(params) {
 			data: data
 		}).then(function (res) {
 			if (callback)
-				callback.call(self, res.data, res.status);
+				callback.call(self, res.data, res.status, res.headers);
 		}).catch(function(err) {
 			var s = err.response && err.response.status ? err.response.status : undefined;
 			var e = err.response && err.response.data ? err.response.data : err;
@@ -1103,13 +1103,11 @@ function Session(params) {
 
 	/**
 	 * Get an external object
-	 * @param {string} External object name
+	 * @param {string} name External object name
 	 * @function
 	 */
 	this.getExternalObject = function(name) {
-		return {
-			metadata: { name: name }
-		};
+		return new ExternalObject(this, name);
 	};
 
 	/**
@@ -2368,10 +2366,97 @@ function BusinessObject(ses, name, instance) {
 	};
 }
 
+/**
+ * External object meta data.
+ * <br/><span style="color: red;">You <strong>should never</strong> instanciate this class directly
+ * but rather use it from the <code>metadata</code> variable of your <code>ExternalObject</code> instances</span>.
+ * @param {string} name Business object name
+ * @class
+ */
+function ExternalObjectMetadata (name) {
+	/**
+	 * Name
+	 * @constant {string}
+	 */
+	this.name = name;
+}
+
+/**
+ * External object.
+ * <br/><span style="color: red;">ou <strong>should never</strong> instanciate this class directly
+ * but rather call <code>getExternalObject</code></span>.
+ * @param {object} ses Session
+ * @param {string} name Business object name
+ * @class
+ */
+function ExternalObject(ses, name) {
+	/**
+	 * Session
+	 * @private
+	 */
+	this.session = ses;
+
+	/**
+	 * Metadata
+	 * @constant
+	 */
+	this.metadata = new ExternalObjectMetadata(name);
+
+	/**
+	 * Path
+	 * @constant {string}
+	 */
+	this.path = this.session.parameters.extpath + '/' + encodeURIComponent(name);
+
+	/**
+	 * Get name
+	 * @returns {string} Name
+	 * @function
+	 */
+	this.getName = function() {
+		return this.metadata.name;
+	};
+
+	/**
+	 * Call an external object
+	 * @param {function} callback Callback (called upon success)
+	 * @param {object} params Parameters
+	 * @param {object} [opts] Options
+	 * @function
+	 */
+	function _call(callback, params, opts) {
+		var self = this;
+		opts = opts || {};
+		self.session.req.call(self.session, self.path, params, function(data, status, headers) {
+			this.debug('[simplicite.ExternalObject(' + self.metadata.name + ').call()] HTTP status = ' + status);
+			if (callback)
+				callback.call(self, { status: status, headers: headers, data: data });
+		}, function(e) {
+			(opts.error ? opts.error : self.session.error).call(self, e);
+		});
+	}
+
+	/**
+	 * Call an external object
+	 * @param {object} params Parameters
+	 * @param {object} [opts] Options
+	 * @param {function} [opts.error] Error handler function
+	 * @function
+	 */
+	this.call = function(params, opts) {
+		var d = Q.defer();
+		opts = opts || {};
+		opts.error = opts.error || function(e) { d.reject(e); };
+		_call.call(this, function(value) { d.resolve(value); }, params, opts);
+		return d.promise;
+	};
+}
+
 module.exports = {
 	session: session,
 	Session: Session,
 	Grant: Grant,
 	BusinessObject: BusinessObject,
-	BusinessObjectMetadata: BusinessObjectMetadata
+	BusinessObjectMetadata: BusinessObjectMetadata,
+	ExternalObject: ExternalObject
 };
