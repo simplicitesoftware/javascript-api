@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 1.1.14
+ * @version 1.1.15
  * @license Apache-2.0
  */
 var Q = require('q');
@@ -600,21 +600,21 @@ function Session(params) {
 	 * Basic HTTP authorization header
 	 * @private
 	 */
-	function getBasicAuthHeader() {
+	this.getBasicAuthHeader = function() {
 		return this.username && this.password
 			? 'Basic ' + (buffer.Buffer.from ? buffer.Buffer.from(this.username + ':' + this.password) : new buffer.Buffer(this.username + ':' + this.password)).toString('base64')
 			: null;
-	}
+	};
 
 	/**
 	 * Get bearer token header
 	 * @private
 	 */
-	function getBearerTokenHeader() {
+	this.getBearerTokenHeader = function() {
 		return this.authtoken
 			? 'Bearer ' + this.authtoken
 			: null;
-	}
+	};
 
 	/**
 	 * Request
@@ -630,12 +630,12 @@ function Session(params) {
 		var h = {};
 		if (data)
 			h['Content-Type'] = 'application/x-www-form-urlencoded; charset=utf-8';
-		var b = getBearerTokenHeader.call(this);
+		var b = self.getBearerTokenHeader();
 		if (b) {
 			self.debug('[simplicite.req] Using bearer token header = ' + b);
 			h['X-Simplicite-Authorization'] = b;
 		} else {
-			b = getBasicAuthHeader.call(this);
+			b = self.getBasicAuthHeader();
 			if (b) {
 				self.debug('[simplicite.req] Using basic auth header = ' + b);
 				h.Authorization = b;
@@ -1637,6 +1637,7 @@ function BusinessObject(ses, name, instance) {
 		}
 		return p;
 	}
+
 	/**
 	 * Count
 	 * @param {function} callback Callback (called upon success)
@@ -2418,36 +2419,89 @@ function ExternalObject(ses, name) {
 	};
 
 	/**
+	 * Build URL-encoded parameters
+	 * @param {object} params URL parameters as key/value pairs
+	 * @function
+	 */
+	this.callParams = function(params) {
+		var p = '';
+		if (!params) return p;
+		var n = 0;
+		for (var i in params) {
+			var v = params[i] || '';
+			if (v.sort) { // Array ?
+				for (var j = 0; j < v.length; j++)
+					p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent(v[j]);
+			} else {
+				p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent(v);
+			}
+		}
+		return p;
+	};
+
+	/**
 	 * Call an external object
 	 * @param {function} callback Callback (called upon success)
-	 * @param {object} params Parameters
+	 * @param {object} [params] Optional URL parameters
+	 * @param {object} [data] Optional data
 	 * @param {object} [opts] Options
 	 * @function
 	 */
-	function _call(callback, params, opts) {
+	function _call(callback, params, data, opts) {
 		var self = this;
 		opts = opts || {};
-		self.session.req.call(self.session, self.path, params, function(data, status, headers) {
-			this.debug('[simplicite.ExternalObject(' + self.metadata.name + ').call()] HTTP status = ' + status);
+		var p = '';
+		if (params)
+			p = '?' + self.callParams(params);
+		var m = opts.method ? opts.method : (data ? 'post' : 'get');
+		var h = {};
+		if (opts.contentType)
+			h['Content-Type'] = opts.contentType;
+		var b = self.session.getBearerTokenHeader();
+		if (b) {
+			self.session.debug('[simplicite.ExternalObject.call] Using bearer token header = ' + b);
+			h['X-Simplicite-Authorization'] = b;
+		} else {
+			b = self.session.getBasicAuthHeader();
+			if (b) {
+				self.session.debug('[simplicite.ExternalObject.call] Using basic auth header = ' + b);
+				h.Authorization = b;
+			}
+		}
+		axios.request({
+			baseURL: self.session.parameters.url,
+			url: self.path + p,
+			method: m,
+			headers: h,
+			timeout: self.session.timeout * 1000,
+			withCredentials: true,
+			data: data
+		}).then(function (res) {
 			if (callback)
-				callback.call(self, { status: status, headers: headers, data: data });
-		}, function(e) {
-			(opts.error ? opts.error : self.session.error).call(self, e);
+				callback.call(self, res.data, res.status, res.headers);
+		}).catch(function(err) {
+			if (opts.error)
+				opts.error.call(self, err);
+			else
+				throw err;
 		});
 	}
 
 	/**
 	 * Call an external object
-	 * @param {object} params Parameters
+	 * @param {object} [params] Optional URL parameters
+	 * @param {object} [data] Optional data (for 'post' and 'put' methods only)
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
+	 * @param {object} [opts.method] Optional method 'get', 'post', 'put' or 'delete' (defaults to 'get' if data is not set or 'post" if data is set
+	 * @param {function} [opts.contentType] Optional data content type (for 'post' and 'put' methods only)
 	 * @function
 	 */
-	this.call = function(params, opts) {
+	this.call = function(params, data, opts) {
 		var d = Q.defer();
 		opts = opts || {};
 		opts.error = opts.error || function(e) { d.reject(e); };
-		_call.call(this, function(value) { d.resolve(value); }, params, opts);
+		_call.call(this, function(value) { d.resolve(value); }, params, data, opts);
 		return d.promise;
 	};
 }

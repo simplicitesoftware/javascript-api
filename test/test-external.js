@@ -18,7 +18,11 @@ app.login().then(res => {
 	assert.ok(res.login == adminUsername);
 	console.log('Logged in as ' + res.login);
 	ext = app.getExternalObject('AppExt1');
-	return ext.call();
+	return ext.call({ name: 'Simplicite (URL parameter)' }); // GET call
+}).then(res => {
+	if (debug) console.log('CALL: ' + JSON.stringify(res, null, 2));
+	assert.ok(res);
+	return ext.call(null, { name: 'Simplicite (posted in JSON)' }); // POST call
 }).then(res => {
 	if (debug) console.log('CALL: ' + JSON.stringify(res, null, 2));
 	assert.ok(res);
