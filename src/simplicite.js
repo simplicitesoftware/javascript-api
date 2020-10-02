@@ -1513,7 +1513,7 @@ function BusinessObject(ses, name, instance) {
 	 * Get the data URL of an inlined document/image field for item (or current item)
 	 * @param {(string|Object)} field Field name or definition
 	 * @param {Object} [item] Item (defaults to current item)
-	 * @returns Field data URL
+	 * @returns Document/image field data URL (or nothing if the field is not of document/image type or if it is not inlined or if it is empty)
 	 * @function
 	 */
 	this.getFieldDataURL = function(field, item) {
@@ -1529,7 +1529,7 @@ function BusinessObject(ses, name, instance) {
 	 * @param {(string|Object)} field Field name or definition
 	 * @param {Object} [item] Item (defaults to current item)
 	 * @param {boolean} [thumbnail=false] Thumbnail?
-	 * @returns Field data URL
+	 * @returns Document/image field URL (or nothing if the field is not of document/image type or if it is empty)
 	 * @function
 	 */
 	this.getFieldDocumentURL = function(field, item, thumbnail) {
