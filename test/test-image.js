@@ -34,6 +34,9 @@ app.login().then(res => {
 	assert.ok(item.appObj1Code == code);
 	assert.ok(item.appObj1Picture && item.appObj1Picture != app.constants.DEFAULT_ROW_ID);
 	console.log('Created with document ID = ' + item.appObj1Picture);
+	console.log('Document URL (current item) = ' + obj.getFieldDocumentURL('appObj1Picture'));
+	console.log('Document URL (created item) = ' + obj.getFieldDocumentURL('appObj1Picture', item));
+	console.log('Document thubnail URL = ' + obj.getFieldDocumentURL('appObj1Picture', item, true));
 	return obj.get(rowId, { inlineDocuments: true, inlineThumbnails: true });
 }).then(item => {
 	if (debug) console.log('GET: ' + JSON.stringify(item, null, 2));

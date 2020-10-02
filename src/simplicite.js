@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 1.1.15
+ * @version 1.1.16
  * @license Apache-2.0
  */
 var Q = require('q');
@@ -511,6 +511,7 @@ function Session(params) {
 		apppath: ep + '/json/app',
 		objpath: ep + '/json/obj',
 		extpath: ep + '/ext',
+		docpath: ep + '/raw/document',
 		respath: '/resource'
 	};
 
@@ -1119,9 +1120,11 @@ function Session(params) {
 	 * @function
 	 */
 	this.getResourceURL = function(code, type, object, objId) {
-		return this.parameters.url + this.parameters.respath + '?code=' + encodeURIComponent(code) + '&type=' + encodeURIComponent(type || 'IMG')
+		return this.parameters.url + this.parameters.respath
+			+ '?code=' + encodeURIComponent(code) + '&type=' + encodeURIComponent(type || 'IMG')
 			+ (object ? '&object=' + encodeURIComponent(object) : '')
-			+ (objId ? '&objid=' + encodeURIComponent(objId): '');
+			+ (objId ? '&objid=' + encodeURIComponent(objId): '')
+			+ (this.authtoken ? '_x_simplicite_authorization_=' + encodeURIComponent(this.authtoken) : '');
 	};
 }
 
@@ -1452,6 +1455,19 @@ function BusinessObject(ses, name, instance) {
 	};
 
 	/**
+	 * Get field type
+	 * @param {(string|Object)} field Field name or definition
+	 * @returns {string} Type (one of <code>constants.TYPE_*</code>)
+	 * @function
+	 */
+	this.getFieldType = function(field) {
+		if (typeof field === 'string')
+			field = this.getField(field);
+		if (field)
+			return field.type;
+	};
+
+	/**
 	 * Get field label
 	 * @param {(string|Object)} field Field name or definition
 	 * @returns {string} Value
@@ -1480,7 +1496,7 @@ function BusinessObject(ses, name, instance) {
 	};
 
 	/**
-	 * Get list value of field for item (or current item)
+	 * Get the list value of a list of values field for item (or current item)
 	 * @param {(string|Object)} field Field name or definition
 	 * @param {string} code Code
 	 * @returns {string} Value
@@ -1494,16 +1510,43 @@ function BusinessObject(ses, name, instance) {
 	};
 
 	/**
-	 * Get data URL of field for item (or current item)
+	 * Get the data URL of an inlined document/image field for item (or current item)
 	 * @param {(string|Object)} field Field name or definition
-	 * @param {Object} [item] Item (defautls to current item)
+	 * @param {Object} [item] Item (defaults to current item)
 	 * @returns Field data URL
 	 * @function
 	 */
 	this.getFieldDataURL = function(field, item) {
+		if (typeof field !== 'string')
+			field = field.fullinput || field.name;
 		var val = this.getFieldValue(field, item);
-		if (val && val.mime) // Inlined image
+		if (val && val.mime) // Inlined
 			return 'data:' + val.mime + ';base64,' + (val.content || val.thumbnail);
+	};
+
+	/**
+	 * Get URL of a document/image field for item (or current item)
+	 * @param {(string|Object)} field Field name or definition
+	 * @param {Object} [item] Item (defautls to current item)
+	 * @param {boolean} [thumbnail=false] Thumbnail?
+	 * @returns Field data URL
+	 * @function
+	 */
+	this.getFieldDocumentURL = function(field, item, thumbnail) {
+		if (typeof field !== 'string')
+			field = field.fullinput || field.input || field.name;
+		var val = this.getFieldValue(field, item);
+		if (val && val.mime) // Inlined
+			val = val.id;
+		if (val) 
+			return this.session.parameters.url + this.session.parameters.docpath
+				+ '?object=' + encodeURIComponent(this.metadata.name)
+				+ '&inst=' + encodeURIComponent(this.metadata.instance)
+				+ '&field=' + encodeURIComponent(field)
+				+ '&row_id=' + encodeURIComponent(this.getRowId(item))
+				+ '&doc_id=' + encodeURIComponent(val)
+				+ (thumbnail ? '&thumbnail=true' : '')
+				+ (this.session.authtoken ? '&_x_simplicite_authorization_=' + encodeURIComponent(this.session.authtoken) : '');
 	};
 
 	/**
@@ -1925,13 +1968,15 @@ function BusinessObject(ses, name, instance) {
 	};
 
 	/**
-	 * Get current item's row ID value
-	 * @returns Current item's row ID value
+	 * Get specified or current item's row ID value
+	 * @param {object} [item] Item, defaults to current item
+	 * @returns Item's row ID value
 	 * @function
 	 */
-	this.getRowId = function() {
-		if (this.item)
-			return this.item[this.getRowIdFieldName()];
+	this.getRowId = function(item) {
+		item = item || this.item;
+		if (item)
+			return item[this.getRowIdFieldName()];
 	};
 
 	/**

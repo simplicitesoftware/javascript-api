@@ -83,6 +83,8 @@ app.getHealth().then(health => {
 	assert.ok(sys.getRowIdField().name == app.constants.DEFAULT_ROW_ID_NAME);
 	let f = sys.getField(sysCodeName);
 	assert.ok(f.name == sysCodeName);
+	assert.ok(f.type == sys.getFieldType(sysCodeName));
+	assert.ok(f.type == sys.getFieldType(f));
 	app.log('Code field: ' + sys.getField(sysCodeName).label);
 	f = sys.getField(sysValueName);
 	assert.ok(f.name == sysValueName);
@@ -199,5 +201,5 @@ app.getHealth().then(health => {
 	assert.ok(res.result);
 	app.log('Logged out');
 }).catch(err => {
-	app.log('Unexepcted error caught: ' + JSON.stringify(err));
+	app.log('Unexpected error caught: ' + JSON.stringify(err));
 });
