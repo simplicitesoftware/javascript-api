@@ -357,7 +357,7 @@ var constants = {
 
 /**
  * Simplicite application session.
- * @param {Object} params Parameters (see session class for details)
+ * @param {object} params Parameters (see session class for details)
  * @return {Session} session
 */
 function session(params) {
@@ -366,7 +366,7 @@ function session(params) {
 
 /**
  * Simplicite application session.
- * @param {Object} params Parameters
+ * @param {object} params Parameters
  * @param {string} params.url Base URL of the Simplicite application
  * @param {string} params.scheme URL scheme (e.g. <code>'https'</code>) of the Simplicite application (not needed if <code>url</code> is set)
  * @param {string} params.host Hostname or IP address (e.g. <code>'myhost.mydomain.com'</code>) of the Simplicite application (not needed if <code>url</code> is set)
@@ -499,7 +499,7 @@ function Session(params) {
 
 	/**
 	 * Parameters
-	 * @constant {Object}
+	 * @constant {object}
 	 */
 	this.parameters = {
 		scheme: scheme,
@@ -562,7 +562,7 @@ function Session(params) {
 
 	/**
 	 * Business objects cache
-	 * @type {Object}
+	 * @type {object}
 	 * @private
 	 */
 	var businessObjectCache = {};
@@ -1268,7 +1268,7 @@ function BusinessObjectMetadata (name, instance) {
 
 	/**
 	 * Fields definitions
-	 * @member {Array}
+	 * @member {array}
 	 */
 	this.fields = [];
 }
@@ -1311,19 +1311,19 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Current item
-	 * @member {Object}
+	 * @member {object}
 	 */
 	this.item = {};
 
 	/**
 	 * Current filters
-	 * @member {Object}
+	 * @member {object}
 	 */
 	this.filters = {};
 
 	/**
 	 * Current list
-	 * @member {Object[]}
+	 * @member {object[]}
 	 */
 	this.list = [];
 
@@ -1406,7 +1406,7 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Get all fields definitions
-	 * @returns {Array} Array of field definitions
+	 * @returns {array} Array of field definitions
 	 * @function
 	 */
 	this.getFields = function() {
@@ -1416,7 +1416,7 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Get a field definition
 	 * @param {string} fieldName Field name
-	 * @returns {Object} Field definition
+	 * @returns {object} Field definition
 	 * @function
 	 */
 	this.getField = function(fieldName) {
@@ -1438,7 +1438,7 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Get row ID field definition
-	 * @returns {Object} Row ID field definition
+	 * @returns {object} Row ID field definition
 	 * @function
 	 */
 	this.getRowIdField = function() {
@@ -1447,7 +1447,7 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Get links
-	 * @returns {Array} Array of links
+	 * @returns {array} Array of links
 	 * @function
 	 */
 	this.getLinks = function() {
@@ -1456,7 +1456,7 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Get field type
-	 * @param {(string|Object)} field Field name or definition
+	 * @param {(string|object)} field Field name or definition
 	 * @returns {string} Type (one of <code>constants.TYPE_*</code>)
 	 * @function
 	 */
@@ -1469,7 +1469,7 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Get field label
-	 * @param {(string|Object)} field Field name or definition
+	 * @param {(string|object)} field Field name or definition
 	 * @returns {string} Value
 	 * @function
 	 */
@@ -1482,8 +1482,8 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Get value of field for item (or current item)
-	 * @param {(string|Object)} field Field name or definition
-	 * @param {Object} [item] Item (defaults to current item)
+	 * @param {(string|object)} field Field name or definition
+	 * @param {object} [item] Item (defaults to current item)
 	 * @returns {string} Value
 	 * @function
 	 */
@@ -1497,7 +1497,7 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Get the list value of a list of values field for item (or current item)
-	 * @param {(string|Object)} field Field name or definition
+	 * @param {(string|object)} field Field name or definition
 	 * @param {string} code Code
 	 * @returns {string} Value
 	 * @function
@@ -1511,8 +1511,8 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Get the data URL of an inlined document/image field for item (or current item)
-	 * @param {(string|Object)} field Field name or definition
-	 * @param {Object} [item] Item (defaults to current item)
+	 * @param {(string|object)} field Field name or definition
+	 * @param {object} [item] Item (defaults to current item)
 	 * @returns Document/image field data URL (or nothing if the field is not of document/image type or if it is not inlined or if it is empty)
 	 * @function
 	 */
@@ -1526,8 +1526,8 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Get URL of a document/image field for item (or current item)
-	 * @param {(string|Object)} field Field name or definition
-	 * @param {Object} [item] Item (defaults to current item)
+	 * @param {(string|object)} field Field name or definition
+	 * @param {object} [item] Item (defaults to current item)
 	 * @param {boolean} [thumbnail=false] Thumbnail?
 	 * @returns Document/image field URL (or nothing if the field is not of document/image type or if it is empty)
 	 * @function
@@ -1569,7 +1569,7 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Is the field the row ID field?
-	 * @param {Object} field Field definition
+	 * @param {object} field Field definition
 	 * @returns True if the field is the row ID field
 	 * @function
 	 */
@@ -1579,7 +1579,7 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Is the field a timestamp field?
-	 * @param {Object} field Field definition
+	 * @param {object} field Field definition
 	 * @returns True if the field is a timestamp field
 	 * @function
 	 */
@@ -2255,7 +2255,7 @@ function BusinessObject(ses, name, instance) {
 	 * Build a pivot table
 	 * @param {string} crosstab Pivot table name
 	 * @param {object} [opts] Options
-	 * @param {Object} [opts.filters] Filters, by default current filters are used
+	 * @param {object} [opts.filters] Filters, by default current filters are used
 	 * @param {function} [opts.error] Error handler function
 	 * @function
 	 */
