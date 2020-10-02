@@ -1483,7 +1483,7 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Get value of field for item (or current item)
 	 * @param {(string|Object)} field Field name or definition
-	 * @param {Object} [item] Item (defautls to current item)
+	 * @param {Object} [item] Item (defaults to current item)
 	 * @returns {string} Value
 	 * @function
 	 */
@@ -1527,7 +1527,7 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Get URL of a document/image field for item (or current item)
 	 * @param {(string|Object)} field Field name or definition
-	 * @param {Object} [item] Item (defautls to current item)
+	 * @param {Object} [item] Item (defaults to current item)
 	 * @param {boolean} [thumbnail=false] Thumbnail?
 	 * @returns Field data URL
 	 * @function
