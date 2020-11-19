@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">59.19% </span>
+                <span class="strong">59.17% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>541/914</span>
+                <span class='fraction'>542/916</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">38.57% </span>
+                <span class="strong">38.62% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>280/726</span>
+                <span class='fraction'>285/738</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">44.59% </span>
+                <span class="strong">44.39% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>99/222</span>
+                <span class='fraction'>99/223</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">61.98% </span>
+                <span class="strong">61.95% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>520/839</span>
+                <span class='fraction'>521/841</span>
             </div>
         
             
@@ -2620,7 +2620,16 @@
 <a name='L2561'></a><a href='#L2561'>2561</a>
 <a name='L2562'></a><a href='#L2562'>2562</a>
 <a name='L2563'></a><a href='#L2563'>2563</a>
-<a name='L2564'></a><a href='#L2564'>2564</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L2564'></a><a href='#L2564'>2564</a>
+<a name='L2565'></a><a href='#L2565'>2565</a>
+<a name='L2566'></a><a href='#L2566'>2566</a>
+<a name='L2567'></a><a href='#L2567'>2567</a>
+<a name='L2568'></a><a href='#L2568'>2568</a>
+<a name='L2569'></a><a href='#L2569'>2569</a>
+<a name='L2570'></a><a href='#L2570'>2570</a>
+<a name='L2571'></a><a href='#L2571'>2571</a>
+<a name='L2572'></a><a href='#L2572'>2572</a>
+<a name='L2573'></a><a href='#L2573'>2573</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -3499,6 +3508,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
@@ -3848,6 +3858,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -5186,7 +5204,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 1.1.17
+ * @version 1.1.18
  * @license Apache-2.0
  */
 var Q = require('q');
@@ -6035,11 +6053,11 @@ function Session(params) {
 	function _getGrant(callback, opts) {
 		var self = this;
 		opts = opts || <span class="branch-1 cbranch-no" title="branch not covered" >{};</span>
-		var p = '';
-		if (opts.inlinePicture)
-			p += '&amp;inline_picture=' + !!opts.inlinePicture;
-		<span class="missing-if-branch" title="if path not taken" >I</span>if (self.endpoint === 'ui')
-<span class="cstat-no" title="statement not covered" >			p += '&amp;web=true';</span>
+		var p = '&amp;web=true'; // Required to be able to include texts 
+		if (opts.inlinePicture || opts.picture) // naming flexibility
+			p += '&amp;inline_picture=' + (!!opts.inlinePicture || <span class="branch-1 cbranch-no" title="branch not covered" >!!opts.picture)</span>;
+		<span class="missing-if-branch" title="if path not taken" >I</span>if (opts.includeTexts || opts.texts)
+<span class="cstat-no" title="statement not covered" >			p += '&amp;texts=' + (!!opts.includeTexts || !!opts.texts);</span>
 		self.req.call(self, self.parameters.apppath + '?action=getgrant' + p, undefined, function(res, status) {
 			var r = self.parse(res, status);
 			self.debug('[simplicite.getGrant] HTTP status = ' + status + ', response type = ' + r.type);
@@ -6059,6 +6077,7 @@ function Session(params) {
 	 * Get grant (current user data)
 	 * @param {object} [opts] Options
 	 * @param {boolean} [opts.inlinePicture=false] Inline user picture?
+	 * @param {boolean} [opts.includeTexts=false] Include texts?
 	 * @param {function} [opts.error] Error handler function
 	 * @function
 	 */
@@ -6411,6 +6430,14 @@ function Grant () {
 	 */
 	this.hasResponsibility = function(group) {
 		return this.responsibilities &amp;&amp; this.responsibilities.indexOf(group) !== -1;
+	};
+&nbsp;
+	/**
+	 * Get text
+	 * @param {string} code Text code
+	 */
+	this.T = <span class="fstat-no" title="function not covered" >fu</span>nction(code) {
+<span class="cstat-no" title="statement not covered" >		return this.texts ? this.texts[code] || '' : '';</span>
 	};
 }
 &nbsp;
@@ -7753,7 +7780,7 @@ module.exports = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Thu Nov 19 2020 14:51:19 GMT+0100 (GMT+01:00)
+                at Thu Nov 19 2020 15:19:54 GMT+0100 (GMT+01:00)
             </div>
         </div>
         <script src="prettify.js"></script>

@@ -11,7 +11,7 @@ const testPassword = process.env.TEST_SIMPLICITE_PASSWORD || 'simplicite';
 	console.log(err);
 }*/
 
-const debug = process.env.TEST_SIMPLICITE_DEBUG == 'true';
+const debug = true;//process.env.TEST_SIMPLICITE_DEBUG == 'true';
 const app = require('../src/simplicite').session({
 	url: process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080',
 	//errorHandler: myErrorHandler,
@@ -32,11 +32,12 @@ app.login().then(res => {
 	app.debug(res);
 	console.log('Logged in as ' + res.login);
 	assert.ok(res.login == adminUsername);
-	return app.getGrant({ inlinePicture: false });
+	return app.getGrant({ inlinePicture: true, includeTexts: true });
 }).then(grant => {
 	app.debug(grant);
 	assert.ok(grant.getLogin() == adminUsername);
 	console.log('Hello ' + grant.getFirstName() + ' ' + grant.getLastName() + ' (' + grant.getLogin() + ')');
+	console.log(grant.T('SAVE'));
 	return app.logout();
 }).then(res => {
 	app.debug(res);

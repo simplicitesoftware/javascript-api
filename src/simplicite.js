@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 1.1.17
+ * @version 1.1.18
  * @license Apache-2.0
  */
 var Q = require('q');
@@ -850,11 +850,11 @@ function Session(params) {
 	function _getGrant(callback, opts) {
 		var self = this;
 		opts = opts || {};
-		var p = '';
-		if (opts.inlinePicture)
-			p += '&inline_picture=' + !!opts.inlinePicture;
-		if (self.endpoint === 'ui')
-			p += '&web=true';
+		var p = '&web=true'; // Required to be able to include texts 
+		if (opts.inlinePicture || opts.picture) // naming flexibility
+			p += '&inline_picture=' + (!!opts.inlinePicture || !!opts.picture);
+		if (opts.includeTexts || opts.texts)
+			p += '&texts=' + (!!opts.includeTexts || !!opts.texts);
 		self.req.call(self, self.parameters.apppath + '?action=getgrant' + p, undefined, function(res, status) {
 			var r = self.parse(res, status);
 			self.debug('[simplicite.getGrant] HTTP status = ' + status + ', response type = ' + r.type);
@@ -874,6 +874,7 @@ function Session(params) {
 	 * Get grant (current user data)
 	 * @param {object} [opts] Options
 	 * @param {boolean} [opts.inlinePicture=false] Inline user picture?
+	 * @param {boolean} [opts.includeTexts=false] Include texts?
 	 * @param {function} [opts.error] Error handler function
 	 * @function
 	 */
@@ -1226,6 +1227,14 @@ function Grant () {
 	 */
 	this.hasResponsibility = function(group) {
 		return this.responsibilities && this.responsibilities.indexOf(group) !== -1;
+	};
+
+	/**
+	 * Get text
+	 * @param {string} code Text code
+	 */
+	this.T = function(code) {
+		return this.texts ? this.texts[code] || '' : '';
 	};
 }
 
