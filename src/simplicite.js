@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 1.1.16
+ * @version 1.1.17
  * @license Apache-2.0
  */
 var Q = require('q');
@@ -853,6 +853,8 @@ function Session(params) {
 		var p = '';
 		if (opts.inlinePicture)
 			p += '&inline_picture=' + !!opts.inlinePicture;
+		if (self.endpoint === 'ui')
+			p += '&web=true';
 		self.req.call(self, self.parameters.apppath + '?action=getgrant' + p, undefined, function(res, status) {
 			var r = self.parse(res, status);
 			self.debug('[simplicite.getGrant] HTTP status = ' + status + ', response type = ' + r.type);
