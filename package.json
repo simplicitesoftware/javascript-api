@@ -15,7 +15,6 @@
   "dependencies": {
     "axios": "latest",
     "buffer": "latest",
-    "docdash": "latest",
     "q": "latest"
   },
   "devDependencies": {
