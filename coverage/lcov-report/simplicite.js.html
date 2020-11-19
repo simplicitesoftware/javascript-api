@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">59.21% </span>
+                <span class="strong">59.19% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>540/912</span>
+                <span class='fraction'>541/914</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">38.54% </span>
+                <span class="strong">38.57% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>279/724</span>
+                <span class='fraction'>280/726</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">62.01% </span>
+                <span class="strong">61.98% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>519/837</span>
+                <span class='fraction'>520/839</span>
             </div>
         
             
@@ -2618,7 +2618,9 @@
 <a name='L2559'></a><a href='#L2559'>2559</a>
 <a name='L2560'></a><a href='#L2560'>2560</a>
 <a name='L2561'></a><a href='#L2561'>2561</a>
-<a name='L2562'></a><a href='#L2562'>2562</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L2562'></a><a href='#L2562'>2562</a>
+<a name='L2563'></a><a href='#L2563'>2563</a>
+<a name='L2564'></a><a href='#L2564'>2564</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -3474,6 +3476,8 @@
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
@@ -4284,18 +4288,18 @@
 <span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">56x</span>
+<span class="cline-any cline-yes">56x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">55x</span>
-<span class="cline-any cline-yes">55x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">54x</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">54x</span>
+<span class="cline-any cline-yes">55x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">54x</span>
+<span class="cline-any cline-yes">55x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">7x</span>
@@ -5182,7 +5186,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 1.1.16
+ * @version 1.1.17
  * @license Apache-2.0
  */
 var Q = require('q');
@@ -5538,7 +5542,7 @@ var constants = {
 &nbsp;
 /**
  * Simplicite application session.
- * @param {Object} params Parameters (see session class for details)
+ * @param {object} params Parameters (see session class for details)
  * @return {Session} session
 */
 function session(params) {
@@ -5547,7 +5551,7 @@ function session(params) {
 &nbsp;
 /**
  * Simplicite application session.
- * @param {Object} params Parameters
+ * @param {object} params Parameters
  * @param {string} params.url Base URL of the Simplicite application
  * @param {string} params.scheme URL scheme (e.g. &lt;code&gt;'https'&lt;/code&gt;) of the Simplicite application (not needed if &lt;code&gt;url&lt;/code&gt; is set)
  * @param {string} params.host Hostname or IP address (e.g. &lt;code&gt;'myhost.mydomain.com'&lt;/code&gt;) of the Simplicite application (not needed if &lt;code&gt;url&lt;/code&gt; is set)
@@ -5680,7 +5684,7 @@ function Session(params) {
 &nbsp;
 	/**
 	 * Parameters
-	 * @constant {Object}
+	 * @constant {object}
 	 */
 	this.parameters = {
 		scheme: scheme,
@@ -5743,7 +5747,7 @@ function Session(params) {
 &nbsp;
 	/**
 	 * Business objects cache
-	 * @type {Object}
+	 * @type {object}
 	 * @private
 	 */
 	var businessObjectCache = {};
@@ -6034,6 +6038,8 @@ function Session(params) {
 		var p = '';
 		if (opts.inlinePicture)
 			p += '&amp;inline_picture=' + !!opts.inlinePicture;
+		<span class="missing-if-branch" title="if path not taken" >I</span>if (self.endpoint === 'ui')
+<span class="cstat-no" title="statement not covered" >			p += '&amp;web=true';</span>
 		self.req.call(self, self.parameters.apppath + '?action=getgrant' + p, undefined, function(res, status) {
 			var r = self.parse(res, status);
 			self.debug('[simplicite.getGrant] HTTP status = ' + status + ', response type = ' + r.type);
@@ -6449,7 +6455,7 @@ function BusinessObjectMetadata (name, instance) {
 &nbsp;
 	/**
 	 * Fields definitions
-	 * @member {Array}
+	 * @member {array}
 	 */
 	this.fields = [];
 }
@@ -6492,19 +6498,19 @@ function BusinessObject(ses, name, instance) {
 &nbsp;
 	/**
 	 * Current item
-	 * @member {Object}
+	 * @member {object}
 	 */
 	this.item = {};
 &nbsp;
 	/**
 	 * Current filters
-	 * @member {Object}
+	 * @member {object}
 	 */
 	this.filters = {};
 &nbsp;
 	/**
 	 * Current list
-	 * @member {Object[]}
+	 * @member {object[]}
 	 */
 	this.list = [];
 &nbsp;
@@ -6587,7 +6593,7 @@ function BusinessObject(ses, name, instance) {
 &nbsp;
 	/**
 	 * Get all fields definitions
-	 * @returns {Array} Array of field definitions
+	 * @returns {array} Array of field definitions
 	 * @function
 	 */
 	this.getFields = <span class="fstat-no" title="function not covered" >fu</span>nction() {
@@ -6597,7 +6603,7 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Get a field definition
 	 * @param {string} fieldName Field name
-	 * @returns {Object} Field definition
+	 * @returns {object} Field definition
 	 * @function
 	 */
 	this.getField = <span class="fstat-no" title="function not covered" >fu</span>nction(fieldName) {
@@ -6619,7 +6625,7 @@ function BusinessObject(ses, name, instance) {
 &nbsp;
 	/**
 	 * Get row ID field definition
-	 * @returns {Object} Row ID field definition
+	 * @returns {object} Row ID field definition
 	 * @function
 	 */
 	this.getRowIdField = <span class="fstat-no" title="function not covered" >fu</span>nction() {
@@ -6628,7 +6634,7 @@ function BusinessObject(ses, name, instance) {
 &nbsp;
 	/**
 	 * Get links
-	 * @returns {Array} Array of links
+	 * @returns {array} Array of links
 	 * @function
 	 */
 	this.getLinks = <span class="fstat-no" title="function not covered" >fu</span>nction() {
@@ -6637,7 +6643,7 @@ function BusinessObject(ses, name, instance) {
 &nbsp;
 	/**
 	 * Get field type
-	 * @param {(string|Object)} field Field name or definition
+	 * @param {(string|object)} field Field name or definition
 	 * @returns {string} Type (one of &lt;code&gt;constants.TYPE_*&lt;/code&gt;)
 	 * @function
 	 */
@@ -6650,7 +6656,7 @@ function BusinessObject(ses, name, instance) {
 &nbsp;
 	/**
 	 * Get field label
-	 * @param {(string|Object)} field Field name or definition
+	 * @param {(string|object)} field Field name or definition
 	 * @returns {string} Value
 	 * @function
 	 */
@@ -6663,8 +6669,8 @@ function BusinessObject(ses, name, instance) {
 &nbsp;
 	/**
 	 * Get value of field for item (or current item)
-	 * @param {(string|Object)} field Field name or definition
-	 * @param {Object} [item] Item (defautls to current item)
+	 * @param {(string|object)} field Field name or definition
+	 * @param {object} [item] Item (defaults to current item)
 	 * @returns {string} Value
 	 * @function
 	 */
@@ -6678,7 +6684,7 @@ function BusinessObject(ses, name, instance) {
 &nbsp;
 	/**
 	 * Get the list value of a list of values field for item (or current item)
-	 * @param {(string|Object)} field Field name or definition
+	 * @param {(string|object)} field Field name or definition
 	 * @param {string} code Code
 	 * @returns {string} Value
 	 * @function
@@ -6692,9 +6698,9 @@ function BusinessObject(ses, name, instance) {
 &nbsp;
 	/**
 	 * Get the data URL of an inlined document/image field for item (or current item)
-	 * @param {(string|Object)} field Field name or definition
-	 * @param {Object} [item] Item (defaults to current item)
-	 * @returns Field data URL
+	 * @param {(string|object)} field Field name or definition
+	 * @param {object} [item] Item (defaults to current item)
+	 * @returns Document/image field data URL (or nothing if the field is not of document/image type or if it is not inlined or if it is empty)
 	 * @function
 	 */
 	this.getFieldDataURL = <span class="fstat-no" title="function not covered" >fu</span>nction(field, item) {
@@ -6707,10 +6713,10 @@ function BusinessObject(ses, name, instance) {
 &nbsp;
 	/**
 	 * Get URL of a document/image field for item (or current item)
-	 * @param {(string|Object)} field Field name or definition
-	 * @param {Object} [item] Item (defautls to current item)
+	 * @param {(string|object)} field Field name or definition
+	 * @param {object} [item] Item (defaults to current item)
 	 * @param {boolean} [thumbnail=false] Thumbnail?
-	 * @returns Field data URL
+	 * @returns Document/image field URL (or nothing if the field is not of document/image type or if it is empty)
 	 * @function
 	 */
 	this.getFieldDocumentURL = <span class="fstat-no" title="function not covered" >fu</span>nction(field, item, thumbnail) {
@@ -6750,7 +6756,7 @@ function BusinessObject(ses, name, instance) {
 &nbsp;
 	/**
 	 * Is the field the row ID field?
-	 * @param {Object} field Field definition
+	 * @param {object} field Field definition
 	 * @returns True if the field is the row ID field
 	 * @function
 	 */
@@ -6760,7 +6766,7 @@ function BusinessObject(ses, name, instance) {
 &nbsp;
 	/**
 	 * Is the field a timestamp field?
-	 * @param {Object} field Field definition
+	 * @param {object} field Field definition
 	 * @returns True if the field is a timestamp field
 	 * @function
 	 */
@@ -7436,7 +7442,7 @@ function BusinessObject(ses, name, instance) {
 	 * Build a pivot table
 	 * @param {string} crosstab Pivot table name
 	 * @param {object} [opts] Options
-	 * @param {Object} [opts.filters] Filters, by default current filters are used
+	 * @param {object} [opts.filters] Filters, by default current filters are used
 	 * @param {function} [opts.error] Error handler function
 	 * @function
 	 */
@@ -7747,7 +7753,7 @@ module.exports = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Fri Oct 02 2020 17:07:55 GMT+0200 (GMT+02:00)
+                at Thu Nov 19 2020 14:51:19 GMT+0100 (GMT+01:00)
             </div>
         </div>
         <script src="prettify.js"></script>
