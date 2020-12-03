@@ -138,8 +138,8 @@ test('Objects', () => {
 		expect(list[0].usr_login).toBe(app.grant.getLogin());
 		expect(list[0].usr_image_id.thumbnail).not.toBeUndefined();
 		return usr.print('User-VCARD', list[0].row_id);
-	}).then(content => {
-		expect(content).not.toBeUndefined();
+	}).then(pub => {
+		expect(pub.content).not.toBeUndefined();
 		return usr.get(app.grant.getUserId(), { treeView: 'TreeUser' });
 	}).then(tree => {
 		expect(tree.object).toBe('User');

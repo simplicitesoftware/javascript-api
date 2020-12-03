@@ -186,9 +186,9 @@ app.getHealth().then(health => {
 	app.log('Picture URL: ' + u.substr(0, 80) + '...');
 	assert.ok(u == app.grant.getPictureURL());
 	return usr.print('User-VCARD', list[0].row_id);
-}).then(content => {
-	app.log('Publication content:\n' + content);
-	assert.ok(!!content);
+}).then(pub => {
+	app.log('Publication:\n' + pub.filename + ' ' + pub.mime + ' ' + pub.content);
+	assert.ok(!!pub.content);
 	return usr.get(app.grant.getUserId(), { treeView: 'TreeUser' });
 }).then(tree => {
 	app.debug(tree);
