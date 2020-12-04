@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 1.1.19
+ * @version 1.1.20
  * @license Apache-2.0
  */
 var Q = require('q');
@@ -723,13 +723,14 @@ function Session(params) {
 	 * @param {object} [opts] Options
 	 * @param {boolean} [opts.full=false] Full health check?
 	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<object>} Promise to the health data
 	 * @function
 	 */
 	this.getHealth = function(opts) {
 		var d = Q.defer();
 		opts = opts || {};
 		opts.error = function(e) { var err = this.getError(e); d.reject(err); };
-		_getHealth.call(this, function(health) { health = health || {}; d.resolve(health); }, opts);
+		_getHealth.call(this, function(health) { d.resolve(health); }, opts);
 		return d.promise;
 	};
 
@@ -763,13 +764,13 @@ function Session(params) {
 				if (self.authtoken)
 					self.debug('[simplicite.login] Auth token = ' + self.authtoken);
 				// Minimal grant from session data
-				self.grant = {
+				self.grant = Object.assign(new Grant(), {
 					login: r.response.login,
 					userid: r.response.userid,
 					firstname: r.response.firstanme,
 					lastname: r.response.lastname,
 					email: r.response.email
-				};
+				});
 				if (callback)
 					callback.call(self, r.response);
 			}
@@ -784,6 +785,7 @@ function Session(params) {
 	 * @param {string} [opts.username] Username
 	 * @param {string} [opts.password] Password
 	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<object>} Promise to the login result
 	 * @function
 	 */
 	this.login = function(opts) {
@@ -825,6 +827,7 @@ function Session(params) {
 	 * @param {function} callback Callback (called upon success)
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<object>} Promise to the logout result
 	 * @function
 	 */
 	this.logout = function(opts) {
@@ -876,6 +879,7 @@ function Session(params) {
 	 * @param {boolean} [opts.inlinePicture=false] Inline user picture?
 	 * @param {boolean} [opts.includeTexts=false] Include texts?
 	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<Grant>} A promise to the grant (also available as the <code>grant</code> member)
 	 * @function
 	 */
 	this.getGrant = function(opts) {
@@ -903,7 +907,7 @@ function Session(params) {
 				(opts.error ? opts.error : self.error).call(self, r.response);
 			} else {
 				if (callback)
-					callback.call(self, self.r.response);
+					callback.call(self, r.response);
 			}
 		}, function(e) {
 			(opts.error ? opts.error : self.error).call(self, e);
@@ -915,6 +919,7 @@ function Session(params) {
 	 * @param {string} pwd Password
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<object>} A promise to the change password result
 	 * @function
 	 */
 	this.changePassword = function(pwd, opts) {
@@ -953,6 +958,7 @@ function Session(params) {
 	 * Get application info
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<object>} A promise to the application info (also avialable as the <code>appinfo</code> member)
 	 * @function
 	 */
 	this.getAppInfo = function(opts) {
@@ -991,6 +997,7 @@ function Session(params) {
 	 * Get system info
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<object>} A promise to the system info (also avialable as the <code>sysinfo</code> member)
 	 * @function
 	 */
 	this.getSysInfo = function(opts) {
@@ -1033,6 +1040,7 @@ function Session(params) {
 	 * @param {object} [opts] Options
 	 * @param {boolean} [opts.inlineImages=false] Inline news images?
 	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<array>} A promise to the list of news (also avialable as the <code>news</code> member)
 	 * @function
 	 */
 	this.getNews = function(opts) {
@@ -1078,6 +1086,7 @@ function Session(params) {
 	 * @param {boolean} [opts.metadata=false] Add meta data for each result
 	 * @param {number} [opts.context] Context
 	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<array>} A promise to a list of index search records
 	 * @function
 	 */
 	this.indexSearch = function(request, object, opts) {
@@ -1158,6 +1167,7 @@ function Grant () {
 
 	/**
 	 * Alias to <code>getUsername</code>
+	 * @return {string} Login
 	 * @function
 	 */
 	this.getLogin = this.getUsername; // Naming flexibility
@@ -1242,6 +1252,113 @@ function Grant () {
 }
 
 /**
+ * Document
+ * @class
+ */
+function Document() {
+	/**
+	 * Get the document's ID
+	 * @return ID
+	 * @function
+	 */
+	this.getId = function() {
+		return this.id;
+	};
+
+	/**
+	 * Get the document's MIME type
+	 * @return {string} MIME type
+	 * @function
+	 */
+	this.getMIMEType = function() {
+		return this.mime;
+	};
+
+	/**
+	 * Alias to <code>getMIMEType</code>
+	 * @return {string} MIME type
+	 * @function
+	 */
+	this.getMimeType = this.getMIMEType;
+
+	/**
+	 * Get the document's file name
+	 * @return {string} File name
+	 * @function
+	 */
+	this.getFilename = function() {
+		return this.filename;
+	};
+
+	/**
+	 * Alias to <code>getFilename</code>
+	 * @return {string} File name
+	 * @function
+	 */
+	this.getFileName = this.getFilename;
+
+	/**
+	 * Get the document's content (encoded in base 64)
+	 * @return {string} Content
+	 * @function
+	 */
+	this.getContent = function() {
+		return this.content;
+	};
+
+	/**
+	 * Get the document's thumbnail (encoded in base 64)
+	 * @return {string} Thumbnail
+	 * @function
+	 */
+	this.getThumbnail = function() {
+		return this.thumbnail;
+	};
+
+	function getBuffer(data) {
+		return buffer.Buffer.from ? buffer.Buffer.from(data, 'base64') : new buffer.Buffer(data, 'base64');
+	}
+
+	/**
+	 * Get the document's content as a an array buffer
+	 * @return {ArrayBuffer} Content as an array buffer
+	 * @function
+	 */
+	this.getContentAsArrayBuffer = function() {
+		return getBuffer(this.content).buffer;
+	};
+
+	/**
+	 * Get the document's thumbnail as a an array buffer
+	 * @return {ArrayBuffer} Thumbnail as an array buffer
+	 * @function
+	 */
+	this.getThumbnailAsArrayBuffer = function() {
+		return getBuffer(this.thumbnail || '').buffer;
+	};
+
+	/**
+	 * Get the document's content as plain text
+	 * @param {string} [encoding] Encoding, defaults to UTF-8
+	 * @return {string} Content as plain text
+	 * @function
+	 */
+	this.getContentAsText = function(encoding) {
+		return getBuffer(this.content).toString(encoding || 'utf-8');
+	};
+
+	/**
+	 * Get the document's data URL
+	 * @param {boolean} [thumbnail] Thumbnail? If thumbnail does not exists the content is used.
+	 * @return {string} Data URL or nothing if content is empty
+	 */
+	this.getDataURL = function(thumbnail) {
+		if (this.content)
+			return 'data:' + this.mime + ';base64,' + (thumbnail && this.thumbnail ? this.thumbnail : this.content);
+	};
+}
+
+/**
  * Business object meta data.
  * <br/><span style="color: red;">You <strong>should never</strong> instanciate this class directly
  * but rather use it from the <code>metadata</code> variable of your <code>BusinessObject</code> instances</span>.
@@ -1312,7 +1429,7 @@ function BusinessObject(ses, name, instance) {
 	this.metadata = new BusinessObjectMetadata(name, instance);
 
 	/**
-	 * cache key
+	 * Cache key
 	 * @constant {string}
 	 */
 	this.cacheKey = this.session.getBusinessObjectCacheKey(name, instance);
@@ -1374,6 +1491,7 @@ function BusinessObject(ses, name, instance) {
 	 * @param {number} [opts.context] Context
 	 * @param {string} [opts.contextParam] Context parameter
 	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<BusinessObjectMetadata>} A promise to the object'ts meta data (also available as the <code>metadata</code> member)
 	 * @function
 	 */
 	this.getMetaData = function(opts) {
@@ -1539,7 +1657,22 @@ function BusinessObject(ses, name, instance) {
 	};
 
 	/**
-	 * Get URL of a document/image field for item (or current item)
+	 * Get the field's value as document/image for item (or current item)
+	 * @param {(string|object)} field Field name or definition
+	 * @param {object} [item] Item (defaults to current item)
+	 * @return {Document} Document/image (or nothing if the field is not of document/image type or if it is empty)
+	 * @function
+	 */
+	this.getFieldDocument = function(field, item) {
+		if (typeof field !== 'string')
+			field = field.fullinput || field.input || field.name;
+		var val = this.getFieldValue(field, item);
+		if (val && val.mime)
+			return Object.assign(new Document(), val);
+	};
+
+	/**
+	 * Get the URL of a document/image field for item (or current item)
 	 * @param {(string|object)} field Field name or definition
 	 * @param {object} [item] Item (defaults to current item)
 	 * @param {boolean} [thumbnail=false] Thumbnail?
@@ -1637,6 +1770,7 @@ function BusinessObject(ses, name, instance) {
 	 * @param {number} [opts.context] Context
 	 * @param {boolean} [opts.reset] Reset filters?
 	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<object>} Promise to the object's filters (also available as the <code>filters</code> member)
 	 * @function
 	 */
 	this.getFilters =function(opts) {
@@ -1729,6 +1863,7 @@ function BusinessObject(ses, name, instance) {
 	 * @param {object} [filters] Filters, defaults to current filters if not set
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<object>} Promise to the count
 	 * @function
 	 */
 	this.count = function(filters, opts) {
@@ -1790,6 +1925,7 @@ function BusinessObject(ses, name, instance) {
 	 * @param {boolean} [opts.metadata=false] Refresh meta data?
 	 * @param {boolean} [opts.visible] Return only visible fields?
 	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<array>} Promise to a list of records (also available as the <code>list</code> member)
 	 * @function
 	 */
 	this.search = function(filters, opts) {
@@ -1849,6 +1985,7 @@ function BusinessObject(ses, name, instance) {
 	 * @param {string[]} [opts.fields] List of field names to return, all fields are returned by default
 	 * @param {string} [opts.treeview] Return the named tree view structure
 	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<object>} Promise to the record (also available as the <code>item</code> member)
 	 * @function
 	 */
 	this.get = function(rowId, opts) {
@@ -1878,6 +2015,7 @@ function BusinessObject(ses, name, instance) {
 	 * @param {object} [opts] Options
 	 * @param {boolean} [opts.metadata=false] Refresh meta data?
 	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
 	 * @function
 	 */
 	this.getForCreate = function(opts) {
@@ -1909,6 +2047,7 @@ function BusinessObject(ses, name, instance) {
 	 * @param {object} [opts] Options
 	 * @param {boolean} [opts.metadata=false] Refresh meta data?
 	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<object>} Promise to the record to update (also available as the <code>item</code> member)
 	 * @function
 	 */
 	this.getForUpdate = function(rowId, opts) {
@@ -1940,6 +2079,7 @@ function BusinessObject(ses, name, instance) {
 	 * @param {object} [opts] Options
 	 * @param {boolean} [opts.metadata=false] Refresh meta data?
 	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
 	 * @function
 	 */
 	this.getForCopy = function(rowId, opts) {
@@ -1971,6 +2111,7 @@ function BusinessObject(ses, name, instance) {
 	 * @param {object} [opts] Options
 	 * @param {boolean} [opts.metadata=false] Refresh meta data?
 	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<object>} Promise to the record to delete (also available as the <code>item</code> member)
 	 * @function
 	 */
 	this.getForDelete = function(rowId, opts) {
@@ -2024,6 +2165,7 @@ function BusinessObject(ses, name, instance) {
 	 * @param {string} rowId Row ID
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
 	 * @function
 	 */
 	this.populate = function(itm, opts) {
@@ -2056,6 +2198,7 @@ function BusinessObject(ses, name, instance) {
 	 * @param {object} item Item (defaults to current item)
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<object>} Promise to the saved record (also available as the <code>item</code> member)
 	 * @function
 	 */
 	this.save = function(itm, opts) {
@@ -2099,6 +2242,7 @@ function BusinessObject(ses, name, instance) {
 	 * @param {object} item Item (defaults to current item)
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<object>} Promise to the created record (also available as the <code>item</code> member)
 	 * @function
 	 */
 	this.create = function(itm, opts) {
@@ -2143,6 +2287,7 @@ function BusinessObject(ses, name, instance) {
 	 * @param {object} item Item (defaults to current item)
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<object>} Promise to the updated record (also available as the <code>item</code> member)
 	 * @function
 	 */
 	this.update = function(itm, opts) {
@@ -2186,6 +2331,7 @@ function BusinessObject(ses, name, instance) {
 	 * @param {object} item Item (defaults to current item)
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
+	 * @return {promise} Promise (the <code>item</code> member is emptied)
 	 * @function
 	 */
 	this.del = function(itm, opts) {
@@ -2228,6 +2374,7 @@ function BusinessObject(ses, name, instance) {
 	 * @param {string} [rowId] Row ID
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<string|object>} A promise to the action result
 	 * @function
 	 */
 	this.action = function(action, rowId, opts) {
@@ -2271,6 +2418,7 @@ function BusinessObject(ses, name, instance) {
 	 * @param {object} [opts] Options
 	 * @param {object} [opts.filters] Filters, by default current filters are used
 	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<object>} A promise to the pivot table data (also avialable as the <code>crosstabdata</code> member)
 	 * @function
 	 */
 	this.crosstab = function(ctb, opts) {
@@ -2305,9 +2453,8 @@ function BusinessObject(ses, name, instance) {
 			if (r.type === 'error') {
 				(opts.error ? opts.error : self.session.error).call(self, r.response);
 			} else {
-				var pub = r.response;
 				if (callback)
-					callback.call(self, pub);
+					callback.call(self, Object.assign(new Document(), r.response));
 			}
 		}, function(e) {
 			(opts.error ? opts.error : self.session.error).call(self, e);
@@ -2315,21 +2462,12 @@ function BusinessObject(ses, name, instance) {
 	}
 
 	/**
-	 * Publication result
-	 * @typedef {object} PublicationResult
-	 * @property {string} mime MIME type
-	 * @property {string} filename File name
-	 * @property {string} content Publication content encoded in base 64
-	 * @class
-	 */
-
-	/**
 	 * Build a custom publication
 	 * @param {string} prt Publication name
 	 * @param {string} [rowId] Row ID
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
-	 * @return {promise<PublicationResult>} A promise to the publication result
+	 * @return {promise<Document>} A promise to the document of the publication
 	 * @function
 	 */
 	this.print = function(pt, rowId, opts) {
@@ -2374,6 +2512,7 @@ function BusinessObject(ses, name, instance) {
 	 * @param {string} value Parameter value
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<object>} Promise
 	 * @function
 	 */
 	this.setParameter = function(param, value, opts) {
@@ -2415,6 +2554,7 @@ function BusinessObject(ses, name, instance) {
 	 * @param {string} param Parameter name
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<object>} Promise to the parameter value
 	 * @function
 	 */
 	this.getParameter = function(param, opts) {
@@ -2564,6 +2704,7 @@ function ExternalObject(ses, name) {
 	 * @param {function} [opts.error] Error handler function
 	 * @param {object} [opts.method] Optional method 'get', 'post', 'put' or 'delete' (defaults to 'get' if data is not set or 'post" if data is set
 	 * @param {function} [opts.contentType] Optional data content type (for 'post' and 'put' methods only)
+	 * @return {promise<object>} Promise to the external object content
 	 * @function
 	 */
 	this.call = function(params, data, opts) {

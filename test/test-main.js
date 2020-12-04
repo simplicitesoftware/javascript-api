@@ -3,7 +3,7 @@ const assert = require('assert').strict;
 const adminUsername = process.env.TEST_SIMPLICITE_ADMIN_USERNAME || 'designer';
 const adminPassword = process.env.TEST_SIMPLICITE_ADMIN_PASSWORD || 'designer';
 
-const debug = false;
+const debug = true;
 const app = require('../src/simplicite').session({
 	url: process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080',
 	debug: debug
@@ -186,9 +186,11 @@ app.getHealth().then(health => {
 	app.log('Picture URL: ' + u.substr(0, 80) + '...');
 	assert.ok(u == app.grant.getPictureURL());
 	return usr.print('User-VCARD', list[0].row_id);
-}).then(pub => {
-	app.log('Publication:\n' + pub.filename + ' ' + pub.mime + ' ' + pub.content);
-	assert.ok(!!pub.content);
+}).then(doc => {
+	app.log('Publication:\n' + doc.getFilename() + ' ' + doc.getMIMEType() + ' ' + doc.getContent());
+	app.log('Data URL:\n' + doc.getDataURL());
+	app.log('Data decoded:\n' + doc.getContentAsText());
+	assert.ok(!!doc.getContent());
 	return usr.get(app.grant.getUserId(), { treeView: 'TreeUser' });
 }).then(tree => {
 	app.debug(tree);
