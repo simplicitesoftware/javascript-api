@@ -571,7 +571,7 @@ function Session(params) {
 	 * Get business object cache key
 	 * @param {string} name Business object name
 	 * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
-	 * @returns Business object cache key
+	 * @return {object} Business object cache key
 	 * @private
 	 */
 	this.getBusinessObjectCacheKey = function(name, instance) {
@@ -1092,7 +1092,7 @@ function Session(params) {
 	 * Get business object
 	 * @param {string} name Business object name
 	 * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
-	 * @returns {BusinessObject} Business object
+	 * @return {BusinessObject} Business object
 	 * @function
 	 */
 	this.getBusinessObject = function(name, instance) {
@@ -1140,7 +1140,7 @@ function Session(params) {
 function Grant () {
 	/**
 	 * Get user ID
-	 * @returns User ID
+	 * @return {string} User ID
 	 * @function
 	 */
 	this.getUserId = function () {
@@ -1149,7 +1149,7 @@ function Grant () {
 
 	/**
 	 * Get username
-	 * @returns Username
+	 * @return {string} Username
 	 * @function
 	 */
 	this.getUsername = function() {
@@ -1164,7 +1164,7 @@ function Grant () {
 
 	/**
 	 * Get language
-	 * @returns Language
+	 * @return {string} Language
 	 * @function
 	 */
 	this.getLang = function() {
@@ -1173,7 +1173,7 @@ function Grant () {
 	
 	/**
 	 * Get email address
-	 * @returns Email address
+	 * @return {string} Email address
 	 * @function
 	 */
 	this.getEmail = function() {
@@ -1182,7 +1182,8 @@ function Grant () {
 	
 	/**
 	 * Get first name
-	 * @returns Fiest name
+	 * @return {string} First name
+	 * @function
 	 */
 	this.getFirstname = function() {
 		return this.firstname;
@@ -1190,13 +1191,14 @@ function Grant () {
 	
 	/**
 	 * Alias to <code>getFirstname</code>
+	 * @return {string} First name
 	 * @function
 	 */
 	this.getFirstName = this.getFirstname; // Naming flexibility
 	
 	/**
 	 * Get last name
-	 * @returns Last name
+	 * @return {string} Last name
 	 * @function
 	 */
 	this.getLastname = function() {
@@ -1205,13 +1207,14 @@ function Grant () {
 	
 	/**
 	 * Alias to <code>getLastname</code>
+	 * @return {string} Last name
 	 * @function
 	 */
 	this.getLastName = this.getLastname; // Naming flexibility
 	
 	/**
 	 * Get picture data URL
-	 * @returns Picture data URL
+	 * @return {string} Picture data URL
 	 * @function
 	 */
 	this.getPictureURL = function() {
@@ -1222,7 +1225,7 @@ function Grant () {
 	/**
 	 * Has responsibility
 	 * @param {string} group Group name
-	 * @returns True if user has a responsibility on the specified group
+	 * @return {boolean} True if user has a responsibility on the specified group
 	 * @function
 	 */
 	this.hasResponsibility = function(group) {
@@ -1381,7 +1384,7 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Get name
-	 * @returns {string} Name
+	 * @return {string} Name
 	 * @function
 	 */
 	this.getName = function() {
@@ -1390,7 +1393,7 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Get instance name
-	 * @returns {string} Instance name
+	 * @return {string} Instance name
 	 * @function
 	 */
 	this.getInstance = function() {
@@ -1399,7 +1402,7 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Get display label
-	 * @returns {string} Display label
+	 * @return {string} Display label
 	 * @function
 	 */
 	this.getLabel = function() {
@@ -1408,7 +1411,7 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Get help
-	 * @returns {string} Help
+	 * @return {string} Help
 	 * @function
 	 */
 	this.getHelp = function() {
@@ -1417,7 +1420,7 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Get all fields definitions
-	 * @returns {array} Array of field definitions
+	 * @return {array} Array of field definitions
 	 * @function
 	 */
 	this.getFields = function() {
@@ -1427,7 +1430,7 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Get a field definition
 	 * @param {string} fieldName Field name
-	 * @returns {object} Field definition
+	 * @return {object} Field definition
 	 * @function
 	 */
 	this.getField = function(fieldName) {
@@ -1440,7 +1443,7 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Get row ID field name
-	 * @returns {string} Row ID field name
+	 * @return {string} Row ID field name
 	 * @function
 	 */
 	this.getRowIdFieldName = function() {
@@ -1449,7 +1452,7 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Get row ID field definition
-	 * @returns {object} Row ID field definition
+	 * @return {object} Row ID field definition
 	 * @function
 	 */
 	this.getRowIdField = function() {
@@ -1458,7 +1461,7 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Get links
-	 * @returns {array} Array of links
+	 * @return {array} Array of links
 	 * @function
 	 */
 	this.getLinks = function() {
@@ -1468,7 +1471,7 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Get field type
 	 * @param {(string|object)} field Field name or definition
-	 * @returns {string} Type (one of <code>constants.TYPE_*</code>)
+	 * @return {string} Type (one of <code>constants.TYPE_*</code>)
 	 * @function
 	 */
 	this.getFieldType = function(field) {
@@ -1481,7 +1484,7 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Get field label
 	 * @param {(string|object)} field Field name or definition
-	 * @returns {string} Value
+	 * @return {string} Value
 	 * @function
 	 */
 	this.getFieldLabel = function(field) {
@@ -1495,7 +1498,7 @@ function BusinessObject(ses, name, instance) {
 	 * Get value of field for item (or current item)
 	 * @param {(string|object)} field Field name or definition
 	 * @param {object} [item] Item (defaults to current item)
-	 * @returns {string} Value
+	 * @return {string} Value
 	 * @function
 	 */
 	this.getFieldValue = function(field, item) {
@@ -1510,7 +1513,7 @@ function BusinessObject(ses, name, instance) {
 	 * Get the list value of a list of values field for item (or current item)
 	 * @param {(string|object)} field Field name or definition
 	 * @param {string} code Code
-	 * @returns {string} Value
+	 * @return {string} Value
 	 * @function
 	 */
 	this.getFieldListValue = function(field, item) {
@@ -1524,7 +1527,7 @@ function BusinessObject(ses, name, instance) {
 	 * Get the data URL of an inlined document/image field for item (or current item)
 	 * @param {(string|object)} field Field name or definition
 	 * @param {object} [item] Item (defaults to current item)
-	 * @returns Document/image field data URL (or nothing if the field is not of document/image type or if it is not inlined or if it is empty)
+	 * @return {string} Document/image field data URL (or nothing if the field is not of document/image type or if it is not inlined or if it is empty)
 	 * @function
 	 */
 	this.getFieldDataURL = function(field, item) {
@@ -1540,7 +1543,7 @@ function BusinessObject(ses, name, instance) {
 	 * @param {(string|object)} field Field name or definition
 	 * @param {object} [item] Item (defaults to current item)
 	 * @param {boolean} [thumbnail=false] Thumbnail?
-	 * @returns Document/image field URL (or nothing if the field is not of document/image type or if it is empty)
+	 * @return {string} Document/image field URL (or nothing if the field is not of document/image type or if it is empty)
 	 * @function
 	 */
 	this.getFieldDocumentURL = function(field, item, thumbnail) {
@@ -1564,7 +1567,7 @@ function BusinessObject(ses, name, instance) {
 	 * Get list value for code
 	 * @param {list} list List of values
 	 * @param {string} code Code
-	 * @returns {string} Value
+	 * @return {string} Value
 	 * @function
 	 */
 	this.getListValue = function(list, code) {
@@ -1581,7 +1584,7 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Is the field the row ID field?
 	 * @param {object} field Field definition
-	 * @returns True if the field is the row ID field
+	 * @return {boolean} True if the field is the row ID field
 	 * @function
 	 */
 	this.isRowIdField = function(field) {
@@ -1591,7 +1594,7 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Is the field a timestamp field?
 	 * @param {object} field Field definition
-	 * @returns True if the field is a timestamp field
+	 * @return {boolean} True if the field is a timestamp field
 	 * @function
 	 */
 	this.isTimestampField = function(field) {
@@ -1981,7 +1984,7 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Get specified or current item's row ID value
 	 * @param {object} [item] Item, defaults to current item
-	 * @returns Item's row ID value
+	 * @return {string} Item's row ID value
 	 * @function
 	 */
 	this.getRowId = function(item) {
@@ -2312,11 +2315,21 @@ function BusinessObject(ses, name, instance) {
 	}
 
 	/**
+	 * Publication result
+	 * @typedef {object} PublicationResult
+	 * @property {string} mime MIME type
+	 * @property {string} filename File name
+	 * @property {string} content Publication content encoded in base 64
+	 * @class
+	 */
+
+	/**
 	 * Build a custom publication
 	 * @param {string} prt Publication name
 	 * @param {string} [rowId] Row ID
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<PublicationResult>} A promise to the publication result
 	 * @function
 	 */
 	this.print = function(pt, rowId, opts) {
@@ -2467,7 +2480,7 @@ function ExternalObject(ses, name) {
 
 	/**
 	 * Get name
-	 * @returns {string} Name
+	 * @return {string} Name
 	 * @function
 	 */
 	this.getName = function() {
