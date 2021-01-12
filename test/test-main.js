@@ -135,6 +135,9 @@ app.getHealth().then(health => {
 	assert.ok(item.sys_code == sysCode);
 	assert.ok(item.sys_value == sysValue);
 	app.log('Created new item with row ID: ' + sysId);
+	return sys.action('getVersion', null, { parameters: { test1: 'TEST1', test2: 'TEST2' } });
+}).then(res => {
+	app.debug(res);
 	return sys.getForUpdate(sysId);
 }).then(item => {
 	app.debug(item);

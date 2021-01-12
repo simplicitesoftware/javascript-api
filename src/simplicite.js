@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 1.1.20
+ * @version 1.1.21
  * @license Apache-2.0
  */
 var Q = require('q');
@@ -2353,7 +2353,7 @@ function BusinessObject(ses, name, instance) {
 	function _action(callback, action, rowId, opts) {
 		var self = this;
 		opts = opts || {};
-		self.session.req.call(self.session, self.path + '&action=' + encodeURIComponent(action) + (rowId ? '&' + self.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : ''), undefined, function(res, status) {
+		self.session.req.call(self.session, self.path + '&action=' + encodeURIComponent(action) + (rowId ? '&' + self.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : ''), opts.parameters, function(res, status) {
 			var r = self.session.parse(res, status);
 			this.debug('[simplicite.BusinessObject.action(' + action + ')] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
@@ -2373,6 +2373,7 @@ function BusinessObject(ses, name, instance) {
 	 * @param {string} action Action name
 	 * @param {string} [rowId] Row ID
 	 * @param {object} [opts] Options
+	 * @param {function} [opts.parameters] Optional action parameters as key/value pairs
 	 * @param {function} [opts.error] Error handler function
 	 * @return {promise<string|object>} A promise to the action result
 	 * @function
