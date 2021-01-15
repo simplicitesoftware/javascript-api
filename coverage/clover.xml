@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1610483576157" clover="3.2.0">
-  <project timestamp="1610483576158" name="All files">
-    <metrics statements="868" coveredstatements="533" conditionals="757" coveredconditionals="284" methods="235" coveredmethods="101" elements="1860" coveredelements="918" complexity="0" loc="868" ncloc="868" packages="1" files="1" classes="1"/>
+<coverage generated="1610729690220" clover="3.2.0">
+  <project timestamp="1610729690221" name="All files">
+    <metrics statements="868" coveredstatements="533" conditionals="757" coveredconditionals="285" methods="235" coveredmethods="101" elements="1860" coveredelements="919" complexity="0" loc="868" ncloc="868" packages="1" files="1" classes="1"/>
     <file name="simplicite.js" path="D:\dev\git\github\nodejs-api-tmp\src\simplicite.js">
-      <metrics statements="868" coveredstatements="533" conditionals="757" coveredconditionals="284" methods="235" coveredmethods="101"/>
+      <metrics statements="868" coveredstatements="533" conditionals="757" coveredconditionals="285" methods="235" coveredmethods="101"/>
       <line num="7" count="1" type="stmt"/>
       <line num="8" count="1" type="stmt"/>
       <line num="9" count="1" type="stmt"/>
@@ -492,8 +492,8 @@
       <line num="1800" count="13" type="cond" truecount="1" falsecount="1"/>
       <line num="1801" count="0" type="cond" truecount="0" falsecount="2"/>
       <line num="1802" count="13" type="stmt"/>
-      <line num="1811" count="7" type="stmt"/>
-      <line num="1812" count="7" type="cond" truecount="1" falsecount="1"/>
+      <line num="1811" count="8" type="stmt"/>
+      <line num="1812" count="8" type="cond" truecount="2" falsecount="0"/>
       <line num="1813" count="7" type="stmt"/>
       <line num="1814" count="7" type="stmt"/>
       <line num="1815" count="57" type="cond" truecount="2" falsecount="0"/>

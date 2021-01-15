@@ -604,7 +604,7 @@ function Session(params) {
 	this.getBasicAuthHeader = function() {
 		return this.username && this.password
 			? 'Basic ' + (buffer.Buffer.from ? buffer.Buffer.from(this.username + ':' + this.password) : new buffer.Buffer(this.username + ':' + this.password)).toString('base64')
-			: null;
+			: undefined;
 	};
 
 	/**
@@ -614,7 +614,7 @@ function Session(params) {
 	this.getBearerTokenHeader = function() {
 		return this.authtoken
 			? 'Bearer ' + this.authtoken
-			: null;
+			: undefined;
 	};
 
 	/**
@@ -2353,7 +2353,7 @@ function BusinessObject(ses, name, instance) {
 	function _action(callback, action, rowId, opts) {
 		var self = this;
 		opts = opts || {};
-		self.session.req.call(self.session, self.path + '&action=' + encodeURIComponent(action) + (rowId ? '&' + self.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : ''), opts.parameters, function(res, status) {
+		self.session.req.call(self.session, self.path + '&action=' + encodeURIComponent(action) + (rowId ? '&' + self.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : ''), _getReqParams(opts.parameters), function(res, status) {
 			var r = self.session.parse(res, status);
 			this.debug('[simplicite.BusinessObject.action(' + action + ')] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
