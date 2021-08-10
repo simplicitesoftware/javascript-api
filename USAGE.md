@@ -11,7 +11,7 @@ const app = require('simplicite').session({ url: '<my instance base URL>' });
 app.login({ username: '<my username>', password: '<my password>' }).then(res => {
 	console.log('Hello ' + res.login + '!');
 	let obj = app.getBusinessObject('MyObject');
-	return app.search();
+	return obj.search();
 }).then(list => {
 	// Do something with the search results list
 	// Etc.
