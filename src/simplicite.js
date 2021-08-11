@@ -1146,7 +1146,7 @@ function Session(params) {
  * but rather use it from the <code>data</code> variable got using <code>getGrant</code></span>.
  * @class
  */
-function Grant () {
+function Grant() {
 	/**
 	 * Get user ID
 	 * @return {string} User ID
@@ -1282,6 +1282,22 @@ function Document() {
 	this.getMimeType = this.getMIMEType;
 
 	/**
+	 * Set the document's MIME type
+	 * @param {string} mime MIME type
+	 * @function
+	 */
+	this.setMIMEType = function(mime) {
+		this.mime = mime;
+	};
+
+	/**
+	 * Alias to <code>setMIMEType</code>
+	 * @param {string} mime MIME type
+	 * @function
+	 */
+	this.setMimeType = this.setMIMEType;
+
+	/**
 	 * Get the document's file name
 	 * @return {string} File name
 	 * @function
@@ -1296,6 +1312,22 @@ function Document() {
 	 * @function
 	 */
 	this.getFileName = this.getFilename;
+
+	/**
+	 * Set the document's file name
+	 * @param {string} filename File name
+	 * @function
+	 */
+	this.setFilename = function(filename) {
+		this.filename = filename;
+	};
+
+	/**
+	 * Alias to <code>setFilename</code>
+	 * @param {string} filename File name
+	 * @function
+	 */
+	this.setFileName = this.setFilename;
 
 	/**
 	 * Get the document's content (encoded in base 64)
@@ -1315,12 +1347,16 @@ function Document() {
 		return this.thumbnail;
 	};
 
+	/**
+	 * Get the document's content as a buffer
+	 * @private
+	 */
 	function getBuffer(data) {
 		return buffer.Buffer.from ? buffer.Buffer.from(data, 'base64') : new buffer.Buffer(data, 'base64');
 	}
 
 	/**
-	 * Get the document's content as a an array buffer
+	 * Get the document's content as an array buffer
 	 * @return {ArrayBuffer} Content as an array buffer
 	 * @function
 	 */
@@ -1329,7 +1365,7 @@ function Document() {
 	};
 
 	/**
-	 * Get the document's thumbnail as a an array buffer
+	 * Get the document's thumbnail as an array buffer
 	 * @return {ArrayBuffer} Thumbnail as an array buffer
 	 * @function
 	 */
@@ -1338,13 +1374,32 @@ function Document() {
 	};
 
 	/**
-	 * Get the document's content as plain text
+	 * Get the document's content as a text
 	 * @param {string} [encoding] Encoding, defaults to UTF-8
 	 * @return {string} Content as plain text
 	 * @function
 	 */
 	this.getContentAsText = function(encoding) {
 		return getBuffer(this.content).toString(encoding || 'utf-8');
+	};
+
+	/**
+	 * Set the document's content
+	 * @param {string} content Content (encoded in base 64)
+	 * @function
+	 */
+	this.setContent = function(content) {
+		this.content = content;
+	};
+
+	/**
+	 * Set the document's content from plain text string
+	 * @param {string} content Content as plain text string
+	 * @param {string} [encoding] Encoding, defaults to UTF-8
+	 * @function
+	 */
+	this.setContentFromText = function(content, encoding) {
+		this.content = (buffer.Buffer.from ? buffer.Buffer.from(content, encoding || 'utf-8') : new buffer.Buffer(content, encoding || 'utf-8')).toString('base64');
 	};
 
 	/**
@@ -1356,6 +1411,14 @@ function Document() {
 		if (this.content)
 			return 'data:' + this.mime + ';base64,' + (thumbnail && this.thumbnail ? this.thumbnail : this.content);
 	};
+
+	/**
+	 * Get the document as a simple value
+	 * @return Value
+	 */
+	this.getValue = function() {
+		return JSON.parse(JSON.stringify(this)); // Strips all functions
+	};
 }
 
 /**
@@ -1366,7 +1429,7 @@ function Document() {
  * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
  * @class
  */
-function BusinessObjectMetadata (name, instance) {
+function BusinessObjectMetadata(name, instance) {
 	/**
 	 * Name
 	 * @constant {string}
