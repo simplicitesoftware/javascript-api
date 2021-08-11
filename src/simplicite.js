@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 1.1.21
+ * @version 1.1.24
  * @license Apache-2.0
  */
 var Q = require('q');
