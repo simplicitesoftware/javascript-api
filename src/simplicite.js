@@ -603,7 +603,7 @@ function Session(params) {
 	 */
 	this.getBasicAuthHeader = function() {
 		return this.username && this.password
-			? 'Basic ' + (buffer.Buffer.from ? buffer.Buffer.from(this.username + ':' + this.password) : new buffer.Buffer(this.username + ':' + this.password)).toString('base64')
+			? 'Basic ' + buffer.Buffer.from(this.username + ':' + this.password).toString('base64')
 			: undefined;
 	};
 
@@ -1352,7 +1352,7 @@ function Document() {
 	 * @private
 	 */
 	function getBuffer(data) {
-		return buffer.Buffer.from ? buffer.Buffer.from(data, 'base64') : new buffer.Buffer(data, 'base64');
+		return buffer.Buffer.from(data, 'base64');
 	}
 
 	/**
@@ -1399,7 +1399,7 @@ function Document() {
 	 * @function
 	 */
 	this.setContentFromText = function(content, encoding) {
-		this.content = (buffer.Buffer.from ? buffer.Buffer.from(content, encoding || 'utf-8') : new buffer.Buffer(content, encoding || 'utf-8')).toString('base64');
+		this.content = buffer.Buffer.from(content, encoding || 'utf-8').toString('base64');
 	};
 
 	/**
