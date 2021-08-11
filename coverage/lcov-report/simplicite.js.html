@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">59.01% </span>
+                <span class="strong">58.81% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>563/954</span>
+                <span class='fraction'>564/959</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">37.48% </span>
+                <span class="strong">37.25% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>286/763</span>
+                <span class='fraction'>285/765</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">42.08% </span>
+                <span class="strong">41.91% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>101/240</span>
+                <span class='fraction'>101/241</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">61.48% </span>
+                <span class="strong">61.24% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>541/880</span>
+                <span class='fraction'>542/885</span>
             </div>
         
             
@@ -2847,7 +2847,22 @@
 <a name='L2788'></a><a href='#L2788'>2788</a>
 <a name='L2789'></a><a href='#L2789'>2789</a>
 <a name='L2790'></a><a href='#L2790'>2790</a>
-<a name='L2791'></a><a href='#L2791'>2791</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L2791'></a><a href='#L2791'>2791</a>
+<a name='L2792'></a><a href='#L2792'>2792</a>
+<a name='L2793'></a><a href='#L2793'>2793</a>
+<a name='L2794'></a><a href='#L2794'>2794</a>
+<a name='L2795'></a><a href='#L2795'>2795</a>
+<a name='L2796'></a><a href='#L2796'>2796</a>
+<a name='L2797'></a><a href='#L2797'>2797</a>
+<a name='L2798'></a><a href='#L2798'>2798</a>
+<a name='L2799'></a><a href='#L2799'>2799</a>
+<a name='L2800'></a><a href='#L2800'>2800</a>
+<a name='L2801'></a><a href='#L2801'>2801</a>
+<a name='L2802'></a><a href='#L2802'>2802</a>
+<a name='L2803'></a><a href='#L2803'>2803</a>
+<a name='L2804'></a><a href='#L2804'>2804</a>
+<a name='L2805'></a><a href='#L2805'>2805</a>
+<a name='L2806'></a><a href='#L2806'>2806</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -4632,6 +4647,21 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -6242,7 +6272,7 @@ function Session(params) {
 	 */
 	this.getBasicAuthHeader = function() {
 		return this.username &amp;&amp; this.password
-			? 'Basic ' + (buffer.Buffer.from ? buffer.Buffer.from(this.username + ':' + this.password) : <span class="branch-1 cbranch-no" title="branch not covered" >new buffer.Buffer(this.username + ':' + this.password))</span>.toString('base64')
+			? 'Basic ' + buffer.Buffer.from(this.username + ':' + this.password).toString('base64')
 			: undefined;
 	};
 &nbsp;
@@ -6991,7 +7021,7 @@ function Document() {
 	 * @private
 	 */
 	function <span class="fstat-no" title="function not covered" >getBuffer(</span>data) {
-<span class="cstat-no" title="statement not covered" >		return buffer.Buffer.from ? buffer.Buffer.from(data, 'base64') : new buffer.Buffer(data, 'base64');</span>
+<span class="cstat-no" title="statement not covered" >		return buffer.Buffer.from(data, 'base64');</span>
 	}
 &nbsp;
 	/**
@@ -7038,7 +7068,7 @@ function Document() {
 	 * @function
 	 */
 	this.setContentFromText = <span class="fstat-no" title="function not covered" >fu</span>nction(content, encoding) {
-<span class="cstat-no" title="statement not covered" >		this.content = (buffer.Buffer.from ? buffer.Buffer.from(content, encoding || 'utf-8') : new buffer.Buffer(content, encoding || 'utf-8')).toString('base64');</span>
+<span class="cstat-no" title="statement not covered" >		this.content = buffer.Buffer.from(content, encoding || 'utf-8').toString('base64');</span>
 	};
 &nbsp;
 	/**
@@ -7414,6 +7444,21 @@ function BusinessObject(ses, name, instance) {
 			}
 		}
 <span class="cstat-no" title="statement not covered" >		return code;</span>
+	};
+&nbsp;
+	/**
+	 * Set value of field for item (or current item)
+	 * @param {(string|object)} field Field name or definition
+	 * @param {(string|object)} value Value
+	 * @param {object} [item] Item (defaults to current item)
+	 * @function
+	 */
+	this.setFieldValue = <span class="fstat-no" title="function not covered" >fu</span>nction(field, value, item) {
+<span class="cstat-no" title="statement not covered" >		if (!item)</span>
+<span class="cstat-no" title="statement not covered" >			item = this.item;</span>
+<span class="cstat-no" title="statement not covered" >		if (field &amp;&amp; item) {</span>
+<span class="cstat-no" title="statement not covered" >			item[typeof field === 'string' ? field : field.name] = value instanceof Document ? value.getValue() : value;</span>
+		}
 	};
 &nbsp;
 	/**
@@ -8434,7 +8479,7 @@ module.exports = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Wed Aug 11 2021 16:31:06 GMT+0200 (heure d’été d’Europe centrale)
+                at Wed Aug 11 2021 18:10:22 GMT+0200 (heure d’été d’Europe centrale)
             </div>
         </div>
         <script src="prettify.js"></script>
