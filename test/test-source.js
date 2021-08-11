@@ -21,12 +21,12 @@ app.login().then(res => {
 	return obj.getForUpdate(list[0].row_id, { inlineDocuments: true });
 }).then(item => {
 	if (debug) console.log(item);
-	let doc = obj.getFieldDocument("obo_script_id");
+	let doc = obj.getFieldDocument('obo_script_id');
 	if (debug) console.log(doc);
 	let src = doc.getContentAsText();
 	if (debug) console.log(src);
 	doc.setContentFromText(src += '\n// ' + new Date()); 
-	item.obo_script_id = doc.getValue();
+	obj.setFieldValue('obo_script_id', doc);
 	return obj.update(item, { inlineDocuments: true });
 }).then(item => {
 	if (debug) console.log(item);

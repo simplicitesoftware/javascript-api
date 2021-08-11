@@ -1778,6 +1778,21 @@ function BusinessObject(ses, name, instance) {
 	};
 
 	/**
+	 * Set value of field for item (or current item)
+	 * @param {(string|object)} field Field name or definition
+	 * @param {(string|object)} value Value
+	 * @param {object} [item] Item (defaults to current item)
+	 * @function
+	 */
+	this.setFieldValue = function(field, value, item) {
+		if (!item)
+			item = this.item;
+		if (field && item) {
+			item[typeof field === 'string' ? field : field.name] = value instanceof Document ? value.getValue() : value;
+		}
+	};
+
+	/**
 	 * Is the field the row ID field?
 	 * @param {object} field Field definition
 	 * @return {boolean} True if the field is the row ID field
