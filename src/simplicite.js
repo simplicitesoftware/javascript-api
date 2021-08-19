@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 1.1.24
+ * @version 1.1.25
  * @license Apache-2.0
  */
 var Q = require('q');
@@ -592,6 +592,7 @@ function Session(params) {
 
 		this.appinfo = undefined;
 		this.sysinfo = undefined;
+		this.devinfo = undefined;
 		this.userinfo = undefined;
 
 		businessObjectCache = {};
@@ -1005,6 +1006,45 @@ function Session(params) {
 		opts = opts || {};
 		opts.error = opts.error || function(e) { d.reject(e); };
 		_getSysInfo.call(this, function(inf) { d.resolve(inf); }, opts);
+		return d.promise;
+	};
+
+	/**
+	 * Get development info
+	 * @param {function} callback Callback (called upon success)
+	 * @param {object} [opts] Options
+	 * @private
+	 */
+	function _getDevInfo(callback, opts) {
+		var self = this;
+		opts = opts || {};
+		self.req.call(self, self.parameters.apppath + '?action=devinfo', undefined, function(res, status) {
+			var r = self.parse(res, status);
+			self.debug('[simplicite.getIDEInfo] HTTP status = ' + status + ', response type = ' + r.type);
+			if (r.type === 'error') {
+				(opts.error ? opts.error : self.error).call(self, r.response);
+			} else {
+				self.devinfo = r.response;
+				if (callback)
+					callback.call(self, self.devinfo);
+			}
+		}, function(e) {
+			(opts.error ? opts.error : self.error).call(self, e);
+		});
+	}
+
+	/**
+	 * Get development info
+	 * @param {object} [opts] Options
+	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<object>} A promise to the develoment info (also avialable as the <code>devinfo</code> member)
+	 * @function
+	 */
+	this.getDevInfo = function(opts) {
+		var d = Q.defer();
+		opts = opts || {};
+		opts.error = opts.error || function(e) { d.reject(e); };
+		_getDevInfo.call(this, function(inf) { d.resolve(inf); }, opts);
 		return d.promise;
 	};
 
