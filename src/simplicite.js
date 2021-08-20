@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 1.1.25
+ * @version 1.1.26
  * @license Apache-2.0
  */
 var Q = require('q');
@@ -744,11 +744,13 @@ function Session(params) {
 	function _login(callback, opts) {
 		var self = this;
 		opts = opts || {};
-		if (opts.username || opts.login) {
+		if ((opts.username || opts.login) && (opts.password || opts.pwd)) {
 			self.clear();
 			self.username = opts.username || opts.login;
-			if (opts.password || opts.pwd)
-				self.password = opts.password || opts.pwd;	
+			self.password = opts.password || opts.pwd;	
+		} else if (opts.authtoken || opts.authToken || opts.token) {
+			self.clear();
+			self.authtoken = opts.authtoken || opts.authToken || opts.token;	
 		}
 		self.req.call(self, self.parameters.apppath + '?action=session', undefined, function(res, status) {
 			var r = self.parse(res, status);
@@ -783,8 +785,9 @@ function Session(params) {
 	/**
 	 * Login
 	 * @param {object} [opts] Options
-	 * @param {string} [opts.username] Username
-	 * @param {string} [opts.password] Password
+	 * @param {string} [opts.username] Username (exclusive with authentication token)
+	 * @param {string} [opts.password] Password (required if username is set)
+	 * @param {string} [opts.authtoken] Authentication token ((exclusive with username)
 	 * @param {function} [opts.error] Error handler function
 	 * @return {promise<object>} Promise to the login result
 	 * @function

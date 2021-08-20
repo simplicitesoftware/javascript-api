@@ -12,6 +12,8 @@ const obj = app.getBusinessObject('WebNews');
 
 obj.search().then(res => {
 	if (debug) console.log(res);
+	assert.ok(res);
+	assert.ok(res.length);
 }).catch(err => {
 	console.error(err);
 });

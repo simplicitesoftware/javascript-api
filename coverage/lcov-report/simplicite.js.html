@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">59.35% </span>
+                <span class="strong">59.23% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>581/979</span>
+                <span class='fraction'>581/981</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">37.48% </span>
+                <span class="strong">37.58% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>292/779</span>
+                <span class='fraction'>295/785</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">61.79% </span>
+                <span class="strong">61.66% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>558/903</span>
+                <span class='fraction'>558/905</span>
             </div>
         
             
@@ -2902,7 +2902,10 @@
 <a name='L2843'></a><a href='#L2843'>2843</a>
 <a name='L2844'></a><a href='#L2844'>2844</a>
 <a name='L2845'></a><a href='#L2845'>2845</a>
-<a name='L2846'></a><a href='#L2846'>2846</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L2846'></a><a href='#L2846'>2846</a>
+<a name='L2847'></a><a href='#L2847'>2847</a>
+<a name='L2848'></a><a href='#L2848'>2848</a>
+<a name='L2849'></a><a href='#L2849'>2849</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -3652,7 +3655,9 @@
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">4x</span>
@@ -3681,6 +3686,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -5750,7 +5756,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 1.1.25
+ * @version 1.1.26
  * @license Apache-2.0
  */
 var Q = require('q');
@@ -6493,11 +6499,13 @@ function Session(params) {
 	function _login(callback, opts) {
 		var self = this;
 		opts = opts || <span class="branch-1 cbranch-no" title="branch not covered" >{};</span>
-		if (opts.username || opts.login) {
+		if ((opts.username || opts.login) &amp;&amp; (opts.password || <span class="branch-3 cbranch-no" title="branch not covered" >opts.pwd)</span>) {
 			self.clear();
 			self.username = opts.username || <span class="branch-1 cbranch-no" title="branch not covered" >opts.login;</span>
-			<span class="missing-if-branch" title="else path not taken" >E</span>if (opts.password || <span class="branch-1 cbranch-no" title="branch not covered" >opts.pwd)</span>
-				self.password = opts.password || <span class="branch-1 cbranch-no" title="branch not covered" >opts.pwd;	</span>
+			self.password = opts.password || <span class="branch-1 cbranch-no" title="branch not covered" >opts.pwd;	</span>
+		} else <span class="missing-if-branch" title="if path not taken" >I</span>if (opts.authtoken || opts.authToken || opts.token) {
+<span class="cstat-no" title="statement not covered" >			self.clear();</span>
+<span class="cstat-no" title="statement not covered" >			self.authtoken = opts.authtoken || opts.authToken || opts.token;	</span>
 		}
 		self.req.call(self, self.parameters.apppath + '?action=session', undefined, function(res, status) {
 			var r = self.parse(res, status);
@@ -6532,8 +6540,9 @@ function Session(params) {
 	/**
 	 * Login
 	 * @param {object} [opts] Options
-	 * @param {string} [opts.username] Username
-	 * @param {string} [opts.password] Password
+	 * @param {string} [opts.username] Username (exclusive with authentication token)
+	 * @param {string} [opts.password] Password (required if username is set)
+	 * @param {string} [opts.authtoken] Authentication token ((exclusive with username)
 	 * @param {function} [opts.error] Error handler function
 	 * @return {promise&lt;object&gt;} Promise to the login result
 	 * @function
@@ -8599,7 +8608,7 @@ module.exports = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Fri Aug 20 2021 10:55:29 GMT+0200 (heure d’été d’Europe centrale)
+                at Fri Aug 20 2021 13:39:47 GMT+0200 (heure d’été d’Europe centrale)
             </div>
         </div>
         <script src="prettify.js"></script>

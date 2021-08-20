@@ -26,7 +26,7 @@ test('Health', () => {
 	return app.getHealth().then(health => {
 		expect(health.platform.status).toBe('OK');
 	}).catch(err => {
-		console.log(err);
+		console.error(err);
 		expect(err).toBeNull(); // Force test failure
 	});
 });
@@ -58,7 +58,7 @@ test('Logins', () => {
 		expect(app.password).toBeUndefined();
 		expect(app.authtoken).toBeUndefined();
 	}).catch(err => {
-		console.log(err);
+		console.error(err);
 		expect(err).toBeNull(); // Force test failure
 	});
 });
@@ -153,7 +153,7 @@ test('Objects', () => {
 	}).then(res => {
 		expect(res.result).not.toBeUndefined();
 	}).catch(err => {
-		console.log(err);
+		console.error(err);
 		expect(err).toBeNull(); // Force test failure
 	});
 });
@@ -185,7 +185,7 @@ test('Image', () => {
 	}).then(res => {
 		expect(res.result).not.toBeUndefined();
 	}).catch(err => {
-		console.log(err);
+		console.error(err);
 		expect(err).toBeNull(); // Force test failure
 	});
 });

@@ -7,8 +7,7 @@ const testUsername = process.env.TEST_SIMPLICITE_USERNAME || 'website';
 const testPassword = process.env.TEST_SIMPLICITE_PASSWORD || 'simplicite';
 
 /*function myErrorHandler(err) {
-	console.log('ERROR:');
-	console.log(err);
+	console.error('ERROR:', err);
 }*/
 
 const debug = true;//process.env.TEST_SIMPLICITE_DEBUG == 'true';
@@ -22,15 +21,15 @@ app.debug(app.parameters);
 //app.login({ username: 'unknown', password: 'unknown' }).catch(myErrorHandler);
 //app.login({ username: 'unknown', password: 'unknown', error: myErrorHandler });
 //app.login({ username: 'unknown', password: 'unknown' });
-//app.login({ token: 'unknown', error: myErrorHandler });
-//app.login({ token: 'unknown' }).catch(myErrorHandler);
-//app.login({ token: 'unknown' });
+//app.login({ authtoken: 'unknown', error: myErrorHandler });
+//app.login({ authtoken: 'unknown' }).catch(myErrorHandler);
+//app.login({ authtoken: 'unknown' });
 
 app.setUsername(adminUsername);
 app.setPassword(adminPassword);
 app.login().then(res => {
 	app.debug(res);
-	console.log('Logged in as ' + res.login);
+	console.log('Logged in as ' + res.login + ' with authentication token ' + res.authtoken);
 	assert.ok(res.login == adminUsername);
 	return app.getGrant({ inlinePicture: true, includeTexts: true });
 }).then(grant => {
@@ -62,6 +61,11 @@ app.login().then(res => {
 		app.debug(err);
 		console.log('Status: ' + err.status + ', message: ' + err.message);
 		assert.ok(err.status == 401);
+		return app.login({ authtoken: 'unknown', error: err => {
+			app.debug(err);
+			console.log('Status: ' + err.status + ', message: ' + err.message);
+			assert.ok(err.status == 401);
+		}});
 	}});	
 }).catch(err => {
 	console.error(err);
