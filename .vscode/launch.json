@@ -27,8 +27,8 @@
         }, {
             "type": "node",
             "request": "launch",
-            "name": "Sources tests",
-            "program": "${workspaceFolder}\\test\\test-sources.js"
+            "name": "Source code tests",
+            "program": "${workspaceFolder}\\test\\test-source.js"
         }, {
             "type": "node",
             "request": "launch",

@@ -15,6 +15,9 @@ app.login().then(res => {
 	if (debug) console.log(res);
 	console.log('Logged in as ' + res.login);
 	obj = app.getBusinessObject('ObjectInternal');
+	return app.getDevInfo();
+}).then(devinfo => {
+	if (debug) console.log(devinfo);
 	return obj.search({ obo_name: 'AppTestSrc' });
 }).then(list => {
 	if (debug) console.log(list);
