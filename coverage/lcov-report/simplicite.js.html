@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">59.23% </span>
+                <span class="strong">59.25% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>581/981</span>
+                <span class='fraction'>583/984</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">37.58% </span>
+                <span class="strong">37.61% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>295/785</span>
+                <span class='fraction'>296/787</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">61.66% </span>
+                <span class="strong">61.67% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>558/905</span>
+                <span class='fraction'>560/908</span>
             </div>
         
             
@@ -2905,7 +2905,11 @@
 <a name='L2846'></a><a href='#L2846'>2846</a>
 <a name='L2847'></a><a href='#L2847'>2847</a>
 <a name='L2848'></a><a href='#L2848'>2848</a>
-<a name='L2849'></a><a href='#L2849'>2849</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L2849'></a><a href='#L2849'>2849</a>
+<a name='L2850'></a><a href='#L2850'>2850</a>
+<a name='L2851'></a><a href='#L2851'>2851</a>
+<a name='L2852'></a><a href='#L2852'>2852</a>
+<a name='L2853'></a><a href='#L2853'>2853</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -3926,8 +3930,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -5756,7 +5764,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 1.1.26
+ * @version 1.1.27
  * @license Apache-2.0
  */
 var Q = require('q');
@@ -6770,15 +6778,19 @@ function Session(params) {
 	/**
 	 * Get development info
 	 * @param {function} callback Callback (called upon success)
+	 * @param {string} [module] Module name
 	 * @param {object} [opts] Options
 	 * @private
 	 */
-	function _getDevInfo(callback, opts) {
+	function _getDevInfo(callback, module, opts) {
 		var self = this;
 		opts = opts || <span class="branch-1 cbranch-no" title="branch not covered" >{};</span>
-		self.req.call(self, self.parameters.apppath + '?action=devinfo', undefined, function(res, status) {
+		var p = '';
+		<span class="missing-if-branch" title="if path not taken" >I</span>if (module)
+<span class="cstat-no" title="statement not covered" >			p += '&amp;module=' + encodeURIComponent(module);</span>
+		self.req.call(self, self.parameters.apppath + '?action=devinfo' + p, undefined, function(res, status) {
 			var r = self.parse(res, status);
-			self.debug('[simplicite.getIDEInfo] HTTP status = ' + status + ', response type = ' + r.type);
+			self.debug('[simplicite.getDevInfo] HTTP status = ' + status + ', response type = ' + r.type);
 			<span class="missing-if-branch" title="if path not taken" >I</span>if (r.type === 'error') {
 <span class="cstat-no" title="statement not covered" >				(opts.error ? opts.error : self.error).call(self, r.response);</span>
 			} else {
@@ -6798,11 +6810,11 @@ function Session(params) {
 	 * @return {promise&lt;object&gt;} A promise to the develoment info (also avialable as the &lt;code&gt;devinfo&lt;/code&gt; member)
 	 * @function
 	 */
-	this.getDevInfo = function(opts) {
+	this.getDevInfo = function(module, opts) {
 		var d = Q.defer();
 		opts = opts || {};
 		opts.error = opts.error || <span class="fstat-no" title="function not covered" >fu</span>nction(e) { <span class="cstat-no" title="statement not covered" >d.reject(e); </span>};
-		_getDevInfo.call(this, function(inf) { d.resolve(inf); }, opts);
+		_getDevInfo.call(this, function(inf) { d.resolve(inf); }, module, opts);
 		return d.promise;
 	};
 &nbsp;
@@ -8608,7 +8620,7 @@ module.exports = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Fri Aug 20 2021 13:39:47 GMT+0200 (heure d’été d’Europe centrale)
+                at Mon Sep 13 2021 20:56:35 GMT+0200 (heure d’été d’Europe centrale)
             </div>
         </div>
         <script src="prettify.js"></script>
