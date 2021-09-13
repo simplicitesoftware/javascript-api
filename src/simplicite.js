@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 1.1.26
+ * @version 1.1.27
  * @license Apache-2.0
  */
 var Q = require('q');
@@ -1015,15 +1015,19 @@ function Session(params) {
 	/**
 	 * Get development info
 	 * @param {function} callback Callback (called upon success)
+	 * @param {string} [module] Module name
 	 * @param {object} [opts] Options
 	 * @private
 	 */
-	function _getDevInfo(callback, opts) {
+	function _getDevInfo(callback, module, opts) {
 		var self = this;
 		opts = opts || {};
-		self.req.call(self, self.parameters.apppath + '?action=devinfo', undefined, function(res, status) {
+		var p = '';
+		if (module)
+			p += '&module=' + encodeURIComponent(module);
+		self.req.call(self, self.parameters.apppath + '?action=devinfo' + p, undefined, function(res, status) {
 			var r = self.parse(res, status);
-			self.debug('[simplicite.getIDEInfo] HTTP status = ' + status + ', response type = ' + r.type);
+			self.debug('[simplicite.getDevInfo] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
 				(opts.error ? opts.error : self.error).call(self, r.response);
 			} else {
@@ -1043,11 +1047,11 @@ function Session(params) {
 	 * @return {promise<object>} A promise to the develoment info (also avialable as the <code>devinfo</code> member)
 	 * @function
 	 */
-	this.getDevInfo = function(opts) {
+	this.getDevInfo = function(module, opts) {
 		var d = Q.defer();
 		opts = opts || {};
 		opts.error = opts.error || function(e) { d.reject(e); };
-		_getDevInfo.call(this, function(inf) { d.resolve(inf); }, opts);
+		_getDevInfo.call(this, function(inf) { d.resolve(inf); }, module, opts);
 		return d.promise;
 	};
 
