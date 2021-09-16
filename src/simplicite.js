@@ -1044,6 +1044,7 @@ function Session(params) {
 	 * Get development info
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
+	 * @param {string} [module] Module name
 	 * @return {promise<object>} A promise to the develoment info (also avialable as the <code>devinfo</code> member)
 	 * @function
 	 */
@@ -1609,6 +1610,17 @@ function BusinessObject(ses, name, instance) {
 		_getMetaData.call(this, function(metadata) { d.resolve(metadata); }, opts);
 		return d.promise;
 	};
+
+	/**
+	 * Get meta data (alias to getMetaData)
+	 * @param {object} [opts] Options
+	 * @param {number} [opts.context] Context
+	 * @param {string} [opts.contextParam] Context parameter
+	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<BusinessObjectMetadata>} A promise to the object'ts meta data (also available as the <code>metadata</code> member)
+	 * @function
+	 */
+	this.getMetadata = this.getMetaData;
 
 	/**
 	 * Get name
