@@ -1042,9 +1042,9 @@ function Session(params) {
 
 	/**
 	 * Get development info
+	 * @param {string} [module] Module name
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
-	 * @param {string} [module] Module name
 	 * @return {promise<object>} A promise to the develoment info (also avialable as the <code>devinfo</code> member)
 	 * @function
 	 */
