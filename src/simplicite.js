@@ -1,12 +1,12 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 1.1.27
+ * @version 2.0.0
  * @license Apache-2.0
  */
-let Q = require('q');
-let axios = require('axios');
-let buffer = require('buffer');
+const Q = require('q');
+const fetch = require('cross-fetch');
+const buffer = require('buffer');
 
 /**
  * Constants
@@ -404,36 +404,28 @@ function Session(params) {
 	 * @param {any} arg Argument
 	 * @function
 	 */
-	this.log = params.logHandler || function(arg) {
-		console.log(arg);
-	};
+	this.log = params.logHandler || (arg => { console.log(arg); });
 
 	/**
 	 * Info handler
 	 * @param {any} arg Argument
 	 * @function
 	 */
-	this.info = params.infoHandle || function(arg) {
-		console.info(arg);
-	};
+	this.info = params.infoHandle || (arg => { console.info(arg); });
 
 	/**
 	 * Warning handler
 	 * @param {any} arg Argument
 	 * @function
 	 */
-	this.warn = params.warningHandler || function(arg) {
-		console.warn(arg);
-	};
+	this.warn = params.warningHandler || (arg => { console.warn(arg); });
 	
 	/**
 	 * Error handler
 	 * @param {any} arg Argument
 	 * @function
 	 */
-	this.error = params.errorHandler || function(arg) {
-		console.error(arg);
-	};
+	this.error = params.errorHandler || (arg => { console.error(arg); });
 
 	const _debug = !!params.debug;
 
@@ -442,10 +434,7 @@ function Session(params) {
 	 * @param {any} arg Argument
 	 * @function
 	 */
-	this.debug = params.debugHandler || function(arg) {
-		if (_debug)
-			console.log(arg);
-	};
+	this.debug = params.debugHandler || (arg => { if (_debug) console.log(arg); });
 
 	/**
 	 * Timeout (seconds)
@@ -526,7 +515,7 @@ function Session(params) {
 	 * @param {string} usr Username
 	 * @function
 	 */
-	this.setUsername = function(usr) {
+	this.setUsername = (usr) => {
 		this.username = usr;
 	};
 
@@ -541,7 +530,7 @@ function Session(params) {
 	 * @param {string} pwd Password
 	 * @function
 	 */
-	this.setPassword = function(pwd) {
+	this.setPassword = (pwd) => {
 		this.password = pwd;
 	};
 
@@ -556,7 +545,7 @@ function Session(params) {
 	 * @param {string} tkn Auth token
 	 * @function
 	 */
-	this.setAuthToken = function(tkn) {
+	this.setAuthToken = (tkn) => {
 		this.authtoken = tkn;
 	};
 
@@ -574,7 +563,7 @@ function Session(params) {
 	 * @return {object} Business object cache key
 	 * @private
 	 */
-	this.getBusinessObjectCacheKey = function(name, instance) {
+	this.getBusinessObjectCacheKey = (name, instance) => {
 		return name + ':' + (instance || 'js_' + name);
 	};
 
@@ -582,7 +571,7 @@ function Session(params) {
 	 * Clears all data (credentials, objects, ...)
 	 * @function
 	 */
-	this.clear = function() {
+	this.clear = () => {
 		this.username = undefined;
 		this.password = undefined;
 		this.authtoken = undefined;
@@ -602,7 +591,7 @@ function Session(params) {
 	 * Basic HTTP authorization header
 	 * @private
 	 */
-	this.getBasicAuthHeader = function() {
+	this.getBasicAuthHeader = () => {
 		return this.username && this.password
 			? 'Basic ' + buffer.Buffer.from(this.username + ':' + this.password).toString('base64')
 			: undefined;
@@ -612,7 +601,7 @@ function Session(params) {
 	 * Get bearer token header
 	 * @private
 	 */
-	this.getBearerTokenHeader = function() {
+	this.getBearerTokenHeader = () => {
 		return this.authtoken
 			? 'Bearer ' + this.authtoken
 			: undefined;
@@ -626,7 +615,7 @@ function Session(params) {
 	 * @param {function} [errorHandler] Error handler
 	 * @private
 	 */
-	this.req = function(path, data, callback, errorHandler) {
+	this.req = (path, data, callback, errorHandler) => {
 		const self = this;
 		const m = data ? 'post' : 'get';
 		const h = {};
@@ -643,18 +632,20 @@ function Session(params) {
 				h.Authorization = b;
 			}
 		}
-		axios.request({
-			baseURL: self.parameters.url,
-			url: path || '/',
+		fetch(self.parameters.url + path || '/', {
 			method: m,
 			headers: h,
-			timeout: self.timeout * 1000,
-			withCredentials: true,
-			data: data
-		}).then(function (res) {
-			if (callback)
-				callback.call(self, res.data, res.status, res.headers);
-		}).catch(function(err) {
+			//timeout: self.timeout * 1000, TODO: no timeout in fetch API
+			mode: 'cors',
+			credentials: 'include',
+			body: data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined
+		}).then(res => {
+			if (callback) {
+				res.text().then(data => {
+					callback.call(self, data, res.status, res.headers);
+				});
+			}
+		}).catch(err => {
 			const s = err.response && err.response.status ? err.response.status : undefined;
 			const e = err.response && err.response.data ? err.response.data : err;
 			if (errorHandler)
@@ -671,7 +662,7 @@ function Session(params) {
 	 * @param {number} [status] Error status
 	 * @private
 	 */
-	this.getError = function(err, status) {
+	this.getError = (err, status) => {
 		if (typeof err === 'string') // plain text error
 			return { message: err, status: status || 200 };
 		else if (err.response) // wrapped error
@@ -686,7 +677,7 @@ function Session(params) {
 	 * @param {number} [status=200] HTTP status
 	 * @private
 	 */
-	this.parse = function(res, status) {
+	this.parse = (res, status) => {
 		try {
 			if (status !== 200)
 				return { type: 'error', response: this.getError('HTTP status: ' + status, status) };
@@ -705,7 +696,7 @@ function Session(params) {
 	function _getHealth(callback, opts) {
 		const self = this;
 		opts = opts || {};
-		self.req.call(self, self.parameters.healthpath + '&full=' + !!opts.full, undefined, function(res, status) {
+		self.req.call(self, self.parameters.healthpath + '&full=' + !!opts.full, undefined, (res, status) => {
 			const r = self.parse(res, status);
 			self.debug('[simplicite._getHealth] HTTP status = ' + status + ', response type = ' + res);
 			if (r.type === 'error') {
@@ -714,7 +705,7 @@ function Session(params) {
 				if (callback)
 					callback.call(self, r);
 			}
-		}, function(e) {
+		}, e => {
 			(opts.error ? opts.error : self.error).call(self, e);
 		});
 	}
@@ -727,11 +718,11 @@ function Session(params) {
 	 * @return {promise<object>} Promise to the health data
 	 * @function
 	 */
-	this.getHealth = function(opts) {
+	this.getHealth = (opts) => {
 		const d = Q.defer();
 		opts = opts || {};
-		opts.error = function(e) { const err = this.getError(e); d.reject(err); };
-		_getHealth.call(this, function(health) { d.resolve(health); }, opts);
+		opts.error = (e => { const err = this.getError(e); d.reject(err); });
+		_getHealth.call(this, health => { d.resolve(health); }, opts);
 		return d.promise;
 	};
 
@@ -752,7 +743,7 @@ function Session(params) {
 			self.clear();
 			self.authtoken = opts.authtoken || opts.authToken || opts.token;	
 		}
-		self.req.call(self, self.parameters.apppath + '?action=session', undefined, function(res, status) {
+		self.req.call(self, self.parameters.apppath + '?action=session', undefined, (res, status) => {
 			const r = self.parse(res, status);
 			self.debug('[simplicite.login] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
@@ -777,7 +768,7 @@ function Session(params) {
 				if (callback)
 					callback.call(self, r.response);
 			}
-		}, function(e) {
+		}, e => {
 			(opts.error ? opts.error : self.error).call(self, e);
 		});
 	}
@@ -792,11 +783,11 @@ function Session(params) {
 	 * @return {promise<object>} Promise to the login result
 	 * @function
 	 */
-	this.login = function(opts) {
+	this.login = (opts) => {
 		const d = Q.defer();
 		opts = opts || {};
-		opts.error = opts.error || function(e) { d.reject(e); };
-		_login.call(this, function(res) { d.resolve(res); }, opts);
+		opts.error = opts.error || (e => { d.reject(e); });
+		_login.call(this, res => { d.resolve(res); }, opts);
 		return d.promise;
 	};
 
@@ -809,7 +800,7 @@ function Session(params) {
 	function _logout(callback, opts) {
 		const self = this;
 		opts = opts || {};
-		self.req.call(self, self.parameters.apppath + '?action=logout', undefined, function(res, status) {
+		self.req.call(self, self.parameters.apppath + '?action=logout', undefined, (res, status) => {
 			const r = self.parse(res, status);
 			self.debug('[simplicite.logout] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
@@ -819,7 +810,7 @@ function Session(params) {
 				if (callback)
 					callback.call(self, r.response);
 			}
-		}, function(e) {
+		}, e => {
 			if (e.status === 401) // Removes (expired or deleted) token if any
 				self.authtoken = undefined;
 			(opts.error ? opts.error : self.error).call(self, e);
@@ -834,11 +825,11 @@ function Session(params) {
 	 * @return {promise<object>} Promise to the logout result
 	 * @function
 	 */
-	this.logout = function(opts) {
+	this.logout = (opts) => {
 		const d = Q.defer();
 		opts = opts || {};
-		opts.error = opts.error || function(e) { d.reject(e); };
-		_logout.call(this, function(res) { d.resolve(res); }, opts);
+		opts.error = opts.error || (e => { d.reject(e); });
+		_logout.call(this, res => { d.resolve(res); }, opts);
 		return d.promise;
 	};
 
@@ -862,7 +853,7 @@ function Session(params) {
 			p += '&inline_picture=' + (!!opts.inlinePicture || !!opts.picture);
 		if (opts.includeTexts || opts.texts)
 			p += '&texts=' + (!!opts.includeTexts || !!opts.texts);
-		self.req.call(self, self.parameters.apppath + '?action=getgrant' + p, undefined, function(res, status) {
+		self.req.call(self, self.parameters.apppath + '?action=getgrant' + p, undefined, (res, status) => {
 			const r = self.parse(res, status);
 			self.debug('[simplicite.getGrant] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
@@ -872,7 +863,7 @@ function Session(params) {
 				if (callback)
 					callback.call(self, self.grant);
 			}
-		}, function(e) {
+		}, e => {
 			(opts.error ? opts.error : self.error).call(self, e);
 		});
 	}
@@ -886,11 +877,11 @@ function Session(params) {
 	 * @return {promise<Grant>} A promise to the grant (also available as the <code>grant</code> member)
 	 * @function
 	 */
-	this.getGrant = function(opts) {
+	this.getGrant = (opts) => {
 		const d = Q.defer();
 		opts = opts || {};
-		opts.error = opts.error || function(e) { d.reject(e); };
-		_getGrant.call(this, function(grt) { d.resolve(grt); }, opts);
+		opts.error = opts.error || (e => { d.reject(e); });
+		_getGrant.call(this, grt => { d.resolve(grt); }, opts);
 		return d.promise;
 	};
 
@@ -904,7 +895,7 @@ function Session(params) {
 	function _changePassword(callback, pwd, opts) {
 		const self = this;
 		opts = opts || {};
-		self.req.call(self, self.parameters.apppath + '?action=setpassword&password=' + encodeURIComponent(pwd), undefined, function(res, status) {
+		self.req.call(self, self.parameters.apppath + '?action=setpassword&password=' + encodeURIComponent(pwd), undefined, (res, status) => {
 			const r = self.parse(res, status);
 			self.debug('[simplicite.changePassword] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
@@ -913,7 +904,7 @@ function Session(params) {
 				if (callback)
 					callback.call(self, r.response);
 			}
-		}, function(e) {
+		}, e => {
 			(opts.error ? opts.error : self.error).call(self, e);
 		});
 	}
@@ -926,11 +917,11 @@ function Session(params) {
 	 * @return {promise<object>} A promise to the change password result
 	 * @function
 	 */
-	this.changePassword = function(pwd, opts) {
+	this.changePassword = (pwd, opts) => {
 		const d = Q.defer();
 		opts = opts || {};
-		opts.error = opts.error || function(e) { d.reject(e); };
-		_changePassword.call(this, function(res) { d.resolve(res); }, pwd, opts);
+		opts.error = opts.error || (e => { d.reject(e); });
+		_changePassword.call(this, res => { d.resolve(res); }, pwd, opts);
 		return d.promise;
 	};
 
@@ -943,7 +934,7 @@ function Session(params) {
 	function _getAppInfo(callback, opts) {
 		const self = this;
 		opts = opts || {};
-		self.req.call(self, self.parameters.apppath + '?action=getinfo', undefined, function(res, status) {
+		self.req.call(self, self.parameters.apppath + '?action=getinfo', undefined, (res, status) => {
 			const r = self.parse(res, status);
 			self.debug('[simplicite.getAppInfo] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
@@ -953,7 +944,7 @@ function Session(params) {
 				if (callback)
 					callback.call(self, self.appinfo);
 			}
-		}, function(e) {
+		}, e => {
 			(opts.error ? opts.error : self.error).call(self, e);
 		});
 	}
@@ -965,11 +956,11 @@ function Session(params) {
 	 * @return {promise<object>} A promise to the application info (also avialable as the <code>appinfo</code> member)
 	 * @function
 	 */
-	this.getAppInfo = function(opts) {
+	this.getAppInfo = (opts) => {
 		const d = Q.defer();
 		opts = opts || {};
-		opts.error = opts.error || function(e) { d.reject(e); };
-		_getAppInfo.call(this, function(inf) { d.resolve(inf); }, opts);
+		opts.error = opts.error || (e => { d.reject(e); });
+		_getAppInfo.call(this, inf => { d.resolve(inf); }, opts);
 		return d.promise;
 	};
 
@@ -982,7 +973,7 @@ function Session(params) {
 	function _getSysInfo(callback, opts) {
 		const self = this;
 		opts = opts || {};
-		self.req.call(self, self.parameters.apppath + '?action=sysinfo', undefined, function(res, status) {
+		self.req.call(self, self.parameters.apppath + '?action=sysinfo', undefined, (res, status) => {
 			const r = self.parse(res, status);
 			self.debug('[simplicite.getSysInfo] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
@@ -992,7 +983,7 @@ function Session(params) {
 				if (callback)
 					callback.call(self, self.sysinfo);
 			}
-		}, function(e) {
+		}, e => {
 			(opts.error ? opts.error : self.error).call(self, e);
 		});
 	}
@@ -1004,11 +995,11 @@ function Session(params) {
 	 * @return {promise<object>} A promise to the system info (also avialable as the <code>sysinfo</code> member)
 	 * @function
 	 */
-	this.getSysInfo = function(opts) {
+	this.getSysInfo = (opts) => {
 		const d = Q.defer();
 		opts = opts || {};
-		opts.error = opts.error || function(e) { d.reject(e); };
-		_getSysInfo.call(this, function(inf) { d.resolve(inf); }, opts);
+		opts.error = opts.error || (e => { d.reject(e); });
+		_getSysInfo.call(this, inf => { d.resolve(inf); }, opts);
 		return d.promise;
 	};
 
@@ -1025,7 +1016,7 @@ function Session(params) {
 		let p = '';
 		if (module)
 			p += '&module=' + encodeURIComponent(module);
-		self.req.call(self, self.parameters.apppath + '?action=devinfo' + p, undefined, function(res, status) {
+		self.req.call(self, self.parameters.apppath + '?action=devinfo' + p, undefined, (res, status) => {
 			const r = self.parse(res, status);
 			self.debug('[simplicite.getDevInfo] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
@@ -1035,7 +1026,7 @@ function Session(params) {
 				if (callback)
 					callback.call(self, self.devinfo);
 			}
-		}, function(e) {
+		}, e => {
 			(opts.error ? opts.error : self.error).call(self, e);
 		});
 	}
@@ -1048,11 +1039,11 @@ function Session(params) {
 	 * @return {promise<object>} A promise to the develoment info (also avialable as the <code>devinfo</code> member)
 	 * @function
 	 */
-	this.getDevInfo = function(module, opts) {
+	this.getDevInfo = (module, opts) => {
 		const d = Q.defer();
 		opts = opts || {};
-		opts.error = opts.error || function(e) { d.reject(e); };
-		_getDevInfo.call(this, function(inf) { d.resolve(inf); }, module, opts);
+		opts.error = opts.error || (e => { d.reject(e); });
+		_getDevInfo.call(this, inf => { d.resolve(inf); }, module, opts);
 		return d.promise;
 	};
 
@@ -1068,7 +1059,7 @@ function Session(params) {
 		let p = '';
 		if (opts.inlineImages)
 			p += '&inline_images=' + !!opts.inlineImages;
-		self.req.call(self, self.parameters.apppath + '?action=news' + p, undefined, function(res, status) {
+		self.req.call(self, self.parameters.apppath + '?action=news' + p, undefined, (res, status) => {
 			const r = self.parse(res, status);
 			self.debug('[simplicite.getNews] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
@@ -1078,7 +1069,7 @@ function Session(params) {
 				if (callback)
 					callback.call(self, self.news);
 			}
-		}, function(e) {
+		}, e => {
 			(opts.error ? opts.error : self.error).call(self, e);
 		});
 	}
@@ -1091,11 +1082,11 @@ function Session(params) {
 	 * @return {promise<array>} A promise to the list of news (also avialable as the <code>news</code> member)
 	 * @function
 	 */
-	this.getNews = function(opts) {
+	this.getNews = (opts) => {
 		const d = Q.defer();
 		opts = opts || {};
-		opts.error = opts.error || function(e) { d.reject(e); };
-		_getNews.call(this, function(nws) { d.resolve(nws); }, opts);
+		opts.error = opts.error || (e => { d.reject(e); });
+		_getNews.call(this, nws => { d.resolve(nws); }, opts);
 		return d.promise;
 	};
 
@@ -1112,7 +1103,7 @@ function Session(params) {
 		let p = '';
 		if (opts.metadata===true) p += '&_md=true';
 		if (opts.context) p += '&context=' + encodeURIComponent(opts.context);
-		self.req.call(self, self.parameters.apppath + '?action=indexsearch&request=' + encodeURIComponent(request ? request : '') + (object ? '&object=' + encodeURIComponent(object) : '') + p, undefined, function(res, status) {
+		self.req.call(self, self.parameters.apppath + '?action=indexsearch&request=' + encodeURIComponent(request ? request : '') + (object ? '&object=' + encodeURIComponent(object) : '') + p, undefined, (res, status) => {
 			const r = self.parse(res, status);
 			self.debug('[simplicite.indexSearch] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
@@ -1121,7 +1112,7 @@ function Session(params) {
 				if (callback)
 					callback.call(self, r.response);
 			}
-		}, function(e) {
+		}, e => {
 			(opts.error ? opts.error : self.error).call(self, e);
 		});
 	}
@@ -1137,11 +1128,11 @@ function Session(params) {
 	 * @return {promise<array>} A promise to a list of index search records
 	 * @function
 	 */
-	this.indexSearch = function(request, object, opts) {
+	this.indexSearch = (request, object, opts) => {
 		const d = Q.defer();
 		opts = opts || {};
-		opts.error = opts.error || function(e) { d.reject(e); };
-		_indexSearch.call(this, function(srs) { d.resolve(srs); }, request, object, opts);
+		opts.error = opts.error || (e => { d.reject(e); });
+		_indexSearch.call(this, srs => { d.resolve(srs); }, request, object, opts);
 		return d.promise;
 	};
 
@@ -1152,7 +1143,7 @@ function Session(params) {
 	 * @return {BusinessObject} Business object
 	 * @function
 	 */
-	this.getBusinessObject = function(name, instance) {
+	this.getBusinessObject = (name, instance) => {
 		const cacheKey = this.getBusinessObjectCacheKey(name, instance);
 		let obj = businessObjectCache[cacheKey];
 		if (!obj) {
@@ -1167,7 +1158,7 @@ function Session(params) {
 	 * @param {string} name External object name
 	 * @function
 	 */
-	this.getExternalObject = function(name) {
+	this.getExternalObject = (name) => {
 		return new ExternalObject(this, name);
 	};
 
@@ -1179,7 +1170,7 @@ function Session(params) {
 	 * @param {string} [objId] Object ID (not required for global resources)
 	 * @function
 	 */
-	this.getResourceURL = function(code, type, object, objId) {
+	this.getResourceURL = (code, type, object, objId) => {
 		return this.parameters.url + this.parameters.respath
 			+ '?code=' + encodeURIComponent(code) + '&type=' + encodeURIComponent(type || 'IMG')
 			+ (object ? '&object=' + encodeURIComponent(object) : '')
@@ -1200,7 +1191,7 @@ function Grant() {
 	 * @return {string} User ID
 	 * @function
 	 */
-	this.getUserId = function () {
+	this.getUserId = () => {
 		return this.userid;
 	};
 
@@ -1209,7 +1200,7 @@ function Grant() {
 	 * @return {string} Username
 	 * @function
 	 */
-	this.getUsername = function() {
+	this.getUsername = () => {
 		return this.login;
 	};
 
@@ -1225,7 +1216,7 @@ function Grant() {
 	 * @return {string} Language
 	 * @function
 	 */
-	this.getLang = function() {
+	this.getLang = () => {
 		return this.lang;
 	};
 	
@@ -1234,7 +1225,7 @@ function Grant() {
 	 * @return {string} Email address
 	 * @function
 	 */
-	this.getEmail = function() {
+	this.getEmail = () => {
 		return this.email;
 	};
 	
@@ -1243,7 +1234,7 @@ function Grant() {
 	 * @return {string} First name
 	 * @function
 	 */
-	this.getFirstname = function() {
+	this.getFirstname = () => {
 		return this.firstname;
 	};
 	
@@ -1259,7 +1250,7 @@ function Grant() {
 	 * @return {string} Last name
 	 * @function
 	 */
-	this.getLastname = function() {
+	this.getLastname = () => {
 		return this.lastname;
 	};
 	
@@ -1275,7 +1266,7 @@ function Grant() {
 	 * @return {string} Picture data URL
 	 * @function
 	 */
-	this.getPictureURL = function() {
+	this.getPictureURL = () => {
 		if (this.picture)
 			return 'data:' + this.picture.mime + ';base64,' + this.picture.content;
 	};
@@ -1286,7 +1277,7 @@ function Grant() {
 	 * @return {boolean} True if user has a responsibility on the specified group
 	 * @function
 	 */
-	this.hasResponsibility = function(group) {
+	this.hasResponsibility = (group) => {
 		return this.responsibilities && this.responsibilities.indexOf(group) !== -1;
 	};
 
@@ -1294,7 +1285,7 @@ function Grant() {
 	 * Get text
 	 * @param {string} code Text code
 	 */
-	this.T = function(code) {
+	this.T = (code) => {
 		return this.texts ? this.texts[code] || '' : '';
 	};
 }
@@ -1309,7 +1300,7 @@ function Document() {
 	 * @return ID
 	 * @function
 	 */
-	this.getId = function() {
+	this.getId = () => {
 		return this.id;
 	};
 
@@ -1318,7 +1309,7 @@ function Document() {
 	 * @return {string} MIME type
 	 * @function
 	 */
-	this.getMIMEType = function() {
+	this.getMIMEType = () => {
 		return this.mime;
 	};
 
@@ -1334,7 +1325,7 @@ function Document() {
 	 * @param {string} mime MIME type
 	 * @function
 	 */
-	this.setMIMEType = function(mime) {
+	this.setMIMEType = (mime) => {
 		this.mime = mime;
 	};
 
@@ -1350,7 +1341,7 @@ function Document() {
 	 * @return {string} File name
 	 * @function
 	 */
-	this.getFilename = function() {
+	this.getFilename = () => {
 		return this.filename;
 	};
 
@@ -1366,7 +1357,7 @@ function Document() {
 	 * @param {string} filename File name
 	 * @function
 	 */
-	this.setFilename = function(filename) {
+	this.setFilename = (filename) => {
 		this.filename = filename;
 	};
 
@@ -1382,7 +1373,7 @@ function Document() {
 	 * @return {string} Content
 	 * @function
 	 */
-	this.getContent = function() {
+	this.getContent = () => {
 		return this.content;
 	};
 
@@ -1391,7 +1382,7 @@ function Document() {
 	 * @return {string} Thumbnail
 	 * @function
 	 */
-	this.getThumbnail = function() {
+	this.getThumbnail = () => {
 		return this.thumbnail;
 	};
 
@@ -1408,7 +1399,7 @@ function Document() {
 	 * @return {ArrayBuffer} Content as an array buffer
 	 * @function
 	 */
-	this.getContentAsArrayBuffer = function() {
+	this.getContentAsArrayBuffer = () => {
 		return getBuffer(this.content).buffer;
 	};
 
@@ -1417,7 +1408,7 @@ function Document() {
 	 * @return {ArrayBuffer} Thumbnail as an array buffer
 	 * @function
 	 */
-	this.getThumbnailAsArrayBuffer = function() {
+	this.getThumbnailAsArrayBuffer = () => {
 		return getBuffer(this.thumbnail || '').buffer;
 	};
 
@@ -1427,7 +1418,7 @@ function Document() {
 	 * @return {string} Content as plain text
 	 * @function
 	 */
-	this.getContentAsText = function(encoding) {
+	this.getContentAsText = (encoding) => {
 		return getBuffer(this.content).toString(encoding || 'utf-8');
 	};
 
@@ -1436,7 +1427,7 @@ function Document() {
 	 * @param {string} content Content (encoded in base 64)
 	 * @function
 	 */
-	this.setContent = function(content) {
+	this.setContent = (content) => {
 		this.content = content;
 	};
 
@@ -1446,7 +1437,7 @@ function Document() {
 	 * @param {string} [encoding] Encoding, defaults to UTF-8
 	 * @function
 	 */
-	this.setContentFromText = function(content, encoding) {
+	this.setContentFromText = (content, encoding) => {
 		this.content = buffer.Buffer.from(content, encoding || 'utf-8').toString('base64');
 	};
 
@@ -1455,7 +1446,7 @@ function Document() {
 	 * @param {boolean} [thumbnail] Thumbnail? If thumbnail does not exists the content is used.
 	 * @return {string} Data URL or nothing if content is empty
 	 */
-	this.getDataURL = function(thumbnail) {
+	this.getDataURL = (thumbnail) => {
 		if (this.content)
 			return 'data:' + this.mime + ';base64,' + (thumbnail && this.thumbnail ? this.thumbnail : this.content);
 	};
@@ -1464,7 +1455,7 @@ function Document() {
 	 * Get the document as a simple value
 	 * @return Value
 	 */
-	this.getValue = function() {
+	this.getValue = () => {
 		return JSON.parse(JSON.stringify(this)); // Strips all functions
 	};
 }
@@ -1581,9 +1572,9 @@ function BusinessObject(ses, name, instance) {
 		let p = '';
 		if (opts.context) p += '&context=' + encodeURIComponent(opts.context);
 		if (opts.contextParam) p += '&contextparam=' + encodeURIComponent(opts.contextParam);
-		self.session.req.call(self.session, self.path + '&action=metadata' + p, undefined, function(res, status) {
+		self.session.req.call(self.session, self.path + '&action=metadata' + p, undefined, (res, status) => {
 			const r = self.session.parse(res, status);
-			this.debug('[simplicite.BusinessObject.getMetaData] HTTP status = ' + status + ', response type = ' + r.type);
+			self.session.debug('[simplicite.BusinessObject.getMetaData] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
 				(opts.error ? opts.error : self.session.error).call(self, r.response);
 			} else {
@@ -1591,7 +1582,7 @@ function BusinessObject(ses, name, instance) {
 				if (callback)
 					callback.call(self, self.metadata);
 			}
-		}, function(e) {
+		}, e => {
 			(opts.error ? opts.error : self.session.error).call(self, e);
 		});
 	}
@@ -1605,9 +1596,9 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<BusinessObjectMetadata>} A promise to the object'ts meta data (also available as the <code>metadata</code> member)
 	 * @function
 	 */
-	this.getMetaData = function(opts) {
+	this.getMetaData = (opts) => {
 		const d = Q.defer();
-		_getMetaData.call(this, function(metadata) { d.resolve(metadata); }, opts);
+		_getMetaData.call(this, metadata => { d.resolve(metadata); }, opts);
 		return d.promise;
 	};
 
@@ -1627,7 +1618,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {string} Name
 	 * @function
 	 */
-	this.getName = function() {
+	this.getName = () => {
 		return this.metadata.name;
 	};
 
@@ -1636,7 +1627,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {string} Instance name
 	 * @function
 	 */
-	this.getInstance = function() {
+	this.getInstance = () => {
 		return this.metadata.instance;
 	};
 
@@ -1645,7 +1636,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {string} Display label
 	 * @function
 	 */
-	this.getLabel = function() {
+	this.getLabel = () => {
 		return this.metadata.label;
 	};
 
@@ -1654,7 +1645,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {string} Help
 	 * @function
 	 */
-	this.getHelp = function() {
+	this.getHelp = () => {
 		return this.metadata.help;
 	};
 
@@ -1663,7 +1654,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {array} Array of field definitions
 	 * @function
 	 */
-	this.getFields = function() {
+	this.getFields = () => {
 		return this.metadata.fields;
 	};
 
@@ -1673,7 +1664,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {object} Field definition
 	 * @function
 	 */
-	this.getField = function(fieldName) {
+	this.getField = (fieldName) => {
 		let n = 0;
 		const fs = this.getFields();
 		while (n < fs.length && fs[n].name !== fieldName) n++;
@@ -1686,7 +1677,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {string} Row ID field name
 	 * @function
 	 */
-	this.getRowIdFieldName = function() {
+	this.getRowIdFieldName = () => {
 		return this.metadata.rowidfield;
 	};
 
@@ -1695,7 +1686,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {object} Row ID field definition
 	 * @function
 	 */
-	this.getRowIdField = function() {
+	this.getRowIdField = () => {
 		return this.getField(this.getRowIdFieldName());
 	};
 
@@ -1704,7 +1695,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {array} Array of links
 	 * @function
 	 */
-	this.getLinks = function() {
+	this.getLinks = () => {
 		return this.metadata.links;
 	};
 
@@ -1714,7 +1705,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {string} Type (one of <code>constants.TYPE_*</code>)
 	 * @function
 	 */
-	this.getFieldType = function(field) {
+	this.getFieldType = (field) => {
 		if (typeof field === 'string')
 			field = this.getField(field);
 		if (field)
@@ -1727,7 +1718,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {string} Value
 	 * @function
 	 */
-	this.getFieldLabel = function(field) {
+	this.getFieldLabel = (field) => {
 		if (typeof field === 'string')
 			field = this.getField(field);
 		if (field)
@@ -1741,7 +1732,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {string} Value
 	 * @function
 	 */
-	this.getFieldValue = function(field, item) {
+	this.getFieldValue = (field, item) => {
 		if (!item)
 			item = this.item;
 		if (field && item) {
@@ -1756,7 +1747,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {string} Value
 	 * @function
 	 */
-	this.getFieldListValue = function(field, item) {
+	this.getFieldListValue = (field, item) => {
 		if (typeof field === 'string')
 			field = this.getField(field);
 		const val = this.getFieldValue(field, item);
@@ -1770,7 +1761,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {string} Document/image field data URL (or nothing if the field is not of document/image type or if it is not inlined or if it is empty)
 	 * @function
 	 */
-	this.getFieldDataURL = function(field, item) {
+	this.getFieldDataURL = (field, item) => {
 		if (typeof field !== 'string')
 			field = field.fullinput || field.name;
 		const val = this.getFieldValue(field, item);
@@ -1785,12 +1776,14 @@ function BusinessObject(ses, name, instance) {
 	 * @return {Document} Document/image (or nothing if the field is not of document/image type or if it is empty)
 	 * @function
 	 */
-	this.getFieldDocument = function(field, item) {
+	this.getFieldDocument = (field, item) => {
 		if (typeof field !== 'string')
 			field = field.fullinput || field.input || field.name;
 		const val = this.getFieldValue(field, item);
 		if (val && val.mime)
 			return Object.assign(new Document(), val);
+		else
+			return val;
 	};
 
 	/**
@@ -1801,7 +1794,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {string} Document/image field URL (or nothing if the field is not of document/image type or if it is empty)
 	 * @function
 	 */
-	this.getFieldDocumentURL = function(field, item, thumbnail) {
+	this.getFieldDocumentURL = (field, item, thumbnail) => {
 		if (typeof field !== 'string')
 			field = field.fullinput || field.input || field.name;
 		let val = this.getFieldValue(field, item);
@@ -1825,7 +1818,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {string} Value
 	 * @function
 	 */
-	this.getListValue = function(list, code) {
+	this.getListValue = (list, code) => {
 		if (list) {
 			for (let i = 0; i < list.length; i++) {
 				const l = list[i];
@@ -1843,7 +1836,7 @@ function BusinessObject(ses, name, instance) {
 	 * @param {object} [item] Item (defaults to current item)
 	 * @function
 	 */
-	this.setFieldValue = function(field, value, item) {
+	this.setFieldValue = (field, value, item) => {
 		if (!item)
 			item = this.item;
 		if (field && item) {
@@ -1857,7 +1850,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {boolean} True if the field is the row ID field
 	 * @function
 	 */
-	this.isRowIdField = function(field) {
+	this.isRowIdField = (field) => {
 		return !field.ref && field.name === this.metadata.rowidfield;
 	};
 
@@ -1867,7 +1860,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {boolean} True if the field is a timestamp field
 	 * @function
 	 */
-	this.isTimestampField = function(field) {
+	this.isTimestampField = (field) => {
 		const n = field.name;
 		return !field.ref && (n === 'created_by' || n === 'created_dt' || n === 'updated_by' || n === 'updated_dt');
 	};
@@ -1886,9 +1879,9 @@ function BusinessObject(ses, name, instance) {
 			p += '&context=' + encodeURIComponent(opts.context);
 		if (opts.reset)
 			p += '&reset=' + !!opts.reset;
-		self.session.req.call(self.session, self.path + '&action=filters' + p, undefined, function(res, status) {
+		self.session.req.call(self.session, self.path + '&action=filters' + p, undefined, (res, status) => {
 			const r = self.session.parse(res, status);
-			this.debug('[simplicite.BusinessObject.getFilters] HTTP status = ' + status + ', response type = ' + r.type);
+			self.session.debug('[simplicite.BusinessObject.getFilters] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
 				(opts.error ? opts.error : self.session.error).call(self, r.response);
 			} else {
@@ -1896,7 +1889,7 @@ function BusinessObject(ses, name, instance) {
 				if (callback)
 					callback.call(self, self.filters);
 			}
-		}, function(e) {
+		}, e => {
 			(opts.error ? opts.error : self.session.error).call(self, e);
 		});
 	}
@@ -1910,11 +1903,11 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} Promise to the object's filters (also available as the <code>filters</code> member)
 	 * @function
 	 */
-	this.getFilters =function(opts) {
+	this.getFilters =(opts) => {
 		const d = Q.defer();
 		opts = opts || {};
-		opts.error = opts.error || function(e) { d.reject(e); };
-		_getFilters.call(this, function(filters) { d.resolve(filters); }, opts);
+		opts.error = opts.error || (e => { d.reject(e); });
+		_getFilters.call(this, filters => { d.resolve(filters); }, opts);
 		return d.promise;
 	};
 
@@ -1977,9 +1970,9 @@ function BusinessObject(ses, name, instance) {
 		const self = this;
 		opts = opts || {};
 		self.filters = filters || {};
-		self.session.req.call(self.session, self.path + '&action=count', _getReqParams(self.filters), function(res, status) {
+		self.session.req.call(self.session, self.path + '&action=count', _getReqParams(self.filters), (res, status) => {
 			const r = self.session.parse(res, status);
-			this.debug('[simplicite.BusinessObject.getCount] HTTP status = ' + status + ', response type = ' + r.type);
+			self.session.debug('[simplicite.BusinessObject.getCount] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
 				(opts.error ? opts.error : self.session.error).call(self, r.response);
 			} else {
@@ -1990,7 +1983,7 @@ function BusinessObject(ses, name, instance) {
 				if (callback)
 					callback.call(self, self.count);
 			}
-		}, function(e) {
+		}, e => {
 			(opts.error ? opts.error : self.session.error).call(self, e);
 		});
 	}
@@ -2003,11 +1996,11 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} Promise to the count
 	 * @function
 	 */
-	this.count = function(filters, opts) {
+	this.count = (filters, opts) => {
 		const d = Q.defer();
 		opts = opts || {};
-		opts.error = opts.error || function(e) { d.reject(e); };
-		_count.call(this, function(count) { d.resolve(count); }, filters, opts);
+		opts.error = opts.error || (e => { d.reject(e); });
+		_count.call(this, count => { d.resolve(count); }, filters, opts);
 		return d.promise;
 	};
 
@@ -2034,9 +2027,9 @@ function BusinessObject(ses, name, instance) {
 		if (opts.metadata===true) p += '&_md=true';
 		if (opts.visible===true) p += '&_visible=true';
 		self.filters = filters || {};
-		self.session.req.call(self.session, self.path + '&action=search' + p, _getReqParams(self.filters), function(res, status) {
+		self.session.req.call(self.session, self.path + '&action=search' + p, _getReqParams(self.filters), (res, status) => {
 			const r = self.session.parse(res, status);
-			this.debug('[simplicite.BusinessObject.search] HTTP status = ' + status + ', response type = ' + r.type);
+			self.session.debug('[simplicite.BusinessObject.search] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
 				(opts.error ? opts.error : self.session.error).call(self, r.response);
 			} else {
@@ -2049,7 +2042,7 @@ function BusinessObject(ses, name, instance) {
 				if (callback)
 					callback.call(self, self.list);
 			}
-		}, function(e) {
+		}, e => {
 			(opts.error ? opts.error : self.session.error).call(self, e);
 		});
 	}
@@ -2065,11 +2058,11 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<array>} Promise to a list of records (also available as the <code>list</code> member)
 	 * @function
 	 */
-	this.search = function(filters, opts) {
+	this.search = (filters, opts) => {
 		const d = Q.defer();
 		opts = opts || {};
-		opts.error = opts.error || function(e) { d.reject(e); };
-		_search.call(this, function(list) { d.resolve(list); }, filters, opts);
+		opts.error = opts.error || (e => { d.reject(e); });
+		_search.call(this, list => { d.resolve(list); }, filters, opts);
 		return d.promise;
 	};
 
@@ -2094,9 +2087,9 @@ function BusinessObject(ses, name, instance) {
 		}
 		if (opts.metadata) p += '&_md=true';
 		if (opts.social) p += '&_social=true';
-		self.session.req.call(self.session, self.path + '&action=get&' + self.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, function(res, status) {
+		self.session.req.call(self.session, self.path + '&action=get&' + self.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, (res, status) => {
 			const r = self.session.parse(res, status);
-			this.debug('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response type = ' + r.type);
+			self.session.debug('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
 				(opts.error ? opts.error : self.session.error).call(self, r.response);
 			} else {
@@ -2109,7 +2102,7 @@ function BusinessObject(ses, name, instance) {
 				if (callback)
 					callback.call(self, tv ? r.response : self.item);
 			}
-		}, function(e) {
+		}, e => {
 			(opts.error ? opts.error : self.session.error).call(self, e);
 		});
 	}
@@ -2125,11 +2118,11 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} Promise to the record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.get = function(rowId, opts) {
+	this.get = (rowId, opts) => {
 		const d = Q.defer();
 		opts = opts || {};
-		opts.error = opts.error || function(e) { d.reject(e); };
-		_get.call(this, function(itm) { d.resolve(itm); }, rowId, opts);
+		opts.error = opts.error || (e => { d.reject(e); });
+		_get.call(this, itm => { d.resolve(itm); }, rowId, opts);
 		return d.promise;
 	};
 
@@ -2155,11 +2148,11 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.getForCreate = function(opts) {
+	this.getForCreate = (opts) => {
 		const d = Q.defer();
 		opts = opts || {};
-		opts.error = opts.error || function(e) { d.reject(e); };
-		_getForCreate.call(this, function(itm) { d.resolve(itm); }, opts);
+		opts.error = opts.error || (e => { d.reject(e); });
+		_getForCreate.call(this, itm => { d.resolve(itm); }, opts);
 		return d.promise;
 	};
 
@@ -2187,11 +2180,11 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} Promise to the record to update (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.getForUpdate = function(rowId, opts) {
+	this.getForUpdate = (rowId, opts) => {
 		const d = Q.defer();
 		opts = opts || {};
-		opts.error = opts.error || function(e) { d.reject(e); };
-		_getForUpdate.call(this, function(itm) { d.resolve(itm); }, rowId, opts);
+		opts.error = opts.error || (e => { d.reject(e); });
+		_getForUpdate.call(this, itm => { d.resolve(itm); }, rowId, opts);
 		return d.promise;
 	};
 
@@ -2219,11 +2212,11 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.getForCopy = function(rowId, opts) {
+	this.getForCopy = (rowId, opts) => {
 		const d = Q.defer();
 		opts = opts || {};
-		opts.error = opts.error || function(e) { d.reject(e); };
-		_getForCopy.call(this, function(itm) { d.resolve(itm); }, rowId, opts);
+		opts.error = opts.error || (e => { d.reject(e); });
+		_getForCopy.call(this, itm => { d.resolve(itm); }, rowId, opts);
 		return d.promise;
 	};
 
@@ -2251,11 +2244,11 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} Promise to the record to delete (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.getForDelete = function(rowId, opts) {
+	this.getForDelete = (rowId, opts) => {
 		const d = Q.defer();
 		opts = opts || {};
-		opts.error = opts.error || function(e) { d.reject(e); };
-		_getForDelete.call(this, function(itm) { d.resolve(itm); }, rowId, opts);
+		opts.error = opts.error || (e => { d.reject(e); });
+		_getForDelete.call(this, itm => { d.resolve(itm); }, rowId, opts);
 		return d.promise;
 	};
 
@@ -2265,7 +2258,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {string} Item's row ID value
 	 * @function
 	 */
-	this.getRowId = function(item) {
+	this.getRowId = (item) => {
 		item = item || this.item;
 		if (item)
 			return item[this.getRowIdFieldName()];
@@ -2282,9 +2275,9 @@ function BusinessObject(ses, name, instance) {
 		const self = this;
 		opts = opts || {};
 		let p = _getOptions(opts);
-		self.session.req.call(self.session, self.path + '&action=populate&' + self.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, function(res, status) {
+		self.session.req.call(self.session, self.path + '&action=populate&' + self.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, (res, status) => {
 			const r = self.session.parse(res, status);
-			this.debug('[simplicite.BusinessObject.populate] HTTP status = ' + status + ', response type = ' + r.type);
+			self.session.debug('[simplicite.BusinessObject.populate] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
 				(opts.error ? opts.error : self.session.error).call(self, r.response);
 			} else {
@@ -2292,7 +2285,7 @@ function BusinessObject(ses, name, instance) {
 				if (callback)
 					callback.call(self, self.item);
 			}
-		}, function(e) {
+		}, e => {
 			(opts.error ? opts.error : self.session.error).call(self, e);
 		});
 	}
@@ -2305,11 +2298,11 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.populate = function(itm, opts) {
+	this.populate = (itm, opts) => {
 		const d = Q.defer();
 		opts = opts || {};
-		opts.error = opts.error || function(e) { d.reject(e); };
-		_populate.call(this, function(i) { d.resolve(i); }, itm, opts);
+		opts.error = opts.error || (e => { d.reject(e); });
+		_populate.call(this, i => { d.resolve(i); }, itm, opts);
 		return d.promise;
 	};
 
@@ -2338,11 +2331,11 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} Promise to the saved record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.save = function(itm, opts) {
+	this.save = (itm, opts) => {
 		const d = Q.defer();
 		opts = opts || {};
-		opts.error = opts.error || function(e) { d.reject(e); };
-		_save.call(this, function(i) { d.resolve(i); }, itm, opts);
+		opts.error = opts.error || (e => { d.reject(e); });
+		_save.call(this, i => { d.resolve(i); }, itm, opts);
 		return d.promise;
 	};
 
@@ -2359,9 +2352,9 @@ function BusinessObject(ses, name, instance) {
 			self.item = item;
 		opts = opts || {};
 		let p = _getOptions(opts);
-		self.session.req.call(self.session, self.path + '&action=create' + p, _getReqParams(self.item), function(res, status) {
+		self.session.req.call(self.session, self.path + '&action=create' + p, _getReqParams(self.item), (res, status) => {
 			const r = self.session.parse(res, status);
-			this.debug('[simplicite.BusinessObject.create] HTTP status = ' + status + ', response type = ' + r.type);
+			self.session.debug('[simplicite.BusinessObject.create] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
 				(opts.error ? opts.error : self.session.error).call(self, r.response);
 			} else {
@@ -2369,7 +2362,7 @@ function BusinessObject(ses, name, instance) {
 				if (callback)
 					callback.call(self, self.item);
 			}
-		}, function(e) {
+		}, e => {
 			(opts.error ? opts.error : self.session.error).call(self, e);
 		});
 	}
@@ -2382,12 +2375,12 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} Promise to the created record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.create = function(itm, opts) {
+	this.create = (itm, opts) => {
 		itm.row_id = this.session.constants.DEFAULT_ROW_ID;
 		const d = Q.defer();
 		opts = opts || {};
-		opts.error = opts.error || function(e) { d.reject(e); };
-		_create.call(this, function(i) { d.resolve(i); }, itm, opts);
+		opts.error = opts.error || (e => { d.reject(e); });
+		_create.call(this, i => { d.resolve(i); }, itm, opts);
 		return d.promise;
 	};
 
@@ -2404,9 +2397,9 @@ function BusinessObject(ses, name, instance) {
 			self.item = item;
 		opts = opts || {};
 		let p = _getOptions(opts);
-		self.session.req.call(self.session, self.path + '&action=update' + p, _getReqParams(self.item), function(res, status) {
+		self.session.req.call(self.session, self.path + '&action=update' + p, _getReqParams(self.item), (res, status) => {
 			const r = self.session.parse(res, status);
-			this.debug('[simplicite.BusinessObject.update] HTTP status = ' + status + ', response type = ' + r.type);
+			self.session.debug('[simplicite.BusinessObject.update] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
 				(opts.error ? opts.error : self.session.error).call(self, r.response);
 			} else {
@@ -2414,7 +2407,7 @@ function BusinessObject(ses, name, instance) {
 				if (callback)
 					callback.call(self, self.item);
 			}
-		}, function(e) {
+		}, e => {
 			(opts.error ? opts.error : self.session.error).call(self, e);
 		});
 	}
@@ -2427,11 +2420,11 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} Promise to the updated record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.update = function(itm, opts) {
+	this.update = (itm, opts) => {
 		const d = Q.defer();
 		opts = opts || {};
-		opts.error = opts.error || function(e) { d.reject(e); };
-		_update.call(this, function(i) { d.resolve(i); }, itm, opts);
+		opts.error = opts.error || (e =>{ d.reject(e); });
+		_update.call(this, i => { d.resolve(i); }, itm, opts);
 		return d.promise;
 	};
 
@@ -2447,9 +2440,9 @@ function BusinessObject(ses, name, instance) {
 		if (item)
 			self.item = item;
 		opts = opts || {};
-		self.session.req.call(self.session, self.path + '&action=delete&' + self.metadata.rowidfield + '=' + encodeURIComponent(self.item[self.metadata.rowidfield]), undefined, function(res, status) {
+		self.session.req.call(self.session, self.path + '&action=delete&' + self.metadata.rowidfield + '=' + encodeURIComponent(self.item[self.metadata.rowidfield]), undefined, (res, status) => {
 			const r = self.session.parse(res, status);
-			this.debug('[simplicite.BusinessObject.del] HTTP status = ' + status + ', response type = ' + r.type);
+			self.session.debug('[simplicite.BusinessObject.del] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
 				(opts.error ? opts.error : self.session.error).call(self, r.response);
 			} else {
@@ -2458,7 +2451,7 @@ function BusinessObject(ses, name, instance) {
 				if (callback)
 					callback.call(self, r.response);
 			}
-		}, function(e) {
+		}, e => {
 			(opts.error ? opts.error : self.session.error).call(self, e);
 		});
 	}
@@ -2471,11 +2464,11 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise} Promise (the <code>item</code> member is emptied)
 	 * @function
 	 */
-	this.del = function(itm, opts) {
+	this.del = (itm, opts) => {
 		const d = Q.defer();
 		opts = opts || {};
-		opts.error = opts.error || function(e) { d.reject(e); };
-		_del.call(this, function(r) { d.resolve(r); }, itm, opts);
+		opts.error = opts.error || (e => { d.reject(e); });
+		_del.call(this, r => { d.resolve(r); }, itm, opts);
 		return d.promise;
 	};
 
@@ -2490,9 +2483,9 @@ function BusinessObject(ses, name, instance) {
 	function _action(callback, action, rowId, opts) {
 		const self = this;
 		opts = opts || {};
-		self.session.req.call(self.session, self.path + '&action=' + encodeURIComponent(action) + (rowId ? '&' + self.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : ''), _getReqParams(opts.parameters), function(res, status) {
+		self.session.req.call(self.session, self.path + '&action=' + encodeURIComponent(action) + (rowId ? '&' + self.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : ''), _getReqParams(opts.parameters), (res, status) => {
 			const r = self.session.parse(res, status);
-			this.debug('[simplicite.BusinessObject.action(' + action + ')] HTTP status = ' + status + ', response type = ' + r.type);
+			self.session.debug('[simplicite.BusinessObject.action(' + action + ')] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
 				(opts.error ? opts.error : self.session.error).call(self, r.response);
 			} else {
@@ -2500,7 +2493,7 @@ function BusinessObject(ses, name, instance) {
 				if (callback)
 					callback.call(self, result);
 			}
-		}, function(e) {
+		}, e => {
 			(opts.error ? opts.error : self.session.error).call(self, e);
 		});
 	}
@@ -2515,11 +2508,11 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<string|object>} A promise to the action result
 	 * @function
 	 */
-	this.action = function(action, rowId, opts) {
+	this.action = (action, rowId, opts) => {
 		const d = Q.defer();
 		opts = opts || {};
-		opts.error = opts.error || function(e) { d.reject(e); };
-		_action.call(this, function(res) { d.resolve(res); }, action, rowId, opts);
+		opts.error = opts.error || (e => { d.reject(e); });
+		_action.call(this, res => { d.resolve(res); }, action, rowId, opts);
 		return d.promise;
 	};
 
@@ -2535,9 +2528,9 @@ function BusinessObject(ses, name, instance) {
 		opts = opts || {};
 		if (opts.filters)
 			self.filters = opts.filters;
-		self.session.req.call(self.session, self.path + '&action=crosstab&crosstab=' + encodeURIComponent(crosstab), _getReqParams(self.filters), function(res, status) {
+		self.session.req.call(self.session, self.path + '&action=crosstab&crosstab=' + encodeURIComponent(crosstab), _getReqParams(self.filters), (res, status) => {
 			const r = self.session.parse(res, status);
-			this.debug('[simplicite.BusinessObject.crosstab(' + crosstab + ')] HTTP status = ' + status + ', response type = ' + r.type);
+			self.session.debug('[simplicite.BusinessObject.crosstab(' + crosstab + ')] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
 				(opts.error ? opts.error : self.session.error).call(self, r.response);
 			} else {
@@ -2545,7 +2538,7 @@ function BusinessObject(ses, name, instance) {
 				if (callback)
 					callback.call(self, self.crosstabdata);
 			}
-		}, function(e) {
+		}, e => {
 			(opts.error ? opts.error : self.session.error).call(self, e);
 		});
 	}
@@ -2559,11 +2552,11 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} A promise to the pivot table data (also avialable as the <code>crosstabdata</code> member)
 	 * @function
 	 */
-	this.crosstab = function(ctb, opts) {
+	this.crosstab = (ctb, opts) => {
 		const d = Q.defer();
 		opts = opts || {};
-		opts.error = opts.error || function(e) { d.reject(e); };
-		_crosstab.call(this, function(res) { d.resolve(res); }, ctb, opts);
+		opts.error = opts.error || (e => { d.reject(e); });
+		_crosstab.call(this, res => { d.resolve(res); }, ctb, opts);
 		return d.promise;
 	};
 
@@ -2585,16 +2578,16 @@ function BusinessObject(ses, name, instance) {
 			p += '&all=' + !!opts.all;
 		if (opts.mailing)
 			p += '&mailing=' + !!opts.mailing;
-		self.session.req.call(self.session, self.path + '&action=print&printtemplate=' + encodeURIComponent(prt) + (rowId ? '&' + self.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : '') + p, undefined, function(res, status) {
+		self.session.req.call(self.session, self.path + '&action=print&printtemplate=' + encodeURIComponent(prt) + (rowId ? '&' + self.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : '') + p, undefined, (res, status) => {
 			const r = self.session.parse(res, status);
-			this.debug('[simplicite.BusinessObject.print(' + prt + ')] HTTP status = ' + status + ', response type = ' + r.type);
+			self.session.debug('[simplicite.BusinessObject.print(' + prt + ')] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
 				(opts.error ? opts.error : self.session.error).call(self, r.response);
 			} else {
 				if (callback)
 					callback.call(self, Object.assign(new Document(), r.response));
 			}
-		}, function(e) {
+		}, e => {
 			(opts.error ? opts.error : self.session.error).call(self, e);
 		});
 	}
@@ -2608,11 +2601,11 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<Document>} A promise to the document of the publication
 	 * @function
 	 */
-	this.print = function(pt, rowId, opts) {
+	this.print = (pt, rowId, opts) => {
 		const d = Q.defer();
 		opts = opts || {};
-		opts.error = opts.error || function(e) { d.reject(e); };
-		_print.call(this, function(res) { d.resolve(res); }, pt, rowId, opts);
+		opts.error = opts.error || (e => { d.reject(e); });
+		_print.call(this, res => { d.resolve(res); }, pt, rowId, opts);
 		return d.promise;
 	};
 
@@ -2629,9 +2622,9 @@ function BusinessObject(ses, name, instance) {
 		opts = opts || {};
 		let p = { name: param };
 		if (value) p.value = value;
-		self.session.req.call(self.session, self.path + '&action=setparameter', _getReqParams(p), function(res, status) {
+		self.session.req.call(self.session, self.path + '&action=setparameter', _getReqParams(p), (res, status) => {
 			const r = self.session.parse(res, status);
-			this.debug('[simplicite.BusinessObject.setParameter(' + p.name + ')] HTTP status = ' + status + ', response type = ' + r.type);
+			self.session.debug('[simplicite.BusinessObject.setParameter(' + p.name + ')] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
 				(opts.error ? opts.error : self.session.error).call(self, r.response);
 			} else {
@@ -2639,7 +2632,7 @@ function BusinessObject(ses, name, instance) {
 				if (callback)
 					callback.call(self, result);
 			}
-		}, function(e) {
+		}, e => {
 			(opts.error ? opts.error : self.session.error).call(self, e);
 		});
 	}
@@ -2653,11 +2646,11 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} Promise
 	 * @function
 	 */
-	this.setParameter = function(param, value, opts) {
+	this.setParameter = (param, value, opts) => {
 		const d = Q.defer();
 		opts = opts || {};
-		opts.error = opts.error || function(e) { d.reject(e); };
-		_setParameter.call(this, function() { d.resolve(); }, param, value, opts);
+		opts.error = opts.error || (e => { d.reject(e); });
+		_setParameter.call(this, () => { d.resolve(); }, param, value, opts);
 		return d.promise;
 	};
 
@@ -2672,9 +2665,9 @@ function BusinessObject(ses, name, instance) {
 		const self = this;
 		opts = opts || {};
 		let p = { name: param };
-		self.session.req.call(self.session, self.path + '&action=getparameter', _getReqParams(p), function(res, status) {
+		self.session.req.call(self.session, self.path + '&action=getparameter', _getReqParams(p), (res, status) => {
 			const r = self.session.parse(res, status);
-			this.debug('[simplicite.BusinessObject.getParameter(' + p.name + ')] HTTP status = ' + status + ', response type = ' + r.type);
+			self.session.debug('[simplicite.BusinessObject.getParameter(' + p.name + ')] HTTP status = ' + status + ', response type = ' + r.type);
 			if (r.type === 'error') {
 				(opts.error ? opts.error : self.session.error).call(self, r.response);
 			} else {
@@ -2682,7 +2675,7 @@ function BusinessObject(ses, name, instance) {
 				if (callback)
 					callback.call(self, result);
 			}
-		}, function(e) {
+		}, e => {
 			(opts.error ? opts.error : self.session.error).call(self, e);
 		});
 	}
@@ -2695,11 +2688,11 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} Promise to the parameter value
 	 * @function
 	 */
-	this.getParameter = function(param, opts) {
+	this.getParameter = (param, opts) => {
 		const d = Q.defer();
 		opts = opts || {};
-		opts.error = opts.error || function(e) { d.reject(e); };
-		_getParameter.call(this, function(value) { d.resolve(value); }, param, opts);
+		opts.error = opts.error || (e => { d.reject(e); });
+		_getParameter.call(this, value => { d.resolve(value); }, param, opts);
 		return d.promise;
 	};
 
@@ -2709,7 +2702,7 @@ function BusinessObject(ses, name, instance) {
 	 * @param {string} [type=IMG] Resource type (IMG=image (default), ICO=Icon, CSS=stylesheet, JS=Javascript, HTML=HTML)
 	 * @function
 	 */
-	this.getResourceURL = function(code, type) {
+	this.getResourceURL = (code, type) => {
 		return this.session.getResourceURL(code, type, this.metadata.name, this.metadata.id);
 	};
 }
@@ -2761,7 +2754,7 @@ function ExternalObject(ses, name) {
 	 * @return {string} Name
 	 * @function
 	 */
-	this.getName = function() {
+	this.getName = () => {
 		return this.metadata.name;
 	};
 
@@ -2770,7 +2763,7 @@ function ExternalObject(ses, name) {
 	 * @param {object} params URL parameters as key/value pairs
 	 * @function
 	 */
-	this.callParams = function(params) {
+	this.callParams = (params) => {
 		let p = '';
 		if (!params) return p;
 		let n = 0;
@@ -2815,18 +2808,20 @@ function ExternalObject(ses, name) {
 				h.Authorization = b;
 			}
 		}
-		axios.request({
-			baseURL: self.session.parameters.url,
-			url: self.path + p,
+		fetch(self.session.parameters.url + self.path + p, {
 			method: m,
 			headers: h,
 			timeout: self.session.timeout * 1000,
-			withCredentials: true,
-			data: data
-		}).then(function (res) {
-			if (callback)
-				callback.call(self, res.data, res.status, res.headers);
-		}).catch(function(err) {
+			mode: 'cors',
+			credentials: 'include',
+			body: data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined
+		}).then(res => {
+			if (callback) {
+				res.text().then(data => {
+					callback.call(self, data, res.status, res.headers);
+				});
+			}
+		}).catch(err => {
 			if (opts.error)
 				opts.error.call(self, err);
 			else
@@ -2845,11 +2840,11 @@ function ExternalObject(ses, name) {
 	 * @return {promise<object>} Promise to the external object content
 	 * @function
 	 */
-	this.call = function(params, data, opts) {
+	this.call = (params, data, opts) => {
 		const d = Q.defer();
 		opts = opts || {};
-		opts.error = opts.error || function(e) { d.reject(e); };
-		_call.call(this, function(value) { d.resolve(value); }, params, data, opts);
+		opts.error = opts.error || (e => { d.reject(e); });
+		_call.call(this, value => { d.resolve(value); }, params, data, opts);
 		return d.promise;
 	};
 }

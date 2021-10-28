@@ -19,7 +19,8 @@ It can be used in **server-side** node applications, in a **client-side** web ap
 (e.g. by building a bundle with [browserify](http://browserify.org) and/or by using various dedicated frameworks)
 or in **native** JavaScript-based mobile frameworks.
 
-> **Note**: for browser compatibility reasons this module is implemented in ES5
+> **Note**: as of version 2.0.0 this API will not work on old browsers like Internet Explorer.
+> If you need support for such old browsers, you **must** use a 1.x.y version
 
 Install
 -------

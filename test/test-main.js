@@ -3,7 +3,7 @@ const assert = require('assert').strict;
 const adminUsername = process.env.TEST_SIMPLICITE_ADMIN_USERNAME || 'designer';
 const adminPassword = process.env.TEST_SIMPLICITE_ADMIN_PASSWORD || 'designer';
 
-const debug = true;
+const debug = process.env.TEST_SIMPLICITE_DEBUG == 'true';
 const app = require('../src/simplicite').session({
 	url: process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080',
 	debug: debug

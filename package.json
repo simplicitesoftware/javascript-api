@@ -1,6 +1,6 @@
 {
   "name": "simplicite",
-  "version": "1.1.27",
+  "version": "2.0.0",
   "description": "Simplicite(R) platform Javascript API (for node.js and browser)",
   "repository": {
     "type": "git",
@@ -13,7 +13,7 @@
     "lowcode"
   ],
   "dependencies": {
-    "axios": "latest",
+    "cross-fetch": "latest",
     "buffer": "latest",
     "q": "latest"
   },
