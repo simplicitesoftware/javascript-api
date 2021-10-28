@@ -25,6 +25,14 @@ or in **native** JavaScript-based mobile frameworks.
 Install
 -------
 
+Look for updates:
+
+```bash
+npm run ncu
+```
+
+Install:
+
 ```bash
 npm install
 ```

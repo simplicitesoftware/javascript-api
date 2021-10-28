@@ -13,22 +13,22 @@
     "lowcode"
   ],
   "dependencies": {
-    "cross-fetch": "latest",
-    "buffer": "latest",
-    "q": "latest"
+    "cross-fetch": "^3.1.4",
+    "buffer": "^6.0.3",
+    "q": "^1.5.1"
   },
   "devDependencies": {
-    "@babel/cli": "latest",
-    "@babel/core": "latest",
-    "@babel/node": "latest",
-    "@babel/preset-env": "latest",
-    "docdash": "latest",
-    "eslint": "latest",
-    "jest": "latest",
-    "jsdoc": "latest",
-    "npm-check-updates": "latest",
-    "replace": "latest",
-    "uglify-js": "latest"
+    "@babel/cli": "^7.15.7",
+    "@babel/core": "^7.15.8",
+    "@babel/node": "^7.15.8",
+    "@babel/preset-env": "^7.15.8",
+    "docdash": "^1.2.0",
+    "eslint": "^7.32.0",
+    "jest": "^27.3.1",
+    "jsdoc": "^3.6.7",
+    "npm-check-updates": "^11.8.5",
+    "replace": "^1.2.1",
+    "uglify-js": "^3.14.2"
   },
   "scripts": {
     "lint": "eslint src/simplicite.js test/*.js",
