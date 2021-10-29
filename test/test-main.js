@@ -33,10 +33,10 @@ app.getHealth().then(health => {
 	assert.ok(health.platform.status == 'OK');
 	app.log('Status = ' + health.platform.status);
 	return app.login({ username: adminUsername, password: adminPassword });
-}).then(res => {
-	app.debug(res);
-	assert.ok(res.login == adminUsername);
-	app.log('Logged in as ' + res.login);
+}).then(ses => {
+	app.debug(ses);
+	assert.ok(ses.login == adminUsername);
+	app.log('Logged in as ' + ses.login);
 	return app.getGrant({ inlinePicture: true });
 }).then(grant => {
 	app.debug(grant);
@@ -56,6 +56,17 @@ app.getHealth().then(health => {
 	app.debug(sysinfo);
 	assert.ok(sysinfo.heapmaxsize);
 	app.log('Memory: ' + sysinfo.heapmaxsize);
+	return app.getDevInfo();
+}).then(devinfo => {
+	app.debug(devinfo);
+	assert.ok(devinfo.jvm);
+	assert.ok(devinfo.jvm.version);
+	app.log('JVM: ' + devinfo.jvm.version);
+	return app.getDevInfo('System');
+}).then(mdlinfo => {
+	app.debug(mdlinfo);
+	assert.ok(mdlinfo.version);
+	app.log('System module version: ' + mdlinfo.version);
 	return app.indexSearch(sysCodeName, 'Field');
 }).then(results => {
 	app.debug(results);

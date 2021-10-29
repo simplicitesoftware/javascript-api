@@ -4,7 +4,6 @@
  * @version 2.0.1
  * @license Apache-2.0
  */
-const Q = require('q');
 const fetch = require('cross-fetch');
 const buffer = require('buffer');
 
@@ -2648,56 +2647,6 @@ function ExternalObject(ses, name) {
 
 	/**
 	 * Call an external object
-	 * @param {function} callback Callback (called upon success)
-	 * @param {object} [params] Optional URL parameters
-	 * @param {object} [data] Optional data
-	 * @param {object} [opts] Options
-	 * @function
-	 */
-	function _call(callback, params, data, opts) {
-		const self = this;
-		opts = opts || {};
-		let p = '';
-		if (params)
-			p = '?' + self.callParams(params);
-		const m = opts.method ? opts.method : (data ? 'post' : 'get');
-		const h = {};
-		if (opts.contentType)
-			h['Content-Type'] = opts.contentType;
-		let b = self.session.getBearerTokenHeader();
-		if (b) {
-			self.session.debug('[simplicite.ExternalObject.call] Using bearer token header = ' + b);
-			h['X-Simplicite-Authorization'] = b;
-		} else {
-			b = self.session.getBasicAuthHeader();
-			if (b) {
-				self.session.debug('[simplicite.ExternalObject.call] Using basic auth header = ' + b);
-				h.Authorization = b;
-			}
-		}
-		fetch(self.session.parameters.url + self.path + p, {
-			method: m,
-			headers: h,
-			timeout: self.session.timeout * 1000,
-			mode: 'cors',
-			credentials: 'include',
-			body: data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined
-		}).then(res => {
-			if (callback) {
-				res.text().then(data => {
-					callback.call(self, data, res.status, res.headers);
-				});
-			}
-		}).catch(err => {
-			if (opts.error)
-				opts.error.call(self, err);
-			else
-				throw err;
-		});
-	}
-
-	/**
-	 * Call an external object
 	 * @param {object} [params] Optional URL parameters
 	 * @param {object} [data] Optional data (for 'post' and 'put' methods only)
 	 * @param {object} [opts] Options
@@ -2708,11 +2657,63 @@ function ExternalObject(ses, name) {
 	 * @function
 	 */
 	this.call = (params, data, opts) => {
-		const d = Q.defer();
+		const self = this;
 		opts = opts || {};
-		opts.error = opts.error || (e => { d.reject(e); });
-		_call.call(this, value => { d.resolve(value); }, params, data, opts);
-		return d.promise;
+		return new Promise((resolve, reject) => {
+			let p = '';
+			if (params)
+				p = '?' + self.callParams(params);
+			const m = opts.method ? opts.method : (data ? 'POST' : 'GET');
+			const h = {};
+			if (opts.contentType) {
+				h['Content-Type'] = opts.contentType;
+			} else if (data) { // Try to guess type...
+				h['Content-Type'] = typeof data === 'string' ? 'application/x-www-form-urlencoded' : 'application/json';
+			}
+			let b = self.session.getBearerTokenHeader();
+			if (b) {
+				self.session.debug('[simplicite.ExternalObject.call] Using bearer token header = ' + b);
+				h['X-Simplicite-Authorization'] = b;
+			} else {
+				b = self.session.getBasicAuthHeader();
+				if (b) {
+					self.session.debug('[simplicite.ExternalObject.call] Using basic auth header = ' + b);
+					h.Authorization = b;
+				}
+			}
+			fetch(self.session.parameters.url + self.path + p, {
+				method: m,
+				headers: h,
+				timeout: self.session.timeout * 1000,
+				mode: 'cors',
+				credentials: 'include',
+				body: data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined
+			}).then(res => {
+				const type = res.headers.get('content-type');
+				self.session.debug('[simplicite.ExternalObject.call(' + p + ')] HTTP status = ' + res.status + ', response content type = ' + type);
+				if (type && type.startsWith('application/json')) { // JSON
+					res.json().then(data => {
+						resolve && resolve.call(self, data, res.status, res.headers);
+					}).catch(err => {
+						(reject || opts.error || self.error).call(self, self.getError(err));
+					});
+				} else if (type && type.startsWith('text/')) { // Text
+					res.text().then(data => {
+						resolve && resolve.call(self, data, res.status, res.headers);
+					}).catch(err => {
+						(reject || opts.error || self.error).call(self, self.getError(err));
+					});
+				} else { // Binary
+					res.arrayBuffer().then(data => {
+						resolve && resolve.call(self, data, res.status, res.headers);
+					}).catch(err => {
+						(reject || opts.error || self.error).call(self, self.getError(err));
+					});
+				}
+			}).catch(err => {
+				(reject || opts.error || self.error).call(self, self.getError(err));
+			});
+		});
 	};
 }
 

@@ -25,15 +25,15 @@ app.login().then(res => {
 	return ext.call(params); // GET call
 }).then(res => {
 	if (debug) console.log('CALL: ' + JSON.stringify(res, null, 2));
-	assert.ok(res);
-	return ext.call(null, data); // POST call
+	assert.ok(res.method == 'get');
+	return ext.call(null, data); // POST call without params
 }).then(res => {
 	if (debug) console.log('CALL: ' + JSON.stringify(res, null, 2));
-	assert.ok(res);
-	return ext.call(params, data); // POST call w/ params
+	assert.ok(res.method == 'post');
+	return ext.call(params, data); // POST call with params
 }).then(res => {
 	if (debug) console.log('CALL: ' + JSON.stringify(res, null, 2));
-	assert.ok(res);
+	assert.ok(res.method == 'post');
 	return app.logout();
 }).then(res => {
 	if (debug) console.log(res);
