@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.0.1
+ * @version 2.1.0
  * @license Apache-2.0
  */
 const fetch = require('node-fetch');
@@ -617,28 +617,28 @@ function Session(params) {
 	 */
 	this.req = (path, data, callback, errorHandler) => {
 		const self = this;
-		const m = data ? 'post' : 'get';
+		const m = data ? 'POST' : 'GET';
 		const h = {};
 		if (data)
 			h['Content-Type'] = 'application/x-www-form-urlencoded; charset=utf-8';
 		let b = self.getBearerTokenHeader();
 		if (b) {
-			self.debug('[simplicite.req] Using bearer token header = ' + b);
 			h['X-Simplicite-Authorization'] = b;
 		} else {
 			b = self.getBasicAuthHeader();
-			if (b) {
-				self.debug('[simplicite.req] Using basic auth header = ' + b);
+			if (b)
 				h.Authorization = b;
-			}
 		}
-		fetch(self.parameters.url + path || '/', {
+		const u = self.parameters.url + path || '/';
+		const d = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined;
+		self.debug('[simplicite.req] ' + m + ' ' + u + (d ? ' with ' + d : ''));
+		fetch(u, {
 			method: m,
 			headers: h,
-			//timeout: self.timeout * 1000, TODO: no timeout in fetch API
+			timeout: self.timeout * 1000, // TODO: no timeout in fetch API
 			mode: 'cors',
 			credentials: 'include',
-			body: data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined
+			body: d
 		}).then(res => {
 			if (callback) {
 				res.text().then(data => {
@@ -703,11 +703,11 @@ function Session(params) {
 				const r = self.parse(res, status);
 				self.debug('[simplicite.getHealth] HTTP status = ' + status + ', response type = ' + res);
 				if (r.type === 'error')
-					(reject || opts.error || self.error).call(self, r.response);
+					(opts.error || self.error || reject).call(self, r.response);
 				else
 					resolve && resolve.call(self, r);
 			}, err => {
-				(reject || opts.error || self.error).call(self, self.getError(err));
+				(opts.error || self.error || reject).call(self, self.getError(err));
 			});
 		});
 	};
@@ -738,7 +738,7 @@ function Session(params) {
 				const r = self.parse(res, status);
 				self.debug('[simplicite.login] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
-					(reject || opts.error || self.error).call(self, r.response);
+					(opts.error || self.error || reject).call(self, r.response);
 				} else {
 					self.sessionid = r.response.id;
 					self.debug('[simplicite.login] Session ID = ' + self.sessionid);
@@ -759,7 +759,7 @@ function Session(params) {
 					resolve && resolve.call(self, r.response);
 				}
 			}, err => {
-				(reject || opts.error || self.error).call(self, self.getError(err));
+				(opts.error || self.error || reject).call(self, self.getError(err));
 			});
 		});
 	};
@@ -780,7 +780,7 @@ function Session(params) {
 				const r = self.parse(res, status);
 				self.debug('[simplicite.logout] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
-					(reject || opts.error || self.error).call(self, r.response);
+					(opts.error || self.error || reject).call(self, r.response);
 				} else {
 					self.clear();
 					resolve && resolve.call(self, r.response);
@@ -788,7 +788,7 @@ function Session(params) {
 			}, err => {
 				if (err.status === 401) // Removes (expired or deleted) token if any
 					self.authtoken = undefined;
-				(reject || opts.error || self.error).call(self, self.getError(err));
+				(opts.error || self.error || reject).call(self, self.getError(err));
 			});
 		});
 	};
@@ -821,13 +821,13 @@ function Session(params) {
 				const r = self.parse(res, status);
 				self.debug('[simplicite.getGrant] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
-					(reject || opts.error || self.error).call(self, r.response);
+					(opts.error || self.error || reject).call(self, r.response);
 				} else {
 					self.grant = Object.assign(new Grant(), r.response);
 					resolve && resolve.call(self, self.grant);
 				}
 			}, err => {
-				(reject || opts.error || self.error).call(self, self.getError(err));
+				(opts.error || self.error || reject).call(self, self.getError(err));
 			});
 		});
 	};
@@ -848,11 +848,11 @@ function Session(params) {
 				const r = self.parse(res, status);
 				self.debug('[simplicite.changePassword] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error')
-					(reject || opts.error || self.error).call(self, r.response);
+					(opts.error || self.error || reject).call(self, r.response);
 				else
 					resolve && resolve.call(self, r.response);
 			}, err => {
-				(reject || opts.error || self.error).call(self, self.getError(err));
+				(opts.error || self.error || reject).call(self, self.getError(err));
 			});
 		});
 	};
@@ -872,13 +872,13 @@ function Session(params) {
 				const r = self.parse(res, status);
 				self.debug('[simplicite.getAppInfo] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
-					(reject || opts.error || self.error).call(self, r.response);
+					(opts.error || self.error || reject).call(self, r.response);
 				} else {
 					self.appinfo = r.response;
 					resolve && resolve.call(self, self.appinfo);
 				}
 			}, err => {
-				(reject || opts.error || self.error).call(self, self.getError(err));
+				(opts.error || self.error || reject).call(self, self.getError(err));
 			});
 		});
 	};
@@ -898,13 +898,13 @@ function Session(params) {
 				const r = self.parse(res, status);
 				self.debug('[simplicite.getSysInfo] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
-					(reject || opts.error || self.error).call(self, r.response);
+					(opts.error || self.error || reject).call(self, r.response);
 				} else {
 					self.sysinfo = r.response;
 					resolve && resolve.call(self, self.sysinfo);
 				}
 			}, err => {
-				(reject || opts.error || self.error).call(self, self.getError(err));
+				(opts.error || self.error || reject).call(self, self.getError(err));
 			});	
 		});
 	};
@@ -928,14 +928,14 @@ function Session(params) {
 				const r = self.parse(res, status);
 				self.debug('[simplicite.getDevInfo] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
-					(reject || opts.error || self.error).call(self, r.response);
+					(opts.error || self.error || reject).call(self, r.response);
 				} else {
 					if (!module)
 						self.devinfo = r.response;
 					resolve && resolve.call(self, r.response);
 				}
 			}, err => {
-				(reject || opts.error || self.error).call(self, self.getError(err));
+				(opts.error || self.error || reject).call(self, self.getError(err));
 			});	
 		});
 	};
@@ -959,13 +959,13 @@ function Session(params) {
 				const r = self.parse(res, status);
 				self.debug('[simplicite.getNews] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
-					(reject || opts.error || self.error).call(self, r.response);
+					(opts.error || self.error || reject).call(self, r.response);
 				} else {
 					self.news = r.response;
 					resolve && resolve.call(self, self.news);
 				}
 			}, err => {
-				(reject || opts.error || self.error).call(self, self.getError(err));
+				(opts.error || self.error || reject).call(self, self.getError(err));
 			});
 		});
 	};
@@ -994,11 +994,11 @@ function Session(params) {
 				const r = self.parse(res, status);
 				self.debug('[simplicite.indexSearch] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error')
-					(reject || opts.error || self.error).call(self, r.response);
+					(opts.error || self.error || reject).call(self, r.response);
 				else
 					resolve && resolve.call(self, r.response);
 			}, err => {
-				(reject || opts.error || self.error).call(self, self.getError(err));
+				(opts.error || self.error || reject).call(self, self.getError(err));
 			});
 		});
 	};
@@ -1449,13 +1449,13 @@ function BusinessObject(ses, name, instance) {
 				const r = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.getMetaData] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
-					(reject || opts.error || self.session.error).call(self, r.response);
+					(opts.error || self.session.error || reject).call(self, r.response);
 				} else {
 					self.metadata = r.response;
 					resolve && resolve.call(self, self.metadata);
 				}
 			}, err => {
-				(reject || opts.error || self.session.error).call(self, self.session.getError(err));
+				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
 			});
 		});
 	};
@@ -1745,13 +1745,13 @@ function BusinessObject(ses, name, instance) {
 				const r = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.getFilters] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
-					(reject || opts.error || self.session.error).call(self, r.response);
+					(opts.error || self.session.error || reject).call(self, r.response);
 				} else {
 					self.filters = r.response;
 					resolve && resolve.call(self, self.filters);
 				}
 			}, err => {
-				(reject || opts.error || self.session.error).call(self, self.session.getError(err));
+				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
 			});
 	
 		});
@@ -1762,7 +1762,7 @@ function BusinessObject(ses, name, instance) {
 	 * @param {object} options Options
 	 * @private
 	 */
-	function _getOptions(options) {
+	function getReqOptions(options) {
 		let opts = '';
 		if (options.context)
 			opts += '&context=' + encodeURIComponent(options.context);
@@ -1783,7 +1783,7 @@ function BusinessObject(ses, name, instance) {
 	 * @param {object} data Data
 	 * @private
 	 */
-	function _getReqParams(data) {
+	function getReqParams(data) {
 		let p = '';
 		if (!data) return p;
 		let n = 0;
@@ -1818,11 +1818,11 @@ function BusinessObject(ses, name, instance) {
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			self.filters = filters || {};
-			self.session.req.call(self.session, self.path + '&action=count', _getReqParams(self.filters), (res, status) => {
+			self.session.req.call(self.session, self.path + '&action=count', getReqParams(self.filters), (res, status) => {
 				const r = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.getCount] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
-					(reject || opts.error || self.session.error).call(self, r.response);
+					(opts.error || self.session.error || reject).call(self, r.response);
 				} else {
 					self.count = r.response.count;
 					self.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
@@ -1831,7 +1831,7 @@ function BusinessObject(ses, name, instance) {
 					resolve && resolve.call(self, self.count);
 				}
 			}, err => {
-				(reject || opts.error || self.session.error).call(self, self.session.getError(err));
+				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
 			});
 		});
 	};
@@ -1858,7 +1858,7 @@ function BusinessObject(ses, name, instance) {
 		const self = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
-			let p = _getOptions(opts);
+			let p = getReqOptions(opts);
 			if (opts.page > 0)
 				p += '&page=' + (opts.page - 1);
 			if (opts.metadata===true)
@@ -1866,11 +1866,11 @@ function BusinessObject(ses, name, instance) {
 			if (opts.visible===true)
 				p += '&_visible=true';
 			self.filters = filters || {};
-			self.session.req.call(self.session, self.path + '&action=search' + p, _getReqParams(self.filters), (res, status) => {
+			self.session.req.call(self.session, self.path + '&action=search' + p, getReqParams(self.filters), (res, status) => {
 				const r = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.search] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
-					(reject || opts.error || self.session.error).call(self, r.response);
+					(opts.error || self.session.error || reject).call(self, r.response);
 				} else {
 					if (res.meta)
 						self.metadata = r.response.meta;
@@ -1881,7 +1881,7 @@ function BusinessObject(ses, name, instance) {
 					resolve && resolve.call(self, self.list);
 				}
 			}, err => {
-				(reject || opts.error || self.session.error).call(self, self.session.getError(err));
+				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
 			});
 		});
 	};
@@ -1901,7 +1901,7 @@ function BusinessObject(ses, name, instance) {
 		const self = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
-			let p = _getOptions(opts);
+			let p = getReqOptions(opts);
 			const  tv = opts.treeView;
 			if (tv)
 				p += '&treeview=' + encodeURIComponent(tv);
@@ -1918,18 +1918,18 @@ function BusinessObject(ses, name, instance) {
 				const r = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
-					(reject || opts.error || self.session.error).call(self, r.response);
+					(opts.error || self.session.error || reject).call(self, r.response);
 				} else {
-					if (res.meta)
+					if (r.response.meta)
 						self.metadata = r.response.meta;
-					if (res.data)
+					if (r.response.data)
 						self.item = tv ? r.response.data.item : r.response.data;
 					else
 						self.item = tv ? r.response.item : r.response;
 					resolve && resolve.call(self, tv ? r.response : self.item);
 				}
 			}, err => {
-				(reject || opts.error || self.session.error).call(self, self.session.getError(err));
+				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
 			});
 		});
 	};
@@ -2025,18 +2025,18 @@ function BusinessObject(ses, name, instance) {
 		const self = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
-			let p = _getOptions(opts);
+			let p = getReqOptions(opts);
 			self.session.req.call(self.session, self.path + '&action=populate&' + self.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, (res, status) => {
 				const r = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.populate] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
-					(reject || opts.error || self.session.error).call(self, r.response);
+					(opts.error || self.session.error || reject).call(self, r.response);
 				} else {
 					self.item = r.response.data ? r.response.data : r.response;
 					resolve && resolve.call(self, self.item);
 				}
 			}, err => {
-				(reject || opts.error || self.session.error).call(self, self.session.getError(err));
+				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
 			});
 		});
 	};
@@ -2074,18 +2074,18 @@ function BusinessObject(ses, name, instance) {
 			if (item)
 				self.item = item;
 			self.item.row_id = self.session.constants.DEFAULT_ROW_ID;
-			let p = _getOptions(opts);
-			self.session.req.call(self.session, self.path + '&action=create' + p, _getReqParams(self.item), (res, status) => {
+			let p = getReqOptions(opts);
+			self.session.req.call(self.session, self.path + '&action=create' + p, getReqParams(self.item), (res, status) => {
 				const r = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.create] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
-					(reject || opts.error || self.session.error).call(self, r.response);
+					(opts.error || self.session.error || reject).call(self, r.response);
 				} else {
 					self.item = r.response.data ? r.response.data : r.response;
 					resolve && resolve.call(self, self.item);
 				}
 			}, err => {
-				(reject || opts.error || self.session.error).call(self, self.session.getError(err));
+				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
 			});
 		});
 	};
@@ -2104,18 +2104,18 @@ function BusinessObject(ses, name, instance) {
 		return new Promise((resolve, reject) => {
 			if (item)
 				self.item = item;
-			let p = _getOptions(opts);
-			self.session.req.call(self.session, self.path + '&action=update' + p, _getReqParams(self.item), (res, status) => {
+			let p = getReqOptions(opts);
+			self.session.req.call(self.session, self.path + '&action=update' + p, getReqParams(self.item), (res, status) => {
 				const r = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.update] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
-					(reject || opts.error || self.session.error).call(self, r.response);
+					(opts.error || self.session.error || reject).call(self, r.response);
 				} else {
 					self.item = r.response.data ? r.response.data : r.response;
 					resolve && resolve.call(self, self.item);
 				}
 			}, err => {
-				(reject || opts.error || self.session.error).call(self, self.session.getError(err));
+				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
 			});
 		});
 	};
@@ -2138,14 +2138,14 @@ function BusinessObject(ses, name, instance) {
 				const r = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.del] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
-					(reject || opts.error || self.session.error).call(self, r.response);
+					(opts.error || self.session.error || reject).call(self, r.response);
 				} else {
 					self.item = undefined;
 					delete r.response.undoredo;
 					resolve && resolve.call(self, r.response);
 				}
 			}, err => {
-				(reject || opts.error || self.session.error).call(self, self.session.getError(err));
+				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
 			});
 		});
 	};
@@ -2164,17 +2164,17 @@ function BusinessObject(ses, name, instance) {
 		const self = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
-			self.session.req.call(self.session, self.path + '&action=' + encodeURIComponent(action) + (rowId ? '&' + self.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : ''), _getReqParams(opts.parameters), (res, status) => {
+			self.session.req.call(self.session, self.path + '&action=' + encodeURIComponent(action) + (rowId ? '&' + self.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : ''), getReqParams(opts.parameters), (res, status) => {
 				const r = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.action(' + action + ')] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
-					(reject || opts.error || self.session.error).call(self, r.response);
+					(opts.error || self.session.error || reject).call(self, r.response);
 				} else {
 					const result = r.response.result;
 					resolve && resolve.call(self, result);
 				}
 			}, err => {
-				(reject || opts.error || self.session.error).call(self, self.session.getError(err));
+				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
 			});
 		});
 	};
@@ -2194,17 +2194,17 @@ function BusinessObject(ses, name, instance) {
 		return new Promise((resolve, reject) => {
 			if (opts.filters)
 				self.filters = opts.filters;
-			self.session.req.call(self.session, self.path + '&action=crosstab&crosstab=' + encodeURIComponent(crosstab), _getReqParams(self.filters), (res, status) => {
+			self.session.req.call(self.session, self.path + '&action=crosstab&crosstab=' + encodeURIComponent(crosstab), getReqParams(self.filters), (res, status) => {
 				const r = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.crosstab(' + crosstab + ')] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
-					(reject || opts.error || self.session.error).call(self, r.response);
+					(opts.error || self.session.error || reject).call(self, r.response);
 				} else {
 					self.crosstabdata = r.response;
 					resolve && resolve.call(self, self.crosstabdata);
 				}
 			}, err => {
-				(reject || opts.error || self.session.error).call(self, self.session.getError(err));
+				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
 			});
 		});
 	};
@@ -2233,12 +2233,12 @@ function BusinessObject(ses, name, instance) {
 				const r = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.print(' + prt + ')] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
-					(reject || opts.error || self.session.error).call(self, r.response);
+					(opts.error || self.session.error || reject).call(self, r.response);
 				} else {
 					resolve && resolve.call(self, Object.assign(new Document(), r.response));
 				}
 			}, err => {
-				(reject || opts.error || self.session.error).call(self, self.session.getError(err));
+				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
 			});
 		});
 	};
@@ -2258,17 +2258,17 @@ function BusinessObject(ses, name, instance) {
 		return new Promise((resolve, reject) => {
 			let p = { name: param };
 			if (value) p.value = value;
-			self.session.req.call(self.session, self.path + '&action=setparameter', _getReqParams(p), (res, status) => {
+			self.session.req.call(self.session, self.path + '&action=setparameter', getReqParams(p), (res, status) => {
 				const r = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.setParameter(' + p.name + ')] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
-					(reject || opts.error || self.session.error).call(self, r.response);
+					(opts.error || self.session.error || reject).call(self, r.response);
 				} else {
 					const result = r.response.result;
 					resolve && resolve.call(self, result);
 				}
 			}, err => {
-				(reject || opts.error || self.session.error).call(self, self.session.getError(err));
+				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
 			});
 		});
 	};
@@ -2286,17 +2286,17 @@ function BusinessObject(ses, name, instance) {
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			let p = { name: param };
-			self.session.req.call(self.session, self.path + '&action=getparameter', _getReqParams(p), (res, status) => {
+			self.session.req.call(self.session, self.path + '&action=getparameter', getReqParams(p), (res, status) => {
 				const r = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.getParameter(' + p.name + ')] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
-					(reject || opts.error || self.session.error).call(self, r.response);
+					(opts.error || self.session.error || reject).call(self, r.response);
 				} else {
 					const result = r.response.result;
 					resolve && resolve.call(self, result);
 				}
 			}, err => {
-				(reject || opts.error || self.session.error).call(self, self.session.getError(err));
+				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
 			});
 		});
 	};
@@ -2387,11 +2387,11 @@ function ExternalObject(ses, name) {
 	/**
 	 * Call an external object
 	 * @param {object} [params] Optional URL parameters
-	 * @param {object} [data] Optional data (for 'post' and 'put' methods only)
+	 * @param {object} [data] Optional data (for 'POST' and 'PUT' methods only)
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
-	 * @param {object} [opts.method] Optional method 'get', 'post', 'put' or 'delete' (defaults to 'get' if data is not set or 'post" if data is set
-	 * @param {function} [opts.contentType] Optional data content type (for 'post' and 'put' methods only)
+	 * @param {object} [opts.method] Optional method 'GET', 'POST', 'PUT' or 'DELETE' (defaults to 'GET' if data is not set or 'POST" if data is set
+	 * @param {function} [opts.contentType] Optional data content type (for 'POST' and 'PUT' methods only)
 	 * @return {promise<object>} Promise to the external object content
 	 * @function
 	 */
@@ -2402,7 +2402,7 @@ function ExternalObject(ses, name) {
 			let p = '';
 			if (params)
 				p = '?' + self.callParams(params);
-			const m = opts.method ? opts.method : (data ? 'POST' : 'GET');
+			const m = opts.method ? opts.method.toUpperCase() : (data ? 'POST' : 'GET');
 			const h = {};
 			if (opts.contentType) {
 				h['Content-Type'] = opts.contentType;
@@ -2411,22 +2411,22 @@ function ExternalObject(ses, name) {
 			}
 			let b = self.session.getBearerTokenHeader();
 			if (b) {
-				self.session.debug('[simplicite.ExternalObject.call] Using bearer token header = ' + b);
 				h['X-Simplicite-Authorization'] = b;
 			} else {
 				b = self.session.getBasicAuthHeader();
-				if (b) {
-					self.session.debug('[simplicite.ExternalObject.call] Using basic auth header = ' + b);
+				if (b)
 					h.Authorization = b;
-				}
 			}
-			fetch(self.session.parameters.url + self.path + p, {
+			const u = self.session.parameters.url + self.path + p;
+			const d = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined;
+			self.session.debug('[simplicite.ExternalObject.call] ' + m + ' ' + u + ' with ' + (d ? ' with ' + d : ''));
+			fetch(u, {
 				method: m,
 				headers: h,
-				timeout: self.session.timeout * 1000,
+				timeout: self.session.timeout * 1000,  // TODO: no timeout in fetch API
 				mode: 'cors',
 				credentials: 'include',
-				body: data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined
+				body: d
 			}).then(res => {
 				const type = res.headers.get('content-type');
 				self.session.debug('[simplicite.ExternalObject.call(' + p + ')] HTTP status = ' + res.status + ', response content type = ' + type);
@@ -2434,23 +2434,23 @@ function ExternalObject(ses, name) {
 					res.json().then(data => {
 						resolve && resolve.call(self, data, res.status, res.headers);
 					}).catch(err => {
-						(reject || opts.error || self.error).call(self, self.getError(err));
+						(opts.error || self.error || reject).call(self, self.getError(err));
 					});
 				} else if (type && type.startsWith('text/')) { // Text
 					res.text().then(data => {
 						resolve && resolve.call(self, data, res.status, res.headers);
 					}).catch(err => {
-						(reject || opts.error || self.error).call(self, self.getError(err));
+						(opts.error || self.error || reject).call(self, self.getError(err));
 					});
 				} else { // Binary
 					res.arrayBuffer().then(data => {
 						resolve && resolve.call(self, data, res.status, res.headers);
 					}).catch(err => {
-						(reject || opts.error || self.error).call(self, self.getError(err));
+						(opts.error || self.error || reject).call(self, self.getError(err));
 					});
 				}
 			}).catch(err => {
-				(reject || opts.error || self.error).call(self, self.getError(err));
+				(opts.error || self.error || reject).call(self, self.getError(err));
 			});
 		});
 	};
