@@ -12,7 +12,8 @@ module.exports = {
 		'SharedArrayBuffer': 'readonly'
 	},
 	'parserOptions': {
-		'ecmaVersion': 11
+		'ecmaVersion': 12,
+		'sourceType': 'module'
 	},
 	'rules': {
 		'indent': [ 'error', 'tab' ],

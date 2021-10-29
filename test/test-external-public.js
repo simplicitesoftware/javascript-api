@@ -1,28 +1,29 @@
-const assert = require('assert').strict;
+import simplicite from '../src/simplicite.mjs';
+import assert from 'assert';
 
-const debug = process.env.TEST_SIMPLICITE_DEBUG == 'true';
-const app = require('../src/simplicite').session({
+const app = simplicite.session({
 	url: process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080',
 	endpoint: 'public',
-	debug: debug
+	debug: process.env.TEST_SIMPLICITE_DEBUG == 'true'
 });
-if (debug) console.log(app.parameters);
+
+app.debug('Parameters', app.parameters);
 
 const params = { name: 'Simplicite public (URL parameter)' };
 const data = { name: 'Simplicite public (posted in JSON)' };
 
 let ext = app.getExternalObject('AppExt2');
-ext.call(params).then(res => {
-	if (debug) console.log('CALL: ' + JSON.stringify(res, null, 2));
-	assert.ok(res);
-	return ext.call(null, data); // POST call
+ext.call(params).then(res => { // GET call
+	app.info(res);
+	assert.ok(res.method == 'get');
+	return ext.call(null, data); // POST call without params
 }).then(res => {
-	if (debug) console.log('CALL: ' + JSON.stringify(res, null, 2));
-	assert.ok(res);
-	return ext.call(params, data); // POST call w/ params
+	app.info(res);
+	assert.ok(res.method == 'post');
+	return ext.call(params, data); // POST call with params
 }).then(res => {
-	if (debug) console.log('CALL: ' + JSON.stringify(res, null, 2));
-	assert.ok(res);
+	app.info(res);
+	assert.ok(res.method == 'post');
 }).catch(err => {
-	console.error(err);
+	app.error(err);
 });

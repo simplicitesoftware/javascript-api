@@ -1,16 +1,16 @@
-const assert = require('assert').strict;
+import simplicite from '../src/simplicite.mjs';
+import assert from 'assert';
 
 const adminUsername = process.env.TEST_SIMPLICITE_ADMIN_USERNAME || 'designer';
 const adminPassword = process.env.TEST_SIMPLICITE_ADMIN_PASSWORD || 'designer';
 
 const debug = process.env.TEST_SIMPLICITE_DEBUG == 'true';
-const app = require('../src/simplicite').session({
+const app = simplicite.session({
 	url: process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080',
 	debug: debug
 });
 
-// Test logger
-app.log(app.parameters);
+if (debug) app.log(app.parameters);
 
 // Test default handlers
 app.info('INFO message');
@@ -33,10 +33,10 @@ app.getHealth().then(health => {
 	assert.ok(health.platform.status == 'OK');
 	app.log('Status = ' + health.platform.status);
 	return app.login({ username: adminUsername, password: adminPassword });
-}).then(ses => {
-	app.debug(ses);
-	assert.ok(ses.login == adminUsername);
-	app.log('Logged in as ' + ses.login);
+}).then(user => {
+	app.debug(user);
+	assert.ok(user.login == adminUsername);
+	app.log('Logged in as ' + user.login);
 	return app.getGrant({ inlinePicture: true });
 }).then(grant => {
 	app.debug(grant);
@@ -50,94 +50,94 @@ app.getHealth().then(health => {
 }).then(appinfo => {
 	app.debug(appinfo);
 	assert.ok(appinfo.version);
-	console.log('Application: ' + appinfo.version + ', title ' + appinfo.title);
+	app.log('Application: ' + appinfo.version + ', title ' + appinfo.title);
 	return app.getSysInfo();
 }).then(sysinfo => {
 	app.debug(sysinfo);
 	assert.ok(sysinfo.heapmaxsize);
-	app.log('Memory: ' + sysinfo.heapmaxsize);
+	app.info('Memory: ' + sysinfo.heapmaxsize);
 	return app.getDevInfo();
 }).then(devinfo => {
 	app.debug(devinfo);
 	assert.ok(devinfo.jvm);
 	assert.ok(devinfo.jvm.version);
-	app.log('JVM: ' + devinfo.jvm.version);
+	app.info('JVM: ' + devinfo.jvm.version);
 	return app.getDevInfo('System');
 }).then(mdlinfo => {
 	app.debug(mdlinfo);
 	assert.ok(mdlinfo.version);
-	app.log('System module version: ' + mdlinfo.version);
+	app.info('System module version: ' + mdlinfo.version);
 	return app.indexSearch(sysCodeName, 'Field');
 }).then(results => {
 	app.debug(results);
 	assert.ok(results.length > 0);
-	app.log('Found ' + results.length + ' results');
+	app.info('Found ' + results.length + ' results');
 	for (let i = 0; i < results.length; i++) {
 		let result = results[i];
-		app.log('- Result[' + i + ']: ' + result.object + '(' + result.row_id + ') = ' + result.key);
+		app.info('- Result[' + i + ']: ' + result.object + '(' + result.row_id + ') = ' + result.key);
 	}
 	return app.getNews();
 }).then(news => {
 	app.debug(news);
 	assert.ok(news);
-	app.log('Nb news: ' + news.length);
+	app.info('Nb news: ' + news.length);
 	sys = app.getBusinessObject(sysName);
 	return sys.getMetaData();
 }).then(md => {
 	app.debug(md);
 	assert.ok(md.name == sysName);
-	app.log('Name: ' + md.name + ', instance name: ' + md.instance + ', label: ' + md.label);
+	app.info('Name: ' + md.name + ', instance name: ' + md.instance + ', label: ' + md.label);
 	assert.ok(sys.getName() == sysName);
-	app.log('Name: ' + sys.getName() + ', instance name: ' + sys.getInstance() + ', label: ' + sys.getLabel());
+	app.info('Name: ' + sys.getName() + ', instance name: ' + sys.getInstance() + ', label: ' + sys.getLabel());
 	assert.ok(sys.getFields().length > 0);
-	app.log('Number of fields: ' + sys.getFields().length + ', number of links: ' + sys.getLinks().length);
+	app.info('Number of fields: ' + sys.getFields().length + ', number of links: ' + sys.getLinks().length);
 	assert.ok(sys.getRowIdField().name == app.constants.DEFAULT_ROW_ID_NAME);
 	let f = sys.getField(sysCodeName);
 	assert.ok(f.name == sysCodeName);
 	assert.ok(f.type == sys.getFieldType(sysCodeName));
 	assert.ok(f.type == sys.getFieldType(f));
-	app.log('Code field: ' + sys.getField(sysCodeName).label);
+	app.info('Code field: ' + sys.getField(sysCodeName).label);
 	f = sys.getField(sysValueName);
 	assert.ok(f.name == sysValueName);
-	app.log('Value field: ' + sys.getField(sysValueName).label);
+	app.info('Value field: ' + sys.getField(sysValueName).label);
 	assert.ok(sys.isRowIdField(f) == false);
 	assert.ok(sys.isTimestampField(f) == false);
-	app.log('Resource URL: ' + sys.getResourceURL('TEST'));
-	app.log('Resource URL: ' + sys.getResourceURL('TEST', app.constants.RESOURCE_TYPE_ICON));
+	app.info('Resource URL: ' + sys.getResourceURL('TEST'));
+	app.info('Resource URL: ' + sys.getResourceURL('TEST', app.constants.RESOURCE_TYPE_ICON));
 	return sys.count(sysFilters);
 }).then(count => {
 	app.debug(count);
 	assert.ok(count >= 0);
-	app.log('Count: ' + count);
+	app.info('Count: ' + count);
 	return sys.search(sysFilters);
 }).then(list => {
 	app.debug(list);
 	assert.ok(list.length);
-	app.log('Found ' + list.length + ' items');
+	app.info('Found ' + list.length + ' items');
 	for (let i = 0; i < list.length; i++) {
 		let item = list[i];
-		app.log('- item[' + i + ']: ' + item.row_id + ' ' + item.sys_code + ' ' + item.sys_value);
+		app.info('- item[' + i + ']: ' + item.row_id + ' ' + item.sys_code + ' ' + item.sys_value);
 	}
-	app.log('Current filter: ' + sys.filters);
+	app.info('Current filter: ' + sys.filters);
 	return sys.getFilters();
 }).then(filters => {
 	app.debug(filters);
 	// TODO: see why this i not OK...
 	//assert.ok(filters[sysCodeName] == sysCodeFilter);
-	app.log('Filter: ' + filters[sysCodeName]);
+	app.info('Filter: ' + filters[sysCodeName]);
 	return sys.get(sysId);
 }).then(item => {
 	app.debug(item);
 	assert.ok(item.row_id == sysId);
-	app.log('Got item: ' + item.row_id + ' ' + item.sys_code + ' ' + item.sys_value);
+	app.info('Got item: ' + item.row_id + ' ' + item.sys_code + ' ' + item.sys_value);
 	sys.create({ sys_code: '', sys_value: '' }, { error: function(err) {
-		app.log('Invalid create error caught: ' + JSON.stringify(err));
+		app.info('Invalid create error caught: ' + JSON.stringify(err));
 	}});
 	return sys.getForCreate();
 }).then(item => {
 	app.debug(item);
 	assert.ok(item.row_id == app.constants.DEFAULT_ROW_ID);
-	app.log('Got new item for creation');
+	app.info('Got new item for creation');
 	item.sys_code = sysCode;
 	item.sys_value = sysValue;
 	return sys.create(item);
@@ -147,7 +147,7 @@ app.getHealth().then(health => {
 	assert.ok(sysId != app.constants.DEFAULT_ROW_ID);
 	assert.ok(item.sys_code == sysCode);
 	assert.ok(item.sys_value == sysValue);
-	app.log('Created new item with row ID: ' + sysId);
+	app.info('Created new item with row ID: ' + sysId);
 	return sys.action('getVersion', null, { parameters: { test1: 'TEST1', test2: 'TEST2' } });
 }).then(res => {
 	app.debug(res);
@@ -157,10 +157,10 @@ app.getHealth().then(health => {
 	assert.ok(item.row_id == sysId);
 	assert.ok(item.sys_code == sysCode);
 	assert.ok(item.sys_value == sysValue);
-	app.log('Got item for update with row ID: ' + item.row_id);
+	app.info('Got item for update with row ID: ' + item.row_id);
 	item.sys_value = '';
 	sys.update(item, { error: function(err) {
-		app.log('Invalid update error caught: ' + JSON.stringify(err));
+		app.info('Invalid update error caught: ' + JSON.stringify(err));
 	}});
 	item.sys_value = sysValue + ' updated';
 	return sys.update(item);
@@ -169,18 +169,18 @@ app.getHealth().then(health => {
 	assert.ok(sysId != app.constants.DEFAULT_ROW_ID);
 	assert.ok(item.sys_code == sysCode);
 	assert.ok(item.sys_value == sysValue + ' updated');
-	app.log('Updated item with row ID: ' + item.row_id);
+	app.info('Updated item with row ID: ' + item.row_id);
 	return sys.getForDelete(sysId);
 }).then(item => {
 	app.debug(item);
 	assert.ok(item.row_id == sysId);
 	assert.ok(item.sys_code == sysCode);
-	app.log('Got item for deletion with row ID: ' + item.row_id);
+	app.info('Got item for deletion with row ID: ' + item.row_id);
 	return sys.del(item);
 }).then(res => {
 	app.debug(res);
 	assert.ok(res.row_id == sysId);
-	app.log('Deleted item with row ID: ' + sysId);
+	app.info('Deleted item with row ID: ' + sysId);
 	usr = app.getBusinessObject(usrName);
 	return usr.getMetaData();
 }).then(md => {
@@ -192,32 +192,32 @@ app.getHealth().then(health => {
 	assert.ok(list.length == 1);
 	assert.ok(list[0].usr_login == app.grant.getLogin());
 	assert.ok(list[0].usr_image_id.mime && list[0].usr_image_id.content);
-	app.log('Got users list for current user (with picture): ' + usr.getFieldValue('usr_login', list[0]));
+	app.info('Got users list for current user (with picture): ' + usr.getFieldValue('usr_login', list[0]));
 	let m = usr.getField('row_module_id__mdl_name');
-	app.log(usr.getFieldLabel(m) + ': ' + usr.getFieldValue(m, list[0]));
+	app.info(usr.getFieldLabel(m) + ': ' + usr.getFieldValue(m, list[0]));
 	var s = usr.getFieldListValue('usr_active', list[0]);
-	app.log('Status: ' + s + ' (code: ' + list[0].usr_active + ')');
+	app.info('Status: ' + s + ' (code: ' + list[0].usr_active + ')');
 	assert.ok(s != list[0].usr_active);
 	var u = usr.getFieldDataURL('usr_image_id', list[0]);
-	app.log('Picture URL: ' + u.substr(0, 80) + '...');
+	app.info('Picture URL: ' + u.substr(0, 80) + '...');
 	assert.ok(u == app.grant.getPictureURL());
 	return usr.print('User-VCARD', list[0].row_id);
 }).then(doc => {
-	app.log('Publication:\n' + doc.getFilename() + ' ' + doc.getMIMEType() + ' ' + doc.getContent());
-	app.log('Data URL:\n' + doc.getDataURL());
-	app.log('Data decoded:\n' + doc.getContentAsText());
+	app.info('Publication:\n' + doc.getFilename() + ' ' + doc.getMIMEType() + ' ' + doc.getContent());
+	app.info('Data URL:\n' + doc.getDataURL());
+	app.info('Data decoded:\n' + doc.getContentAsText());
 	assert.ok(!!doc.getContent());
 	return usr.get(app.grant.getUserId(), { treeView: 'TreeUser' });
 }).then(tree => {
 	app.debug(tree);
 	assert.ok(tree.object == 'User');
 	assert.ok(tree.item.row_id == app.grant.getUserId());
-	app.log('Got user treeview');
+	app.info('Got user treeview');
 	return app.logout();
-}).then(res => {
-	app.debug(res);
-	assert.ok(res.result);
-	app.log('Logged out');
+}).then(logout => {
+	app.debug(logout);
+	assert.ok(logout.result);
+	app.info('Logged out');
 }).catch(err => {
-	app.log('Unexpected error caught: ' + JSON.stringify(err));
+	app.error(err);
 });

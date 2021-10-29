@@ -1,11 +1,12 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.1.0
+ * @version 2.1.2
  * @license Apache-2.0
  */
-const fetch = require('node-fetch');
-const buffer = require('buffer');
+
+import fetch  from 'node-fetch';
+import buffer from 'buffer';
 
 /**
  * Constants
@@ -400,40 +401,40 @@ function Session(params) {
 
 	/**
 	 * Log handler
-	 * @param {any} arg Argument
+	 * @param {...any} args Arguments
 	 * @function
 	 */
-	this.log = params.logHandler || (arg => { console.log(arg); });
+	this.log = params.logHandler || ((...args) => { console.log(args); });
 
 	/**
 	 * Info handler
-	 * @param {any} arg Argument
+	 * @param {...any} args Arguments
 	 * @function
 	 */
-	this.info = params.infoHandle || (arg => { console.info(arg); });
+	this.info = params.infoHandle || ((...args) => { console.info('INFO', args); });
 
 	/**
 	 * Warning handler
-	 * @param {any} arg Argument
+	 * @param {...any} args Arguments
 	 * @function
 	 */
-	this.warn = params.warningHandler || (arg => { console.warn(arg); });
+	this.warn = params.warningHandler || ((...args) => { console.warn('WARN', args); });
 	
 	/**
 	 * Error handler
-	 * @param {any} arg Argument
+	 * @param {...any} args Arguments
 	 * @function
 	 */
-	this.error = params.errorHandler || (arg => { console.error(arg); });
+	this.error = params.errorHandler || ((...args) => { console.error('ERROR', args); });
 
 	const _debug = !!params.debug;
 
 	/**
 	 * Debug handler
-	 * @param {any} arg Argument
+	 * @param {...any} args Arguments
 	 * @function
 	 */
-	this.debug = params.debugHandler || (arg => { if (_debug) console.log(arg); });
+	this.debug = params.debugHandler || ((...args) => { if (_debug) console.log('DEBUG', args); });
 
 	/**
 	 * Timeout (seconds)
@@ -2455,7 +2456,7 @@ function ExternalObject(ses, name) {
 	};
 }
 
-module.exports = {
+export default {
 	session: session,
 	Session: Session,
 	Grant: Grant,

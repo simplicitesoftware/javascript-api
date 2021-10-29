@@ -1,19 +1,21 @@
-const assert = require('assert').strict;
+import simplicite from '../src/simplicite.mjs';
+import assert from 'assert';
 
 const debug = process.env.TEST_SIMPLICITE_DEBUG == 'true';
-const app = require('../src/simplicite').session({
+const app = simplicite.session({
 	url: process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080',
 	endpoint: 'public',
 	debug: debug
 });
-if (debug) console.log(app.parameters);
+
+app.debug('Parameters', app.parameters);
 
 const obj = app.getBusinessObject('WebNews');
 
 obj.search().then(res => {
-	if (debug) console.log(res);
+	app.debug(res);
 	assert.ok(res);
 	assert.ok(res.length);
 }).catch(err => {
-	console.error(err);
+	app.error(err);
 });

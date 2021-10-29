@@ -1,4 +1,5 @@
-const assert = require('assert').strict;
+import simplicite from '../src/simplicite.mjs';
+import assert from 'assert';
 
 const adminUsername = process.env.TEST_SIMPLICITE_ADMIN_USERNAME || 'designer';
 const adminPassword = process.env.TEST_SIMPLICITE_ADMIN_PASSWORD || 'designer';
@@ -6,16 +7,16 @@ const adminPassword = process.env.TEST_SIMPLICITE_ADMIN_PASSWORD || 'designer';
 const testUsername = process.env.TEST_SIMPLICITE_USERNAME || 'website';
 const testPassword = process.env.TEST_SIMPLICITE_PASSWORD || 'simplicite';
 
-/*function myErrorHandler(err) {
-	console.error('ERROR:', err);
+/*function myErrorHandler(...args) {
+	console.error('MYERROR:', args);
 }*/
 
-const debug = process.env.TEST_SIMPLICITE_DEBUG == 'true';
-const app = require('../src/simplicite').session({
+const app = simplicite.session({
 	url: process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080',
 	//errorHandler: myErrorHandler,
-	debug: debug
+	debug: process.env.TEST_SIMPLICITE_DEBUG == 'true'
 });
+
 app.debug(app.parameters);
 
 //app.login({ username: 'unknown', password: 'unknown' }).catch(myErrorHandler);
@@ -27,46 +28,46 @@ app.debug(app.parameters);
 
 app.setUsername(adminUsername);
 app.setPassword(adminPassword);
-app.login().then(res => {
-	app.debug(res);
-	console.log('Logged in as ' + res.login + ' with authentication token ' + res.authtoken);
-	assert.ok(res.login == adminUsername);
+app.login().then(user => {
+	app.debug(user);
+	app.info('Logged in as ' + user.login + ' with authentication token ' + user.authtoken);
+	assert.ok(user.login == adminUsername);
 	return app.getGrant({ inlinePicture: true, includeTexts: true });
 }).then(grant => {
 	app.debug(grant);
 	assert.ok(grant.getLogin() == adminUsername);
-	console.log('Hello ' + grant.getFirstName() + ' ' + grant.getLastName() + ' (' + grant.getLogin() + ')');
-	console.log(grant.T('SAVE'));
+	app.info('Hello ' + grant.getFirstName() + ' ' + grant.getLastName() + ' (' + grant.getLogin() + ')');
+	app.info(grant.T('SAVE'));
 	return app.logout();
 }).then(res => {
 	app.debug(res);
 	assert.ok(res.result);
-	console.log('Logged out');
+	app.info('Logged out');
 	return app.login({ username: testUsername, password: testPassword });
 }).then(res => {
 	app.debug(res);
 	assert.ok(res.login == testUsername);
-	console.log('Logged in as ' + res.login);
+	app.info('Logged in as ' + res.login);
 	return app.getGrant({ inlinePicture: false });
 }).then(grant => {
 	app.debug(grant);
 	assert.ok(grant.getLogin() == testUsername);
-	console.log('Hello ' + grant.getFirstName() + ' ' + grant.getLastName() + ' (' + grant.getLogin() + ')');
+	app.info('Hello ' + grant.getFirstName() + ' ' + grant.getLastName() + ' (' + grant.getLogin() + ')');
 	return app.logout();
-}).then(res => {
-	app.debug(res);
-	assert.ok(res.result);
-	console.log('Logged out');
+}).then(logout => {
+	app.debug(logout);
+	assert.ok(logout.result);
+	app.info('Logged out');
 	return app.login({ username: 'unknown', password: 'unknown', error: err => {
 		app.debug(err);
-		console.log('Status: ' + err.status + ', message: ' + err.message);
+		app.info('Status: ' + err.status + ', message: ' + err.message);
 		assert.ok(err.status == 401);
 		return app.login({ authtoken: 'unknown', error: err => {
 			app.debug(err);
-			console.log('Status: ' + err.status + ', message: ' + err.message);
+			app.info('Status: ' + err.status + ', message: ' + err.message);
 			assert.ok(err.status == 401);
 		}});
 	}});	
 }).catch(err => {
-	console.error(err);
+	app.error(err);
 });

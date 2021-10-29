@@ -1,6 +1,7 @@
 {
   "name": "simplicite",
-  "version": "2.1.0",
+  "type": "module",
+  "version": "2.2.0",
   "description": "Simplicite(R) platform Javascript API (for node.js and browser)",
   "repository": {
     "type": "git",
@@ -13,7 +14,7 @@
     "lowcode"
   ],
   "dependencies": {
-    "node-fetch": "^2.6.5",
+    "node-fetch": "^3.0.0",
     "buffer": "^6.0.3"
   },
   "devDependencies": {
@@ -22,18 +23,18 @@
     "@babel/node": "^7.15.8",
     "@babel/preset-env": "^7.15.8",
     "docdash": "^1.2.0",
-    "eslint": "^7.32.0",
+    "esbuild": "^0.13.10",
+    "eslint": "^8.1.0",
     "jest": "^27.3.1",
     "jsdoc": "^3.6.7",
     "npm-check-updates": "^11.8.5",
-    "replace": "^1.2.1",
-    "uglify-js": "^3.14.2"
+    "replace": "^1.2.1"
   },
   "scripts": {
-    "lint": "eslint src/simplicite.js test/*.js",
+    "lint": "eslint src/simplicite.mjs test/*.js",
     "babel": "babel src --out-dir=babel",
-    "build": "uglifyjs src/simplicite.js --comments -o dist/simplicite.min.js",
-    "doc": "jsdoc -t node_modules/docdash -d docs src/simplicite.js USAGE.md && replace '#fc83ff' '#98cbff' docs/styles/jsdoc.css && replace '#6d426d' '#2e76bd' docs/styles/jsdoc.css && replace '#CA79CA' '#edb8b8' docs/styles/jsdoc.css && replace '#606' '#094e93' docs/styles/jsdoc.css",
+    "build": "esbuild --minify --outfile=dist/simplicite.min.js src/simplicite.mjs",
+    "doc": "jsdoc -t node_modules/docdash -d docs src/simplicite.mjs USAGE.md && replace '#fc83ff' '#98cbff' docs/styles/jsdoc.css && replace '#6d426d' '#2e76bd' docs/styles/jsdoc.css && replace '#CA79CA' '#edb8b8' docs/styles/jsdoc.css && replace '#606' '#094e93' docs/styles/jsdoc.css",
     "test": "jest --coverage -- test/simplicite.test.js",
     "ncu": "ncu"
   },
