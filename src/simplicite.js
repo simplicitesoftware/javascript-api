@@ -4,7 +4,8 @@
  * @version 2.0.1
  * @license Apache-2.0
  */
-const fetch = require('cross-fetch');
+const fetch = require('node-fetch');
+//const fetch = require('cross-fetch');
 const buffer = require('buffer');
 
 /**
@@ -700,7 +701,7 @@ function Session(params) {
 		return new Promise((resolve, reject) => {
 			self.req.call(self, self.parameters.healthpath + '&full=' + !!opts.full, undefined, (res, status) => {
 				const r = self.parse(res, status);
-				self.debug('[simplicite._getHealth] HTTP status = ' + status + ', response type = ' + res);
+				self.debug('[simplicite.getHealth] HTTP status = ' + status + ', response type = ' + res);
 				if (r.type === 'error')
 					(reject || opts.error || self.error).call(self, r.response);
 				else
@@ -874,7 +875,7 @@ function Session(params) {
 					(reject || opts.error || self.error).call(self, r.response);
 				} else {
 					self.appinfo = r.response;
-					resolve && resolve.call(self, r.response);
+					resolve && resolve.call(self, self.appinfo);
 				}
 			}, err => {
 				(reject || opts.error || self.error).call(self, self.getError(err));
@@ -900,7 +901,7 @@ function Session(params) {
 					(reject || opts.error || self.error).call(self, r.response);
 				} else {
 					self.sysinfo = r.response;
-					resolve && resolve.call(self, r.response);
+					resolve && resolve.call(self, self.sysinfo);
 				}
 			}, err => {
 				(reject || opts.error || self.error).call(self, self.getError(err));
@@ -961,7 +962,7 @@ function Session(params) {
 					(reject || opts.error || self.error).call(self, r.response);
 				} else {
 					self.news = r.response;
-					resolve && resolve.call(self, r.response);
+					resolve && resolve.call(self, self.news);
 				}
 			}, err => {
 				(reject || opts.error || self.error).call(self, self.getError(err));
@@ -1428,33 +1429,6 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Get meta data
-	 * @param {function} callback Callback (called upon success)
-	 * @param {object} [opts] Options
-	 * @private
-	 */
-	function _getMetaData(callback, opts) {
-		const self = this;
-		opts = opts || {};
-		let p = '';
-		if (opts.context) p += '&context=' + encodeURIComponent(opts.context);
-		if (opts.contextParam) p += '&contextparam=' + encodeURIComponent(opts.contextParam);
-		self.session.req.call(self.session, self.path + '&action=metadata' + p, undefined, (res, status) => {
-			const r = self.session.parse(res, status);
-			self.session.debug('[simplicite.BusinessObject.getMetaData] HTTP status = ' + status + ', response type = ' + r.type);
-			if (r.type === 'error') {
-				(opts.error ? opts.error : self.session.error).call(self, r.response);
-			} else {
-				self.metadata = r.response;
-				if (callback)
-					callback.call(self, self.metadata);
-			}
-		}, e => {
-			(opts.error ? opts.error : self.session.error).call(self, e);
-		});
-	}
-
-	/**
-	 * Get meta data
 	 * @param {object} [opts] Options
 	 * @param {number} [opts.context] Context
 	 * @param {string} [opts.contextParam] Context parameter
@@ -1463,9 +1437,27 @@ function BusinessObject(ses, name, instance) {
 	 * @function
 	 */
 	this.getMetaData = (opts) => {
-		const d = Q.defer();
-		_getMetaData.call(this, metadata => { d.resolve(metadata); }, opts);
-		return d.promise;
+		const self = this;
+		opts = opts || {};
+		return new Promise((resolve, reject) => {
+			let p = '';
+			if (opts.context)
+				p += '&context=' + encodeURIComponent(opts.context);
+			if (opts.contextParam)
+				p += '&contextparam=' + encodeURIComponent(opts.contextParam);
+			self.session.req.call(self.session, self.path + '&action=metadata' + p, undefined, (res, status) => {
+				const r = self.session.parse(res, status);
+				self.session.debug('[simplicite.BusinessObject.getMetaData] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(reject || opts.error || self.session.error).call(self, r.response);
+				} else {
+					self.metadata = r.response;
+					resolve && resolve.call(self, self.metadata);
+				}
+			}, err => {
+				(reject || opts.error || self.session.error).call(self, self.session.getError(err));
+			});
+		});
 	};
 
 	/**
@@ -1733,35 +1725,6 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Get current filters
-	 * @param {function} callback Callback (called upon success)
-	 * @param {object} [opts] Options
-	 * @private
-	 */
-	function _getFilters(callback, opts) {
-		const self = this;
-		opts = opts || {};
-		let p = '';
-		if (opts.context)
-			p += '&context=' + encodeURIComponent(opts.context);
-		if (opts.reset)
-			p += '&reset=' + !!opts.reset;
-		self.session.req.call(self.session, self.path + '&action=filters' + p, undefined, (res, status) => {
-			const r = self.session.parse(res, status);
-			self.session.debug('[simplicite.BusinessObject.getFilters] HTTP status = ' + status + ', response type = ' + r.type);
-			if (r.type === 'error') {
-				(opts.error ? opts.error : self.session.error).call(self, r.response);
-			} else {
-				self.item = r.response;
-				if (callback)
-					callback.call(self, self.filters);
-			}
-		}, e => {
-			(opts.error ? opts.error : self.session.error).call(self, e);
-		});
-	}
-
-	/**
-	 * Get current filters
 	 * @param {object} [opts] Options
 	 * @param {number} [opts.context] Context
 	 * @param {boolean} [opts.reset] Reset filters?
@@ -1770,11 +1733,28 @@ function BusinessObject(ses, name, instance) {
 	 * @function
 	 */
 	this.getFilters =(opts) => {
-		const d = Q.defer();
+		const self = this;
 		opts = opts || {};
-		opts.error = opts.error || (e => { d.reject(e); });
-		_getFilters.call(this, filters => { d.resolve(filters); }, opts);
-		return d.promise;
+		return new Promise((resolve, reject) => {
+			let p = '';
+			if (opts.context)
+				p += '&context=' + encodeURIComponent(opts.context);
+			if (opts.reset)
+				p += '&reset=' + !!opts.reset;
+			self.session.req.call(self.session, self.path + '&action=filters' + p, undefined, (res, status) => {
+				const r = self.session.parse(res, status);
+				self.session.debug('[simplicite.BusinessObject.getFilters] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(reject || opts.error || self.session.error).call(self, r.response);
+				} else {
+					self.filters = r.response;
+					resolve && resolve.call(self, self.filters);
+				}
+			}, err => {
+				(reject || opts.error || self.session.error).call(self, self.session.getError(err));
+			});
+	
+		});
 	};
 
 	/**
@@ -1827,35 +1807,6 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Count
-	 * @param {function} callback Callback (called upon success)
-	 * @param {object} [filters] Filters, defaults to current filters if not set
-	 * @param {object} [opts] Options
-	 * @private
-	 */
-	function _count(callback, filters, opts) {
-		const self = this;
-		opts = opts || {};
-		self.filters = filters || {};
-		self.session.req.call(self.session, self.path + '&action=count', _getReqParams(self.filters), (res, status) => {
-			const r = self.session.parse(res, status);
-			self.session.debug('[simplicite.BusinessObject.getCount] HTTP status = ' + status + ', response type = ' + r.type);
-			if (r.type === 'error') {
-				(opts.error ? opts.error : self.session.error).call(self, r.response);
-			} else {
-				self.count = r.response.count;
-				self.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
-				self.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
-				self.list = [];
-				if (callback)
-					callback.call(self, self.count);
-			}
-		}, e => {
-			(opts.error ? opts.error : self.session.error).call(self, e);
-		});
-	}
-
-	/**
-	 * Count
 	 * @param {object} [filters] Filters, defaults to current filters if not set
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
@@ -1863,11 +1814,26 @@ function BusinessObject(ses, name, instance) {
 	 * @function
 	 */
 	this.count = (filters, opts) => {
-		const d = Q.defer();
+		const self = this;
 		opts = opts || {};
-		opts.error = opts.error || (e => { d.reject(e); });
-		_count.call(this, count => { d.resolve(count); }, filters, opts);
-		return d.promise;
+		return new Promise((resolve, reject) => {
+			self.filters = filters || {};
+			self.session.req.call(self.session, self.path + '&action=count', _getReqParams(self.filters), (res, status) => {
+				const r = self.session.parse(res, status);
+				self.session.debug('[simplicite.BusinessObject.getCount] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(reject || opts.error || self.session.error).call(self, r.response);
+				} else {
+					self.count = r.response.count;
+					self.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
+					self.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
+					self.list = [];
+					resolve && resolve.call(self, self.count);
+				}
+			}, err => {
+				(reject || opts.error || self.session.error).call(self, self.session.getError(err));
+			});
+		});
 	};
 
 	/**
@@ -1876,42 +1842,6 @@ function BusinessObject(ses, name, instance) {
 	 * @function
 	 */
 	this.getCount = this.count;
-
-	/**
-	 * Search
-	 * @param {function} callback Callback (called upon success)
-	 * @param {object} [filters] Filters, defaults to current filters if not set
-	 * @param {object} [opts] Options
-	 * @private
-	 */
-	function _search(callback, filters, opts) {
-		const self = this;
-		opts = opts || {};
-		let p = _getOptions(opts);
-		if (opts.page > 0)
-			p += '&page=' + (opts.page - 1);
-		if (opts.metadata===true) p += '&_md=true';
-		if (opts.visible===true) p += '&_visible=true';
-		self.filters = filters || {};
-		self.session.req.call(self.session, self.path + '&action=search' + p, _getReqParams(self.filters), (res, status) => {
-			const r = self.session.parse(res, status);
-			self.session.debug('[simplicite.BusinessObject.search] HTTP status = ' + status + ', response type = ' + r.type);
-			if (r.type === 'error') {
-				(opts.error ? opts.error : self.session.error).call(self, r.response);
-			} else {
-				if (res.meta)
-					self.metadata = r.response.meta;
-				self.count = r.response.count;
-				self.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
-				self.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
-				self.list = r.response.list;
-				if (callback)
-					callback.call(self, self.list);
-			}
-		}, e => {
-			(opts.error ? opts.error : self.session.error).call(self, e);
-		});
-	}
 
 	/**
 	 * Search
@@ -1925,53 +1855,36 @@ function BusinessObject(ses, name, instance) {
 	 * @function
 	 */
 	this.search = (filters, opts) => {
-		const d = Q.defer();
-		opts = opts || {};
-		opts.error = opts.error || (e => { d.reject(e); });
-		_search.call(this, list => { d.resolve(list); }, filters, opts);
-		return d.promise;
-	};
-
-	/**
-	 * Get
-	 * @param {function} callback Callback (called upon success)
-	 * @param {string} rowId Row ID
-	 * @param {object} [opts] Options
-	 * @private
-	 */
-	function _get(callback, rowId, opts) {
 		const self = this;
 		opts = opts || {};
-		let p = _getOptions(opts);
-		const  tv = opts.treeView;
-		if (tv)
-			p += '&treeview=' + encodeURIComponent(tv);
-		if (opts.fields) {
-			for (let i = 0; i < opts.fields.length; i++) {
-				p += '&fields=' + encodeURIComponent(opts.fields[i].replace('.', '__'));
-			}
-		}
-		if (opts.metadata) p += '&_md=true';
-		if (opts.social) p += '&_social=true';
-		self.session.req.call(self.session, self.path + '&action=get&' + self.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, (res, status) => {
-			const r = self.session.parse(res, status);
-			self.session.debug('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response type = ' + r.type);
-			if (r.type === 'error') {
-				(opts.error ? opts.error : self.session.error).call(self, r.response);
-			} else {
-				if (res.meta)
-					self.metadata = r.response.meta;
-				if (res.data)
-					self.item = tv ? r.response.data.item : r.response.data;
-				else
-					self.item = tv ? r.response.item : r.response;
-				if (callback)
-					callback.call(self, tv ? r.response : self.item);
-			}
-		}, e => {
-			(opts.error ? opts.error : self.session.error).call(self, e);
+		return new Promise((resolve, reject) => {
+			let p = _getOptions(opts);
+			if (opts.page > 0)
+				p += '&page=' + (opts.page - 1);
+			if (opts.metadata===true)
+				p += '&_md=true';
+			if (opts.visible===true)
+				p += '&_visible=true';
+			self.filters = filters || {};
+			self.session.req.call(self.session, self.path + '&action=search' + p, _getReqParams(self.filters), (res, status) => {
+				const r = self.session.parse(res, status);
+				self.session.debug('[simplicite.BusinessObject.search] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(reject || opts.error || self.session.error).call(self, r.response);
+				} else {
+					if (res.meta)
+						self.metadata = r.response.meta;
+					self.count = r.response.count;
+					self.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
+					self.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
+					self.list = r.response.list;
+					resolve && resolve.call(self, self.list);
+				}
+			}, err => {
+				(reject || opts.error || self.session.error).call(self, self.session.getError(err));
+			});
 		});
-	}
+	};
 
 	/**
 	 * Get
@@ -1985,26 +1898,41 @@ function BusinessObject(ses, name, instance) {
 	 * @function
 	 */
 	this.get = (rowId, opts) => {
-		const d = Q.defer();
+		const self = this;
 		opts = opts || {};
-		opts.error = opts.error || (e => { d.reject(e); });
-		_get.call(this, itm => { d.resolve(itm); }, rowId, opts);
-		return d.promise;
+		return new Promise((resolve, reject) => {
+			let p = _getOptions(opts);
+			const  tv = opts.treeView;
+			if (tv)
+				p += '&treeview=' + encodeURIComponent(tv);
+			if (opts.fields) {
+				for (let i = 0; i < opts.fields.length; i++) {
+					p += '&fields=' + encodeURIComponent(opts.fields[i].replace('.', '__'));
+				}
+			}
+			if (opts.metadata)
+				p += '&_md=true';
+			if (opts.social)
+				p += '&_social=true';
+			self.session.req.call(self.session, self.path + '&action=get&' + self.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, (res, status) => {
+				const r = self.session.parse(res, status);
+				self.session.debug('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(reject || opts.error || self.session.error).call(self, r.response);
+				} else {
+					if (res.meta)
+						self.metadata = r.response.meta;
+					if (res.data)
+						self.item = tv ? r.response.data.item : r.response.data;
+					else
+						self.item = tv ? r.response.item : r.response;
+					resolve && resolve.call(self, tv ? r.response : self.item);
+				}
+			}, err => {
+				(reject || opts.error || self.session.error).call(self, self.session.getError(err));
+			});
+		});
 	};
-
-	/**
-	 * Get for create
-	 * @param {function} callback Callback (called upon success)
-	 * @param {object} [opts] Options
-	 * @private
-	 */
-	function _getForCreate(callback, opts) {
-		opts = opts || {};
-		delete opts.treeview; // Inhibited in this context
-		delete opts.fields; // Inhibited in this context
-		opts.context = constants.CONTEXT_CREATE;
-		_get.call(this, callback, this.session.constants.DEFAULT_ROW_ID, opts);
-	}
 
 	/**
 	 * Get for create
@@ -2015,27 +1943,12 @@ function BusinessObject(ses, name, instance) {
 	 * @function
 	 */
 	this.getForCreate = (opts) => {
-		const d = Q.defer();
-		opts = opts || {};
-		opts.error = opts.error || (e => { d.reject(e); });
-		_getForCreate.call(this, itm => { d.resolve(itm); }, opts);
-		return d.promise;
-	};
-
-	/**
-	 * Get for update
-	 * @param {function} callback Callback (called upon success)
-	 * @param {string} rowId Row ID
-	 * @param {object} [opts] Options
-	 * @private
-	 */
-	function _getForUpdate(callback, rowId, opts) {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
-		opts.context = constants.CONTEXT_UPDATE;
-		_get.call(this, callback, rowId, opts);
-	}
+		opts.context = constants.CONTEXT_CREATE;
+		return this.get(this.session.constants.DEFAULT_ROW_ID, opts);
+	};
 
 	/**
 	 * Get for update
@@ -2047,27 +1960,12 @@ function BusinessObject(ses, name, instance) {
 	 * @function
 	 */
 	this.getForUpdate = (rowId, opts) => {
-		const d = Q.defer();
-		opts = opts || {};
-		opts.error = opts.error || (e => { d.reject(e); });
-		_getForUpdate.call(this, itm => { d.resolve(itm); }, rowId, opts);
-		return d.promise;
-	};
-
-	/**
-	 * Get for copy
-	 * @param {function} callback Callback (called upon success)
-	 * @param {string} rowId Row ID to copy
-	 * @param {object} [opts] Options
-	 * @private
-	 */
-	function _getForCopy(callback, rowId, opts) {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
-		opts.context = constants.CONTEXT_COPY;
-		_get.call(this, callback, rowId, opts);
-	}
+		opts.context = constants.CONTEXT_UPDATE;
+		return this.get(rowId, opts);
+	};
 
 	/**
 	 * Get for copy
@@ -2079,27 +1977,12 @@ function BusinessObject(ses, name, instance) {
 	 * @function
 	 */
 	this.getForCopy = (rowId, opts) => {
-		const d = Q.defer();
-		opts = opts || {};
-		opts.error = opts.error || (e => { d.reject(e); });
-		_getForCopy.call(this, itm => { d.resolve(itm); }, rowId, opts);
-		return d.promise;
-	};
-
-	/**
-	 * Get for delete
-	 * @param {function} callback Callback (called upon success)
-	 * @param {string} rowId Row ID
-	 * @param {object} [opts] Options
-	 * @private
-	 */
-	function _getForDelete(callback, rowId, opts) {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
-		opts.context = constants.CONTEXT_CREATE;
-		_get.call(this, callback, rowId, opts);
-	}
+		opts.context = constants.CONTEXT_COPY;
+		return this.get(rowId, opts);
+	};
 
 	/**
 	 * Get for delete
@@ -2111,11 +1994,11 @@ function BusinessObject(ses, name, instance) {
 	 * @function
 	 */
 	this.getForDelete = (rowId, opts) => {
-		const d = Q.defer();
 		opts = opts || {};
-		opts.error = opts.error || (e => { d.reject(e); });
-		_getForDelete.call(this, itm => { d.resolve(itm); }, rowId, opts);
-		return d.promise;
+		delete opts.treeview; // Inhibited in this context
+		delete opts.fields; // Inhibited in this context
+		opts.context = constants.CONTEXT_DELETE;
+		return this.get(rowId, opts);
 	};
 
 	/**
@@ -2132,106 +2015,49 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Populate
-	 * @param {function} callback Callback (called upon success)
-	 * @param {string} rowId Row ID
-	 * @param {object} [opts] Options
-	 * @private
-	 */
-	function _populate(callback, rowId, opts) {
-		const self = this;
-		opts = opts || {};
-		let p = _getOptions(opts);
-		self.session.req.call(self.session, self.path + '&action=populate&' + self.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, (res, status) => {
-			const r = self.session.parse(res, status);
-			self.session.debug('[simplicite.BusinessObject.populate] HTTP status = ' + status + ', response type = ' + r.type);
-			if (r.type === 'error') {
-				(opts.error ? opts.error : self.session.error).call(self, r.response);
-			} else {
-				self.item = r.response;
-				if (callback)
-					callback.call(self, self.item);
-			}
-		}, e => {
-			(opts.error ? opts.error : self.session.error).call(self, e);
-		});
-	}
-
-	/**
-	 * Populate
 	 * @param {string} rowId Row ID
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
 	 * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.populate = (itm, opts) => {
-		const d = Q.defer();
+	this.populate = (rowId, opts) => {
+		const self = this;
 		opts = opts || {};
-		opts.error = opts.error || (e => { d.reject(e); });
-		_populate.call(this, i => { d.resolve(i); }, itm, opts);
-		return d.promise;
+		return new Promise((resolve, reject) => {
+			let p = _getOptions(opts);
+			self.session.req.call(self.session, self.path + '&action=populate&' + self.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, (res, status) => {
+				const r = self.session.parse(res, status);
+				self.session.debug('[simplicite.BusinessObject.populate] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(reject || opts.error || self.session.error).call(self, r.response);
+				} else {
+					self.item = r.response.data ? r.response.data : r.response;
+					resolve && resolve.call(self, self.item);
+				}
+			}, err => {
+				(reject || opts.error || self.session.error).call(self, self.session.getError(err));
+			});
+		});
 	};
 
 	/**
-	 * Save
-	 * @param {function} callback Callback (called upon success)
-	 * @param {object} item Item (defaults to current item)
-	 * @param {object} [opts] Options
-	 * @private
-	 */
-	function _save(callback, item, opts) {
-		if (item)
-			this.item = item;
-		const rowId = this.item[this.metadata.rowidfield];
-		if (!rowId || rowId === constants.DEFAULT_ROW_ID)
-			_create.call(this, callback, item, opts);
-		else
-			_update.call(this, callback, item, opts);
-	}
-	
-	/**
-	 * Save
+	 * Save (create or update depending on item row ID value)
 	 * @param {object} item Item (defaults to current item)
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
 	 * @return {promise<object>} Promise to the saved record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.save = (itm, opts) => {
-		const d = Q.defer();
-		opts = opts || {};
-		opts.error = opts.error || (e => { d.reject(e); });
-		_save.call(this, i => { d.resolve(i); }, itm, opts);
-		return d.promise;
-	};
-
-	/**
-	 * Create (create or update)
-	 * @param {function} callback Callback (called upon success)
-	 * @param {object} item Item (defaults to current item)
-	 * @param {object} [opts] Options
-	 * @private
-	 */
-	function _create(callback, item, opts) {
-		const self = this;
+	this.save = (item, opts) => {
 		if (item)
-			self.item = item;
-		opts = opts || {};
-		let p = _getOptions(opts);
-		self.session.req.call(self.session, self.path + '&action=create' + p, _getReqParams(self.item), (res, status) => {
-			const r = self.session.parse(res, status);
-			self.session.debug('[simplicite.BusinessObject.create] HTTP status = ' + status + ', response type = ' + r.type);
-			if (r.type === 'error') {
-				(opts.error ? opts.error : self.session.error).call(self, r.response);
-			} else {
-				self.item = r.response.data ? r.response.data : r.response;
-				if (callback)
-					callback.call(self, self.item);
-			}
-		}, e => {
-			(opts.error ? opts.error : self.session.error).call(self, e);
-		});
-	}
+			this.item = item;
+		const rowId = this.item[this.metadata.rowidfield];
+		if (!rowId || rowId === constants.DEFAULT_ROW_ID)
+			return this.create(item, opts);
+		else
+			return this.update(item, opts);
+	};
 
 	/**
 	 * Create (create or update)
@@ -2241,42 +2067,28 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} Promise to the created record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.create = (itm, opts) => {
-		itm.row_id = this.session.constants.DEFAULT_ROW_ID;
-		const d = Q.defer();
-		opts = opts || {};
-		opts.error = opts.error || (e => { d.reject(e); });
-		_create.call(this, i => { d.resolve(i); }, itm, opts);
-		return d.promise;
-	};
-
-	/**
-	 * Update
-	 * @param {function} callback Callback (called upon success)
-	 * @param {object} item Item (defaults to current item)
-	 * @param {object} [opts] Options
-	 * @private
-	 */
-	function _update(callback, item, opts) {
+	this.create = (item, opts) => {
 		const self = this;
-		if (item)
-			self.item = item;
 		opts = opts || {};
-		let p = _getOptions(opts);
-		self.session.req.call(self.session, self.path + '&action=update' + p, _getReqParams(self.item), (res, status) => {
-			const r = self.session.parse(res, status);
-			self.session.debug('[simplicite.BusinessObject.update] HTTP status = ' + status + ', response type = ' + r.type);
-			if (r.type === 'error') {
-				(opts.error ? opts.error : self.session.error).call(self, r.response);
-			} else {
-				self.item = r.response.data ? r.response.data : r.response;
-				if (callback)
-					callback.call(self, self.item);
-			}
-		}, e => {
-			(opts.error ? opts.error : self.session.error).call(self, e);
+		return new Promise((resolve, reject) => {
+			if (item)
+				self.item = item;
+			self.item.row_id = self.session.constants.DEFAULT_ROW_ID;
+			let p = _getOptions(opts);
+			self.session.req.call(self.session, self.path + '&action=create' + p, _getReqParams(self.item), (res, status) => {
+				const r = self.session.parse(res, status);
+				self.session.debug('[simplicite.BusinessObject.create] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(reject || opts.error || self.session.error).call(self, r.response);
+				} else {
+					self.item = r.response.data ? r.response.data : r.response;
+					resolve && resolve.call(self, self.item);
+				}
+			}, err => {
+				(reject || opts.error || self.session.error).call(self, self.session.getError(err));
+			});
 		});
-	}
+	};
 
 	/**
 	 * Update
@@ -2286,41 +2098,27 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} Promise to the updated record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.update = (itm, opts) => {
-		const d = Q.defer();
-		opts = opts || {};
-		opts.error = opts.error || (e =>{ d.reject(e); });
-		_update.call(this, i => { d.resolve(i); }, itm, opts);
-		return d.promise;
-	};
-
-	/**
-	 * Delete
-	 * @param {function} callback Callback (called upon success)
-	 * @param {object} item Item (defaults to current item)
-	 * @param {object} [opts] Options
-	 * @private
-	 */
-	function _del(callback, item, opts) {
+	this.update = (item, opts) => {
 		const self = this;
-		if (item)
-			self.item = item;
 		opts = opts || {};
-		self.session.req.call(self.session, self.path + '&action=delete&' + self.metadata.rowidfield + '=' + encodeURIComponent(self.item[self.metadata.rowidfield]), undefined, (res, status) => {
-			const r = self.session.parse(res, status);
-			self.session.debug('[simplicite.BusinessObject.del] HTTP status = ' + status + ', response type = ' + r.type);
-			if (r.type === 'error') {
-				(opts.error ? opts.error : self.session.error).call(self, r.response);
-			} else {
-				self.item = undefined;
-				delete r.response.undoredo;
-				if (callback)
-					callback.call(self, r.response);
-			}
-		}, e => {
-			(opts.error ? opts.error : self.session.error).call(self, e);
+		return new Promise((resolve, reject) => {
+			if (item)
+				self.item = item;
+			let p = _getOptions(opts);
+			self.session.req.call(self.session, self.path + '&action=update' + p, _getReqParams(self.item), (res, status) => {
+				const r = self.session.parse(res, status);
+				self.session.debug('[simplicite.BusinessObject.update] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(reject || opts.error || self.session.error).call(self, r.response);
+				} else {
+					self.item = r.response.data ? r.response.data : r.response;
+					resolve && resolve.call(self, self.item);
+				}
+			}, err => {
+				(reject || opts.error || self.session.error).call(self, self.session.getError(err));
+			});
 		});
-	}
+	};
 
 	/**
 	 * Delete
@@ -2330,39 +2128,27 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise} Promise (the <code>item</code> member is emptied)
 	 * @function
 	 */
-	this.del = (itm, opts) => {
-		const d = Q.defer();
-		opts = opts || {};
-		opts.error = opts.error || (e => { d.reject(e); });
-		_del.call(this, r => { d.resolve(r); }, itm, opts);
-		return d.promise;
-	};
-
-	/**
-	 * Invoke a custom action
-	 * @param {function} callback Callback (called upon success)
-	 * @param {string} action Action name
-	 * @param {string} [rowId] Row ID
-	 * @param {object} [opts] Options
-	 * @private
-	 */
-	function _action(callback, action, rowId, opts) {
+	this.del = (item, opts) => {
 		const self = this;
 		opts = opts || {};
-		self.session.req.call(self.session, self.path + '&action=' + encodeURIComponent(action) + (rowId ? '&' + self.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : ''), _getReqParams(opts.parameters), (res, status) => {
-			const r = self.session.parse(res, status);
-			self.session.debug('[simplicite.BusinessObject.action(' + action + ')] HTTP status = ' + status + ', response type = ' + r.type);
-			if (r.type === 'error') {
-				(opts.error ? opts.error : self.session.error).call(self, r.response);
-			} else {
-				const result = r.response.result;
-				if (callback)
-					callback.call(self, result);
-			}
-		}, e => {
-			(opts.error ? opts.error : self.session.error).call(self, e);
+		return new Promise((resolve, reject) => {
+			if (item)
+				self.item = item;
+			self.session.req.call(self.session, self.path + '&action=delete&' + self.metadata.rowidfield + '=' + encodeURIComponent(self.item[self.metadata.rowidfield]), undefined, (res, status) => {
+				const r = self.session.parse(res, status);
+				self.session.debug('[simplicite.BusinessObject.del] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(reject || opts.error || self.session.error).call(self, r.response);
+				} else {
+					self.item = undefined;
+					delete r.response.undoredo;
+					resolve && resolve.call(self, r.response);
+				}
+			}, err => {
+				(reject || opts.error || self.session.error).call(self, self.session.getError(err));
+			});
 		});
-	}
+	};
 
 	/**
 	 * Invoke a custom action
@@ -2375,39 +2161,23 @@ function BusinessObject(ses, name, instance) {
 	 * @function
 	 */
 	this.action = (action, rowId, opts) => {
-		const d = Q.defer();
-		opts = opts || {};
-		opts.error = opts.error || (e => { d.reject(e); });
-		_action.call(this, res => { d.resolve(res); }, action, rowId, opts);
-		return d.promise;
-	};
-
-	/**
-	 * Build a pivot table
-	 * @param {function} callback Callback (called upon success)
-	 * @param {string} crosstab Pivot table name
-	 * @param {object} [opts] Options
-	 * @private
-	 */
-	function _crosstab(callback, crosstab, opts) {
 		const self = this;
 		opts = opts || {};
-		if (opts.filters)
-			self.filters = opts.filters;
-		self.session.req.call(self.session, self.path + '&action=crosstab&crosstab=' + encodeURIComponent(crosstab), _getReqParams(self.filters), (res, status) => {
-			const r = self.session.parse(res, status);
-			self.session.debug('[simplicite.BusinessObject.crosstab(' + crosstab + ')] HTTP status = ' + status + ', response type = ' + r.type);
-			if (r.type === 'error') {
-				(opts.error ? opts.error : self.session.error).call(self, r.response);
-			} else {
-				self.crosstabdata = r.response;
-				if (callback)
-					callback.call(self, self.crosstabdata);
-			}
-		}, e => {
-			(opts.error ? opts.error : self.session.error).call(self, e);
+		return new Promise((resolve, reject) => {
+			self.session.req.call(self.session, self.path + '&action=' + encodeURIComponent(action) + (rowId ? '&' + self.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : ''), _getReqParams(opts.parameters), (res, status) => {
+				const r = self.session.parse(res, status);
+				self.session.debug('[simplicite.BusinessObject.action(' + action + ')] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(reject || opts.error || self.session.error).call(self, r.response);
+				} else {
+					const result = r.response.result;
+					resolve && resolve.call(self, result);
+				}
+			}, err => {
+				(reject || opts.error || self.session.error).call(self, self.session.getError(err));
+			});
 		});
-	}
+	};
 
 	/**
 	 * Build a pivot table
@@ -2418,45 +2188,26 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} A promise to the pivot table data (also avialable as the <code>crosstabdata</code> member)
 	 * @function
 	 */
-	this.crosstab = (ctb, opts) => {
-		const d = Q.defer();
-		opts = opts || {};
-		opts.error = opts.error || (e => { d.reject(e); });
-		_crosstab.call(this, res => { d.resolve(res); }, ctb, opts);
-		return d.promise;
-	};
-
-	/**
-	 * Build a custom publication
-	 * @param {function} callback Callback (called upon success)
-	 * @param {string} prt Publication name
-	 * @param {string} [rowId] Row ID
-	 * @param {object} [opts] Options
-	 * @private
-	 */
-	function _print(callback, prt, rowId, opts) {
+	this.crosstab = (crosstab, opts) => {
 		const self = this;
 		opts = opts || {};
-		if (opts.filters)
-			self.filters = opts.filters;
-		let p = '';
-		if (opts.all)
-			p += '&all=' + !!opts.all;
-		if (opts.mailing)
-			p += '&mailing=' + !!opts.mailing;
-		self.session.req.call(self.session, self.path + '&action=print&printtemplate=' + encodeURIComponent(prt) + (rowId ? '&' + self.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : '') + p, undefined, (res, status) => {
-			const r = self.session.parse(res, status);
-			self.session.debug('[simplicite.BusinessObject.print(' + prt + ')] HTTP status = ' + status + ', response type = ' + r.type);
-			if (r.type === 'error') {
-				(opts.error ? opts.error : self.session.error).call(self, r.response);
-			} else {
-				if (callback)
-					callback.call(self, Object.assign(new Document(), r.response));
-			}
-		}, e => {
-			(opts.error ? opts.error : self.session.error).call(self, e);
+		return new Promise((resolve, reject) => {
+			if (opts.filters)
+				self.filters = opts.filters;
+			self.session.req.call(self.session, self.path + '&action=crosstab&crosstab=' + encodeURIComponent(crosstab), _getReqParams(self.filters), (res, status) => {
+				const r = self.session.parse(res, status);
+				self.session.debug('[simplicite.BusinessObject.crosstab(' + crosstab + ')] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(reject || opts.error || self.session.error).call(self, r.response);
+				} else {
+					self.crosstabdata = r.response;
+					resolve && resolve.call(self, self.crosstabdata);
+				}
+			}, err => {
+				(reject || opts.error || self.session.error).call(self, self.session.getError(err));
+			});
 		});
-	}
+	};
 
 	/**
 	 * Build a custom publication
@@ -2467,41 +2218,30 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<Document>} A promise to the document of the publication
 	 * @function
 	 */
-	this.print = (pt, rowId, opts) => {
-		const d = Q.defer();
-		opts = opts || {};
-		opts.error = opts.error || (e => { d.reject(e); });
-		_print.call(this, res => { d.resolve(res); }, pt, rowId, opts);
-		return d.promise;
-	};
-
-	/**
-	 * Set an object parameter
-	 * @param {function} callback Callback (called upon success)
-	 * @param {string} param Parameter name
-	 * @param {string} value Parameter value
-	 * @param {object} [opts] Options
-	 * @private
-	 */
-	function _setParameter(callback, param, value, opts) {
+	this.print = (prt, rowId, opts) => {
 		const self = this;
 		opts = opts || {};
-		let p = { name: param };
-		if (value) p.value = value;
-		self.session.req.call(self.session, self.path + '&action=setparameter', _getReqParams(p), (res, status) => {
-			const r = self.session.parse(res, status);
-			self.session.debug('[simplicite.BusinessObject.setParameter(' + p.name + ')] HTTP status = ' + status + ', response type = ' + r.type);
-			if (r.type === 'error') {
-				(opts.error ? opts.error : self.session.error).call(self, r.response);
-			} else {
-				const result = r.response.result;
-				if (callback)
-					callback.call(self, result);
-			}
-		}, e => {
-			(opts.error ? opts.error : self.session.error).call(self, e);
+		return new Promise((resolve, reject) => {
+			if (opts.filters)
+				self.filters = opts.filters;
+			let p = '';
+			if (opts.all)
+				p += '&all=' + !!opts.all;
+			if (opts.mailing)
+				p += '&mailing=' + !!opts.mailing;
+			self.session.req.call(self.session, self.path + '&action=print&printtemplate=' + encodeURIComponent(prt) + (rowId ? '&' + self.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : '') + p, undefined, (res, status) => {
+				const r = self.session.parse(res, status);
+				self.session.debug('[simplicite.BusinessObject.print(' + prt + ')] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(reject || opts.error || self.session.error).call(self, r.response);
+				} else {
+					resolve && resolve.call(self, Object.assign(new Document(), r.response));
+				}
+			}, err => {
+				(reject || opts.error || self.session.error).call(self, self.session.getError(err));
+			});
 		});
-	}
+	};
 
 	/**
 	 * Set an object parameter
@@ -2513,38 +2253,25 @@ function BusinessObject(ses, name, instance) {
 	 * @function
 	 */
 	this.setParameter = (param, value, opts) => {
-		const d = Q.defer();
-		opts = opts || {};
-		opts.error = opts.error || (e => { d.reject(e); });
-		_setParameter.call(this, () => { d.resolve(); }, param, value, opts);
-		return d.promise;
-	};
-
-	/**
-	 * Get an object parameter
-	 * @param {function} callback Callback (called upon success)
-	 * @param {string} param Parameter name
-	 * @param {object} [opts] Options
-	 * @private
-	 */
-	function _getParameter(callback, param, opts) {
 		const self = this;
 		opts = opts || {};
-		let p = { name: param };
-		self.session.req.call(self.session, self.path + '&action=getparameter', _getReqParams(p), (res, status) => {
-			const r = self.session.parse(res, status);
-			self.session.debug('[simplicite.BusinessObject.getParameter(' + p.name + ')] HTTP status = ' + status + ', response type = ' + r.type);
-			if (r.type === 'error') {
-				(opts.error ? opts.error : self.session.error).call(self, r.response);
-			} else {
-				const result = r.response.result;
-				if (callback)
-					callback.call(self, result);
-			}
-		}, e => {
-			(opts.error ? opts.error : self.session.error).call(self, e);
+		return new Promise((resolve, reject) => {
+			let p = { name: param };
+			if (value) p.value = value;
+			self.session.req.call(self.session, self.path + '&action=setparameter', _getReqParams(p), (res, status) => {
+				const r = self.session.parse(res, status);
+				self.session.debug('[simplicite.BusinessObject.setParameter(' + p.name + ')] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(reject || opts.error || self.session.error).call(self, r.response);
+				} else {
+					const result = r.response.result;
+					resolve && resolve.call(self, result);
+				}
+			}, err => {
+				(reject || opts.error || self.session.error).call(self, self.session.getError(err));
+			});
 		});
-	}
+	};
 
 	/**
 	 * Get an object parameter
@@ -2555,11 +2282,23 @@ function BusinessObject(ses, name, instance) {
 	 * @function
 	 */
 	this.getParameter = (param, opts) => {
-		const d = Q.defer();
+		const self = this;
 		opts = opts || {};
-		opts.error = opts.error || (e => { d.reject(e); });
-		_getParameter.call(this, value => { d.resolve(value); }, param, opts);
-		return d.promise;
+		return new Promise((resolve, reject) => {
+			let p = { name: param };
+			self.session.req.call(self.session, self.path + '&action=getparameter', _getReqParams(p), (res, status) => {
+				const r = self.session.parse(res, status);
+				self.session.debug('[simplicite.BusinessObject.getParameter(' + p.name + ')] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(reject || opts.error || self.session.error).call(self, r.response);
+				} else {
+					const result = r.response.result;
+					resolve && resolve.call(self, result);
+				}
+			}, err => {
+				(reject || opts.error || self.session.error).call(self, self.session.getError(err));
+			});
+		});
 	};
 
 	/**
