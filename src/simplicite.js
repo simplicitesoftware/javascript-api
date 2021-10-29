@@ -5,7 +5,6 @@
  * @license Apache-2.0
  */
 const fetch = require('node-fetch');
-//const fetch = require('cross-fetch');
 const buffer = require('buffer');
 
 /**
@@ -635,14 +634,14 @@ function Session(params) {
 		fetch(u, {
 			method: m,
 			headers: h,
-			timeout: self.timeout * 1000, // TODO: no timeout in fetch API
+			timeout: self.timeout * 1000, // useless because there is no timeout in fetch API
 			mode: 'cors',
 			credentials: 'include',
 			body: d
 		}).then(res => {
 			if (callback) {
-				res.text().then(data => {
-					callback.call(self, data, res.status, res.headers);
+				res.text().then(textData => {
+					callback.call(self, textData, res.status, res.headers);
 				});
 			}
 		}).catch(err => {
@@ -2423,7 +2422,7 @@ function ExternalObject(ses, name) {
 			fetch(u, {
 				method: m,
 				headers: h,
-				timeout: self.session.timeout * 1000,  // TODO: no timeout in fetch API
+				timeout: self.session.timeout * 1000, // useless because there is no timeout in fetch API
 				mode: 'cors',
 				credentials: 'include',
 				body: d
@@ -2431,20 +2430,20 @@ function ExternalObject(ses, name) {
 				const type = res.headers.get('content-type');
 				self.session.debug('[simplicite.ExternalObject.call(' + p + ')] HTTP status = ' + res.status + ', response content type = ' + type);
 				if (type && type.startsWith('application/json')) { // JSON
-					res.json().then(data => {
-						resolve && resolve.call(self, data, res.status, res.headers);
+					res.json().then(jsonData => {
+						resolve && resolve.call(self, jsonData, res.status, res.headers);
 					}).catch(err => {
 						(opts.error || self.error || reject).call(self, self.getError(err));
 					});
 				} else if (type && type.startsWith('text/')) { // Text
-					res.text().then(data => {
-						resolve && resolve.call(self, data, res.status, res.headers);
+					res.text().then(textData => {
+						resolve && resolve.call(self, textData, res.status, res.headers);
 					}).catch(err => {
 						(opts.error || self.error || reject).call(self, self.getError(err));
 					});
 				} else { // Binary
-					res.arrayBuffer().then(data => {
-						resolve && resolve.call(self, data, res.status, res.headers);
+					res.arrayBuffer().then(binData => {
+						resolve && resolve.call(self, binData, res.status, res.headers);
 					}).catch(err => {
 						(opts.error || self.error || reject).call(self, self.getError(err));
 					});
