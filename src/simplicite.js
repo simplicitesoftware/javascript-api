@@ -689,29 +689,6 @@ function Session(params) {
 
 	/**
 	 * Get health check (no need to be authenticated)
-	 * @param {function} callback Callback (called upon success)
-	 * @param {object} [opts] Options
-	 * @private
-	 */
-	function _getHealth(callback, opts) {
-		const self = this;
-		opts = opts || {};
-		self.req.call(self, self.parameters.healthpath + '&full=' + !!opts.full, undefined, (res, status) => {
-			const r = self.parse(res, status);
-			self.debug('[simplicite._getHealth] HTTP status = ' + status + ', response type = ' + res);
-			if (r.type === 'error') {
-				(opts.error ? opts.error : self.error).call(self, r.response);
-			} else {
-				if (callback)
-					callback.call(self, r);
-			}
-		}, e => {
-			(opts.error ? opts.error : self.error).call(self, e);
-		});
-	}
-
-	/**
-	 * Get health check (no need to be authenticated)
 	 * @param {object} [opts] Options
 	 * @param {boolean} [opts.full=false] Full health check?
 	 * @param {function} [opts.error] Error handler function
@@ -719,59 +696,21 @@ function Session(params) {
 	 * @function
 	 */
 	this.getHealth = (opts) => {
-		const d = Q.defer();
-		opts = opts || {};
-		opts.error = (e => { const err = this.getError(e); d.reject(err); });
-		_getHealth.call(this, health => { d.resolve(health); }, opts);
-		return d.promise;
-	};
-
-	/**
-	 * Login
-	 * @param {function} callback Callback (called upon success)
-	 * @param {object} [opts] Options
-	 * @private
-	 */
-	function _login(callback, opts) {
 		const self = this;
 		opts = opts || {};
-		if ((opts.username || opts.login) && (opts.password || opts.pwd)) {
-			self.clear();
-			self.username = opts.username || opts.login;
-			self.password = opts.password || opts.pwd;	
-		} else if (opts.authtoken || opts.authToken || opts.token) {
-			self.clear();
-			self.authtoken = opts.authtoken || opts.authToken || opts.token;	
-		}
-		self.req.call(self, self.parameters.apppath + '?action=session', undefined, (res, status) => {
-			const r = self.parse(res, status);
-			self.debug('[simplicite.login] HTTP status = ' + status + ', response type = ' + r.type);
-			if (r.type === 'error') {
-				(opts.error ? opts.error : self.error).call(self, r.response);
-			} else {
-				self.sessionid = r.response.id;
-				self.debug('[simplicite.login] Session ID = ' + self.sessionid);
-				self.username = r.response.login;
-				if (self.username)
-					self.debug('[simplicite.login] Username = ' + self.username);
-				self.authtoken = r.response.authtoken;
-				if (self.authtoken)
-					self.debug('[simplicite.login] Auth token = ' + self.authtoken);
-				// Minimal grant from session data
-				self.grant = Object.assign(new Grant(), {
-					login: r.response.login,
-					userid: r.response.userid,
-					firstname: r.response.firstanme,
-					lastname: r.response.lastname,
-					email: r.response.email
-				});
-				if (callback)
-					callback.call(self, r.response);
-			}
-		}, e => {
-			(opts.error ? opts.error : self.error).call(self, e);
+		return new Promise((resolve, reject) => {
+			self.req.call(self, self.parameters.healthpath + '&full=' + !!opts.full, undefined, (res, status) => {
+				const r = self.parse(res, status);
+				self.debug('[simplicite._getHealth] HTTP status = ' + status + ', response type = ' + res);
+				if (r.type === 'error')
+					(reject || opts.error || self.error).call(self, r.response);
+				else
+					resolve && resolve.call(self, r);
+			}, err => {
+				(reject || opts.error || self.error).call(self, self.getError(err));
+			});
 		});
-	}
+	};
 
 	/**
 	 * Login
@@ -784,38 +723,46 @@ function Session(params) {
 	 * @function
 	 */
 	this.login = (opts) => {
-		const d = Q.defer();
-		opts = opts || {};
-		opts.error = opts.error || (e => { d.reject(e); });
-		_login.call(this, res => { d.resolve(res); }, opts);
-		return d.promise;
-	};
-
-	/**
-	 * Logout
-	 * @param {function} callback Callback (called upon success)
-	 * @param {object} [opts] Options
-	 * @private
-	 */
-	function _logout(callback, opts) {
 		const self = this;
 		opts = opts || {};
-		self.req.call(self, self.parameters.apppath + '?action=logout', undefined, (res, status) => {
-			const r = self.parse(res, status);
-			self.debug('[simplicite.logout] HTTP status = ' + status + ', response type = ' + r.type);
-			if (r.type === 'error') {
-				(opts.error ? opts.error : self.error).call(self, r.response);
-			} else {
+		return new Promise((resolve, reject) => {
+			if ((opts.username || opts.login) && (opts.password || opts.pwd)) {
 				self.clear();
-				if (callback)
-					callback.call(self, r.response);
+				self.username = opts.username || opts.login;
+				self.password = opts.password || opts.pwd;	
+			} else if (opts.authtoken || opts.authToken || opts.token) {
+				self.clear();
+				self.authtoken = opts.authtoken || opts.authToken || opts.token;	
 			}
-		}, e => {
-			if (e.status === 401) // Removes (expired or deleted) token if any
-				self.authtoken = undefined;
-			(opts.error ? opts.error : self.error).call(self, e);
+			self.req.call(self, self.parameters.apppath + '?action=session', undefined, (res, status) => {
+				const r = self.parse(res, status);
+				self.debug('[simplicite.login] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(reject || opts.error || self.error).call(self, r.response);
+				} else {
+					self.sessionid = r.response.id;
+					self.debug('[simplicite.login] Session ID = ' + self.sessionid);
+					self.username = r.response.login;
+					if (self.username)
+						self.debug('[simplicite.login] Username = ' + self.username);
+					self.authtoken = r.response.authtoken;
+					if (self.authtoken)
+						self.debug('[simplicite.login] Auth token = ' + self.authtoken);
+					// Minimal grant from session data
+					self.grant = Object.assign(new Grant(), {
+						login: r.response.login,
+						userid: r.response.userid,
+						firstname: r.response.firstanme,
+						lastname: r.response.lastname,
+						email: r.response.email
+					});
+					resolve && resolve.call(self, r.response);
+				}
+			}, err => {
+				(reject || opts.error || self.error).call(self, self.getError(err));
+			});
 		});
-	}
+	};
 
 	/**
 	 * Logout
@@ -826,11 +773,24 @@ function Session(params) {
 	 * @function
 	 */
 	this.logout = (opts) => {
-		const d = Q.defer();
+		const self = this;
 		opts = opts || {};
-		opts.error = opts.error || (e => { d.reject(e); });
-		_logout.call(this, res => { d.resolve(res); }, opts);
-		return d.promise;
+		return new Promise((resolve, reject) => {
+			self.req.call(self, self.parameters.apppath + '?action=logout', undefined, (res, status) => {
+				const r = self.parse(res, status);
+				self.debug('[simplicite.logout] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(reject || opts.error || self.error).call(self, r.response);
+				} else {
+					self.clear();
+					resolve && resolve.call(self, r.response);
+				}
+			}, err => {
+				if (err.status === 401) // Removes (expired or deleted) token if any
+					self.authtoken = undefined;
+				(reject || opts.error || self.error).call(self, self.getError(err));
+			});
+		});
 	};
 
 	/**
@@ -838,35 +798,6 @@ function Session(params) {
 	 * @member {Grant}
 	 */
 	this.grant = undefined;
-
-	/**
-	 * Get user (grant)
-	 * @param {function} callback Callback (called upon success)
-	 * @param {object} [opts] Options
-	 * @private
-	 */
-	function _getGrant(callback, opts) {
-		const self = this;
-		opts = opts || {};
-		let p = '&web=true'; // Required to be able to include texts 
-		if (opts.inlinePicture || opts.picture) // naming flexibility
-			p += '&inline_picture=' + (!!opts.inlinePicture || !!opts.picture);
-		if (opts.includeTexts || opts.texts)
-			p += '&texts=' + (!!opts.includeTexts || !!opts.texts);
-		self.req.call(self, self.parameters.apppath + '?action=getgrant' + p, undefined, (res, status) => {
-			const r = self.parse(res, status);
-			self.debug('[simplicite.getGrant] HTTP status = ' + status + ', response type = ' + r.type);
-			if (r.type === 'error') {
-				(opts.error ? opts.error : self.error).call(self, r.response);
-			} else {
-				self.grant = Object.assign(new Grant(), r.response);
-				if (callback)
-					callback.call(self, self.grant);
-			}
-		}, e => {
-			(opts.error ? opts.error : self.error).call(self, e);
-		});
-	}
 
 	/**
 	 * Get grant (current user data)
@@ -878,36 +809,28 @@ function Session(params) {
 	 * @function
 	 */
 	this.getGrant = (opts) => {
-		const d = Q.defer();
-		opts = opts || {};
-		opts.error = opts.error || (e => { d.reject(e); });
-		_getGrant.call(this, grt => { d.resolve(grt); }, opts);
-		return d.promise;
-	};
-
-	/**
-	 * Change password
-	 * @param {string} pwd Password
-	 * @param {function} callback Callback (called upon success)
-	 * @param {object} [opts] Options
-	 * @private
-	 */
-	function _changePassword(callback, pwd, opts) {
 		const self = this;
 		opts = opts || {};
-		self.req.call(self, self.parameters.apppath + '?action=setpassword&password=' + encodeURIComponent(pwd), undefined, (res, status) => {
-			const r = self.parse(res, status);
-			self.debug('[simplicite.changePassword] HTTP status = ' + status + ', response type = ' + r.type);
-			if (r.type === 'error') {
-				(opts.error ? opts.error : self.error).call(self, r.response);
-			} else {
-				if (callback)
-					callback.call(self, r.response);
-			}
-		}, e => {
-			(opts.error ? opts.error : self.error).call(self, e);
+		return new Promise((resolve, reject) => {
+			let p = '&web=true'; // Required to be able to include texts 
+			if (opts.inlinePicture || opts.picture) // naming flexibility
+				p += '&inline_picture=' + (!!opts.inlinePicture || !!opts.picture);
+			if (opts.includeTexts || opts.texts)
+				p += '&texts=' + (!!opts.includeTexts || !!opts.texts);
+			self.req.call(self, self.parameters.apppath + '?action=getgrant' + p, undefined, (res, status) => {
+				const r = self.parse(res, status);
+				self.debug('[simplicite.getGrant] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(reject || opts.error || self.error).call(self, r.response);
+				} else {
+					self.grant = Object.assign(new Grant(), r.response);
+					resolve && resolve.call(self, self.grant);
+				}
+			}, err => {
+				(reject || opts.error || self.error).call(self, self.getError(err));
+			});
 		});
-	}
+	};
 
 	/**
 	 * Change password
@@ -918,36 +841,21 @@ function Session(params) {
 	 * @function
 	 */
 	this.changePassword = (pwd, opts) => {
-		const d = Q.defer();
-		opts = opts || {};
-		opts.error = opts.error || (e => { d.reject(e); });
-		_changePassword.call(this, res => { d.resolve(res); }, pwd, opts);
-		return d.promise;
-	};
-
-	/**
-	 * Get application info
-	 * @param {function} callback Callback (called upon success)
-	 * @param {object} [opts] Options
-	 * @private
-	 */
-	function _getAppInfo(callback, opts) {
 		const self = this;
 		opts = opts || {};
-		self.req.call(self, self.parameters.apppath + '?action=getinfo', undefined, (res, status) => {
-			const r = self.parse(res, status);
-			self.debug('[simplicite.getAppInfo] HTTP status = ' + status + ', response type = ' + r.type);
-			if (r.type === 'error') {
-				(opts.error ? opts.error : self.error).call(self, r.response);
-			} else {
-				self.appinfo = r.response;
-				if (callback)
-					callback.call(self, self.appinfo);
-			}
-		}, e => {
-			(opts.error ? opts.error : self.error).call(self, e);
+		return new Promise((resolve, reject) => {
+			self.req.call(self, self.parameters.apppath + '?action=setpassword&password=' + encodeURIComponent(pwd), undefined, (res, status) => {
+				const r = self.parse(res, status);
+				self.debug('[simplicite.changePassword] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error')
+					(reject || opts.error || self.error).call(self, r.response);
+				else
+					resolve && resolve.call(self, r.response);
+			}, err => {
+				(reject || opts.error || self.error).call(self, self.getError(err));
+			});
 		});
-	}
+	};
 
 	/**
 	 * Get application info
@@ -957,36 +865,23 @@ function Session(params) {
 	 * @function
 	 */
 	this.getAppInfo = (opts) => {
-		const d = Q.defer();
-		opts = opts || {};
-		opts.error = opts.error || (e => { d.reject(e); });
-		_getAppInfo.call(this, inf => { d.resolve(inf); }, opts);
-		return d.promise;
-	};
-
-	/**
-	 * Get system info
-	 * @param {function} callback Callback (called upon success)
-	 * @param {object} [opts] Options
-	 * @private
-	 */
-	function _getSysInfo(callback, opts) {
 		const self = this;
 		opts = opts || {};
-		self.req.call(self, self.parameters.apppath + '?action=sysinfo', undefined, (res, status) => {
-			const r = self.parse(res, status);
-			self.debug('[simplicite.getSysInfo] HTTP status = ' + status + ', response type = ' + r.type);
-			if (r.type === 'error') {
-				(opts.error ? opts.error : self.error).call(self, r.response);
-			} else {
-				self.sysinfo = r.response;
-				if (callback)
-					callback.call(self, self.sysinfo);
-			}
-		}, e => {
-			(opts.error ? opts.error : self.error).call(self, e);
+		return new Promise((resolve, reject) => {
+			self.req.call(self, self.parameters.apppath + '?action=getinfo', undefined, (res, status) => {
+				const r = self.parse(res, status);
+				self.debug('[simplicite.getAppInfo] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(reject || opts.error || self.error).call(self, r.response);
+				} else {
+					self.appinfo = r.response;
+					resolve && resolve.call(self, r.response);
+				}
+			}, err => {
+				(reject || opts.error || self.error).call(self, self.getError(err));
+			});
 		});
-	}
+	};
 
 	/**
 	 * Get system info
@@ -996,40 +891,23 @@ function Session(params) {
 	 * @function
 	 */
 	this.getSysInfo = (opts) => {
-		const d = Q.defer();
-		opts = opts || {};
-		opts.error = opts.error || (e => { d.reject(e); });
-		_getSysInfo.call(this, inf => { d.resolve(inf); }, opts);
-		return d.promise;
-	};
-
-	/**
-	 * Get development info
-	 * @param {function} callback Callback (called upon success)
-	 * @param {string} [module] Module name
-	 * @param {object} [opts] Options
-	 * @private
-	 */
-	function _getDevInfo(callback, module, opts) {
 		const self = this;
 		opts = opts || {};
-		let p = '';
-		if (module)
-			p += '&module=' + encodeURIComponent(module);
-		self.req.call(self, self.parameters.apppath + '?action=devinfo' + p, undefined, (res, status) => {
-			const r = self.parse(res, status);
-			self.debug('[simplicite.getDevInfo] HTTP status = ' + status + ', response type = ' + r.type);
-			if (r.type === 'error') {
-				(opts.error ? opts.error : self.error).call(self, r.response);
-			} else {
-				self.devinfo = r.response;
-				if (callback)
-					callback.call(self, self.devinfo);
-			}
-		}, e => {
-			(opts.error ? opts.error : self.error).call(self, e);
+		return new Promise((resolve, reject) => {
+			self.req.call(self, self.parameters.apppath + '?action=sysinfo', undefined, (res, status) => {
+				const r = self.parse(res, status);
+				self.debug('[simplicite.getSysInfo] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(reject || opts.error || self.error).call(self, r.response);
+				} else {
+					self.sysinfo = r.response;
+					resolve && resolve.call(self, r.response);
+				}
+			}, err => {
+				(reject || opts.error || self.error).call(self, self.getError(err));
+			});	
 		});
-	}
+	};
 
 	/**
 	 * Get development info
@@ -1040,39 +918,27 @@ function Session(params) {
 	 * @function
 	 */
 	this.getDevInfo = (module, opts) => {
-		const d = Q.defer();
-		opts = opts || {};
-		opts.error = opts.error || (e => { d.reject(e); });
-		_getDevInfo.call(this, inf => { d.resolve(inf); }, module, opts);
-		return d.promise;
-	};
-
-	/**
-	 * Get news
-	 * @param {function} callback Callback (called upon success)
-	 * @param {object} [opts] Options
-	 * @private
-	 */
-	function _getNews(callback, opts) {
 		const self = this;
 		opts = opts || {};
-		let p = '';
-		if (opts.inlineImages)
-			p += '&inline_images=' + !!opts.inlineImages;
-		self.req.call(self, self.parameters.apppath + '?action=news' + p, undefined, (res, status) => {
-			const r = self.parse(res, status);
-			self.debug('[simplicite.getNews] HTTP status = ' + status + ', response type = ' + r.type);
-			if (r.type === 'error') {
-				(opts.error ? opts.error : self.error).call(self, r.response);
-			} else {
-				self.news = r.response;
-				if (callback)
-					callback.call(self, self.news);
-			}
-		}, e => {
-			(opts.error ? opts.error : self.error).call(self, e);
+		return new Promise((resolve, reject) => {
+			let p = '';
+			if (module)
+				p += '&module=' + encodeURIComponent(module);
+			self.req.call(self, self.parameters.apppath + '?action=devinfo' + p, undefined, (res, status) => {
+				const r = self.parse(res, status);
+				self.debug('[simplicite.getDevInfo] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(reject || opts.error || self.error).call(self, r.response);
+				} else {
+					if (!module)
+						self.devinfo = r.response;
+					resolve && resolve.call(self, r.response);
+				}
+			}, err => {
+				(reject || opts.error || self.error).call(self, self.getError(err));
+			});	
 		});
-	}
+	};
 
 	/**
 	 * Get news
@@ -1083,39 +949,26 @@ function Session(params) {
 	 * @function
 	 */
 	this.getNews = (opts) => {
-		const d = Q.defer();
-		opts = opts || {};
-		opts.error = opts.error || (e => { d.reject(e); });
-		_getNews.call(this, nws => { d.resolve(nws); }, opts);
-		return d.promise;
-	};
-
-	/**
-	 * Index search
-	 * @param {function} callback Callback (called upon success)
-	 * @param {string} request Index search request
-	 * @param {string} [object] Object
-	 * @private
-	 */
-	function _indexSearch(callback, request, object, opts) {
 		const self = this;
 		opts = opts || {};
-		let p = '';
-		if (opts.metadata===true) p += '&_md=true';
-		if (opts.context) p += '&context=' + encodeURIComponent(opts.context);
-		self.req.call(self, self.parameters.apppath + '?action=indexsearch&request=' + encodeURIComponent(request ? request : '') + (object ? '&object=' + encodeURIComponent(object) : '') + p, undefined, (res, status) => {
-			const r = self.parse(res, status);
-			self.debug('[simplicite.indexSearch] HTTP status = ' + status + ', response type = ' + r.type);
-			if (r.type === 'error') {
-				(opts.error ? opts.error : self.error).call(self, r.response);
-			} else {
-				if (callback)
-					callback.call(self, r.response);
-			}
-		}, e => {
-			(opts.error ? opts.error : self.error).call(self, e);
+		return new Promise((resolve, reject) => {
+			let p = '';
+			if (opts.inlineImages)
+				p += '&inline_images=' + !!opts.inlineImages;
+			self.req.call(self, self.parameters.apppath + '?action=news' + p, undefined, (res, status) => {
+				const r = self.parse(res, status);
+				self.debug('[simplicite.getNews] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error') {
+					(reject || opts.error || self.error).call(self, r.response);
+				} else {
+					self.news = r.response;
+					resolve && resolve.call(self, r.response);
+				}
+			}, err => {
+				(reject || opts.error || self.error).call(self, self.getError(err));
+			});
 		});
-	}
+	};
 
 	/**
 	 * Index search
@@ -1129,11 +982,25 @@ function Session(params) {
 	 * @function
 	 */
 	this.indexSearch = (request, object, opts) => {
-		const d = Q.defer();
+		const self = this;
 		opts = opts || {};
-		opts.error = opts.error || (e => { d.reject(e); });
-		_indexSearch.call(this, srs => { d.resolve(srs); }, request, object, opts);
-		return d.promise;
+		return new Promise((resolve, reject) => {
+			let p = '';
+			if (opts.metadata===true)
+				p += '&_md=true';
+			if (opts.context)
+				p += '&context=' + encodeURIComponent(opts.context);
+			self.req.call(self, self.parameters.apppath + '?action=indexsearch&request=' + encodeURIComponent(request ? request : '') + (object ? '&object=' + encodeURIComponent(object) : '') + p, undefined, (res, status) => {
+				const r = self.parse(res, status);
+				self.debug('[simplicite.indexSearch] HTTP status = ' + status + ', response type = ' + r.type);
+				if (r.type === 'error')
+					(reject || opts.error || self.error).call(self, r.response);
+				else
+					resolve && resolve.call(self, r.response);
+			}, err => {
+				(reject || opts.error || self.error).call(self, self.getError(err));
+			});
+		});
 	};
 
 	/**
