@@ -1,6 +1,3 @@
-![Simplicit&eacute; Software](https://www.simplicite.io/resources/logos/logo250.png)
-* * *
-
 Install
 -------
 
