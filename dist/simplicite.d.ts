@@ -94,6 +94,11 @@ declare class Session {
      */
     constants: {
         /**
+         * API client module version
+         * @const {string}
+         */
+        MODULE_VERSION: string;
+        /**
          * Default row ID field name
          * @const {string}
          */

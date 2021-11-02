@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.1
+ * @version 2.2.2
  * @license Apache-2.0
  */
 
@@ -13,6 +13,11 @@ import buffer from 'buffer';
  * @constant
 */
 const constants = {
+	/**
+	 * API client module version
+	 * @const {string}
+	 */
+	MODULE_VERSION: '2.2.2',
 	/**
 	 * Default row ID field name
 	 * @const {string}
