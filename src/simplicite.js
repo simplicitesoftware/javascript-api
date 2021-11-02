@@ -413,7 +413,7 @@ function Session(params) {
 	 * @param {any} arg Argument
 	 * @function
 	 */
-	this.info = params.infoHandle || function(arg) {
+	this.info = params.infoHandler || function(arg) {
 		console.info(arg);
 	};
 
