@@ -35,7 +35,7 @@
     "lint": "eslint src/simplicite.js test/*.js",
     "babel": "babel src --out-dir=babel",
     "build": "esbuild --minify --sourcemap --outfile=dist/simplicite.min.js src/simplicite.js && esbuild --outfile=dist/simplicite.mjs src/simplicite.js && tsc src/simplicite.js --declaration --allowJs --emitDeclarationOnly --outDir dist",
-    "doc": "jsdoc -t node_modules/docdash -d docs src/simplicite.js USAGE.md && replace '#fc83ff' '#98cbff' docs/styles/jsdoc.css && replace '#6d426d' '#2e76bd' docs/styles/jsdoc.css && replace '#CA79CA' '#edb8b8' docs/styles/jsdoc.css && replace '#606' '#094e93' docs/styles/jsdoc.css",
+    "doc": "jsdoc -t node_modules/docdash -d docs src/simplicite.js README.md && replace '#fc83ff' '#98cbff' docs/styles/jsdoc.css && replace '#6d426d' '#2e76bd' docs/styles/jsdoc.css && replace '#CA79CA' '#edb8b8' docs/styles/jsdoc.css && replace '#606' '#094e93' docs/styles/jsdoc.css",
     "test": "jest --coverage -- test/simplicite.test.js",
     "ncu": "ncu"
   },
