@@ -1,7 +1,7 @@
 {
   "name": "simplicite",
-  "version": "1.1.27",
-  "description": "Simplicite(R) platform Javascript API (for node.js and browser)",
+  "version": "1.1.28",
+  "description": "Simplicite(R) platform Javascript API CommonJS module (for node.js and browser)",
   "repository": {
     "type": "git",
     "url": "git://github.com/simplicitesoftware/nodejs-api.git"
@@ -13,28 +13,24 @@
     "lowcode"
   ],
   "dependencies": {
-    "axios": "latest",
-    "buffer": "latest",
-    "q": "latest"
+    "axios": "^0.24.0",
+    "buffer": "^6.0.3",
+    "q": "^1.5.1"
   },
   "devDependencies": {
-    "@babel/cli": "latest",
-    "@babel/core": "latest",
-    "@babel/node": "latest",
-    "@babel/preset-env": "latest",
-    "docdash": "latest",
-    "eslint": "latest",
-    "jest": "latest",
-    "jsdoc": "latest",
-    "npm-check-updates": "latest",
-    "replace": "latest",
-    "uglify-js": "latest"
+    "docdash": "^1.2.0",
+    "eslint": "^7.32.0",
+    "jest": "^27.3.1",
+    "jsdoc": "^3.6.7",
+    "npm-check-updates": "^11.8.5",
+    "replace": "^1.2.1",
+    "uglify-js": "^3.14.3"
   },
   "scripts": {
     "lint": "eslint src/simplicite.js test/*.js",
     "babel": "babel src --out-dir=babel",
     "build": "uglifyjs src/simplicite.js --comments -o dist/simplicite.min.js",
-    "doc": "jsdoc -t node_modules/docdash -d docs src/simplicite.js USAGE.md && replace '#fc83ff' '#98cbff' docs/styles/jsdoc.css && replace '#6d426d' '#2e76bd' docs/styles/jsdoc.css && replace '#CA79CA' '#edb8b8' docs/styles/jsdoc.css && replace '#606' '#094e93' docs/styles/jsdoc.css",
+    "doc": "jsdoc -t node_modules/docdash -d docs src/simplicite.js README.md && replace '#fc83ff' '#98cbff' docs/styles/jsdoc.css && replace '#6d426d' '#2e76bd' docs/styles/jsdoc.css && replace '#CA79CA' '#edb8b8' docs/styles/jsdoc.css && replace '#606' '#094e93' docs/styles/jsdoc.css",
     "test": "jest --coverage -- test/simplicite.test.js",
     "ncu": "ncu"
   },

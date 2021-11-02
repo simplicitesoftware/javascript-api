@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">59.25% </span>
+                <span class="strong">59.28% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>583/984</span>
+                <span class='fraction'>584/985</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">61.67% </span>
+                <span class="strong">61.71% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>560/908</span>
+                <span class='fraction'>561/909</span>
             </div>
         
             
@@ -2909,7 +2909,19 @@
 <a name='L2850'></a><a href='#L2850'>2850</a>
 <a name='L2851'></a><a href='#L2851'>2851</a>
 <a name='L2852'></a><a href='#L2852'>2852</a>
-<a name='L2853'></a><a href='#L2853'>2853</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L2853'></a><a href='#L2853'>2853</a>
+<a name='L2854'></a><a href='#L2854'>2854</a>
+<a name='L2855'></a><a href='#L2855'>2855</a>
+<a name='L2856'></a><a href='#L2856'>2856</a>
+<a name='L2857'></a><a href='#L2857'>2857</a>
+<a name='L2858'></a><a href='#L2858'>2858</a>
+<a name='L2859'></a><a href='#L2859'>2859</a>
+<a name='L2860'></a><a href='#L2860'>2860</a>
+<a name='L2861'></a><a href='#L2861'>2861</a>
+<a name='L2862'></a><a href='#L2862'>2862</a>
+<a name='L2863'></a><a href='#L2863'>2863</a>
+<a name='L2864'></a><a href='#L2864'>2864</a>
+<a name='L2865'></a><a href='#L2865'>2865</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -3958,6 +3970,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -4520,6 +4533,17 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -5764,7 +5788,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 1.1.27
+ * @version 1.1.28
  * @license Apache-2.0
  */
 var Q = require('q');
@@ -5778,294 +5802,294 @@ var buffer = require('buffer');
 var constants = {
 	/**
 	 * Default row ID field name
-	 * @const {string}
+	 * @var {string}
 	 */
 	DEFAULT_ROW_ID_NAME: 'row_id',
 &nbsp;
 	/**
 	 * Default row ID value
-	 * @const {string}
+	 * @var {string}
 	 */
 	DEFAULT_ROW_ID: '0',
 &nbsp;
 	/**
 	 * Default context
-	 * @const {number}
+	 * @var {number}
 	 */
 	CONTEXT_NONE: 0,
 	/**
 	 * Search context
-	 * @const {number}
+	 * @var {number}
 	 */
 	CONTEXT_SEARCH: 1,
 	/**
 	 * List context
-	 * @const {number}
+	 * @var {number}
 	 */
 	CONTEXT_LIST: 2,
 	/**
 	 * Creation context
-	 * @const {number}
+	 * @var {number}
 	 */
 	CONTEXT_CREATE: 3,
 	/**
 	 * Copy context
-	 * @const {number}
+	 * @var {number}
 	 */
 	CONTEXT_COPY: 4,
 	/**
 	 * Update context
-	 * @const {number}
+	 * @var {number}
 	 */
 	CONTEXT_UPDATE: 5,
 	/**
 	 * Delete context
-	 * @const {number}
+	 * @var {number}
 	 */
 	CONTEXT_DELETE: 6,
 	/**
 	 * Chart context
-	 * @const {number}
+	 * @var {number}
 	 */
 	CONTEXT_GRAPH: 7,
 	/**
 	 * Pivot table context
-	 * @const {number}
+	 * @var {number}
 	 */
 	CONTEXT_CROSSTAB: 8,
 	/**
 	 * Publication context
-	 * @const {number}
+	 * @var {number}
 	 */
 	CONTEXT_PRINTTMPL: 9,
 	/**
 	 * Bulk update context
-	 * @const {number}
+	 * @var {number}
 	 */
 	CONTEXT_UPDATEALL: 10,
 	/**
 	 * Reference selection context
-	 * @const {number}
+	 * @var {number}
 	 */
 	CONTEXT_REFSELECT: 11,
 	/**
 	 * Datamap selection context
-	 * @const {number}
+	 * @var {number}
 	 */
 	CONTEXT_DATAMAPSELECT: 12,
 	/**
 	 * Pre validation context
-	 * @const {number}
+	 * @var {number}
 	 */
 	CONTEXT_PREVALIDATE: 13,
 	/**
 	 * Post validation context
-	 * @const {number}
+	 * @var {number}
 	 */
 	CONTEXT_POSTVALIDATE: 14,
 	/**
 	 * State transition context
-	 * @const {number}
+	 * @var {number}
 	 */
 	CONTEXT_STATETRANSITION: 15,
 	/**
 	 * Export context
-	 * @const {number}
+	 * @var {number}
 	 */
 	CONTEXT_EXPORT: 16,
 	/**
 	 * Import context
-	 * @const {number}
+	 * @var {number}
 	 */
 	CONTEXT_IMPORT: 17,
 	/**
 	 * Association context
-	 * @const {number}
+	 * @var {number}
 	 */
 	CONTEXT_ASSOCIATE: 18,
 	/**
 	 * Panle list context
-	 * @const {number}
+	 * @var {number}
 	 */
 	CONTEXT_PANELLIST: 19,
 &nbsp;
 	/**
 	 * Foreign key (reference) type
-	 * @const {number}
+	 * @var {number}
 	 */
 	TYPE_ID: 0,
 	/**
 	 * Integer type
-	 * @const {number}
+	 * @var {number}
 	 */
 	TYPE_INT: 1,
 	/**
 	 * Decimal type
-	 * @const {number}
+	 * @var {number}
 	 */
 	TYPE_FLOAT: 2,
 	/**
 	 * Short string type
-	 * @const {number}
+	 * @var {number}
 	 */
 	TYPE_STRING: 3,
 	/**
 	 * Date type
-	 * @const {number}
+	 * @var {number}
 	 */
 	TYPE_DATE: 4,
 	/**
 	 * Date and time type
-	 * @const {number}
+	 * @var {number}
 	 */
 	TYPE_DATETIME: 5,
 	/**
 	 * Time type
-	 * @const {number}
+	 * @var {number}
 	 */
 	TYPE_TIME: 6,
 	/**
 	 * Simple enumeration type
-	 * @const {number}
+	 * @var {number}
 	 */
 	TYPE_ENUM: 7,
 	/**
 	 * Boolean type
-	 * @const {number}
+	 * @var {number}
 	 */
 	TYPE_BOOLEAN: 8,
 	/**
 	 * Password type
-	 * @const {number}
+	 * @var {number}
 	 */
 	TYPE_PASSWORD: 9,
 	/**
 	 * URL type
-	 * @const {number}
+	 * @var {number}
 	 */
 	TYPE_URL: 10,
 	/**
 	 * HTML content type
-	 * @const {number}
+	 * @var {number}
 	 */
 	TYPE_HTML: 11,
 	/**
 	 * Email type
-	 * @const {number}
+	 * @var {number}
 	 */
 	TYPE_EMAIL: 12,
 	/**
 	 * Long string type
-	 * @const {number}
+	 * @var {number}
 	 */
 	TYPE_LONG_STRING: 13,
 	/**
 	 * Multiple enumeration type
-	 * @const {number}
+	 * @var {number}
 	 */
 	TYPE_ENUM_MULTI: 14,
 	/**
 	 * Validated string type
-	 * @const {number}
+	 * @var {number}
 	 */
 	TYPE_REGEXP: 15,
 	/**
 	 * Document type
-	 * @const {number}
+	 * @var {number}
 	 */
 	TYPE_DOC: 17,
 	/**
 	 * Decimal type
-	 * @const {number}
+	 * @var {number}
 	 * @deprecated
 	 */
 	TYPE_FLOAT_EMPTY: 18,
 	/**
 	 * External file type
-	 * @const {number}
+	 * @var {number}
 	 * @deprecated
 	 */
 	TYPE_EXTFILE: 19,
 	/**
 	 * Image type
-	 * @const {number}
+	 * @var {number}
 	 */
 	TYPE_IMAGE: 20,
 	/**
 	 * Notepad type
-	 * @const {number}
+	 * @var {number}
 	 */
 	TYPE_NOTEPAD: 21,
 	/**
 	 * Phone number type
-	 * @const {number}
+	 * @var {number}
 	 */
 	TYPE_PHONENUM: 22,
 	/**
 	 * RGB color type
-	 * @const {number}
+	 * @var {number}
 	 */
 	TYPE_COLOR: 23,
 	/**
 	 * Object type
-	 * @const {number}
+	 * @var {number}
 	 */
 	TYPE_OBJECT: 24,
 	/**
 	 * Geocoordinates type
-	 * @const {number}
+	 * @var {number}
 	 */
 	TYPE_GEOCOORDS: 25,
 &nbsp;
 	/**
 	 * Not visible
-	 * @const {number}
+	 * @var {number}
 	 */
 	VIS_NOT: 0,
 	/**
 	 * Hiiden (same as not visible)
-	 * @const {number}
+	 * @var {number}
 	 */
 	VIS_HIDDEN: 0,
 	/**
 	 * Visible on lists only
-	 * @const {number}
+	 * @var {number}
 	 */
 	VIS_LIST: 1,
 	/**
 	 * Visible on forms only
-	 * @const {number}
+	 * @var {number}
 	 */
 	VIS_FORM: 2,
 	/**
 	 * Visible on both lists and forms only
-	 * @const {number}
+	 * @var {number}
 	 */
 	VIS_BOTH: 3,
 &nbsp;
 	/**
 	 * No search
-	 * @const {number}
+	 * @var {number}
 	 */
 	SEARCH_NONE: 0,
 	/**
 	 * Simple search
-	 * @const {number}
+	 * @var {number}
 	 */
 	SEARCH_MONO: 1,
 	/**
 	 * Multiple search (checkboxes)
-	 * @const {number}
+	 * @var {number}
 	 */
 	SEARCH_MULTI_CHECK: 2,
 	/**
 	 * Multiple search (listbox)
-	 * @const {number}
+	 * @var {number}
 	 */
 	SEARCH_MULTI_LIST: 3,
 	/**
 	 * Search by period (date/time)
-	 * @const {number}
+	 * @var {number}
 	 */
 	SEARCH_PERIOD: 4,
 &nbsp;
@@ -6082,38 +6106,38 @@ var constants = {
 &nbsp;
 	/**
 	 * Fatal error level
-	 * @const {number}
+	 * @var {number}
 	 */
 	ERRLEVEL_FATAL: 1,
 	/**
 	 * Error level
-	 * @const {number}
+	 * @var {number}
 	 */
 	ERRLEVEL_ERROR: 2,
 	/**
 	 * Warning level
-	 * @const {number}
+	 * @var {number}
 	 */
 	ERRLEVEL_WARNING: 3,
 &nbsp;
 	/**
 	 * Image resource type
-	 * @const {number}
+	 * @var {number}
 	 */
 	RESOURCE_TYPE_IMAGE: 'IMG',
 	/**
 	 * Icon resource type
-	 * @const {number}
+	 * @var {number}
 	 */
 	RESOURCE_TYPE_ICON: 'ICO',
 	/**
 	 * Stylesheet resource type
-	 * @const {number}
+	 * @var {number}
 	 */
 	RESOURCE_TYPE_STYLESHEET: 'CSS',
 	/**
 	 * Javascript resource type
-	 * @const {number}
+	 * @var {number}
 	 */
 	RESOURCE_TYPE_JAVASCRIPT: 'JS'
 };
@@ -6217,7 +6241,7 @@ function Session(params) {
 	 */
 	this.timeout = params.timeout || 30;
 &nbsp;
-	<span class="missing-if-branch" title="else path not taken" >E</span>if (params.url) {
+	if (params.url) {
 		try {
 			params.scheme = params.url.replace(/:.*$/, '');
 			var u = params.url.replace(new RegExp('^' + params.scheme + '://'), '').split(':');
@@ -6415,7 +6439,7 @@ function Session(params) {
 			withCredentials: true,
 			data: data
 		}).then(function (res) {
-			<span class="missing-if-branch" title="else path not taken" >E</span>if (callback)
+			if (callback)
 				callback.call(self, res.data, res.status, res.headers);
 		}).catch(<span class="fstat-no" title="function not covered" >fu</span>nction(err) {
 			var s = <span class="cstat-no" title="statement not covered" >err.response &amp;&amp; err.response.status ? err.response.status : undefined;</span>
@@ -6474,7 +6498,7 @@ function Session(params) {
 			<span class="missing-if-branch" title="if path not taken" >I</span>if (r.type === 'error') {
 <span class="cstat-no" title="statement not covered" >				(opts.error ? opts.error : self.error).call(self, r.response);</span>
 			} else {
-				<span class="missing-if-branch" title="else path not taken" >E</span>if (callback)
+				if (callback)
 					callback.call(self, r);
 			}
 		}, <span class="fstat-no" title="function not covered" >fu</span>nction(e) {
@@ -6524,10 +6548,10 @@ function Session(params) {
 				self.sessionid = r.response.id;
 				self.debug('[simplicite.login] Session ID = ' + self.sessionid);
 				self.username = r.response.login;
-				<span class="missing-if-branch" title="else path not taken" >E</span>if (self.username)
+				if (self.username)
 					self.debug('[simplicite.login] Username = ' + self.username);
 				self.authtoken = r.response.authtoken;
-				<span class="missing-if-branch" title="else path not taken" >E</span>if (self.authtoken)
+				if (self.authtoken)
 					self.debug('[simplicite.login] Auth token = ' + self.authtoken);
 				// Minimal grant from session data
 				self.grant = Object.assign(new Grant(), {
@@ -6537,7 +6561,7 @@ function Session(params) {
 					lastname: r.response.lastname,
 					email: r.response.email
 				});
-				<span class="missing-if-branch" title="else path not taken" >E</span>if (callback)
+				if (callback)
 					callback.call(self, r.response);
 			}
 		}, <span class="fstat-no" title="function not covered" >fu</span>nction(e) {
@@ -6579,7 +6603,7 @@ function Session(params) {
 <span class="cstat-no" title="statement not covered" >				(opts.error ? opts.error : self.error).call(self, r.response);</span>
 			} else {
 				self.clear();
-				<span class="missing-if-branch" title="else path not taken" >E</span>if (callback)
+				if (callback)
 					callback.call(self, r.response);
 			}
 		}, <span class="fstat-no" title="function not covered" >fu</span>nction(e) {
@@ -6632,7 +6656,7 @@ function Session(params) {
 <span class="cstat-no" title="statement not covered" >				(opts.error ? opts.error : self.error).call(self, r.response);</span>
 			} else {
 				self.grant = Object.assign(new Grant(), r.response);
-				<span class="missing-if-branch" title="else path not taken" >E</span>if (callback)
+				if (callback)
 					callback.call(self, self.grant);
 			}
 		}, <span class="fstat-no" title="function not covered" >fu</span>nction(e) {
@@ -6713,7 +6737,7 @@ function Session(params) {
 <span class="cstat-no" title="statement not covered" >				(opts.error ? opts.error : self.error).call(self, r.response);</span>
 			} else {
 				self.appinfo = r.response;
-				<span class="missing-if-branch" title="else path not taken" >E</span>if (callback)
+				if (callback)
 					callback.call(self, self.appinfo);
 			}
 		}, <span class="fstat-no" title="function not covered" >fu</span>nction(e) {
@@ -6752,7 +6776,7 @@ function Session(params) {
 <span class="cstat-no" title="statement not covered" >				(opts.error ? opts.error : self.error).call(self, r.response);</span>
 			} else {
 				self.sysinfo = r.response;
-				<span class="missing-if-branch" title="else path not taken" >E</span>if (callback)
+				if (callback)
 					callback.call(self, self.sysinfo);
 			}
 		}, <span class="fstat-no" title="function not covered" >fu</span>nction(e) {
@@ -6795,7 +6819,7 @@ function Session(params) {
 <span class="cstat-no" title="statement not covered" >				(opts.error ? opts.error : self.error).call(self, r.response);</span>
 			} else {
 				self.devinfo = r.response;
-				<span class="missing-if-branch" title="else path not taken" >E</span>if (callback)
+				if (callback)
 					callback.call(self, self.devinfo);
 			}
 		}, <span class="fstat-no" title="function not covered" >fu</span>nction(e) {
@@ -6805,6 +6829,7 @@ function Session(params) {
 &nbsp;
 	/**
 	 * Get development info
+	 * @param {string} [module] Module name
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
 	 * @return {promise&lt;object&gt;} A promise to the develoment info (also avialable as the &lt;code&gt;devinfo&lt;/code&gt; member)
@@ -6917,7 +6942,7 @@ function Session(params) {
 	this.getBusinessObject = function(name, instance) {
 		var cacheKey = this.getBusinessObjectCacheKey(name, instance);
 		var obj = businessObjectCache[cacheKey];
-		<span class="missing-if-branch" title="else path not taken" >E</span>if (!obj) {
+		if (!obj) {
 			obj = new BusinessObject(this, name, instance);
 			businessObjectCache[cacheKey] = obj;
 		}
@@ -7350,7 +7375,7 @@ function BusinessObject(ses, name, instance) {
 <span class="cstat-no" title="statement not covered" >				(opts.error ? opts.error : self.session.error).call(self, r.response);</span>
 			} else {
 				self.metadata = r.response;
-				<span class="missing-if-branch" title="else path not taken" >E</span>if (callback)
+				if (callback)
 					callback.call(self, self.metadata);
 			}
 		}, <span class="fstat-no" title="function not covered" >fu</span>nction(e) {
@@ -7372,6 +7397,17 @@ function BusinessObject(ses, name, instance) {
 		_getMetaData.call(this, function(metadata) { d.resolve(metadata); }, opts);
 		return d.promise;
 	};
+&nbsp;
+	/**
+	 * Get meta data (alias to getMetaData)
+	 * @param {object} [opts] Options
+	 * @param {number} [opts.context] Context
+	 * @param {string} [opts.contextParam] Context parameter
+	 * @param {function} [opts.error] Error handler function
+	 * @return {promise&lt;BusinessObjectMetadata&gt;} A promise to the object'ts meta data (also available as the &lt;code&gt;metadata&lt;/code&gt; member)
+	 * @function
+	 */
+	this.getMetadata = this.getMetaData;
 &nbsp;
 	/**
 	 * Get name
@@ -7644,7 +7680,7 @@ function BusinessObject(ses, name, instance) {
 <span class="cstat-no" title="statement not covered" >				(opts.error ? opts.error : self.session.error).call(self, r.response);</span>
 			} else {
 				self.item = r.response;
-				<span class="missing-if-branch" title="else path not taken" >E</span>if (callback)
+				if (callback)
 					callback.call(self, self.filters);
 			}
 		}, <span class="fstat-no" title="function not covered" >fu</span>nction(e) {
@@ -7702,7 +7738,7 @@ function BusinessObject(ses, name, instance) {
 		for (var i in data) {
 			var d = data[i] || '';
 			if (d.name &amp;&amp; d.content) { // Document ?
-				<span class="missing-if-branch" title="else path not taken" >E</span>if (d.content.startsWith('data:')) // Flexibility = extract content fron data URL
+				if (d.content.startsWith('data:')) // Flexibility = extract content fron data URL
 					d.content = d.content.replace(/data:.*;base64,/, '');
 				p += (n++ !== 0 ? '&amp;' : <span class="branch-1 cbranch-no" title="branch not covered" >'')</span> + i + '=' + encodeURIComponent('id|' + (d.id ? <span class="branch-0 cbranch-no" title="branch not covered" >d.id </span>: '0') + '|name|' + d.name + '|content|' + d.content);
 			} else <span class="missing-if-branch" title="if path not taken" >I</span>if (d.object &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >d.row_id)</span> { // Object ?
@@ -7738,7 +7774,7 @@ function BusinessObject(ses, name, instance) {
 				self.page = r.response.page &gt;= 0 ? r.response.page + 1 : <span class="branch-1 cbranch-no" title="branch not covered" >undefined;</span>
 				self.maxpage = r.response.maxpage &gt;= 0 ? r.response.maxpage + 1 : <span class="branch-1 cbranch-no" title="branch not covered" >undefined;</span>
 				self.list = [];
-				<span class="missing-if-branch" title="else path not taken" >E</span>if (callback)
+				if (callback)
 					callback.call(self, self.count);
 			}
 		}, <span class="fstat-no" title="function not covered" >fu</span>nction(e) {
@@ -7797,7 +7833,7 @@ function BusinessObject(ses, name, instance) {
 				self.page = r.response.page &gt;= 0 ? <span class="branch-0 cbranch-no" title="branch not covered" >r.response.page + 1 </span>: undefined;
 				self.maxpage = r.response.maxpage &gt;= 0 ? <span class="branch-0 cbranch-no" title="branch not covered" >r.response.maxpage + 1 </span>: undefined;
 				self.list = r.response.list;
-				<span class="missing-if-branch" title="else path not taken" >E</span>if (callback)
+				if (callback)
 					callback.call(self, self.list);
 			}
 		}, <span class="fstat-no" title="function not covered" >fu</span>nction(e) {
@@ -7835,7 +7871,7 @@ function BusinessObject(ses, name, instance) {
 		var self = this;
 		opts = opts || <span class="branch-1 cbranch-no" title="branch not covered" >{};</span>
 		var p = _getOptions(opts);
-		var tv = opts.treeView;
+		var  tv = opts.treeView;
 		if (tv)
 			p += '&amp;treeview=' + encodeURIComponent(tv);
 		<span class="missing-if-branch" title="if path not taken" >I</span>if (opts.fields) {
@@ -7857,7 +7893,7 @@ function BusinessObject(ses, name, instance) {
 <span class="cstat-no" title="statement not covered" >					self.item = tv ? r.response.data.item : r.response.data;</span>
 				else
 					self.item = tv ? r.response.item : r.response;
-				<span class="missing-if-branch" title="else path not taken" >E</span>if (callback)
+				if (callback)
 					callback.call(self, tv ? r.response : self.item);
 			}
 		}, <span class="fstat-no" title="function not covered" >fu</span>nction(e) {
@@ -8072,7 +8108,7 @@ function BusinessObject(ses, name, instance) {
 	 * @private
 	 */
 	function _save(callback, item, opts) {
-		<span class="missing-if-branch" title="else path not taken" >E</span>if (item)
+		if (item)
 			this.item = item;
 		var rowId = this.item[this.metadata.rowidfield];
 		<span class="missing-if-branch" title="if path not taken" >I</span>if (!rowId || rowId === constants.DEFAULT_ROW_ID)
@@ -8106,7 +8142,7 @@ function BusinessObject(ses, name, instance) {
 	 */
 	function _create(callback, item, opts) {
 		var self = this;
-		<span class="missing-if-branch" title="else path not taken" >E</span>if (item)
+		if (item)
 			self.item = item;
 		opts = opts || <span class="branch-1 cbranch-no" title="branch not covered" >{};</span>
 		var p = _getOptions(opts);
@@ -8117,7 +8153,7 @@ function BusinessObject(ses, name, instance) {
 <span class="cstat-no" title="statement not covered" >				(opts.error ? opts.error : self.session.error).call(self, r.response);</span>
 			} else {
 				self.item = r.response.data ? r.response.data : r.response;
-				<span class="missing-if-branch" title="else path not taken" >E</span>if (callback)
+				if (callback)
 					callback.call(self, self.item);
 			}
 		}, <span class="fstat-no" title="function not covered" >fu</span>nction(e) {
@@ -8151,7 +8187,7 @@ function BusinessObject(ses, name, instance) {
 	 */
 	function _update(callback, item, opts) {
 		var self = this;
-		<span class="missing-if-branch" title="else path not taken" >E</span>if (item)
+		if (item)
 			self.item = item;
 		opts = opts || <span class="branch-1 cbranch-no" title="branch not covered" >{};</span>
 		var p = _getOptions(opts);
@@ -8162,7 +8198,7 @@ function BusinessObject(ses, name, instance) {
 <span class="cstat-no" title="statement not covered" >				(opts.error ? opts.error : self.session.error).call(self, r.response);</span>
 			} else {
 				self.item = r.response.data ? <span class="branch-0 cbranch-no" title="branch not covered" >r.response.data </span>: r.response;
-				<span class="missing-if-branch" title="else path not taken" >E</span>if (callback)
+				if (callback)
 					callback.call(self, self.item);
 			}
 		}, <span class="fstat-no" title="function not covered" >fu</span>nction(e) {
@@ -8195,7 +8231,7 @@ function BusinessObject(ses, name, instance) {
 	 */
 	function _del(callback, item, opts) {
 		var self = this;
-		<span class="missing-if-branch" title="else path not taken" >E</span>if (item)
+		if (item)
 			self.item = item;
 		opts = opts || <span class="branch-1 cbranch-no" title="branch not covered" >{};</span>
 		self.session.req.call(self.session, self.path + '&amp;action=delete&amp;' + self.metadata.rowidfield + '=' + encodeURIComponent(self.item[self.metadata.rowidfield]), undefined, function(res, status) {
@@ -8206,7 +8242,7 @@ function BusinessObject(ses, name, instance) {
 			} else {
 				self.item = undefined;
 				delete r.response.undoredo;
-				<span class="missing-if-branch" title="else path not taken" >E</span>if (callback)
+				if (callback)
 					callback.call(self, r.response);
 			}
 		}, <span class="fstat-no" title="function not covered" >fu</span>nction(e) {
@@ -8248,7 +8284,7 @@ function BusinessObject(ses, name, instance) {
 <span class="cstat-no" title="statement not covered" >				(opts.error ? opts.error : self.session.error).call(self, r.response);</span>
 			} else {
 				var result = r.response.result;
-				<span class="missing-if-branch" title="else path not taken" >E</span>if (callback)
+				if (callback)
 					callback.call(self, result);
 			}
 		}, <span class="fstat-no" title="function not covered" >fu</span>nction(e) {
@@ -8342,7 +8378,7 @@ function BusinessObject(ses, name, instance) {
 			<span class="missing-if-branch" title="if path not taken" >I</span>if (r.type === 'error') {
 <span class="cstat-no" title="statement not covered" >				(opts.error ? opts.error : self.session.error).call(self, r.response);</span>
 			} else {
-				<span class="missing-if-branch" title="else path not taken" >E</span>if (callback)
+				if (callback)
 					callback.call(self, Object.assign(new Document(), r.response));
 			}
 		}, <span class="fstat-no" title="function not covered" >fu</span>nction(e) {
@@ -8620,7 +8656,7 @@ module.exports = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Mon Sep 13 2021 20:56:35 GMT+0200 (heure d’été d’Europe centrale)
+                at Tue Nov 02 2021 18:54:09 GMT+0100 (heure normale d’Europe centrale)
             </div>
         </div>
         <script src="prettify.js"></script>
