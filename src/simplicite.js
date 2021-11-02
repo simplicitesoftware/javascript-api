@@ -416,7 +416,7 @@ function Session(params) {
 	 * @param {...any} args Arguments
 	 * @function
 	 */
-	this.info = params.infoHandle || ((...args) => { console.info('INFO', args); });
+	this.info = params.infoHandler || ((...args) => { console.info('INFO', args); });
 
 	/**
 	 * Warning handler
