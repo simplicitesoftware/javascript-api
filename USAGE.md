@@ -6,13 +6,15 @@ This is the node.js&reg; &amp; browser **JavaScript API client module** for the 
 It uses promises, basic usage is something like:
 
 ```javascript
-const app = require('simplicite').session({ url: '<my instance base URL>' });
+import simplicite from 'simplicite';
 
-app.login({ username: '<my username>', password: '<my password>' }).then(res => {
-	console.log('Hello ' + res.login + '!');
-	let obj = app.getBusinessObject('MyObject');
-	return obj.search();
-}).then(list => {
+const app = simplicite.session({ url: '<my instance base URL>' });
+
+try {
+	const user = await app.login({ username: '<my username>', password: '<my password>' });
+	console.log('Hello ' + user.login + '!');
+	const obj = app.getBusinessObject('MyObject');
+	const list = await obj.search();
 	// Do something with the search results list
 	// Etc.
 }).catch(err => {
