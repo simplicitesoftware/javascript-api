@@ -1,4 +1,4 @@
-import simplicite from '../src/simplicite.mjs';
+import simplicite from '../src/simplicite.js';
 import assert from 'assert';
 
 const debug = process.env.TEST_SIMPLICITE_DEBUG == 'true';

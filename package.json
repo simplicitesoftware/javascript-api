@@ -1,7 +1,7 @@
 {
   "name": "simplicite",
   "type": "module",
-  "version": "3.0.0",
+  "version": "2.2.0",
   "description": "Simplicite(R) platform Javascript API (for node.js and browser)",
   "repository": {
     "type": "git",
@@ -14,16 +14,16 @@
     "lowcode"
   ],
   "dependencies": {
-    "node-fetch": "^3.0.0",
+    "node-fetch": "^2.6.6",
     "buffer": "^6.0.3"
   },
   "devDependencies": {
-    "@babel/cli": "^7.15.7",
-    "@babel/core": "^7.15.8",
-    "@babel/node": "^7.15.8",
-    "@babel/preset-env": "^7.15.8",
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
+    "@babel/node": "^7.16.0",
+    "@babel/preset-env": "^7.16.0",
     "docdash": "^1.2.0",
-    "esbuild": "^0.13.10",
+    "esbuild": "^0.13.12",
     "eslint": "^8.1.0",
     "jest": "^27.3.1",
     "jsdoc": "^3.6.7",
@@ -31,20 +31,22 @@
     "replace": "^1.2.1"
   },
   "scripts": {
-    "lint": "eslint src/simplicite.mjs test/*.js",
+    "lint": "eslint src/simplicite.js test/*.js",
     "babel": "babel src --out-dir=babel",
-    "build": "esbuild --minify --outfile=dist/simplicite.min.mjs src/simplicite.mjs",
-    "doc": "jsdoc -t node_modules/docdash -d docs src/simplicite.mjs USAGE.md && replace '#fc83ff' '#98cbff' docs/styles/jsdoc.css && replace '#6d426d' '#2e76bd' docs/styles/jsdoc.css && replace '#CA79CA' '#edb8b8' docs/styles/jsdoc.css && replace '#606' '#094e93' docs/styles/jsdoc.css",
+    "build": "esbuild --minify --sourcemap --outfile=dist/simplicite.min.js src/simplicite.js && esbuild --outfile=dist/simplicite.mjs src/simplicite.js",
+    "doc": "jsdoc -t node_modules/docdash -d docs src/simplicite.js USAGE.md && replace '#fc83ff' '#98cbff' docs/styles/jsdoc.css && replace '#6d426d' '#2e76bd' docs/styles/jsdoc.css && replace '#CA79CA' '#edb8b8' docs/styles/jsdoc.css && replace '#606' '#094e93' docs/styles/jsdoc.css",
     "test": "jest --coverage -- test/simplicite.test.js",
     "ncu": "ncu"
   },
   "files": [
     "src",
     "test",
-    "simplicite.min.js"
+    "dist/simplicite.mjs",
+    "dist/simplicite.min.js",
+    "dist/simplicite.min.js.map"
   ],
-  "main": "dist/simplicite.min.js",
-  "unpkg": "dist/simplicite.min.js",
+  "main": "dist/simplicite.mjs",
+  "browser": "dist/simplicite.min.js",
   "author": "Simplicite Software <contact@simplicitesoftware.com> (http://www.simplicitesoftware.com/)",
   "license": "Apache-2.0"
 }

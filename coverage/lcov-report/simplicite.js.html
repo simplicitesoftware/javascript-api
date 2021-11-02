@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">58.25% </span>
+                <span class="strong">58.1% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>462/793</span>
+                <span class='fraction'>459/790</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">58.92% </span>
+                <span class="strong">58.76% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>459/779</span>
+                <span class='fraction'>456/776</span>
             </div>
         
             
@@ -2529,9 +2529,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -4981,7 +4981,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -4992,12 +4992,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.1.0
+ * @version 2.2.0
  * @license Apache-2.0
  */
-const fetch = require('node-fetch');
-//const fetch = require('cross-fetch');
-const buffer = require('buffer');
+&nbsp;
+import fetch  from 'node-fetch';
+import buffer from 'buffer';
 &nbsp;
 /**
  * Constants
@@ -5392,40 +5392,40 @@ function Session(params) {
 &nbsp;
 	/**
 	 * Log handler
-	 * @param {any} arg Argument
+	 * @param {...any} args Arguments
 	 * @function
 	 */
-	this.log = params.logHandler || (<span class="fstat-no" title="function not covered" >ar</span>g =&gt; { <span class="cstat-no" title="statement not covered" >console.log(arg); </span>});
+	this.log = params.logHandler || (<span class="fstat-no" title="function not covered" >(.</span>..args) =&gt; { <span class="cstat-no" title="statement not covered" >console.log(args); </span>});
 &nbsp;
 	/**
 	 * Info handler
-	 * @param {any} arg Argument
+	 * @param {...any} args Arguments
 	 * @function
 	 */
-	this.info = params.infoHandle || (<span class="fstat-no" title="function not covered" >ar</span>g =&gt; { <span class="cstat-no" title="statement not covered" >console.info(arg); </span>});
+	this.info = params.infoHandle || (<span class="fstat-no" title="function not covered" >(.</span>..args) =&gt; { <span class="cstat-no" title="statement not covered" >console.info('INFO', args); </span>});
 &nbsp;
 	/**
 	 * Warning handler
-	 * @param {any} arg Argument
+	 * @param {...any} args Arguments
 	 * @function
 	 */
-	this.warn = params.warningHandler || (<span class="fstat-no" title="function not covered" >ar</span>g =&gt; { <span class="cstat-no" title="statement not covered" >console.warn(arg); </span>});
+	this.warn = params.warningHandler || (<span class="fstat-no" title="function not covered" >(.</span>..args) =&gt; { <span class="cstat-no" title="statement not covered" >console.warn('WARN', args); </span>});
 	
 	/**
 	 * Error handler
-	 * @param {any} arg Argument
+	 * @param {...any} args Arguments
 	 * @function
 	 */
-	this.error = params.errorHandler || (<span class="fstat-no" title="function not covered" >ar</span>g =&gt; { <span class="cstat-no" title="statement not covered" >console.error(arg); </span>});
+	this.error = params.errorHandler || (<span class="fstat-no" title="function not covered" >(.</span>..args) =&gt; { <span class="cstat-no" title="statement not covered" >console.error('ERROR', args); </span>});
 &nbsp;
 	const _debug = !!params.debug;
 &nbsp;
 	/**
 	 * Debug handler
-	 * @param {any} arg Argument
+	 * @param {...any} args Arguments
 	 * @function
 	 */
-	this.debug = params.debugHandler || (arg =&gt; { <span class="missing-if-branch" title="if path not taken" >I</span>if (_debug) <span class="cstat-no" title="statement not covered" >console.log(arg); </span>});
+	this.debug = params.debugHandler || ((...args) =&gt; { <span class="missing-if-branch" title="if path not taken" >I</span>if (_debug) <span class="cstat-no" title="statement not covered" >console.log('DEBUG', args); </span>});
 &nbsp;
 	/**
 	 * Timeout (seconds)
@@ -5626,14 +5626,14 @@ function Session(params) {
 		fetch(u, {
 			method: m,
 			headers: h,
-			timeout: self.timeout * 1000, // TODO: no timeout in fetch API
+			timeout: self.timeout * 1000, // useless because there is no timeout in fetch API
 			mode: 'cors',
 			credentials: 'include',
 			body: d
 		}).then(res =&gt; {
 			if (callback) {
-				res.text().then(data =&gt; {
-					callback.call(self, data, res.status, res.headers);
+				res.text().then(textData =&gt; {
+					callback.call(self, textData, res.status, res.headers);
 				});
 			}
 		}).catch(<span class="fstat-no" title="function not covered" >er</span>r =&gt; {
@@ -7414,7 +7414,7 @@ function <span class="fstat-no" title="function not covered" >ExternalObject(</s
 <span class="cstat-no" title="statement not covered" >			fetch(u, {</span>
 				method: m,
 				headers: h,
-				timeout: self.session.timeout * 1000,  // TODO: no timeout in fetch API
+				timeout: self.session.timeout * 1000, // useless because there is no timeout in fetch API
 				mode: 'cors',
 				credentials: 'include',
 				body: d
@@ -7422,20 +7422,20 @@ function <span class="fstat-no" title="function not covered" >ExternalObject(</s
 				const type = <span class="cstat-no" title="statement not covered" >res.headers.get('content-type');</span>
 <span class="cstat-no" title="statement not covered" >				self.session.debug('[simplicite.ExternalObject.call(' + p + ')] HTTP status = ' + res.status + ', response content type = ' + type);</span>
 <span class="cstat-no" title="statement not covered" >				if (type &amp;&amp; type.startsWith('application/json')) { // JSON</span>
-<span class="cstat-no" title="statement not covered" >					res.json().then(<span class="fstat-no" title="function not covered" >da</span>ta =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >						resolve &amp;&amp; resolve.call(self, data, res.status, res.headers);</span>
+<span class="cstat-no" title="statement not covered" >					res.json().then(<span class="fstat-no" title="function not covered" >js</span>onData =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >						resolve &amp;&amp; resolve.call(self, jsonData, res.status, res.headers);</span>
 					}).catch(<span class="fstat-no" title="function not covered" >er</span>r =&gt; {
 <span class="cstat-no" title="statement not covered" >						(opts.error || self.error || reject).call(self, self.getError(err));</span>
 					});
 				} else <span class="cstat-no" title="statement not covered" >if (type &amp;&amp; type.startsWith('text/')) { // Text</span>
-<span class="cstat-no" title="statement not covered" >					res.text().then(<span class="fstat-no" title="function not covered" >da</span>ta =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >						resolve &amp;&amp; resolve.call(self, data, res.status, res.headers);</span>
+<span class="cstat-no" title="statement not covered" >					res.text().then(<span class="fstat-no" title="function not covered" >te</span>xtData =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >						resolve &amp;&amp; resolve.call(self, textData, res.status, res.headers);</span>
 					}).catch(<span class="fstat-no" title="function not covered" >er</span>r =&gt; {
 <span class="cstat-no" title="statement not covered" >						(opts.error || self.error || reject).call(self, self.getError(err));</span>
 					});
 				} else { // Binary
-<span class="cstat-no" title="statement not covered" >					res.arrayBuffer().then(<span class="fstat-no" title="function not covered" >da</span>ta =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >						resolve &amp;&amp; resolve.call(self, data, res.status, res.headers);</span>
+<span class="cstat-no" title="statement not covered" >					res.arrayBuffer().then(<span class="fstat-no" title="function not covered" >bi</span>nData =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >						resolve &amp;&amp; resolve.call(self, binData, res.status, res.headers);</span>
 					}).catch(<span class="fstat-no" title="function not covered" >er</span>r =&gt; {
 <span class="cstat-no" title="statement not covered" >						(opts.error || self.error || reject).call(self, self.getError(err));</span>
 					});
@@ -7447,7 +7447,7 @@ function <span class="fstat-no" title="function not covered" >ExternalObject(</s
 	};
 }
 &nbsp;
-module.exports = {
+export default {
 	session: session,
 	Session: Session,
 	Grant: Grant,
@@ -7462,7 +7462,7 @@ module.exports = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Fri Oct 29 2021 17:00:23 GMT+0200 (heure d’été d’Europe centrale)
+                at Tue Nov 02 2021 16:47:46 GMT+0100 (heure normale d’Europe centrale)
             </div>
         </div>
         <script src="prettify.js"></script>
