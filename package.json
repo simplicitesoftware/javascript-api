@@ -1,7 +1,7 @@
 {
   "name": "simplicite",
   "type": "module",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Simplicite(R) platform Javascript API (for node.js and browser)",
   "repository": {
     "type": "git",
@@ -28,11 +28,13 @@
     "jest": "^27.3.1",
     "jsdoc": "^3.6.7",
     "npm-check-updates": "^11.8.5",
+    "typescript": "^4.4.4",
     "replace": "^1.2.1"
   },
   "scripts": {
     "lint": "eslint src/simplicite.js test/*.js",
     "babel": "babel src --out-dir=babel",
+    "dts": "tsc src/simplicite.js --declaration --allowJs --emitDeclarationOnly --outDir dist",
     "build": "esbuild --minify --sourcemap --outfile=dist/simplicite.min.js src/simplicite.js && esbuild --outfile=dist/simplicite.mjs src/simplicite.js",
     "doc": "jsdoc -t node_modules/docdash -d docs src/simplicite.js USAGE.md && replace '#fc83ff' '#98cbff' docs/styles/jsdoc.css && replace '#6d426d' '#2e76bd' docs/styles/jsdoc.css && replace '#CA79CA' '#edb8b8' docs/styles/jsdoc.css && replace '#606' '#094e93' docs/styles/jsdoc.css",
     "test": "jest --coverage -- test/simplicite.test.js",
@@ -41,6 +43,7 @@
   "files": [
     "src",
     "test",
+    "dist/simplicite.d.ts",
     "dist/simplicite.mjs",
     "dist/simplicite.min.js",
     "dist/simplicite.min.js.map"
