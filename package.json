@@ -33,7 +33,7 @@
   "scripts": {
     "lint": "eslint src/simplicite.mjs test/*.js",
     "babel": "babel src --out-dir=babel",
-    "build": "esbuild --minify --outfile=dist/simplicite.min.js src/simplicite.mjs",
+    "build": "esbuild --minify --outfile=dist/simplicite.min.mjs src/simplicite.mjs",
     "doc": "jsdoc -t node_modules/docdash -d docs src/simplicite.mjs USAGE.md && replace '#fc83ff' '#98cbff' docs/styles/jsdoc.css && replace '#6d426d' '#2e76bd' docs/styles/jsdoc.css && replace '#CA79CA' '#edb8b8' docs/styles/jsdoc.css && replace '#606' '#094e93' docs/styles/jsdoc.css",
     "test": "jest --coverage -- test/simplicite.test.js",
     "ncu": "ncu"
