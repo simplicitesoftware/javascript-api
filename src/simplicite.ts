@@ -7,7 +7,7 @@
 
 import fetch from 'node-fetch'; // Node.js polyfill for fetch
 import { Buffer } from 'buffer'; // Browser polyfill for Buffer
-
+ 
 /**
  * Constants
  * @constant
@@ -15,300 +15,300 @@ import { Buffer } from 'buffer'; // Browser polyfill for Buffer
 const constants = {
 	/**
 	 * API client module version
-	 * @const {string}
+	 * @constant {string}
 	 */
 	MODULE_VERSION: '2.2.3',
 
 	/**
 	 * Default row ID field name
-	 * @const {string}
+	 * @constant {string}
 	 */
 	DEFAULT_ROW_ID_NAME: 'row_id',
 
 	/**
 	 * Default row ID value
-	 * @const {string}
+	 * @constant {string}
 	 */
 	DEFAULT_ROW_ID: '0',
 
 	/**
 	 * Default context
-	 * @const {number}
+	 * @constant {number}
 	 */
 	CONTEXT_NONE: 0,
 	/**
 	 * Search context
-	 * @const {number}
+	 * @constant {number}
 	 */
 	CONTEXT_SEARCH: 1,
 	/**
 	 * List context
-	 * @const {number}
+	 * @constant {number}
 	 */
 	CONTEXT_LIST: 2,
 	/**
 	 * Creation context
-	 * @const {number}
+	 * @constant {number}
 	 */
 	CONTEXT_CREATE: 3,
 	/**
 	 * Copy context
-	 * @const {number}
+	 * @constant {number}
 	 */
 	CONTEXT_COPY: 4,
 	/**
 	 * Update context
-	 * @const {number}
+	 * @constant {number}
 	 */
 	CONTEXT_UPDATE: 5,
 	/**
 	 * Delete context
-	 * @const {number}
+	 * @constant {number}
 	 */
 	CONTEXT_DELETE: 6,
 	/**
 	 * Chart context
-	 * @const {number}
+	 * @constant {number}
 	 */
 	CONTEXT_GRAPH: 7,
 	/**
 	 * Pivot table context
-	 * @const {number}
+	 * @constant {number}
 	 */
 	CONTEXT_CROSSTAB: 8,
 	/**
 	 * Publication context
-	 * @const {number}
+	 * @constant {number}
 	 */
 	CONTEXT_PRINTTMPL: 9,
 	/**
 	 * Bulk update context
-	 * @const {number}
+	 * @constant {number}
 	 */
 	CONTEXT_UPDATEALL: 10,
 	/**
 	 * Reference selection context
-	 * @const {number}
+	 * @constant {number}
 	 */
 	CONTEXT_REFSELECT: 11,
 	/**
 	 * Datamap selection context
-	 * @const {number}
+	 * @constant {number}
 	 */
 	CONTEXT_DATAMAPSELECT: 12,
 	/**
 	 * Pre validation context
-	 * @const {number}
+	 * @constant {number}
 	 */
 	CONTEXT_PREVALIDATE: 13,
 	/**
 	 * Post validation context
-	 * @const {number}
+	 * @constant {number}
 	 */
 	CONTEXT_POSTVALIDATE: 14,
 	/**
 	 * State transition context
-	 * @const {number}
+	 * @constant {number}
 	 */
 	CONTEXT_STATETRANSITION: 15,
 	/**
 	 * Export context
-	 * @const {number}
+	 * @constant {number}
 	 */
 	CONTEXT_EXPORT: 16,
 	/**
 	 * Import context
-	 * @const {number}
+	 * @constant {number}
 	 */
 	CONTEXT_IMPORT: 17,
 	/**
 	 * Association context
-	 * @const {number}
+	 * @constant {number}
 	 */
 	CONTEXT_ASSOCIATE: 18,
 	/**
 	 * Panle list context
-	 * @const {number}
+	 * @constant {number}
 	 */
 	CONTEXT_PANELLIST: 19,
 
 	/**
 	 * Foreign key (reference) type
-	 * @const {number}
+	 * @constant {number}
 	 */
 	TYPE_ID: 0,
 	/**
 	 * Integer type
-	 * @const {number}
+	 * @constant {number}
 	 */
 	TYPE_INT: 1,
 	/**
 	 * Decimal type
-	 * @const {number}
+	 * @constant {number}
 	 */
 	TYPE_FLOAT: 2,
 	/**
 	 * Short string type
-	 * @const {number}
+	 * @constant {number}
 	 */
 	TYPE_STRING: 3,
 	/**
 	 * Date type
-	 * @const {number}
+	 * @constant {number}
 	 */
 	TYPE_DATE: 4,
 	/**
 	 * Date and time type
-	 * @const {number}
+	 * @constant {number}
 	 */
 	TYPE_DATETIME: 5,
 	/**
 	 * Time type
-	 * @const {number}
+	 * @constant {number}
 	 */
 	TYPE_TIME: 6,
 	/**
 	 * Simple enumeration type
-	 * @const {number}
+	 * @constant {number}
 	 */
 	TYPE_ENUM: 7,
 	/**
 	 * Boolean type
-	 * @const {number}
+	 * @constant {number}
 	 */
 	TYPE_BOOLEAN: 8,
 	/**
 	 * Password type
-	 * @const {number}
+	 * @constant {number}
 	 */
 	TYPE_PASSWORD: 9,
 	/**
 	 * URL type
-	 * @const {number}
+	 * @constant {number}
 	 */
 	TYPE_URL: 10,
 	/**
 	 * HTML content type
-	 * @const {number}
+	 * @constant {number}
 	 */
 	TYPE_HTML: 11,
 	/**
 	 * Email type
-	 * @const {number}
+	 * @constant {number}
 	 */
 	TYPE_EMAIL: 12,
 	/**
 	 * Long string type
-	 * @const {number}
+	 * @constant {number}
 	 */
 	TYPE_LONG_STRING: 13,
 	/**
 	 * Multiple enumeration type
-	 * @const {number}
+	 * @constant {number}
 	 */
 	TYPE_ENUM_MULTI: 14,
 	/**
 	 * Validated string type
-	 * @const {number}
+	 * @constant {number}
 	 */
 	TYPE_REGEXP: 15,
 	/**
 	 * Document type
-	 * @const {number}
+	 * @constant {number}
 	 */
 	TYPE_DOC: 17,
 	/**
 	 * Decimal type
-	 * @const {number}
+	 * @constant {number}
 	 * @deprecated
 	 */
 	TYPE_FLOAT_EMPTY: 18,
 	/**
 	 * External file type
-	 * @const {number}
+	 * @constant {number}
 	 * @deprecated
 	 */
 	TYPE_EXTFILE: 19,
 	/**
 	 * Image type
-	 * @const {number}
+	 * @constant {number}
 	 */
 	TYPE_IMAGE: 20,
 	/**
 	 * Notepad type
-	 * @const {number}
+	 * @constant {number}
 	 */
 	TYPE_NOTEPAD: 21,
 	/**
 	 * Phone number type
-	 * @const {number}
+	 * @constant {number}
 	 */
 	TYPE_PHONENUM: 22,
 	/**
 	 * RGB color type
-	 * @const {number}
+	 * @constant {number}
 	 */
 	TYPE_COLOR: 23,
 	/**
 	 * Object type
-	 * @const {number}
+	 * @constant {number}
 	 */
 	TYPE_OBJECT: 24,
 	/**
 	 * Geocoordinates type
-	 * @const {number}
+	 * @constant {number}
 	 */
 	TYPE_GEOCOORDS: 25,
 
 	/**
 	 * Not visible
-	 * @const {number}
+	 * @constant {number}
 	 */
 	VIS_NOT: 0,
 	/**
 	 * Hiiden (same as not visible)
-	 * @const {number}
+	 * @constant {number}
 	 */
 	VIS_HIDDEN: 0,
 	/**
 	 * Visible on lists only
-	 * @const {number}
+	 * @constant {number}
 	 */
 	VIS_LIST: 1,
 	/**
 	 * Visible on forms only
-	 * @const {number}
+	 * @constant {number}
 	 */
 	VIS_FORM: 2,
 	/**
 	 * Visible on both lists and forms only
-	 * @const {number}
+	 * @constant {number}
 	 */
 	VIS_BOTH: 3,
 
 	/**
 	 * No search
-	 * @const {number}
+	 * @constant {number}
 	 */
 	SEARCH_NONE: 0,
 	/**
 	 * Simple search
-	 * @const {number}
+	 * @constant {number}
 	 */
 	SEARCH_MONO: 1,
 	/**
 	 * Multiple search (checkboxes)
-	 * @const {number}
+	 * @constant {number}
 	 */
 	SEARCH_MULTI_CHECK: 2,
 	/**
 	 * Multiple search (listbox)
-	 * @const {number}
+	 * @constant {number}
 	 */
 	SEARCH_MULTI_LIST: 3,
 	/**
 	 * Search by period (date/time)
-	 * @const {number}
+	 * @constant {number}
 	 */
 	SEARCH_PERIOD: 4,
 
@@ -325,40 +325,178 @@ const constants = {
 
 	/**
 	 * Fatal error level
-	 * @const {number}
+	 * @constant {number}
 	 */
 	ERRLEVEL_FATAL: 1,
 	/**
 	 * Error level
-	 * @const {number}
+	 * @constant {number}
 	 */
 	ERRLEVEL_ERROR: 2,
 	/**
 	 * Warning level
-	 * @const {number}
+	 * @constant {number}
 	 */
 	ERRLEVEL_WARNING: 3,
 
 	/**
 	 * Image resource type
-	 * @const {number}
+	 * @constant {number}
 	 */
 	RESOURCE_TYPE_IMAGE: 'IMG',
 	/**
 	 * Icon resource type
-	 * @const {number}
+	 * @constant {number}
 	 */
 	RESOURCE_TYPE_ICON: 'ICO',
 	/**
 	 * Stylesheet resource type
-	 * @const {number}
+	 * @constant {number}
 	 */
 	RESOURCE_TYPE_STYLESHEET: 'CSS',
 	/**
 	 * Javascript resource type
-	 * @const {number}
+	 * @constant {number}
 	 */
 	RESOURCE_TYPE_JAVASCRIPT: 'JS'
+};
+
+/**
+ * Session parameters endpoints
+ */
+const enum SessionParamEndpoint {
+	/**
+	 * API endpoint
+	 */
+	API = 'api',
+	/**
+	 * UI endpoint
+	 */
+	UI = 'ui',
+	/**
+	 * Public UI endpoint
+	 */
+	PUBLIC = 'public'
+}
+
+/**
+ * Session parameters
+ * @type
+ */
+type SessionParams = {
+	/**
+	 * URL
+	 * @constant {string}
+	 */
+	url?: string,
+
+	/**
+	 * Scheme
+	 * @constant {string}
+	 */
+	scheme?: string,
+
+	/**
+	 * Hostname or IP address
+	 * @constant {string}
+	 */
+	host?: string,
+
+	/**
+	 * Port
+	 * @constant {number}
+	 */
+	port?: number,
+
+	/**
+	 * Root
+	 * @constant {string}
+	 */
+	root?: string,
+
+	/**
+	 * Endpoint
+	 * @constant {SessionParamEndpoint}
+	 */
+	endpoint?: SessionParamEndpoint,
+
+	/**
+	 * Username
+	 * @constant {string}
+	 */
+	username?: string,
+
+	/**
+	 * Alias to username
+	 * @constant {string}
+	 */
+	login?: string,
+
+	/**
+	 * Password
+	 * @constant {string}
+	 */
+	password?: string,
+
+	/**
+	 * Alias to password
+	 * @constant {string}
+	 */
+	pwd?: string,
+
+	/**
+	 * Authentication token
+	 * @constant {string}
+	 */
+	authtoken?: string,
+
+	/**
+	 * Alias to authentication token
+	 * @constant {string}
+	 */
+	token?: string,
+
+	/**
+	 * Timeout (s)
+	 * @constant {number}
+	 */
+	timeout?: number,
+
+	/**
+	 * Debug?
+	 * @constant {boolean}
+	 */
+	debug?: boolean,
+
+	/**
+	 * Log handler
+	 * @constant {function}
+	 */
+	logHandler?: (...args: any[]) => any,
+
+	/**
+	 * Debug handler
+	 * @constant {function}
+	 */
+	debugHandler?: (...args: any[]) => any,
+
+	/**
+	 * Info handler
+	 * @constant {function}
+	 */
+	infoHandler?: (...args: any[]) => any,
+
+	/**
+	 * Warning handler
+	 * @constant {function}
+	 */
+	warningHandler?: (...args: any[]) => any,
+
+	/**
+	 * Error handler
+	 * @constant {function}
+	 */
+	errorHandler?: (...args: any[]) => any
 };
 
 /**
@@ -366,7 +504,7 @@ const constants = {
  * @param {object} params Parameters (see session class for details)
  * @return {Session} session
 */
-function session(params) {
+function session(params: any): any {
 	return new Session(params);
 }
 
@@ -390,138 +528,161 @@ function session(params) {
  * @param {function} [params.logHandler] Log handler function
  * @class
  */
-function Session(params) {
-	params = params || {};
-
+class Session {
 	/**
 	 * Constants
-	 * @constant
+	 * @member
 	 */
-	this.constants = constants;
+	 constants = constants;
 
 	/**
-	 * Is used within generic UI?
-	 * @constant
+	 * Endpoint
+	 * @member {string}
 	 */
-	this.endpoint = params.endpoint || 'api';
+	endpoint: SessionParamEndpoint;
+
+	 /**
+	 * Constructor
+	 * @param params {object} Parameters
+	 */
+	constructor(params: SessionParams) {
+		if (!params)
+			throw 'No session parammeters';
+		
+		this.endpoint = params.endpoint || SessionParamEndpoint.API;
+		
+		this.log = params.logHandler || ((...args: any): void => { console.log(args); });
+		this.info = params.infoHandler || ((...args: any): void => { console.info('INFO', args); });
+		this.warn = params.warningHandler || ((...args: any): void => { console.warn('WARN', args); });
+		this.error = params.errorHandler || ((...args: any): void => { console.error('ERROR', args); });
+		this.debugMode = !!params.debug;
+		this.debug = params.debugHandler || ((...args: any): void => { if (this.debugMode) console.log('DEBUG', args); });
+
+		if (params.url) {
+			try {
+				params.scheme = params.url.replace(/:.*$/, '');
+				const u = params.url.replace(new RegExp('^' + params.scheme + '://'), '').split(':');
+				if (u.length === 1) {
+					params.host = u[0].replace(/\/.*$/, '');
+					params.port = params.scheme === 'http' ? 80 : 443;
+					params.root = u[0].replace(new RegExp('^' + params.host + '/?'), '');
+				} else {
+					params.host = u[0];
+					params.port = parseInt(u[1].replace(/\/.*$/, ''), 10);
+					if (isNaN(params.port))
+						throw new Error('Incorrect port');
+					params.root = u[1].replace(new RegExp('^' + params.port + '/?'), '');
+				}
+				if (params.root === '/')
+					params.root = '';
+			} catch (e: any) {
+				this.error('Unable to parse URL [' + params.url + ']: ' + e.message);
+				return;
+			}
+		}
+		
+		const scheme = params.scheme || (params.port === 443 ? 'https' : 'http');
+		if (scheme !== 'http' && scheme !== 'https') {
+			this.error('Incorrect scheme [' + params.scheme + ']');
+			return;
+		}
+		const host = params.host || 'localhost';
+		const port = params.port || 8080;
+		let root = params.root || '';
+		if (root === '/')
+			root = '';
+		
+		let url = scheme + '://' + host;
+		if ((scheme === 'http' && port != 80) || (scheme === 'https' && port != 443))
+			url += ':' + port;
+		if (root !== '')
+			url += root.startsWith('/') ? root : '/' + root;
+		this.debug('[simplicite] Base URL = ' + url);
+	
+		const ep = this.endpoint == 'public' ? '' : '/' + this.endpoint;
+	
+		this.parameters = {
+			scheme: scheme,
+			host: host,
+			port: port,
+			root: root,
+			url: url,
+			timeout: params.timeout || 30,
+			healthpath: (ep == '/ui' ? ep : '') + '/health?format=json',
+			apppath: ep + '/json/app',
+			objpath: ep + '/json/obj',
+			extpath: ep + '/ext',
+			docpath: ep + '/raw/document',
+			respath: '/resource'
+		};
+
+		this.username = params.username || params.login; // naming flexibility
+		this.password = params.password || params.pwd; // naming flexibility
+		this.authtoken = params.authtoken || params.token; // naming flexibility
+
+		this.businessObjectCache = new Map<string, any>();
+		// TODO : this.businessObjectCache = new Map<string, BusinessObject>();
+	}
 
 	/**
 	 * Log handler
 	 * @param {...any} args Arguments
 	 * @function
 	 */
-	this.log = params.logHandler || ((...args) => { console.log(args); });
+	log: Function;
 
 	/**
 	 * Info handler
 	 * @param {...any} args Arguments
 	 * @function
 	 */
-	this.info = params.infoHandler || ((...args) => { console.info('INFO', args); });
+	info: Function
 
 	/**
 	 * Warning handler
 	 * @param {...any} args Arguments
 	 * @function
 	 */
-	this.warn = params.warningHandler || ((...args) => { console.warn('WARN', args); });
+	warn: Function;
 	
 	/**
 	 * Error handler
 	 * @param {...any} args Arguments
 	 * @function
 	 */
-	this.error = params.errorHandler || ((...args) => { console.error('ERROR', args); });
+	error: Function;
 
-	const _debug = !!params.debug;
+	/**
+	 * Debug mode enabled?
+	 * @member {boolean}
+	 */
+	debugMode: boolean;
 
 	/**
 	 * Debug handler
 	 * @param {...any} args Arguments
 	 * @function
 	 */
-	this.debug = params.debugHandler || ((...args) => { if (_debug) console.log('DEBUG', args); });
-
-	/**
-	 * Timeout (seconds)
-	 * @default 30
-	 * @member {number}
-	 */
-	this.timeout = params.timeout || 30;
-
-	if (params.url) {
-		try {
-			params.scheme = params.url.replace(/:.*$/, '');
-			const u = params.url.replace(new RegExp('^' + params.scheme + '://'), '').split(':');
-			if (u.length === 1) {
-				params.host = u[0].replace(/\/.*$/, '');
-				params.port = params.scheme === 'http' ? 80 : 443;
-				params.root = u[0].replace(new RegExp('^' + params.host + '/?'), '');
-			} else {
-				params.host = u[0];
-				params.port = parseInt(u[1].replace(/\/.*$/, ''), 10);
-				if (isNaN(params.port))
-					throw new Error('Incorrect port');
-				params.root = u[1].replace(new RegExp('^' + params.port + '/?'), '');
-			}
-			if (params.root === '/')
-				params.root = '';
-		} catch (e) {
-			this.error('Unable to parse URL [' + params.url + ']: ' + e.message);
-			return;
-		}
-	}
-	
-	const scheme = params.scheme || (params.port === 443 ? 'https' : 'http');
-	if (scheme !== 'http' && scheme !== 'https') {
-		this.error('Incorrect scheme [' + params.scheme + ']');
-		return;
-	}
-	const host = params.host || 'localhost';
-	const port = params.port || 8080;
-	let root = params.root || '';
-	if (root === '/')
-		root = '';
-	
-	let url = scheme + '://' + host;
-	if ((scheme === 'http' && port != 80) || (scheme === 'https' && port != 443))
-		url += ':' + port;
-	if (root !== '')
-		url += root.startsWith('/') ? root : '/' + root;
-	this.debug('[simplicite] Base URL = ' + url);
-
-	const ep = this.endpoint == 'public' ? '' : '/' + this.endpoint;
+	debug: Function;
 
 	/**
 	 * Parameters
-	 * @constant {object}
+	 * @member {object}
 	 */
-	this.parameters = {
-		scheme: scheme,
-		host: host,
-		port: port,
-		root: root,
-		url: url,
-		healthpath: (ep == '/ui' ? ep : '') + '/health?format=json',
-		apppath: ep + '/json/app',
-		objpath: ep + '/json/obj',
-		extpath: ep + '/ext',
-		docpath: ep + '/raw/document',
-		respath: '/resource'
-	};
+	parameters: any;
 
 	/**
 	 * Username
 	 * @member {string}
 	 */
-	this.username = params.username || params.login; // naming flexibility
+	username: string;
 
 	/**
 	 * Set username
 	 * @param {string} usr Username
 	 * @function
 	 */
-	this.setUsername = (usr) => {
+	setUsername = (usr: string): void => {
 		this.username = usr;
 	};
 
@@ -529,14 +690,14 @@ function Session(params) {
 	 * Password
 	 * @member {string}
 	 */
-	this.password = params.password || params.pwd; // naming flexibility
+	password: string;
 
 	/**
 	 * Set password
 	 * @param {string} pwd Password
 	 * @function
 	 */
-	this.setPassword = (pwd) => {
+	setPassword = (pwd: string): void => {
 		this.password = pwd;
 	};
 
@@ -544,24 +705,30 @@ function Session(params) {
 	 * Auth token
 	 * @member {string}
 	 */
-	this.authtoken = params.authtoken || params.authToken || params.token; // naming flexibility
+	 authtoken: string;
 
 	/**
+	 * Session ID
+	 * @member {string}
+	 */
+	 sessionid: string;
+
+	 /**
 	 * Set auth token
-	 * @param {string} tkn Auth token
+	 * @param {string} token Auth token
 	 * @function
 	 */
-	this.setAuthToken = (tkn) => {
-		this.authtoken = tkn;
+	setAuthToken = (token: string): void => {
+		this.authtoken = token;
 	};
 
 	/**
 	 * Business objects cache
-	 * @type {object}
+	 * @member {object}
 	 * @private
 	 */
-	let businessObjectCache = {};
-
+	businessObjectCache: Map<string, any>;
+	 
 	/**
 	 * Get business object cache key
 	 * @param {string} name Business object name
@@ -569,7 +736,7 @@ function Session(params) {
 	 * @return {object} Business object cache key
 	 * @private
 	 */
-	this.getBusinessObjectCacheKey = (name, instance) => {
+	getBusinessObjectCacheKey = (name: string, instance: string): any => {
 		return name + ':' + (instance || 'js_' + name);
 	};
 
@@ -577,7 +744,7 @@ function Session(params) {
 	 * Clears all data (credentials, objects, ...)
 	 * @function
 	 */
-	this.clear = () => {
+	clear = () => {
 		this.username = undefined;
 		this.password = undefined;
 		this.authtoken = undefined;
@@ -588,31 +755,60 @@ function Session(params) {
 		this.appinfo = undefined;
 		this.sysinfo = undefined;
 		this.devinfo = undefined;
-		this.userinfo = undefined;
 
-		businessObjectCache = {};
+		this.businessObjectCache = new Map<string, any>();
+		// TODO: this.businessObjectCache = new Map<string, BusinessObject>();
 	};
 
 	/**
-	 * Basic HTTP authorization header
+	 * Basic HTTP authorization header value
+	 * @return {string} HTTP authorization header value
 	 * @private
 	 */
-	this.getBasicAuthHeader = () => {
+	getBasicAuthHeader = (): string => {
 		return this.username && this.password
 			? 'Basic ' + Buffer.from(this.username + ':' + this.password).toString('base64')
 			: undefined;
 	};
 
 	/**
-	 * Get bearer token header
+	 * Get bearer token header value
+	 * @return {string} Bearer token header value
 	 * @private
 	 */
-	this.getBearerTokenHeader = () => {
+	getBearerTokenHeader = (): string => {
 		return this.authtoken
 			? 'Bearer ' + this.authtoken
 			: undefined;
 	};
 
+	/**
+	 * Get error object
+	 * @param {(string|object)} err Error
+	 * @param {string} err.message Error message
+	 * @param {number} [status] Optional error status (defaults to 200)
+	 * @param {string} [origin] Optional error origin
+	 * @return {object} Error object
+	 * @private
+	 */
+	getError = (err: string|any, status?: number, origin?: string): any => {
+		if (typeof err === 'string') { // plain text error
+			return { message: err, status: status || 200, origin: origin };
+		} else if (err.response) { // wrapped error
+			if (typeof err.response === 'string') {
+				return { message: err.response, status: status || 200, origin: origin };
+			} else {
+				if (origin)
+					try { err.response.origin = origin; } catch(e) { /* ignore */ }
+				return err.response;
+			}
+		} else { // other cases
+			if (origin)
+				try { err.origin = origin; } catch(e) { /* ignore */ }
+			return err;
+		}
+	};
+	
 	/**
 	 * Request
 	 * @param {string} path Path
@@ -621,74 +817,59 @@ function Session(params) {
 	 * @param {function} [errorHandler] Error handler
 	 * @private
 	 */
-	this.req = (path, data, callback, errorHandler) => {
-		const self = this;
-		const m = data ? 'POST' : 'GET';
-		const h = {};
+	req = (path: string, data: any, callback: (testData: string, status: number, headers: any) => void, errorHandler: (err: any) => void): void => {
+		const origin = 'Session.req';
+		const m: string = data ? 'POST' : 'GET';
+		const h: any = {};
 		if (data)
 			h['Content-Type'] = 'application/x-www-form-urlencoded; charset=utf-8';
-		let b = self.getBearerTokenHeader();
+		let b = this.getBearerTokenHeader();
 		if (b) {
 			h['X-Simplicite-Authorization'] = b;
 		} else {
-			b = self.getBasicAuthHeader();
+			b = this.getBasicAuthHeader();
 			if (b)
-				h.Authorization = b;
+				h['Authorization'] = b;
 		}
-		const u = self.parameters.url + path || '/';
-		const d = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined;
-		self.debug('[simplicite.req] ' + m + ' ' + u + (d ? ' with ' + d : ''));
+		const u: string = this.parameters.url + path || '/';
+		const d: any = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined;
+		this.debug(`[${origin}] ${m} ${u}${d ? ' with ' + d : ''}`);
 		fetch(u, {
 			method: m,
 			headers: h,
-			timeout: self.timeout * 1000, // useless because there is no timeout in fetch API
+			timeout: this.parameters.timeout * 1000, // useless because there is no timeout in fetch API
 			mode: 'cors',
 			credentials: 'include',
 			body: d
-		}).then(res => {
+		}).then((res: any) => {
 			if (callback) {
-				res.text().then(textData => {
-					callback.call(self, textData, res.status, res.headers);
+				res.text().then((textData: string) => {
+					callback.call(this, textData, res.status, res.headers);
 				});
 			}
-		}).catch(err => {
+		}).catch((err: any) => {
 			const s = err.response && err.response.status ? err.response.status : undefined;
 			const e = err.response && err.response.data ? err.response.data : err;
 			if (errorHandler)
-				errorHandler.call(self, self.getError.call(self, e, s));
+				errorHandler.call(this, this.getError(e, s, origin));
 			else
 				throw e;
 		});
 	};
 
 	/**
-	 * Get error object
-	 * @param {(string|object)} err Error
-	 * @param {string} err.message Error message
-	 * @param {number} [status] Error status
-	 * @private
-	 */
-	this.getError = (err, status) => {
-		if (typeof err === 'string') // plain text error
-			return { message: err, status: status || 200 };
-		else if (err.response) // wrapped error
-			return typeof err.response === 'string' ? { message: err.response, status: status || 200 } : err.response;
-		else
-			return err;
-	};
-
-	/**
 	 * Parse result
 	 * @param {object} res Response to parse
 	 * @param {number} [status=200] HTTP status
+	 * @return {object} Error object
 	 * @private
 	 */
-	this.parse = (res, status) => {
+	parse = (res: any, status: number): any => {
 		try {
 			if (status !== 200)
 				return { type: 'error', response: this.getError('HTTP status: ' + status, status) };
 			return typeof res === 'object' ? res : JSON.parse(res);
-		} catch (e) {
+		} catch (e: any) {
 			return { type: 'error', response: this.getError('Parsing error: ' + e.message, status) };
 		}
 	};
@@ -701,19 +882,20 @@ function Session(params) {
 	 * @return {promise<object>} Promise to the health data
 	 * @function
 	 */
-	this.getHealth = (opts) => {
-		const self = this;
+	getHealth = (opts: any): Promise<any> => {
+		const origin = 'Session.getHealth';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
-			self.req.call(self, self.parameters.healthpath + '&full=' + !!opts.full, undefined, (res, status) => {
-				const r = self.parse(res, status);
-				self.debug('[simplicite.getHealth] HTTP status = ' + status + ', response type = ' + res);
-				if (r.type === 'error')
-					(opts.error || self.error || reject).call(self, r.response);
-				else
-					resolve && resolve.call(self, r);
-			}, err => {
-				(opts.error || self.error || reject).call(self, self.getError(err));
+			this.req(`${this.parameters.healthpath}&full=${!!opts.full}`, undefined, (res: any, status: number) => {
+				const r: any = this.parse(res, status);
+				this.debug(`[${origin}] HTTP status = ${status}, response type = ${res}`);
+				if (r.type === 'error') {
+					(opts.error || this.error || reject).call(this, this.getError(r.response, undefined, origin));
+				} else {
+					resolve && resolve.call(this, r);
+				}
+			}, (err: any) => {
+				(opts.error || this.error || reject).call(this, this.getError(err, undefined, origin));
 			});
 		});
 	};
@@ -728,44 +910,44 @@ function Session(params) {
 	 * @return {promise<object>} Promise to the login result
 	 * @function
 	 */
-	this.login = (opts) => {
-		const self = this;
+	login = (opts): Promise<any> => {
+		const origin = 'Session.login';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			if ((opts.username || opts.login) && (opts.password || opts.pwd)) {
-				self.clear();
-				self.username = opts.username || opts.login;
-				self.password = opts.password || opts.pwd;	
+				this.clear();
+				this.username = opts.username || opts.login;
+				this.password = opts.password || opts.pwd;	
 			} else if (opts.authtoken || opts.authToken || opts.token) {
-				self.clear();
-				self.authtoken = opts.authtoken || opts.authToken || opts.token;	
+				this.clear();
+				this.authtoken = opts.authtoken || opts.authToken || opts.token;	
 			}
-			self.req.call(self, self.parameters.apppath + '?action=session', undefined, (res, status) => {
-				const r = self.parse(res, status);
-				self.debug('[simplicite.login] HTTP status = ' + status + ', response type = ' + r.type);
+			this.req(`${this.parameters.apppath}?action=session`, undefined, (res: any, status: number) => {
+				const r: any = this.parse(res, status);
+				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
-					(opts.error || self.error || reject).call(self, r.response);
+					(opts.error || this.error || reject).call(this, this.getError(r.response, undefined, origin));
 				} else {
-					self.sessionid = r.response.id;
-					self.debug('[simplicite.login] Session ID = ' + self.sessionid);
-					self.username = r.response.login;
-					if (self.username)
-						self.debug('[simplicite.login] Username = ' + self.username);
-					self.authtoken = r.response.authtoken;
-					if (self.authtoken)
-						self.debug('[simplicite.login] Auth token = ' + self.authtoken);
+					this.sessionid = r.response.id;
+					this.debug(`[${origin}] Session ID = ${this.sessionid}`);
+					this.username = r.response.login;
+					if (this.username)
+						this.debug(`[${origin}] Username = ${this.username}`);
+					this.authtoken = r.response.authtoken;
+					if (this.authtoken)
+						this.debug(`[${origin}] Auth token = ${this.authtoken}`);
 					// Minimal grant from session data
-					self.grant = Object.assign(new Grant(), {
+					this.grant = Object.assign(new Grant(), {
 						login: r.response.login,
 						userid: r.response.userid,
 						firstname: r.response.firstanme,
 						lastname: r.response.lastname,
 						email: r.response.email
 					});
-					resolve && resolve.call(self, r.response);
+					resolve && resolve.call(this, r.response);
 				}
-			}, err => {
-				(opts.error || self.error || reject).call(self, self.getError(err));
+			}, (err: any) => {
+				(opts.error || this.error || reject).call(this, this.getError(err, undefined, origin));
 			});
 		});
 	};
@@ -778,23 +960,23 @@ function Session(params) {
 	 * @return {promise<object>} Promise to the logout result
 	 * @function
 	 */
-	this.logout = (opts) => {
-		const self = this;
+	logout = (opts: any): Promise<any> => {
+		const origin = 'Session.logout';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
-			self.req.call(self, self.parameters.apppath + '?action=logout', undefined, (res, status) => {
-				const r = self.parse(res, status);
-				self.debug('[simplicite.logout] HTTP status = ' + status + ', response type = ' + r.type);
+			this.req(`${this.parameters.apppath}?action=logout`, undefined, (res: any, status: number) => {
+				const r: any = this.parse(res, status);
+				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
-					(opts.error || self.error || reject).call(self, r.response);
+					(opts.error || this.error || reject).call(this, this.getError(r.response, undefined, origin));
 				} else {
-					self.clear();
-					resolve && resolve.call(self, r.response);
+					this.clear();
+					resolve && resolve.call(this, r.response);
 				}
-			}, err => {
+			}, (err: any) => {
 				if (err.status === 401) // Removes (expired or deleted) token if any
-					self.authtoken = undefined;
-				(opts.error || self.error || reject).call(self, self.getError(err));
+					this.authtoken = undefined;
+				(opts.error || this.error || reject).call(this, this.getError(err, undefined, origin));
 			});
 		});
 	};
@@ -803,7 +985,7 @@ function Session(params) {
 	 * Grant
 	 * @member {Grant}
 	 */
-	this.grant = undefined;
+	grant: Grant;
 
 	/**
 	 * Get grant (current user data)
@@ -814,26 +996,32 @@ function Session(params) {
 	 * @return {promise<Grant>} A promise to the grant (also available as the <code>grant</code> member)
 	 * @function
 	 */
-	this.getGrant = (opts) => {
-		const self = this;
+	getGrant = (opts: any): Promise<any> => {
+		const origin = 'Session.getGrant';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
-			let p = '&web=true'; // Required to be able to include texts 
-			if (opts.inlinePicture || opts.picture) // naming flexibility
-				p += '&inline_picture=' + (!!opts.inlinePicture || !!opts.picture);
-			if (opts.includeTexts || opts.texts)
-				p += '&texts=' + (!!opts.includeTexts || !!opts.texts);
-			self.req.call(self, self.parameters.apppath + '?action=getgrant' + p, undefined, (res, status) => {
-				const r = self.parse(res, status);
-				self.debug('[simplicite.getGrant] HTTP status = ' + status + ', response type = ' + r.type);
+			let p = '&web=true'; // Required to be able to include texts
+			const pic = !!opts.inlinePicture || !!opts.picture; // naming flexibility
+			if (pic)
+				p += '&inline_picture=true';
+			const txt = !!opts.includeTexts || !!opts.texts; // naming flexibility
+			if (txt)
+				p += '&texts=true';
+			this.req(`${this.parameters.apppath}?action=getgrant${p}`, undefined, (res: any, status: number) => {
+				const r: any = this.parse(res, status);
+				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
-					(opts.error || self.error || reject).call(self, r.response);
+					(opts.error || this.error || reject).call(this, this.getError(r.response, undefined, origin));
 				} else {
-					self.grant = Object.assign(new Grant(), r.response);
-					resolve && resolve.call(self, self.grant);
+					this.grant = Object.assign(new Grant(), r.response); // Set as Grant
+					if (pic)
+						this.grant.picture = Object.assign(new Document(), this.grant.picture); // Set picture as Document
+					if (txt)
+						this.grant.texts = Object.assign(new Map<string, string>(), this.grant.texts); // Set texts as Map
+					resolve && resolve.call(this, this.grant);
 				}
-			}, err => {
-				(opts.error || self.error || reject).call(self, self.getError(err));
+			}, (err: any) => {
+				(opts.error || this.error || reject).call(this, this.getError(err, undefined, origin));
 			});
 		});
 	};
@@ -846,22 +1034,28 @@ function Session(params) {
 	 * @return {promise<object>} A promise to the change password result
 	 * @function
 	 */
-	this.changePassword = (pwd, opts) => {
-		const self = this;
+	changePassword = (pwd: string, opts: any): Promise<any> => {
+		const origin = 'Session.changePassword';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
-			self.req.call(self, self.parameters.apppath + '?action=setpassword&password=' + encodeURIComponent(pwd), undefined, (res, status) => {
-				const r = self.parse(res, status);
-				self.debug('[simplicite.changePassword] HTTP status = ' + status + ', response type = ' + r.type);
+			this.req(`${this.parameters.apppath}?action=setpassword&password=${encodeURIComponent(pwd)}`, undefined, (res: any, status: number) => {
+				const r: any = this.parse(res, status);
+				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error')
-					(opts.error || self.error || reject).call(self, r.response);
+					(opts.error || this.error || reject).call(this, this.getError(r.response, undefined, origin));
 				else
-					resolve && resolve.call(self, r.response);
-			}, err => {
-				(opts.error || self.error || reject).call(self, self.getError(err));
+					resolve && resolve.call(this, r.response);
+			}, (err: any) => {
+				(opts.error || this.error || reject).call(this, this.getError(err, undefined, origin));
 			});
 		});
 	};
+
+	/**
+	 * Application info
+	 * @member {object}
+	 */
+	appinfo: any;
 
 	/**
 	 * Get application info
@@ -870,52 +1064,64 @@ function Session(params) {
 	 * @return {promise<object>} A promise to the application info (also avialable as the <code>appinfo</code> member)
 	 * @function
 	 */
-	this.getAppInfo = (opts) => {
-		const self = this;
+	getAppInfo = (opts: any): Promise<any> => {
+		const origin = 'Session.getAppInfo';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
-			self.req.call(self, self.parameters.apppath + '?action=getinfo', undefined, (res, status) => {
-				const r = self.parse(res, status);
-				self.debug('[simplicite.getAppInfo] HTTP status = ' + status + ', response type = ' + r.type);
+			this.req(`${this.parameters.apppath}?action=getinfo`, undefined, (res: any, status: number) => {
+				const r: any = this.parse(res, status);
+				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
-					(opts.error || self.error || reject).call(self, r.response);
+					(opts.error || this.error || reject).call(this, this.getError(r.response, undefined, origin));
 				} else {
-					self.appinfo = r.response;
-					resolve && resolve.call(self, self.appinfo);
+					this.appinfo = r.response;
+					resolve && resolve.call(this, this.appinfo);
 				}
-			}, err => {
-				(opts.error || self.error || reject).call(self, self.getError(err));
+			}, (err: any) => {
+				(opts.error || this.error || reject).call(this, this.getError(err, undefined, origin));
 			});
 		});
 	};
 
 	/**
+	 * System info
+	 * @member {object}
+	 */
+	sysinfo: any;
+
+	 /**
 	 * Get system info
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
 	 * @return {promise<object>} A promise to the system info (also avialable as the <code>sysinfo</code> member)
 	 * @function
 	 */
-	this.getSysInfo = (opts) => {
-		const self = this;
+	getSysInfo = (opts: any): Promise<any> => {
+		const origin = 'Session.getSysInfo';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
-			self.req.call(self, self.parameters.apppath + '?action=sysinfo', undefined, (res, status) => {
-				const r = self.parse(res, status);
-				self.debug('[simplicite.getSysInfo] HTTP status = ' + status + ', response type = ' + r.type);
+			this.req(`${this.parameters.apppath}?action=sysinfo`, undefined, (res: any, status: number) => {
+				const r: any = this.parse(res, status);
+				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
-					(opts.error || self.error || reject).call(self, r.response);
+					(opts.error || this.error || reject).call(this, this.getError(r.response, undefined, origin));
 				} else {
-					self.sysinfo = r.response;
-					resolve && resolve.call(self, self.sysinfo);
+					this.sysinfo = r.response;
+					resolve && resolve.call(this, this.sysinfo);
 				}
-			}, err => {
-				(opts.error || self.error || reject).call(self, self.getError(err));
+			}, (err: any) => {
+				(opts.error || this.error || reject).call(this, this.getError(err, undefined, origin));
 			});	
 		});
 	};
 
 	/**
+	 * Development info
+	 * @member {object}
+	 */
+	devinfo: any;
+
+	 /**
 	 * Get development info
 	 * @param {string} [module] Module name
 	 * @param {object} [opts] Options
@@ -923,30 +1129,36 @@ function Session(params) {
 	 * @return {promise<object>} A promise to the develoment info (also avialable as the <code>devinfo</code> member)
 	 * @function
 	 */
-	this.getDevInfo = (module, opts) => {
-		const self = this;
+	getDevInfo = (module: string, opts: any): Promise<any> => {
+		const origin = 'Session.getDevInfo';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			let p = '';
 			if (module)
 				p += '&module=' + encodeURIComponent(module);
-			self.req.call(self, self.parameters.apppath + '?action=devinfo' + p, undefined, (res, status) => {
-				const r = self.parse(res, status);
-				self.debug('[simplicite.getDevInfo] HTTP status = ' + status + ', response type = ' + r.type);
+			this.req(`${this.parameters.apppath}?action=devinfo${p}`, undefined, (res: any, status: number) => {
+				const r: any = this.parse(res, status);
+				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
-					(opts.error || self.error || reject).call(self, r.response);
+					(opts.error || this.error || reject).call(this, this.getError(r.response, undefined, origin));
 				} else {
 					if (!module)
-						self.devinfo = r.response;
-					resolve && resolve.call(self, r.response);
+						this.devinfo = r.response;
+					resolve && resolve.call(this, r.response);
 				}
-			}, err => {
-				(opts.error || self.error || reject).call(self, self.getError(err));
+			}, (err: any) => {
+				(opts.error || this.error || reject).call(this, this.getError(err, undefined, origin));
 			});	
 		});
 	};
 
 	/**
+	 * News
+	 * @member {array}
+	 */
+	news: Array<any>;
+
+	 /**
 	 * Get news
 	 * @param {object} [opts] Options
 	 * @param {boolean} [opts.inlineImages=false] Inline news images?
@@ -954,31 +1166,34 @@ function Session(params) {
 	 * @return {promise<array>} A promise to the list of news (also avialable as the <code>news</code> member)
 	 * @function
 	 */
-	this.getNews = (opts) => {
-		const self = this;
+	getNews = (opts: any): Promise<Array<any>> => {
+		const origin = 'Session.getHealth';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			let p = '';
-			if (opts.inlineImages)
-				p += '&inline_images=' + !!opts.inlineImages;
-			self.req.call(self, self.parameters.apppath + '?action=news' + p, undefined, (res, status) => {
-				const r = self.parse(res, status);
-				self.debug('[simplicite.getNews] HTTP status = ' + status + ', response type = ' + r.type);
+			const img = !!opts.inlineImages || !!opts.images; // naming flexibility
+			if (img)
+				p += '&inline_images=true';
+			this.req(`${this.parameters.apppath}?action=news${p}`, undefined, (res: any, status: number) => {
+				const r: any = this.parse(res, status);
+				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
-					(opts.error || self.error || reject).call(self, r.response);
+					(opts.error || this.error || reject).call(this, this.getError(r.response, undefined, origin));
 				} else {
-					self.news = r.response;
-					resolve && resolve.call(self, self.news);
+					this.news = r.response;
+					for (const n of this.news)
+						n.image = Object.assign(new Document(), n.image); // Set image as document
+					resolve && resolve.call(this, this.news);
 				}
-			}, err => {
-				(opts.error || self.error || reject).call(self, self.getError(err));
+			}, (err: any) => {
+				(opts.error || this.error || reject).call(this, this.getError(err, undefined, origin));
 			});
 		});
 	};
 
 	/**
 	 * Index search
-	 * @param {string} request Index search request
+	 * @param {string} query Index search query
 	 * @param {string} [object] Object
 	 * @param {object} [opts] Options
 	 * @param {boolean} [opts.metadata=false] Add meta data for each result
@@ -987,8 +1202,8 @@ function Session(params) {
 	 * @return {promise<array>} A promise to a list of index search records
 	 * @function
 	 */
-	this.indexSearch = (request, object, opts) => {
-		const self = this;
+	indexSearch = (query: string, object: string, opts: any): Promise<Array<any>> => {
+		const origin = 'Session.indexSearch';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			let p = '';
@@ -996,15 +1211,15 @@ function Session(params) {
 				p += '&_md=true';
 			if (opts.context)
 				p += '&context=' + encodeURIComponent(opts.context);
-			self.req.call(self, self.parameters.apppath + '?action=indexsearch&request=' + encodeURIComponent(request ? request : '') + (object ? '&object=' + encodeURIComponent(object) : '') + p, undefined, (res, status) => {
-				const r = self.parse(res, status);
-				self.debug('[simplicite.indexSearch] HTTP status = ' + status + ', response type = ' + r.type);
+			this.req(`${this.parameters.apppath}?action=indexsearch&request=${encodeURIComponent(query ? query : '')}${object ? '&object=' + encodeURIComponent(object) : ''}${p}`, undefined, (res: any, status: number) => {
+				const r: any = this.parse(res, status);
+				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error')
-					(opts.error || self.error || reject).call(self, r.response);
+					(opts.error || this.error || reject).call(this, this.getError(r.response, undefined, origin));
 				else
-					resolve && resolve.call(self, r.response);
-			}, err => {
-				(opts.error || self.error || reject).call(self, self.getError(err));
+					resolve && resolve.call(this, r.response);
+			}, (err: any) => {
+				(opts.error || this.error || reject).call(this, this.getError(err, undefined, origin));
 			});
 		});
 	};
@@ -1016,12 +1231,12 @@ function Session(params) {
 	 * @return {BusinessObject} Business object
 	 * @function
 	 */
-	this.getBusinessObject = (name, instance) => {
-		const cacheKey = this.getBusinessObjectCacheKey(name, instance);
-		let obj = businessObjectCache[cacheKey];
+	getBusinessObject = (name: string, instance: string): any => {
+		const cacheKey: string = this.getBusinessObjectCacheKey(name, instance);
+		let obj: any = this.businessObjectCache[cacheKey];
 		if (!obj) {
 			obj = new BusinessObject(this, name, instance);
-			businessObjectCache[cacheKey] = obj;
+			this.businessObjectCache[cacheKey] = obj;
 		}
 		return obj;
 	};
@@ -1031,7 +1246,7 @@ function Session(params) {
 	 * @param {string} name External object name
 	 * @function
 	 */
-	this.getExternalObject = (name) => {
+	getExternalObject = (name: string): any => {
 		return new ExternalObject(this, name);
 	};
 
@@ -1043,7 +1258,7 @@ function Session(params) {
 	 * @param {string} [objId] Object ID (not required for global resources)
 	 * @function
 	 */
-	this.getResourceURL = (code, type, object, objId) => {
+	getResourceURL = (code: string, type: string, object: any, objId: string) => {
 		return this.parameters.url + this.parameters.respath
 			+ '?code=' + encodeURIComponent(code) + '&type=' + encodeURIComponent(type || 'IMG')
 			+ (object ? '&object=' + encodeURIComponent(object) : '')
@@ -1053,18 +1268,272 @@ function Session(params) {
 }
 
 /**
+ * Document
+ * @class
+ */
+class Document {
+	/**
+	 * Document's ID
+	 * @member {string}
+	 */
+	id?: string;
+
+	/**
+	 * Document's MIME type
+	 * @member {string}
+	 */
+	mime?: string;
+
+	/**
+	 * Document's file name
+	 * @member {string}
+	 */
+	filename?: string;
+
+	/**
+	 * Document's content as base 64
+	 * @member {string}
+	 */
+	content?: string;
+
+	/**
+	 * Document's thumbnail as base 64
+	 * @member {string}
+	 */
+	thumbnail?: string;
+
+	/**
+	 * Get the document's ID
+	 * @return {string} ID
+	 * @function
+	 */
+	getId = (): string => {
+		return this.id;
+	};
+
+	/**
+	 * Get the document's MIME type
+	 * @return {string} MIME type
+	 * @function
+	 */
+	getMIMEType = (): string => {
+		return this.mime;
+	};
+
+	/**
+	 * Alias to <code>getMIMEType</code>
+	 * @return {string} MIME type
+	 * @function
+	 */
+	getMimeType = this.getMIMEType;
+
+	/**
+	 * Set the document's MIME type
+	 * @param {string} mime MIME type
+	 * @function
+	 */
+	setMIMEType = (mime: string): void => {
+		this.mime = mime;
+	};
+
+	/**
+	 * Alias to <code>setMIMEType</code>
+	 * @param {string} mime MIME type
+	 * @function
+	 */
+	setMimeType = this.setMIMEType;
+
+	/**
+	 * Get the document's file name
+	 * @return {string} File name
+	 * @function
+	 */
+	getFilename = (): string => {
+		return this.filename;
+	};
+
+	/**
+	 * Alias to <code>getFilename</code>
+	 * @return {string} File name
+	 * @function
+	 */
+	getFileName = this.getFilename;
+
+	/**
+	 * Set the document's file name
+	 * @param {string} filename File name
+	 * @function
+	 */
+	setFilename = (filename: string): void => {
+		this.filename = filename;
+	};
+
+	/**
+	 * Alias to <code>setFilename</code>
+	 * @param {string} filename File name
+	 * @function
+	 */
+	setFileName = this.setFilename;
+
+	/**
+	 * Get the document's content (encoded in base 64)
+	 * @return {string} Content
+	 * @function
+	 */
+	getContent = (): string => {
+		return this.content;
+	};
+
+	/**
+	 * Get the document's thumbnail (encoded in base 64)
+	 * @return {string} Thumbnail
+	 * @function
+	 */
+	getThumbnail = (): string => {
+		return this.thumbnail;
+	};
+
+	/**
+	 * Get the document's content as a buffer
+	 * @param {any} data Content data
+	 * @return {buffer} Content data as buffer
+	 * @private
+	 */
+	getBuffer(data: any): Buffer {
+		return Buffer.from(data, 'base64');
+	}
+
+	/**
+	 * Get the document's content as an array buffer
+	 * @return {ArrayBuffer} Content as an array buffer
+	 * @function
+	 */
+	getContentAsArrayBuffer = (): ArrayBuffer => {
+		return this.getBuffer(this.content).buffer;
+	};
+
+	/**
+	 * Get the document's thumbnail as an array buffer
+	 * @return {ArrayBuffer} Thumbnail as an array buffer
+	 * @function
+	 */
+	getThumbnailAsArrayBuffer = (): ArrayBuffer => {
+		return this.getBuffer(this.thumbnail || '').buffer;
+	};
+
+	/**
+	 * Get the document's content as a text
+	 * @return {string} Content as plain text
+	 * @function
+	 */
+	getContentAsText = (): string => {
+		return this.getBuffer(this.content).toString('utf-8');
+	};
+
+	/**
+	 * Set the document's content
+	 * @param {string} content Content (encoded in base 64)
+	 * @function
+	 */
+	setContent = (content: string): void => {
+		this.content = content;
+	};
+
+	/**
+	 * Set the document's content from plain text string
+	 * @param {string} content Content as plain text string
+	 * @function
+	 */
+	setContentFromText = (content: string): void => {
+		this.content = Buffer.from(content, 'utf-8').toString('base64');
+	};
+
+	/**
+	 * Get the document's data URL
+	 * @param {boolean} [thumbnail=false] Thumbnail? If thumbnail does not exists the content is used.
+	 * @return {string} Data URL or nothing if content is empty
+	 */
+	getDataURL = (thumbnail: boolean): string => {
+		if (this.content)
+			return 'data:' + this.mime + ';base64,' + (thumbnail && this.thumbnail ? this.thumbnail : this.content);
+	};
+
+	/**
+	 * Get the document as a simple value
+	 * @return {object} Value
+	 */
+	getValue = (): any => {
+		return JSON.parse(JSON.stringify(this)); // Strips all functions
+	};
+}
+
+/**
  * Grant (user).
  * <br/><span style="color: red;">You <strong>should never</strong> instanciate this class directly
  * but rather use it from the <code>data</code> variable got using <code>getGrant</code></span>.
  * @class
  */
-function Grant() {
+class Grant {
+	/**
+	 * User ID
+	 * @member {string} 
+	 */
+	userid: string;
+
+	/**
+	 * User name
+	 * @member {string} 
+	 */
+	login: string;
+
+	/**
+	 * User language
+	 * @member {string} 
+	 */
+	lang: string;
+
+	/**
+	 * User email address
+	 * @member {string} 
+	 */
+	email: string;
+
+	/**
+	 * User first name
+	 * @member {string} 
+	 */
+	firstname: string;
+
+	/**
+	 * User last name
+	 * @member {string} 
+	 */
+	lastname: string;
+
+	/**
+	 * User picture
+	 * @member {Document} 
+	 */
+	picture: Document;
+
+	/**
+	 * User picture
+	 * @member {array} 
+	 */
+	responsibilities: Array<string>;
+
+	/**
+	 * User picture
+	 * @member {object} 
+	 */
+	texts: Map<string, string>;
+
 	/**
 	 * Get user ID
 	 * @return {string} User ID
 	 * @function
 	 */
-	this.getUserId = () => {
+	getUserId = (): string => {
 		return this.userid;
 	};
 
@@ -1073,7 +1542,7 @@ function Grant() {
 	 * @return {string} Username
 	 * @function
 	 */
-	this.getUsername = () => {
+	getUsername = (): string => {
 		return this.login;
 	};
 
@@ -1082,14 +1551,14 @@ function Grant() {
 	 * @return {string} Login
 	 * @function
 	 */
-	this.getLogin = this.getUsername; // Naming flexibility
+	getLogin = this.getUsername; // Naming flexibility
 
 	/**
-	 * Get language
-	 * @return {string} Language
+	 * Get user language
+	 * @return {string} User language
 	 * @function
 	 */
-	this.getLang = () => {
+	getLang = (): string => {
 		return this.lang;
 	};
 	
@@ -1098,7 +1567,7 @@ function Grant() {
 	 * @return {string} Email address
 	 * @function
 	 */
-	this.getEmail = () => {
+	getEmail = (): string => {
 		return this.email;
 	};
 	
@@ -1107,7 +1576,7 @@ function Grant() {
 	 * @return {string} First name
 	 * @function
 	 */
-	this.getFirstname = () => {
+	getFirstname = (): string => {
 		return this.firstname;
 	};
 	
@@ -1116,14 +1585,14 @@ function Grant() {
 	 * @return {string} First name
 	 * @function
 	 */
-	this.getFirstName = this.getFirstname; // Naming flexibility
+	getFirstName = this.getFirstname; // Naming flexibility
 	
 	/**
 	 * Get last name
 	 * @return {string} Last name
 	 * @function
 	 */
-	this.getLastname = () => {
+	getLastname = (): string => {
 		return this.lastname;
 	};
 	
@@ -1132,14 +1601,14 @@ function Grant() {
 	 * @return {string} Last name
 	 * @function
 	 */
-	this.getLastName = this.getLastname; // Naming flexibility
+	getLastName = this.getLastname; // Naming flexibility
 	
 	/**
 	 * Get picture data URL
-	 * @return {string} Picture data URL
+	 * @return {Document} Picture data URL
 	 * @function
 	 */
-	this.getPictureURL = () => {
+	getPictureURL = (): string => {
 		if (this.picture)
 			return 'data:' + this.picture.mime + ';base64,' + this.picture.content;
 	};
@@ -1150,186 +1619,17 @@ function Grant() {
 	 * @return {boolean} True if user has a responsibility on the specified group
 	 * @function
 	 */
-	this.hasResponsibility = (group) => {
+	hasResponsibility = (group: string): boolean => {
 		return this.responsibilities && this.responsibilities.indexOf(group) !== -1;
 	};
 
 	/**
-	 * Get text
+	 * Get text value
 	 * @param {string} code Text code
+	 * @return {string} Text value
 	 */
-	this.T = (code) => {
+	T = (code: string): string => {
 		return this.texts ? this.texts[code] || '' : '';
-	};
-}
-
-/**
- * Document
- * @class
- */
-function Document() {
-	/**
-	 * Get the document's ID
-	 * @return ID
-	 * @function
-	 */
-	this.getId = () => {
-		return this.id;
-	};
-
-	/**
-	 * Get the document's MIME type
-	 * @return {string} MIME type
-	 * @function
-	 */
-	this.getMIMEType = () => {
-		return this.mime;
-	};
-
-	/**
-	 * Alias to <code>getMIMEType</code>
-	 * @return {string} MIME type
-	 * @function
-	 */
-	this.getMimeType = this.getMIMEType;
-
-	/**
-	 * Set the document's MIME type
-	 * @param {string} mime MIME type
-	 * @function
-	 */
-	this.setMIMEType = (mime) => {
-		this.mime = mime;
-	};
-
-	/**
-	 * Alias to <code>setMIMEType</code>
-	 * @param {string} mime MIME type
-	 * @function
-	 */
-	this.setMimeType = this.setMIMEType;
-
-	/**
-	 * Get the document's file name
-	 * @return {string} File name
-	 * @function
-	 */
-	this.getFilename = () => {
-		return this.filename;
-	};
-
-	/**
-	 * Alias to <code>getFilename</code>
-	 * @return {string} File name
-	 * @function
-	 */
-	this.getFileName = this.getFilename;
-
-	/**
-	 * Set the document's file name
-	 * @param {string} filename File name
-	 * @function
-	 */
-	this.setFilename = (filename) => {
-		this.filename = filename;
-	};
-
-	/**
-	 * Alias to <code>setFilename</code>
-	 * @param {string} filename File name
-	 * @function
-	 */
-	this.setFileName = this.setFilename;
-
-	/**
-	 * Get the document's content (encoded in base 64)
-	 * @return {string} Content
-	 * @function
-	 */
-	this.getContent = () => {
-		return this.content;
-	};
-
-	/**
-	 * Get the document's thumbnail (encoded in base 64)
-	 * @return {string} Thumbnail
-	 * @function
-	 */
-	this.getThumbnail = () => {
-		return this.thumbnail;
-	};
-
-	/**
-	 * Get the document's content as a buffer
-	 * @private
-	 */
-	function getBuffer(data) {
-		return Buffer.from(data, 'base64');
-	}
-
-	/**
-	 * Get the document's content as an array buffer
-	 * @return {ArrayBuffer} Content as an array buffer
-	 * @function
-	 */
-	this.getContentAsArrayBuffer = () => {
-		return getBuffer(this.content).buffer;
-	};
-
-	/**
-	 * Get the document's thumbnail as an array buffer
-	 * @return {ArrayBuffer} Thumbnail as an array buffer
-	 * @function
-	 */
-	this.getThumbnailAsArrayBuffer = () => {
-		return getBuffer(this.thumbnail || '').buffer;
-	};
-
-	/**
-	 * Get the document's content as a text
-	 * @param {string} [encoding] Encoding, defaults to UTF-8
-	 * @return {string} Content as plain text
-	 * @function
-	 */
-	this.getContentAsText = (encoding) => {
-		return getBuffer(this.content).toString(encoding || 'utf-8');
-	};
-
-	/**
-	 * Set the document's content
-	 * @param {string} content Content (encoded in base 64)
-	 * @function
-	 */
-	this.setContent = (content) => {
-		this.content = content;
-	};
-
-	/**
-	 * Set the document's content from plain text string
-	 * @param {string} content Content as plain text string
-	 * @param {string} [encoding] Encoding, defaults to UTF-8
-	 * @function
-	 */
-	this.setContentFromText = (content, encoding) => {
-		this.content = Buffer.from(content, encoding || 'utf-8').toString('base64');
-	};
-
-	/**
-	 * Get the document's data URL
-	 * @param {boolean} [thumbnail] Thumbnail? If thumbnail does not exists the content is used.
-	 * @return {string} Data URL or nothing if content is empty
-	 */
-	this.getDataURL = (thumbnail) => {
-		if (this.content)
-			return 'data:' + this.mime + ';base64,' + (thumbnail && this.thumbnail ? this.thumbnail : this.content);
-	};
-
-	/**
-	 * Get the document as a simple value
-	 * @return Value
-	 */
-	this.getValue = () => {
-		return JSON.parse(JSON.stringify(this)); // Strips all functions
 	};
 }
 
@@ -1341,7 +1641,7 @@ function Document() {
  * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
  * @class
  */
-function BusinessObjectMetadata(name, instance) {
+function BusinessObjectMetadata(name: string, instance: string) {
 	/**
 	 * Name
 	 * @constant {string}
@@ -1388,7 +1688,7 @@ function BusinessObjectMetadata(name, instance) {
  * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
  * @class
  */
-function BusinessObject(ses, name, instance) {
+function BusinessObject(ses: any, name: string, instance: string) {
 	instance = instance || 'js_' + name;
 
 	/**
@@ -1442,8 +1742,8 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<BusinessObjectMetadata>} A promise to the object'ts meta data (also available as the <code>metadata</code> member)
 	 * @function
 	 */
-	this.getMetaData = (opts) => {
-		const self = this;
+	this.getMetaData = (opts: any): any => {
+		const self: any = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			let p = '';
@@ -1451,8 +1751,8 @@ function BusinessObject(ses, name, instance) {
 				p += '&context=' + encodeURIComponent(opts.context);
 			if (opts.contextParam)
 				p += '&contextparam=' + encodeURIComponent(opts.contextParam);
-			self.session.req.call(self.session, self.path + '&action=metadata' + p, undefined, (res, status) => {
-				const r = self.session.parse(res, status);
+			self.session.req.call(self.session, self.path + '&action=metadata' + p, undefined, (res: any, status: number) => {
+				const r: any = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.getMetaData] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
 					(opts.error || self.session.error || reject).call(self, r.response);
@@ -1460,7 +1760,7 @@ function BusinessObject(ses, name, instance) {
 					self.metadata = r.response;
 					resolve && resolve.call(self, self.metadata);
 				}
-			}, err => {
+			}, (err: any) => {
 				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
 			});
 		});
@@ -1482,7 +1782,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {string} Name
 	 * @function
 	 */
-	this.getName = () => {
+	this.getName = (): string => {
 		return this.metadata.name;
 	};
 
@@ -1491,7 +1791,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {string} Instance name
 	 * @function
 	 */
-	this.getInstance = () => {
+	this.getInstance = (): string => {
 		return this.metadata.instance;
 	};
 
@@ -1500,7 +1800,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {string} Display label
 	 * @function
 	 */
-	this.getLabel = () => {
+	this.getLabel = (): string => {
 		return this.metadata.label;
 	};
 
@@ -1509,7 +1809,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {string} Help
 	 * @function
 	 */
-	this.getHelp = () => {
+	this.getHelp = (): string => {
 		return this.metadata.help;
 	};
 
@@ -1518,7 +1818,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {array} Array of field definitions
 	 * @function
 	 */
-	this.getFields = () => {
+	this.getFields = (): Array<any> => {
 		return this.metadata.fields;
 	};
 
@@ -1528,9 +1828,9 @@ function BusinessObject(ses, name, instance) {
 	 * @return {object} Field definition
 	 * @function
 	 */
-	this.getField = (fieldName) => {
+	this.getField = (fieldName: string): any => {
+		const fs: Array<any> = this.getFields();
 		let n = 0;
-		const fs = this.getFields();
 		while (n < fs.length && fs[n].name !== fieldName) n++;
 		if (n < fs.length)
 			return fs[n];
@@ -1541,7 +1841,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {string} Row ID field name
 	 * @function
 	 */
-	this.getRowIdFieldName = () => {
+	this.getRowIdFieldName = (): string => {
 		return this.metadata.rowidfield;
 	};
 
@@ -1550,7 +1850,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {object} Row ID field definition
 	 * @function
 	 */
-	this.getRowIdField = () => {
+	this.getRowIdField = (): any => {
 		return this.getField(this.getRowIdFieldName());
 	};
 
@@ -1559,7 +1859,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {array} Array of links
 	 * @function
 	 */
-	this.getLinks = () => {
+	this.getLinks = (): Array<any> => {
 		return this.metadata.links;
 	};
 
@@ -1569,7 +1869,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {string} Type (one of <code>constants.TYPE_*</code>)
 	 * @function
 	 */
-	this.getFieldType = (field) => {
+	this.getFieldType = (field: string|any): string => {
 		if (typeof field === 'string')
 			field = this.getField(field);
 		if (field)
@@ -1579,10 +1879,10 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Get field label
 	 * @param {(string|object)} field Field name or definition
-	 * @return {string} Value
+	 * @return {string} Field label
 	 * @function
 	 */
-	this.getFieldLabel = (field) => {
+	this.getFieldLabel = (field: string|any): string => {
 		if (typeof field === 'string')
 			field = this.getField(field);
 		if (field)
@@ -1593,10 +1893,10 @@ function BusinessObject(ses, name, instance) {
 	 * Get value of field for item (or current item)
 	 * @param {(string|object)} field Field name or definition
 	 * @param {object} [item] Item (defaults to current item)
-	 * @return {string} Value
+	 * @return {strin|Document} Value
 	 * @function
 	 */
-	this.getFieldValue = (field, item) => {
+	this.getFieldValue = (field: string|any, item: any): string|any => {
 		if (!item)
 			item = this.item;
 		if (field && item) {
@@ -1607,14 +1907,14 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Get the list value of a list of values field for item (or current item)
 	 * @param {(string|object)} field Field name or definition
-	 * @param {string} code Code
-	 * @return {string} Value
+	 * @param {object} [item] Item (defaults to current item)
+	 * @return {string} List value
 	 * @function
 	 */
-	this.getFieldListValue = (field, item) => {
+	this.getFieldListValue = (field: string|any, item: any) => {
 		if (typeof field === 'string')
 			field = this.getField(field);
-		const val = this.getFieldValue(field, item);
+		const val: string = this.getFieldValue(field, item);
 		return field && field.listOfValues ? this.getListValue(field.listOfValues, val) : val;
 	};
 
@@ -1625,10 +1925,10 @@ function BusinessObject(ses, name, instance) {
 	 * @return {string} Document/image field data URL (or nothing if the field is not of document/image type or if it is not inlined or if it is empty)
 	 * @function
 	 */
-	this.getFieldDataURL = (field, item) => {
+	this.getFieldDataURL = (field: string|any, item: any): string => {
 		if (typeof field !== 'string')
 			field = field.fullinput || field.name;
-		const val = this.getFieldValue(field, item);
+		const val: string|any = this.getFieldValue(field, item);
 		if (val && val.mime) // Inlined
 			return 'data:' + val.mime + ';base64,' + (val.content || val.thumbnail);
 	};
@@ -1640,10 +1940,10 @@ function BusinessObject(ses, name, instance) {
 	 * @return {Document} Document/image (or nothing if the field is not of document/image type or if it is empty)
 	 * @function
 	 */
-	this.getFieldDocument = (field, item) => {
+	this.getFieldDocument = (field: string|any, item: any): any => {
 		if (typeof field !== 'string')
 			field = field.fullinput || field.input || field.name;
-		const val = this.getFieldValue(field, item);
+		const val: string|any = this.getFieldValue(field, item);
 		if (val && val.mime)
 			return Object.assign(new Document(), val);
 		else
@@ -1658,10 +1958,10 @@ function BusinessObject(ses, name, instance) {
 	 * @return {string} Document/image field URL (or nothing if the field is not of document/image type or if it is empty)
 	 * @function
 	 */
-	this.getFieldDocumentURL = (field, item, thumbnail) => {
+	this.getFieldDocumentURL = (field: string|any, item: any, thumbnail: boolean): string => {
 		if (typeof field !== 'string')
 			field = field.fullinput || field.input || field.name;
-		let val = this.getFieldValue(field, item);
+		let val: string|any = this.getFieldValue(field, item);
 		if (val && val.mime) // Inlined
 			val = val.id;
 		if (val) 
@@ -1677,15 +1977,15 @@ function BusinessObject(ses, name, instance) {
 
 	/**
 	 * Get list value for code
-	 * @param {list} list List of values
+	 * @param {array} list List of values
 	 * @param {string} code Code
 	 * @return {string} Value
 	 * @function
 	 */
-	this.getListValue = (list, code) => {
+	this.getListValue = (list: Array<any>, code: string): string => {
 		if (list) {
 			for (let i = 0; i < list.length; i++) {
-				const l = list[i];
+				const l: any = list[i];
 				if (l.code === code)
 					return l.value;
 			}
@@ -1700,11 +2000,11 @@ function BusinessObject(ses, name, instance) {
 	 * @param {object} [item] Item (defaults to current item)
 	 * @function
 	 */
-	this.setFieldValue = (field, value, item) => {
+	this.setFieldValue = (field: string|any, value: string|any, item: any): void => {
 		if (!item)
 			item = this.item;
 		if (field && item) {
-			item[typeof field === 'string' ? field : field.name] = value instanceof Document ? value.getValue() : value;
+			item[typeof field === 'string' ? field : field.name] = value instanceof Document ? (value as Document).getValue() : value;
 		}
 	};
 
@@ -1714,7 +2014,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {boolean} True if the field is the row ID field
 	 * @function
 	 */
-	this.isRowIdField = (field) => {
+	this.isRowIdField = (field: any): boolean => {
 		return !field.ref && field.name === this.metadata.rowidfield;
 	};
 
@@ -1724,7 +2024,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {boolean} True if the field is a timestamp field
 	 * @function
 	 */
-	this.isTimestampField = (field) => {
+	this.isTimestampField = (field: any): boolean => {
 		const n = field.name;
 		return !field.ref && (n === 'created_by' || n === 'created_dt' || n === 'updated_by' || n === 'updated_dt');
 	};
@@ -1738,8 +2038,8 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} Promise to the object's filters (also available as the <code>filters</code> member)
 	 * @function
 	 */
-	this.getFilters =(opts) => {
-		const self = this;
+	this.getFilters =(opts: any): Promise<any> => {
+		const self: any = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			let p = '';
@@ -1747,8 +2047,8 @@ function BusinessObject(ses, name, instance) {
 				p += '&context=' + encodeURIComponent(opts.context);
 			if (opts.reset)
 				p += '&reset=' + !!opts.reset;
-			self.session.req.call(self.session, self.path + '&action=filters' + p, undefined, (res, status) => {
-				const r = self.session.parse(res, status);
+			self.session.req.call(self.session, self.path + '&action=filters' + p, undefined, (res: any, status: number) => {
+				const r: any = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.getFilters] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
 					(opts.error || self.session.error || reject).call(self, r.response);
@@ -1756,7 +2056,7 @@ function BusinessObject(ses, name, instance) {
 					self.filters = r.response;
 					resolve && resolve.call(self, self.filters);
 				}
-			}, err => {
+			}, (err: any) => {
 				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
 			});
 	
@@ -1766,9 +2066,10 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Build options parameters
 	 * @param {object} options Options
+	 * @return {string} Option parameters
 	 * @private
 	 */
-	function getReqOptions(options) {
+	function getReqOptions(options: any): string {
 		let opts = '';
 		if (options.context)
 			opts += '&context=' + encodeURIComponent(options.context);
@@ -1787,9 +2088,10 @@ function BusinessObject(ses, name, instance) {
 	/**
 	 * Build request parameters
 	 * @param {object} data Data
+	 * @return {string} Request parameters
 	 * @private
 	 */
-	function getReqParams(data) {
+	function getReqParams(data: any): string {
 		let p = '';
 		if (!data) return p;
 		let n = 0;
@@ -1819,13 +2121,13 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} Promise to the count
 	 * @function
 	 */
-	this.count = (filters, opts) => {
-		const self = this;
+	this.count = (filters: any, opts: any): Promise<any> => {
+		const self: any = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			self.filters = filters || {};
-			self.session.req.call(self.session, self.path + '&action=count', getReqParams(self.filters), (res, status) => {
-				const r = self.session.parse(res, status);
+			self.session.req.call(self.session, self.path + '&action=count', getReqParams(self.filters), (res: any, status: number) => {
+				const r: any = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.getCount] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
 					(opts.error || self.session.error || reject).call(self, r.response);
@@ -1836,7 +2138,7 @@ function BusinessObject(ses, name, instance) {
 					self.list = [];
 					resolve && resolve.call(self, self.count);
 				}
-			}, err => {
+			}, (err: any) => {
 				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
 			});
 		});
@@ -1860,11 +2162,11 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<array>} Promise to a list of records (also available as the <code>list</code> member)
 	 * @function
 	 */
-	this.search = (filters, opts) => {
-		const self = this;
+	this.search = (filters: any, opts: any): Promise<Array<any>> => {
+		const self: any = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
-			let p = getReqOptions(opts);
+			let p: string = getReqOptions(opts);
 			if (opts.page > 0)
 				p += '&page=' + (opts.page - 1);
 			if (opts.metadata===true)
@@ -1872,8 +2174,8 @@ function BusinessObject(ses, name, instance) {
 			if (opts.visible===true)
 				p += '&_visible=true';
 			self.filters = filters || {};
-			self.session.req.call(self.session, self.path + '&action=search' + p, getReqParams(self.filters), (res, status) => {
-				const r = self.session.parse(res, status);
+			self.session.req.call(self.session, self.path + '&action=search' + p, getReqParams(self.filters), (res: any, status: number) => {
+				const r: any = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.search] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
 					(opts.error || self.session.error || reject).call(self, r.response);
@@ -1886,7 +2188,7 @@ function BusinessObject(ses, name, instance) {
 					self.list = r.response.list;
 					resolve && resolve.call(self, self.list);
 				}
-			}, err => {
+			}, (err: any) => {
 				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
 			});
 		});
@@ -1903,12 +2205,12 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} Promise to the record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.get = (rowId, opts) => {
-		const self = this;
+	this.get = (rowId: string, opts: any): Promise<any> => {
+		const self: any = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
-			let p = getReqOptions(opts);
-			const  tv = opts.treeView;
+			let p: string = getReqOptions(opts);
+			const  tv: string = opts.treeView;
 			if (tv)
 				p += '&treeview=' + encodeURIComponent(tv);
 			if (opts.fields) {
@@ -1920,8 +2222,8 @@ function BusinessObject(ses, name, instance) {
 				p += '&_md=true';
 			if (opts.social)
 				p += '&_social=true';
-			self.session.req.call(self.session, self.path + '&action=get&' + self.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, (res, status) => {
-				const r = self.session.parse(res, status);
+			self.session.req.call(self.session, self.path + '&action=get&' + self.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, (res: any, status: number) => {
+				const r: any = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
 					(opts.error || self.session.error || reject).call(self, r.response);
@@ -1934,7 +2236,7 @@ function BusinessObject(ses, name, instance) {
 						self.item = tv ? r.response.item : r.response;
 					resolve && resolve.call(self, tv ? r.response : self.item);
 				}
-			}, err => {
+			}, (err: any) => {
 				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
 			});
 		});
@@ -1948,7 +2250,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.getForCreate = (opts) => {
+	this.getForCreate = (opts: any): Promise<any> => {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
@@ -1965,7 +2267,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} Promise to the record to update (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.getForUpdate = (rowId, opts) => {
+	this.getForUpdate = (rowId: string, opts: any): Promise<any> => {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
@@ -1982,7 +2284,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.getForCopy = (rowId, opts) => {
+	this.getForCopy = (rowId: string, opts: any): Promise<any> => {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
@@ -1999,7 +2301,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} Promise to the record to delete (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.getForDelete = (rowId, opts) => {
+	this.getForDelete = (rowId: string, opts: any): Promise<any> => {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
@@ -2013,7 +2315,7 @@ function BusinessObject(ses, name, instance) {
 	 * @return {string} Item's row ID value
 	 * @function
 	 */
-	this.getRowId = (item) => {
+	this.getRowId = (item: any): string => {
 		item = item || this.item;
 		if (item)
 			return item[this.getRowIdFieldName()];
@@ -2027,13 +2329,13 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.populate = (rowId, opts) => {
-		const self = this;
+	this.populate = (rowId: string, opts: any): Promise<any> => {
+		const self: any = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
-			const p = getReqOptions(opts);
-			self.session.req.call(self.session, self.path + '&action=populate&' + self.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, (res, status) => {
-				const r = self.session.parse(res, status);
+			const p: string = getReqOptions(opts);
+			self.session.req.call(self.session, self.path + '&action=populate&' + self.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, (res: any, status: number) => {
+				const r: any = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.populate] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
 					(opts.error || self.session.error || reject).call(self, r.response);
@@ -2041,7 +2343,7 @@ function BusinessObject(ses, name, instance) {
 					self.item = r.response.data ? r.response.data : r.response;
 					resolve && resolve.call(self, self.item);
 				}
-			}, err => {
+			}, (err: any) => {
 				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
 			});
 		});
@@ -2055,10 +2357,10 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} Promise to the saved record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.save = (item, opts) => {
+	this.save = (item: any, opts: any): Promise<any> => {
 		if (item)
 			this.item = item;
-		const rowId = this.item[this.metadata.rowidfield];
+		const rowId: string = this.item[this.metadata.rowidfield];
 		if (!rowId || rowId === constants.DEFAULT_ROW_ID)
 			return this.create(item, opts);
 		else
@@ -2073,16 +2375,16 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} Promise to the created record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.create = (item, opts) => {
-		const self = this;
+	this.create = (item: any, opts: any): Promise<any> => {
+		const self: any = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			if (item)
 				self.item = item;
 			self.item.row_id = self.session.constants.DEFAULT_ROW_ID;
-			const p = getReqOptions(opts);
-			self.session.req.call(self.session, self.path + '&action=create' + p, getReqParams(self.item), (res, status) => {
-				const r = self.session.parse(res, status);
+			const p: string = getReqOptions(opts);
+			self.session.req.call(self.session, self.path + '&action=create' + p, getReqParams(self.item), (res: any, status: number) => {
+				const r: any = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.create] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
 					(opts.error || self.session.error || reject).call(self, r.response);
@@ -2090,7 +2392,7 @@ function BusinessObject(ses, name, instance) {
 					self.item = r.response.data ? r.response.data : r.response;
 					resolve && resolve.call(self, self.item);
 				}
-			}, err => {
+			}, (err: any) => {
 				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
 			});
 		});
@@ -2104,15 +2406,15 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} Promise to the updated record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.update = (item, opts) => {
-		const self = this;
+	this.update = (item: any, opts: any): Promise<any> => {
+		const self: any = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			if (item)
 				self.item = item;
-			const p = getReqOptions(opts);
-			self.session.req.call(self.session, self.path + '&action=update' + p, getReqParams(self.item), (res, status) => {
-				const r = self.session.parse(res, status);
+			const p: string = getReqOptions(opts);
+			self.session.req.call(self.session, self.path + '&action=update' + p, getReqParams(self.item), (res: any, status: number) => {
+				const r: any = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.update] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
 					(opts.error || self.session.error || reject).call(self, r.response);
@@ -2120,7 +2422,7 @@ function BusinessObject(ses, name, instance) {
 					self.item = r.response.data ? r.response.data : r.response;
 					resolve && resolve.call(self, self.item);
 				}
-			}, err => {
+			}, (err: any) => {
 				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
 			});
 		});
@@ -2131,16 +2433,16 @@ function BusinessObject(ses, name, instance) {
 	 * @param {object} item Item (defaults to current item)
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
-	 * @return {promise} Promise (the <code>item</code> member is emptied)
+	 * @return {promise<object>} Promise (the <code>item</code> member is emptied)
 	 * @function
 	 */
-	this.del = (item, opts) => {
+	this.del = (item: any, opts: any): Promise<any> => {
 		const self = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			if (item)
 				self.item = item;
-			self.session.req.call(self.session, self.path + '&action=delete&' + self.metadata.rowidfield + '=' + encodeURIComponent(self.item[self.metadata.rowidfield]), undefined, (res, status) => {
+			self.session.req.call(self.session, self.path + '&action=delete&' + self.metadata.rowidfield + '=' + encodeURIComponent(self.item[self.metadata.rowidfield]), undefined, (res: any, status: number) => {
 				const r = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.del] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
@@ -2150,7 +2452,7 @@ function BusinessObject(ses, name, instance) {
 					delete r.response.undoredo;
 					resolve && resolve.call(self, r.response);
 				}
-			}, err => {
+			}, (err: any) => {
 				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
 			});
 		});
@@ -2166,12 +2468,12 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<string|object>} A promise to the action result
 	 * @function
 	 */
-	this.action = (action, rowId, opts) => {
-		const self = this;
+	this.action = (action: string, rowId: string, opts: any): Promise<string|any> => {
+		const self: any = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
-			self.session.req.call(self.session, self.path + '&action=' + encodeURIComponent(action) + (rowId ? '&' + self.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : ''), getReqParams(opts.parameters), (res, status) => {
-				const r = self.session.parse(res, status);
+			self.session.req.call(self.session, self.path + '&action=' + encodeURIComponent(action) + (rowId ? '&' + self.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : ''), getReqParams(opts.parameters), (res: any, status: number) => {
+				const r: any = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.action(' + action + ')] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
 					(opts.error || self.session.error || reject).call(self, r.response);
@@ -2179,7 +2481,7 @@ function BusinessObject(ses, name, instance) {
 					const result = r.response.result;
 					resolve && resolve.call(self, result);
 				}
-			}, err => {
+			}, (err: any) => {
 				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
 			});
 		});
@@ -2194,14 +2496,14 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} A promise to the pivot table data (also avialable as the <code>crosstabdata</code> member)
 	 * @function
 	 */
-	this.crosstab = (crosstab, opts) => {
-		const self = this;
+	this.crosstab = (crosstab: string, opts: any): Promise<any> => {
+		const self: any = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			if (opts.filters)
 				self.filters = opts.filters;
-			self.session.req.call(self.session, self.path + '&action=crosstab&crosstab=' + encodeURIComponent(crosstab), getReqParams(self.filters), (res, status) => {
-				const r = self.session.parse(res, status);
+			self.session.req.call(self.session, self.path + '&action=crosstab&crosstab=' + encodeURIComponent(crosstab), getReqParams(self.filters), (res: any, status: number) => {
+				const r: any = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.crosstab(' + crosstab + ')] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
 					(opts.error || self.session.error || reject).call(self, r.response);
@@ -2209,7 +2511,7 @@ function BusinessObject(ses, name, instance) {
 					self.crosstabdata = r.response;
 					resolve && resolve.call(self, self.crosstabdata);
 				}
-			}, err => {
+			}, (err: any) => {
 				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
 			});
 		});
@@ -2224,8 +2526,8 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<Document>} A promise to the document of the publication
 	 * @function
 	 */
-	this.print = (prt, rowId, opts) => {
-		const self = this;
+	this.print = (prt: string, rowId: string, opts: any): Promise<any> => {
+		const self: any = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			if (opts.filters)
@@ -2235,15 +2537,15 @@ function BusinessObject(ses, name, instance) {
 				p += '&all=' + !!opts.all;
 			if (opts.mailing)
 				p += '&mailing=' + !!opts.mailing;
-			self.session.req.call(self.session, self.path + '&action=print&printtemplate=' + encodeURIComponent(prt) + (rowId ? '&' + self.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : '') + p, undefined, (res, status) => {
-				const r = self.session.parse(res, status);
+			self.session.req.call(self.session, self.path + '&action=print&printtemplate=' + encodeURIComponent(prt) + (rowId ? '&' + self.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : '') + p, undefined, (res: any, status: number) => {
+				const r: any = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.print(' + prt + ')] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
 					(opts.error || self.session.error || reject).call(self, r.response);
 				} else {
 					resolve && resolve.call(self, Object.assign(new Document(), r.response));
 				}
-			}, err => {
+			}, (err: any) => {
 				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
 			});
 		});
@@ -2258,14 +2560,14 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} Promise
 	 * @function
 	 */
-	this.setParameter = (param, value, opts) => {
-		const self = this;
+	this.setParameter = (param: string, value: string, opts: any): Promise<any> => {
+		const self: any = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
-			const p = { name: param };
+			const p: any = { name: param };
 			if (value) p.value = value;
-			self.session.req.call(self.session, self.path + '&action=setparameter', getReqParams(p), (res, status) => {
-				const r = self.session.parse(res, status);
+			self.session.req.call(self.session, self.path + '&action=setparameter', getReqParams(p), (res: any, status: number) => {
+				const r: any = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.setParameter(' + p.name + ')] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
 					(opts.error || self.session.error || reject).call(self, r.response);
@@ -2273,7 +2575,7 @@ function BusinessObject(ses, name, instance) {
 					const result = r.response.result;
 					resolve && resolve.call(self, result);
 				}
-			}, err => {
+			}, (err: any) => {
 				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
 			});
 		});
@@ -2287,13 +2589,13 @@ function BusinessObject(ses, name, instance) {
 	 * @return {promise<object>} Promise to the parameter value
 	 * @function
 	 */
-	this.getParameter = (param, opts) => {
-		const self = this;
+	this.getParameter = (param: string, opts: any): Promise<any> => {
+		const self: any = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
-			const p = { name: param };
-			self.session.req.call(self.session, self.path + '&action=getparameter', getReqParams(p), (res, status) => {
-				const r = self.session.parse(res, status);
+			const p: any = { name: param };
+			self.session.req.call(self.session, self.path + '&action=getparameter', getReqParams(p), (res: any, status: number) => {
+				const r: any = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.getParameter(' + p.name + ')] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
 					(opts.error || self.session.error || reject).call(self, r.response);
@@ -2301,7 +2603,7 @@ function BusinessObject(ses, name, instance) {
 					const result = r.response.result;
 					resolve && resolve.call(self, result);
 				}
-			}, err => {
+			}, (err: any) => {
 				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
 			});
 		});
@@ -2311,9 +2613,10 @@ function BusinessObject(ses, name, instance) {
 	 * Get an object resource URL
 	 * @param {string} code Resource code
 	 * @param {string} [type=IMG] Resource type (IMG=image (default), ICO=Icon, CSS=stylesheet, JS=Javascript, HTML=HTML)
+	 * @return {string} Object resource URL
 	 * @function
 	 */
-	this.getResourceURL = (code, type) => {
+	this.getResourceURL = (code: string, type: string): string => {
 		return this.session.getResourceURL(code, type, this.metadata.name, this.metadata.id);
 	};
 }
@@ -2325,7 +2628,7 @@ function BusinessObject(ses, name, instance) {
  * @param {string} name Business object name
  * @class
  */
-function ExternalObjectMetadata (name) {
+function ExternalObjectMetadata(name: string) {
 	/**
 	 * Name
 	 * @constant {string}
@@ -2341,7 +2644,7 @@ function ExternalObjectMetadata (name) {
  * @param {string} name Business object name
  * @class
  */
-function ExternalObject(ses, name) {
+function ExternalObject(ses: any, name: string) {
 	/**
 	 * Session
 	 * @private
@@ -2365,21 +2668,22 @@ function ExternalObject(ses, name) {
 	 * @return {string} Name
 	 * @function
 	 */
-	this.getName = () => {
+	this.getName = (): string => {
 		return this.metadata.name;
 	};
 
 	/**
 	 * Build URL-encoded parameters
 	 * @param {object} params URL parameters as key/value pairs
+	 * @return {string} URL-encoded parameters
 	 * @function
 	 */
-	this.callParams = (params) => {
+	this.callParams = (params: any): string => {
 		let p = '';
 		if (!params) return p;
 		let n = 0;
 		for (const i in params) {
-			const v = params[i] || '';
+			const v: any = params[i] || '';
 			if (v.sort) { // Array ?
 				for (let j = 0; j < v.length; j++)
 					p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent(v[j]);
@@ -2401,21 +2705,21 @@ function ExternalObject(ses, name) {
 	 * @return {promise<object>} Promise to the external object content
 	 * @function
 	 */
-	this.call = (params, data, opts) => {
-		const self = this;
+	this.call = (params: any, data: any, opts: any) => {
+		const self: any = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			let p = '';
 			if (params)
 				p = '?' + self.callParams(params);
-			const m = opts.method ? opts.method.toUpperCase() : (data ? 'POST' : 'GET');
-			const h = {};
+			const m: string = opts.method ? opts.method.toUpperCase() : (data ? 'POST' : 'GET');
+			const h: any = {};
 			if (opts.contentType) {
 				h['Content-Type'] = opts.contentType;
 			} else if (data) { // Try to guess type...
 				h['Content-Type'] = typeof data === 'string' ? 'application/x-www-form-urlencoded' : 'application/json';
 			}
-			let b = self.session.getBearerTokenHeader();
+			let b: string = self.session.getBearerTokenHeader();
 			if (b) {
 				h['X-Simplicite-Authorization'] = b;
 			} else {
@@ -2423,8 +2727,8 @@ function ExternalObject(ses, name) {
 				if (b)
 					h.Authorization = b;
 			}
-			const u = self.session.parameters.url + self.path + p;
-			const d = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined;
+			const u: string = self.session.parameters.url + self.path + p;
+			const d: string = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined;
 			self.session.debug('[simplicite.ExternalObject.call] ' + m + ' ' + u + ' with ' + (d ? ' with ' + d : ''));
 			fetch(u, {
 				method: m,
@@ -2433,29 +2737,29 @@ function ExternalObject(ses, name) {
 				mode: 'cors',
 				credentials: 'include',
 				body: d
-			}).then(res => {
-				const type = res.headers.get('content-type');
+			}).then((res: any) => {
+				const type: string = res.headers.get('content-type');
 				self.session.debug('[simplicite.ExternalObject.call(' + p + ')] HTTP status = ' + res.status + ', response content type = ' + type);
 				if (type && type.startsWith('application/json')) { // JSON
 					res.json().then(jsonData => {
 						resolve && resolve.call(self, jsonData, res.status, res.headers);
-					}).catch(err => {
+					}).catch((err: any) => {
 						(opts.error || self.error || reject).call(self, self.getError(err));
 					});
 				} else if (type && type.startsWith('text/')) { // Text
 					res.text().then(textData => {
 						resolve && resolve.call(self, textData, res.status, res.headers);
-					}).catch(err => {
+					}).catch((err: any) => {
 						(opts.error || self.error || reject).call(self, self.getError(err));
 					});
 				} else { // Binary
 					res.arrayBuffer().then(binData => {
 						resolve && resolve.call(self, binData, res.status, res.headers);
-					}).catch(err => {
+					}).catch((err: any) => {
 						(opts.error || self.error || reject).call(self, self.getError(err));
 					});
 				}
-			}).catch(err => {
+			}).catch((err: any) => {
 				(opts.error || self.error || reject).call(self, self.getError(err));
 			});
 		});
@@ -2463,10 +2767,12 @@ function ExternalObject(ses, name) {
 }
 
 export default {
-	session: session,
-	Session: Session,
-	Grant: Grant,
-	BusinessObject: BusinessObject,
-	BusinessObjectMetadata: BusinessObjectMetadata,
-	ExternalObject: ExternalObject
+	constants,
+	session,
+	Session,
+	Document,
+	Grant,
+	BusinessObject,
+	BusinessObjectMetadata,
+	ExternalObject
 };
