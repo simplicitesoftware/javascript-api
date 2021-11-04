@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>Grant - Documentation</title>
+    <title>Doc - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -32,7 +32,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Grant</h1>
+    <h1 class="page-title">Doc</h1>
     
 
     
@@ -47,10 +47,10 @@
         <h2>
             <span class="ancestors"><a href="module-simplicite.html">simplicite</a>~</span>
         
-        Grant
+        Doc
         </h2>
         
-            <div class="class-description usertext">Grant (user).<br/><span style="color: red;">You <strong>should never</strong> instanciate this class directlybut rather use it from the <code>data</code> variable got using <code>getGrant</code></span>.</div>
+            <div class="class-description usertext">Document</div>
         
     
 </header>
@@ -65,7 +65,7 @@
     <h2>Constructor</h2>
     
 
-    <h4 class="name" id="Grant"><span class="type-signature"></span>new Grant<span class="signature">(grant)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="Doc"><span class="type-signature"></span>new Doc<span class="signature">(value)</span><span class="type-signature"></span></h4>
 
     
 
@@ -77,7 +77,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1274">line 1274</a>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1089">line 1089</a>
     </li></ul></dd>
     
 
@@ -155,7 +155,7 @@
 
         <tr>
             
-                <td class="name"><code>grant</code></td>
+                <td class="name"><code>value</code></td>
             
 
             <td class="type">
@@ -171,7 +171,7 @@
 
             
 
-            <td class="description last">Grant object</td>
+            <td class="description last">Document value</td>
         </tr>
 
     
@@ -217,7 +217,7 @@
 
         
             
-<h4 class="name" id="email"><span class="type-signature"></span>email<span class="type-signature"> :string</span></h4>
+<h4 class="name" id="content"><span class="type-signature"></span>content<span class="type-signature"> :string</span></h4>
 
 
 
@@ -228,7 +228,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1301">line 1301</a>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1116">line 1116</a>
     </li></ul></dd>
     
 
@@ -268,7 +268,7 @@
 
 
 <div class="description usertext">
-    User email address
+    Document content as base 64
 </div>
 
 
@@ -290,7 +290,7 @@
 
         
             
-<h4 class="name" id="firstname"><span class="type-signature"></span>firstname<span class="type-signature"> :string</span></h4>
+<h4 class="name" id="filename"><span class="type-signature"></span>filename<span class="type-signature"> :string</span></h4>
 
 
 
@@ -301,7 +301,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1306">line 1306</a>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1111">line 1111</a>
     </li></ul></dd>
     
 
@@ -341,7 +341,7 @@
 
 
 <div class="description usertext">
-    User first name
+    Document file name
 </div>
 
 
@@ -363,7 +363,7 @@
 
         
             
-<h4 class="name" id="lang"><span class="type-signature"></span>lang<span class="type-signature"> :string</span></h4>
+<h4 class="name" id="getDataURL"><span class="type-signature"></span>getDataURL<span class="type-signature"></span></h4>
 
 
 
@@ -374,7 +374,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1296">line 1296</a>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1256">line 1256</a>
     </li></ul></dd>
     
 
@@ -414,7 +414,133 @@
 
 
 <div class="description usertext">
-    User language
+    Get the document data URL
+</div>
+
+
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="getValue"><span class="type-signature"></span>getValue<span class="type-signature"></span></h4>
+
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1264">line 1264</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    Get the document as a simple value
+</div>
+
+
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="id"><span class="type-signature"></span>id<span class="type-signature"> :string</span></h4>
+
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1101">line 1101</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    Document ID
 </div>
 
 
@@ -436,7 +562,7 @@
 
         
             
-<h4 class="name" id="lastname"><span class="type-signature"></span>lastname<span class="type-signature"> :string</span></h4>
+<h4 class="name" id="mime"><span class="type-signature"></span>mime<span class="type-signature"> :string</span></h4>
 
 
 
@@ -447,7 +573,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1311">line 1311</a>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1106">line 1106</a>
     </li></ul></dd>
     
 
@@ -487,7 +613,7 @@
 
 
 <div class="description usertext">
-    User last name
+    Document MIME type
 </div>
 
 
@@ -509,7 +635,7 @@
 
         
             
-<h4 class="name" id="login"><span class="type-signature"></span>login<span class="type-signature"> :string</span></h4>
+<h4 class="name" id="thumbnail"><span class="type-signature"></span>thumbnail<span class="type-signature"> :string</span></h4>
 
 
 
@@ -520,7 +646,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1291">line 1291</a>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1121">line 1121</a>
     </li></ul></dd>
     
 
@@ -560,362 +686,7 @@
 
 
 <div class="description usertext">
-    User name
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">string</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id="picture"><span class="type-signature"></span>picture<span class="type-signature"> :Doc</span></h4>
-
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1316">line 1316</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description usertext">
-    User picture
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">Doc</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id="responsibilities"><span class="type-signature"></span>responsibilities<span class="type-signature"> :array</span></h4>
-
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1321">line 1321</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description usertext">
-    User responsibilities
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">array</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id="T"><span class="type-signature"></span>T<span class="type-signature"></span></h4>
-
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1416">line 1416</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description usertext">
-    Get text value
-</div>
-
-
-
-
-
-
-
-
-        
-            
-<h4 class="name" id="texts"><span class="type-signature"></span>texts<span class="type-signature"> :object</span></h4>
-
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1326">line 1326</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description usertext">
-    Translated texts
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">object</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id="userid"><span class="type-signature"></span>userid<span class="type-signature"> :string</span></h4>
-
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1286">line 1286</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description usertext">
-    User ID
+    Document thumbnail as base 64
 </div>
 
 
@@ -946,7 +717,7 @@
 
     
 
-    <h4 class="name" id="getEmail"><span class="type-signature"></span>getEmail<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
+    <h4 class="name" id="getContent"><span class="type-signature"></span>getContent<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
 
     
 
@@ -958,7 +729,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1362">line 1362</a>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1191">line 1191</a>
     </li></ul></dd>
     
 
@@ -998,7 +769,7 @@
 
 
 <div class="description usertext">
-    Get email address
+    Get the document content (encoded in base 64)
 </div>
 
 
@@ -1029,7 +800,7 @@
 
         
 <div class="param-desc">
-    Email address
+    Content
 </div>
 
 
@@ -1055,7 +826,7 @@
 
     
 
-    <h4 class="name" id="getFirstname"><span class="type-signature"></span>getFirstname<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
+    <h4 class="name" id="getContentAsArrayBuffer"><span class="type-signature"></span>getContentAsArrayBuffer<span class="signature">()</span><span class="type-signature"> &rarr; {ArrayBuffer}</span></h4>
 
     
 
@@ -1067,7 +838,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1370">line 1370</a>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1216">line 1216</a>
     </li></ul></dd>
     
 
@@ -1107,7 +878,7 @@
 
 
 <div class="description usertext">
-    Get first name
+    Get the document content as an array buffer
 </div>
 
 
@@ -1138,7 +909,116 @@
 
         
 <div class="param-desc">
-    First name
+    Content as an array buffer
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">ArrayBuffer</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getContentAsText"><span class="type-signature"></span>getContentAsText<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1232">line 1232</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    Get the document content as a text
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    Content as plain text
 </div>
 
 
@@ -1164,7 +1044,7 @@
 
     
 
-    <h4 class="name" id="getFirstName"><span class="type-signature"></span>getFirstName<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
+    <h4 class="name" id="getFilename"><span class="type-signature"></span>getFilename<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
 
     
 
@@ -1176,7 +1056,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1378">line 1378</a>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1163">line 1163</a>
     </li></ul></dd>
     
 
@@ -1216,7 +1096,7 @@
 
 
 <div class="description usertext">
-    Alias to <code>getFirstname</code>
+    Get the document file name
 </div>
 
 
@@ -1247,7 +1127,7 @@
 
         
 <div class="param-desc">
-    First name
+    File name
 </div>
 
 
@@ -1273,7 +1153,7 @@
 
     
 
-    <h4 class="name" id="getLang"><span class="type-signature"></span>getLang<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
+    <h4 class="name" id="getFileName"><span class="type-signature"></span>getFileName<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
 
     
 
@@ -1285,7 +1165,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1354">line 1354</a>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1171">line 1171</a>
     </li></ul></dd>
     
 
@@ -1325,7 +1205,7 @@
 
 
 <div class="description usertext">
-    Get user language
+    Alias to <code>getFilename</code>
 </div>
 
 
@@ -1356,7 +1236,7 @@
 
         
 <div class="param-desc">
-    User language
+    File name
 </div>
 
 
@@ -1382,7 +1262,7 @@
 
     
 
-    <h4 class="name" id="getLastname"><span class="type-signature"></span>getLastname<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
+    <h4 class="name" id="getId"><span class="type-signature"></span>getId<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
 
     
 
@@ -1394,7 +1274,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1384">line 1384</a>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1127">line 1127</a>
     </li></ul></dd>
     
 
@@ -1434,7 +1314,7 @@
 
 
 <div class="description usertext">
-    Get last name
+    Get the document ID
 </div>
 
 
@@ -1465,7 +1345,7 @@
 
         
 <div class="param-desc">
-    Last name
+    ID
 </div>
 
 
@@ -1491,7 +1371,7 @@
 
     
 
-    <h4 class="name" id="getLastName"><span class="type-signature"></span>getLastName<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
+    <h4 class="name" id="getMIMEType"><span class="type-signature"></span>getMIMEType<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
 
     
 
@@ -1503,7 +1383,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1392">line 1392</a>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1135">line 1135</a>
     </li></ul></dd>
     
 
@@ -1543,7 +1423,7 @@
 
 
 <div class="description usertext">
-    Alias to <code>getLastname</code>
+    Get the document MIME type
 </div>
 
 
@@ -1574,7 +1454,7 @@
 
         
 <div class="param-desc">
-    Last name
+    MIME type
 </div>
 
 
@@ -1600,7 +1480,7 @@
 
     
 
-    <h4 class="name" id="getLogin"><span class="type-signature"></span>getLogin<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
+    <h4 class="name" id="getMimeType"><span class="type-signature"></span>getMimeType<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
 
     
 
@@ -1612,7 +1492,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1348">line 1348</a>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1143">line 1143</a>
     </li></ul></dd>
     
 
@@ -1652,7 +1532,7 @@
 
 
 <div class="description usertext">
-    Alias to <code>getUsername</code>
+    Alias to <code>getMIMEType</code>
 </div>
 
 
@@ -1683,7 +1563,7 @@
 
         
 <div class="param-desc">
-    Login
+    MIME type
 </div>
 
 
@@ -1709,7 +1589,7 @@
 
     
 
-    <h4 class="name" id="getPictureURL"><span class="type-signature"></span>getPictureURL<span class="signature">()</span><span class="type-signature"> &rarr; {Doc}</span></h4>
+    <h4 class="name" id="getThumbnail"><span class="type-signature"></span>getThumbnail<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
 
     
 
@@ -1721,7 +1601,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1398">line 1398</a>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1199">line 1199</a>
     </li></ul></dd>
     
 
@@ -1761,7 +1641,7 @@
 
 
 <div class="description usertext">
-    Get picture data URL
+    Get the document thumbnail (encoded in base 64)
 </div>
 
 
@@ -1792,116 +1672,7 @@
 
         
 <div class="param-desc">
-    Picture data URL
-</div>
-
-
-
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Doc</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="getUserId"><span class="type-signature"></span>getUserId<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
-
-    
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1332">line 1332</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description usertext">
-    Get user ID
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    User ID
+    Thumbnail
 </div>
 
 
@@ -1927,7 +1698,7 @@
 
     
 
-    <h4 class="name" id="getUsername"><span class="type-signature"></span>getUsername<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
+    <h4 class="name" id="getThumbnailAsArrayBuffer"><span class="type-signature"></span>getThumbnailAsArrayBuffer<span class="signature">()</span><span class="type-signature"> &rarr; {ArrayBuffer}</span></h4>
 
     
 
@@ -1939,7 +1710,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1340">line 1340</a>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1224">line 1224</a>
     </li></ul></dd>
     
 
@@ -1979,7 +1750,7 @@
 
 
 <div class="description usertext">
-    Get username
+    Get the document thumbnail as an array buffer
 </div>
 
 
@@ -2010,7 +1781,7 @@
 
         
 <div class="param-desc">
-    Username
+    Thumbnail as an array buffer
 </div>
 
 
@@ -2021,7 +1792,7 @@
     </dt>
     <dd>
         
-<span class="param-type">string</span>
+<span class="param-type">ArrayBuffer</span>
 
 
     </dd>
@@ -2036,7 +1807,7 @@
 
     
 
-    <h4 class="name" id="hasResponsibility"><span class="type-signature"></span>hasResponsibility<span class="signature">(group)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    <h4 class="name" id="setContent"><span class="type-signature"></span>setContent<span class="signature">(content)</span><span class="type-signature"></span></h4>
 
     
 
@@ -2048,7 +1819,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1408">line 1408</a>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1240">line 1240</a>
     </li></ul></dd>
     
 
@@ -2088,7 +1859,7 @@
 
 
 <div class="description usertext">
-    Has responsibility
+    Set the document content
 </div>
 
 
@@ -2126,7 +1897,7 @@
 
         <tr>
             
-                <td class="name"><code>group</code></td>
+                <td class="name"><code>content</code></td>
             
 
             <td class="type">
@@ -2142,7 +1913,7 @@
 
             
 
-            <td class="description last">Group name</td>
+            <td class="description last">Content (encoded in base 64)</td>
         </tr>
 
     
@@ -2164,28 +1935,686 @@
 
 
 
-<h5>Returns:</h5>
+
+
 
         
-<div class="param-desc">
-    True if user has a responsibility on the specified group
+            
+
+    
+
+    <h4 class="name" id="setContentFromText"><span class="type-signature"></span>setContentFromText<span class="signature">(content)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1248">line 1248</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    Set the document content from plain text string
 </div>
 
 
 
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
         
-<span class="param-type">boolean</span>
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>content</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
 
 
-    </dd>
-</dl>
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Content as plain text string</td>
+        </tr>
 
     
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="setFilename"><span class="type-signature"></span>setFilename<span class="signature">(filename)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1177">line 1177</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    Set the document file name
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>filename</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">File name</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="setFileName"><span class="type-signature"></span>setFileName<span class="signature">(filename)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1185">line 1185</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    Alias to <code>setFilename</code>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>filename</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">File name</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="setMIMEType"><span class="type-signature"></span>setMIMEType<span class="signature">(mime)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1149">line 1149</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    Set the document MIME type
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>mime</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">MIME type</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="setMimeType"><span class="type-signature"></span>setMimeType<span class="signature">(mime)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="simplicite.js.html">simplicite.js</a>, <a href="simplicite.js.html#line1157">line 1157</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    Alias to <code>setMIMEType</code>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>mime</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">MIME type</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

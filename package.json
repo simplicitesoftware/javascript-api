@@ -18,6 +18,7 @@
     "node-fetch": "^2.6.6"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.16.0",
     "@typescript-eslint/parser": "^5.3.0",
     "@typescript-eslint/eslint-plugin": "^5.3.0",
     "docdash": "^1.2.0",
@@ -25,6 +26,7 @@
     "eslint": "^8.1.0",
     "jest": "^27.3.1",
     "ts-jest": "^27.0.7",
+    "babel-jest": "^27.3.1",
     "jsdoc": "^3.6.7",
     "jsdoc-plugin-typescript": "^2.0.6",
     "npm-check-updates": "^12.0.0",
@@ -38,7 +40,7 @@
     "lint": "eslint src/simplicite.ts src/simplicite.ts test/*.js",
     "compile": "tsc --moduleResolution node --module esnext --target esnext --outDir build/esm src/simplicite.ts && tsc --module commonjs --target es5 --esModuleInterop true --outDir build/cjs src/simplicite.ts",
     "dist": "esbuild --minify --sourcemap --outfile=dist/simplicite.min.js build/cjs/simplicite.js && esbuild --outfile=dist/simplicite.mjs build/esm/simplicite.js && tsc --declaration --emitDeclarationOnly --allowJs --outDir dist build/esm/simplicite.js",
-    "doc": "jsdoc -t node_modules/docdash -d docs src/simplicite.ts README.md && replace '#fc83ff' '#98cbff' docs/styles/jsdoc.css && replace '#6d426d' '#2e76bd' docs/styles/jsdoc.css && replace '#CA79CA' '#edb8b8' docs/styles/jsdoc.css && replace '#606' '#094e93' docs/styles/jsdoc.css",
+    "doc": "jsdoc -t node_modules/docdash -d docs build/esm/simplicite.js README.md && replace '#fc83ff' '#98cbff' docs/styles/jsdoc.css && replace '#6d426d' '#2e76bd' docs/styles/jsdoc.css && replace '#CA79CA' '#edb8b8' docs/styles/jsdoc.css && replace '#606' '#094e93' docs/styles/jsdoc.css",
     "test": "jest --coverage -- test/simplicite.test.js",
     "test-browser": "webpack build ./test/test-browser.js && serve -l 3000 test",
     "ncu": "ncu"

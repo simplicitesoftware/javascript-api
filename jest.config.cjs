@@ -1,19 +1,7 @@
 module.exports = {
-	coverageDirectory: 'coverage',
-    globals: {
-        'ts-jest': {
-            tsconfigFile: 'tsconfig.json'
-        }
-    },
-    moduleFileExtensions: [
-        'ts',
-        'js'
-    ],
+    preset: 'ts-jest',
     transform: {
-        '^.+\\.(ts|tsx)$': './node_modules/ts-jest/preprocessor.js'
-    },
-    testMatch: [
-        'test/*.(ts|js)'
-    ],
-    testEnvironment: 'node'
+        '^.+\\.(ts|tsx)?$': 'ts-jest',
+        "^.+\\.(js|jsx)$": "babel-jest",
+    }
 };
