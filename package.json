@@ -27,7 +27,7 @@
     "ts-jest": "^27.0.7",
     "jsdoc": "^3.6.7",
     "jsdoc-plugin-typescript": "^2.0.6",
-    "npm-check-updates": "^11.8.5",
+    "npm-check-updates": "^12.0.0",
     "typescript": "^4.4.4",
     "replace": "^1.2.1",
     "serve": "^13.0.2",
@@ -35,16 +35,17 @@
     "webpack-cli": "^4.9.1"
   },
   "scripts": {
-    "lint": "eslint src/simplicite.js src/simplicite.ts test/*.js",
-    "compile": "eslint src/simplicite.ts && tsc --moduleResolution node --module esnext --target esnext --outDir build/esm src/simplicite.ts && tsc --module commonjs --target es5 --esModuleInterop true --outDir build/cjs src/simplicite.ts",
-    "build": "esbuild --minify --sourcemap --outfile=dist/simplicite.min.js src/simplicite.js && esbuild --outfile=dist/simplicite.mjs src/simplicite.js && tsc --emitDeclarationOnly --allowJs --outDir dist src/simplicite.js",
-    "doc": "jsdoc -t node_modules/docdash -d docs src/simplicite.js README.md && replace '#fc83ff' '#98cbff' docs/styles/jsdoc.css && replace '#6d426d' '#2e76bd' docs/styles/jsdoc.css && replace '#CA79CA' '#edb8b8' docs/styles/jsdoc.css && replace '#606' '#094e93' docs/styles/jsdoc.css",
+    "lint": "eslint src/simplicite.ts src/simplicite.ts test/*.js",
+    "compile": "tsc --moduleResolution node --module esnext --target esnext --outDir build/esm src/simplicite.ts && tsc --module commonjs --target es5 --esModuleInterop true --outDir build/cjs src/simplicite.ts",
+    "dist": "esbuild --minify --sourcemap --outfile=dist/simplicite.min.js build/cjs/simplicite.js && esbuild --outfile=dist/simplicite.mjs build/esm/simplicite.js && tsc --declaration --emitDeclarationOnly --allowJs --outDir dist build/esm/simplicite.js",
+    "doc": "jsdoc -t node_modules/docdash -d docs src/simplicite.ts README.md && replace '#fc83ff' '#98cbff' docs/styles/jsdoc.css && replace '#6d426d' '#2e76bd' docs/styles/jsdoc.css && replace '#CA79CA' '#edb8b8' docs/styles/jsdoc.css && replace '#606' '#094e93' docs/styles/jsdoc.css",
     "test": "jest --coverage -- test/simplicite.test.js",
     "test-browser": "webpack build ./test/test-browser.js && serve -l 3000 test",
     "ncu": "ncu"
   },
   "files": [
     "src",
+    "build",
     "test",
     "dist/simplicite.d.ts",
     "dist/simplicite.mjs",

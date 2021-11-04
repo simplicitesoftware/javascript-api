@@ -1,13 +1,13 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.2
+ * @version 2.2.3
  * @license Apache-2.0
  */
 import fetch from "node-fetch";
-import buffer from "buffer";
+import { Buffer } from "buffer";
 const constants = {
-  MODULE_VERSION: "2.2.2",
+  MODULE_VERSION: "2.2.3",
   DEFAULT_ROW_ID_NAME: "row_id",
   DEFAULT_ROW_ID: "0",
   CONTEXT_NONE: 0,
@@ -75,100 +75,116 @@ const constants = {
   RESOURCE_TYPE_STYLESHEET: "CSS",
   RESOURCE_TYPE_JAVASCRIPT: "JS"
 };
-function session(params) {
+const session = (params) => {
   return new Session(params);
-}
-function Session(params) {
-  params = params || {};
-  this.constants = constants;
-  this.endpoint = params.endpoint || "api";
-  this.log = params.logHandler || ((...args) => {
-    console.log(args);
-  });
-  this.info = params.infoHandle || ((...args) => {
-    console.info("INFO", args);
-  });
-  this.warn = params.warningHandler || ((...args) => {
-    console.warn("WARN", args);
-  });
-  this.error = params.errorHandler || ((...args) => {
-    console.error("ERROR", args);
-  });
-  const _debug = !!params.debug;
-  this.debug = params.debugHandler || ((...args) => {
-    if (_debug)
-      console.log("DEBUG", args);
-  });
-  this.timeout = params.timeout || 30;
-  if (params.url) {
-    try {
-      params.scheme = params.url.replace(/:.*$/, "");
-      const u = params.url.replace(new RegExp("^" + params.scheme + "://"), "").split(":");
-      if (u.length === 1) {
-        params.host = u[0].replace(/\/.*$/, "");
-        params.port = params.scheme === "http" ? 80 : 443;
-        params.root = u[0].replace(new RegExp("^" + params.host + "/?"), "");
-      } else {
-        params.host = u[0];
-        params.port = parseInt(u[1].replace(/\/.*$/, ""), 10);
-        if (isNaN(params.port))
-          throw new Error("Incorrect port");
-        params.root = u[1].replace(new RegExp("^" + params.port + "/?"), "");
+};
+class Session {
+  constructor(params) {
+    if (!params)
+      throw "No session parammeters";
+    this.endpoint = params.endpoint || "api";
+    this.log = params.logHandler || ((...args) => {
+      console.log(args);
+    });
+    this.info = params.infoHandler || ((...args) => {
+      console.info("INFO", args);
+    });
+    this.warn = params.warningHandler || ((...args) => {
+      console.warn("WARN", args);
+    });
+    this.error = params.errorHandler || ((...args) => {
+      console.error("ERROR", args);
+    });
+    this.debugMode = !!params.debug;
+    this.debug = params.debugHandler || ((...args) => {
+      if (this.debugMode)
+        console.log("DEBUG", args);
+    });
+    if (params.url) {
+      try {
+        params.scheme = params.url.replace(/:.*$/, "");
+        const u = params.url.replace(new RegExp("^" + params.scheme + "://"), "").split(":");
+        if (u.length === 1) {
+          params.host = u[0].replace(/\/.*$/, "");
+          params.port = params.scheme === "http" ? 80 : 443;
+          params.root = u[0].replace(new RegExp("^" + params.host + "/?"), "");
+        } else {
+          params.host = u[0];
+          params.port = parseInt(u[1].replace(/\/.*$/, ""), 10);
+          if (isNaN(params.port))
+            throw new Error("Incorrect port");
+          params.root = u[1].replace(new RegExp("^" + params.port + "/?"), "");
+        }
+        if (params.root === "/")
+          params.root = "";
+      } catch (e) {
+        this.error("Unable to parse URL [" + params.url + "]: " + e.message);
+        return;
       }
-      if (params.root === "/")
-        params.root = "";
-    } catch (e) {
-      this.error("Unable to parse URL [" + params.url + "]: " + e.message);
+    }
+    const scheme = params.scheme || (params.port === 443 ? "https" : "http");
+    if (scheme !== "http" && scheme !== "https") {
+      this.error("Incorrect scheme [" + params.scheme + "]");
       return;
     }
+    const host = params.host || "localhost";
+    const port = params.port || 8080;
+    let root = params.root || "";
+    if (root === "/")
+      root = "";
+    let url = scheme + "://" + host;
+    if (scheme === "http" && port != 80 || scheme === "https" && port != 443)
+      url += ":" + port;
+    if (root !== "")
+      url += root.startsWith("/") ? root : "/" + root;
+    this.debug("[simplicite] Base URL = " + url);
+    const ep = this.endpoint == "public" ? "" : "/" + this.endpoint;
+    this.parameters = {
+      scheme,
+      host,
+      port,
+      root,
+      url,
+      timeout: params.timeout || 30,
+      healthpath: (ep == "/ui" ? ep : "") + "/health?format=json",
+      apppath: ep + "/json/app",
+      objpath: ep + "/json/obj",
+      extpath: ep + "/ext",
+      docpath: ep + "/raw/document",
+      respath: "/resource"
+    };
+    this.username = params.username || params.login;
+    this.password = params.password || params.pwd;
+    this.authtoken = params.authtoken || params.token;
+    this.businessObjectCache = new Map();
   }
-  const scheme = params.scheme || (params.port === 443 ? "https" : "http");
-  if (scheme !== "http" && scheme !== "https") {
-    this.error("Incorrect scheme [" + params.scheme + "]");
-    return;
-  }
-  const host = params.host || "localhost";
-  const port = params.port || 8080;
-  let root = params.root || "";
-  if (root === "/")
-    root = "";
-  let url = scheme + "://" + host;
-  if (scheme === "http" && port != 80 || scheme === "https" && port != 443)
-    url += ":" + port;
-  if (root !== "")
-    url += root.startsWith("/") ? root : "/" + root;
-  this.debug("[simplicite] Base URL = " + url);
-  const ep = this.endpoint == "public" ? "" : "/" + this.endpoint;
-  this.parameters = {
-    scheme,
-    host,
-    port,
-    root,
-    url,
-    healthpath: (ep == "/ui" ? ep : "") + "/health?format=json",
-    apppath: ep + "/json/app",
-    objpath: ep + "/json/obj",
-    extpath: ep + "/ext",
-    docpath: ep + "/raw/document",
-    respath: "/resource"
-  };
-  this.username = params.username || params.login;
-  this.setUsername = (usr) => {
+  constants = constants;
+  endpoint;
+  log;
+  info;
+  warn;
+  error;
+  debugMode;
+  debug;
+  parameters;
+  username;
+  setUsername = (usr) => {
     this.username = usr;
   };
-  this.password = params.password || params.pwd;
-  this.setPassword = (pwd) => {
+  password;
+  setPassword = (pwd) => {
     this.password = pwd;
   };
-  this.authtoken = params.authtoken || params.authToken || params.token;
-  this.setAuthToken = (tkn) => {
-    this.authtoken = tkn;
+  authtoken;
+  sessionid;
+  setAuthToken = (token) => {
+    this.authtoken = token;
   };
-  let businessObjectCache = {};
-  this.getBusinessObjectCacheKey = (name, instance) => {
+  businessObjectCache;
+  getBusinessObjectCacheKey = (name, instance) => {
     return name + ":" + (instance || "js_" + name);
   };
-  this.clear = () => {
+  clear = () => {
     this.username = void 0;
     this.password = void 0;
     this.authtoken = void 0;
@@ -177,63 +193,77 @@ function Session(params) {
     this.appinfo = void 0;
     this.sysinfo = void 0;
     this.devinfo = void 0;
-    this.userinfo = void 0;
-    businessObjectCache = {};
+    this.businessObjectCache = new Map();
   };
-  this.getBasicAuthHeader = () => {
-    return this.username && this.password ? "Basic " + buffer.Buffer.from(this.username + ":" + this.password).toString("base64") : void 0;
+  getBasicAuthHeader = () => {
+    return this.username && this.password ? "Basic " + Buffer.from(this.username + ":" + this.password).toString("base64") : void 0;
   };
-  this.getBearerTokenHeader = () => {
+  getBearerTokenHeader = () => {
     return this.authtoken ? "Bearer " + this.authtoken : void 0;
   };
-  this.req = (path, data, callback, errorHandler) => {
-    const self = this;
+  getError = (err, status, origin) => {
+    if (typeof err === "string") {
+      return { message: err, status: status || 200, origin };
+    } else if (err.response) {
+      if (typeof err.response === "string") {
+        return { message: err.response, status: status || 200, origin };
+      } else {
+        if (origin)
+          try {
+            err.response.origin = origin;
+          } catch (e) {
+          }
+        return err.response;
+      }
+    } else {
+      if (origin)
+        try {
+          err.origin = origin;
+        } catch (e) {
+        }
+      return err;
+    }
+  };
+  req = (path, data, callback, errorHandler) => {
+    const origin = "Session.req";
     const m = data ? "POST" : "GET";
     const h = {};
     if (data)
       h["Content-Type"] = "application/x-www-form-urlencoded; charset=utf-8";
-    let b = self.getBearerTokenHeader();
+    let b = this.getBearerTokenHeader();
     if (b) {
       h["X-Simplicite-Authorization"] = b;
     } else {
-      b = self.getBasicAuthHeader();
+      b = this.getBasicAuthHeader();
       if (b)
-        h.Authorization = b;
+        h["Authorization"] = b;
     }
-    const u = self.parameters.url + path || "/";
+    const u = this.parameters.url + path || "/";
     const d = data ? typeof data === "string" ? data : JSON.stringify(data) : void 0;
-    self.debug("[simplicite.req] " + m + " " + u + (d ? " with " + d : ""));
+    this.debug(`[${origin}] ${m} ${u}${d ? " with " + d : ""}`);
     fetch(u, {
       method: m,
       headers: h,
-      timeout: self.timeout * 1e3,
+      timeout: this.parameters.timeout * 1e3,
       mode: "cors",
       credentials: "include",
       body: d
     }).then((res) => {
       if (callback) {
         res.text().then((textData) => {
-          callback.call(self, textData, res.status, res.headers);
+          callback.call(this, textData, res.status, res.headers);
         });
       }
     }).catch((err) => {
       const s = err.response && err.response.status ? err.response.status : void 0;
       const e = err.response && err.response.data ? err.response.data : err;
       if (errorHandler)
-        errorHandler.call(self, self.getError.call(self, e, s));
+        errorHandler.call(this, this.getError(e, s, origin));
       else
         throw e;
     });
   };
-  this.getError = (err, status) => {
-    if (typeof err === "string")
-      return { message: err, status: status || 200 };
-    else if (err.response)
-      return typeof err.response === "string" ? { message: err.response, status: status || 200 } : err.response;
-    else
-      return err;
-  };
-  this.parse = (res, status) => {
+  parse = (res, status) => {
     try {
       if (status !== 200)
         return { type: "error", response: this.getError("HTTP status: " + status, status) };
@@ -242,203 +272,217 @@ function Session(params) {
       return { type: "error", response: this.getError("Parsing error: " + e.message, status) };
     }
   };
-  this.getHealth = (opts) => {
-    const self = this;
+  getHealth = (opts) => {
+    const origin = "Session.getHealth";
     opts = opts || {};
     return new Promise((resolve, reject) => {
-      self.req.call(self, self.parameters.healthpath + "&full=" + !!opts.full, void 0, (res, status) => {
-        const r = self.parse(res, status);
-        self.debug("[simplicite.getHealth] HTTP status = " + status + ", response type = " + res);
-        if (r.type === "error")
-          (opts.error || self.error || reject).call(self, r.response);
-        else
-          resolve && resolve.call(self, r);
+      this.req(`${this.parameters.healthpath}&full=${!!opts.full}`, void 0, (res, status) => {
+        const r = this.parse(res, status);
+        this.debug(`[${origin}] HTTP status = ${status}, response type = ${res}`);
+        if (r.type === "error") {
+          (opts.error || this.error || reject).call(this, this.getError(r.response, void 0, origin));
+        } else {
+          resolve && resolve.call(this, r);
+        }
       }, (err) => {
-        (opts.error || self.error || reject).call(self, self.getError(err));
+        (opts.error || this.error || reject).call(this, this.getError(err, void 0, origin));
       });
     });
   };
-  this.login = (opts) => {
-    const self = this;
+  login = (opts) => {
+    const origin = "Session.login";
     opts = opts || {};
     return new Promise((resolve, reject) => {
       if ((opts.username || opts.login) && (opts.password || opts.pwd)) {
-        self.clear();
-        self.username = opts.username || opts.login;
-        self.password = opts.password || opts.pwd;
+        this.clear();
+        this.username = opts.username || opts.login;
+        this.password = opts.password || opts.pwd;
       } else if (opts.authtoken || opts.authToken || opts.token) {
-        self.clear();
-        self.authtoken = opts.authtoken || opts.authToken || opts.token;
+        this.clear();
+        this.authtoken = opts.authtoken || opts.authToken || opts.token;
       }
-      self.req.call(self, self.parameters.apppath + "?action=session", void 0, (res, status) => {
-        const r = self.parse(res, status);
-        self.debug("[simplicite.login] HTTP status = " + status + ", response type = " + r.type);
+      this.req(`${this.parameters.apppath}?action=session`, void 0, (res, status) => {
+        const r = this.parse(res, status);
+        this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
         if (r.type === "error") {
-          (opts.error || self.error || reject).call(self, r.response);
+          (opts.error || this.error || reject).call(this, this.getError(r.response, void 0, origin));
         } else {
-          self.sessionid = r.response.id;
-          self.debug("[simplicite.login] Session ID = " + self.sessionid);
-          self.username = r.response.login;
-          if (self.username)
-            self.debug("[simplicite.login] Username = " + self.username);
-          self.authtoken = r.response.authtoken;
-          if (self.authtoken)
-            self.debug("[simplicite.login] Auth token = " + self.authtoken);
-          self.grant = Object.assign(new Grant(), {
+          this.sessionid = r.response.id;
+          this.debug(`[${origin}] Session ID = ${this.sessionid}`);
+          this.username = r.response.login;
+          if (this.username)
+            this.debug(`[${origin}] Username = ${this.username}`);
+          this.authtoken = r.response.authtoken;
+          if (this.authtoken)
+            this.debug(`[${origin}] Auth token = ${this.authtoken}`);
+          this.grant = new Grant({
             login: r.response.login,
             userid: r.response.userid,
             firstname: r.response.firstanme,
             lastname: r.response.lastname,
             email: r.response.email
           });
-          resolve && resolve.call(self, r.response);
+          resolve && resolve.call(this, r.response);
         }
       }, (err) => {
-        (opts.error || self.error || reject).call(self, self.getError(err));
+        (opts.error || this.error || reject).call(this, this.getError(err, void 0, origin));
       });
     });
   };
-  this.logout = (opts) => {
-    const self = this;
+  logout = (opts) => {
+    const origin = "Session.logout";
     opts = opts || {};
     return new Promise((resolve, reject) => {
-      self.req.call(self, self.parameters.apppath + "?action=logout", void 0, (res, status) => {
-        const r = self.parse(res, status);
-        self.debug("[simplicite.logout] HTTP status = " + status + ", response type = " + r.type);
+      this.req(`${this.parameters.apppath}?action=logout`, void 0, (res, status) => {
+        const r = this.parse(res, status);
+        this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
         if (r.type === "error") {
-          (opts.error || self.error || reject).call(self, r.response);
+          (opts.error || this.error || reject).call(this, this.getError(r.response, void 0, origin));
         } else {
-          self.clear();
-          resolve && resolve.call(self, r.response);
+          this.clear();
+          resolve && resolve.call(this, r.response);
         }
       }, (err) => {
         if (err.status === 401)
-          self.authtoken = void 0;
-        (opts.error || self.error || reject).call(self, self.getError(err));
+          this.authtoken = void 0;
+        (opts.error || this.error || reject).call(this, this.getError(err, void 0, origin));
       });
     });
   };
-  this.grant = void 0;
-  this.getGrant = (opts) => {
-    const self = this;
+  grant;
+  getGrant = (opts) => {
+    const origin = "Session.getGrant";
     opts = opts || {};
     return new Promise((resolve, reject) => {
       let p = "&web=true";
-      if (opts.inlinePicture || opts.picture)
-        p += "&inline_picture=" + (!!opts.inlinePicture || !!opts.picture);
-      if (opts.includeTexts || opts.texts)
-        p += "&texts=" + (!!opts.includeTexts || !!opts.texts);
-      self.req.call(self, self.parameters.apppath + "?action=getgrant" + p, void 0, (res, status) => {
-        const r = self.parse(res, status);
-        self.debug("[simplicite.getGrant] HTTP status = " + status + ", response type = " + r.type);
+      const pic = !!opts.inlinePicture || !!opts.picture;
+      if (pic)
+        p += "&inline_picture=true";
+      const txt = !!opts.includeTexts || !!opts.texts;
+      if (txt)
+        p += "&texts=true";
+      this.req(`${this.parameters.apppath}?action=getgrant${p}`, void 0, (res, status) => {
+        const r = this.parse(res, status);
+        this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
         if (r.type === "error") {
-          (opts.error || self.error || reject).call(self, r.response);
+          (opts.error || this.error || reject).call(this, this.getError(r.response, void 0, origin));
         } else {
-          self.grant = Object.assign(new Grant(), r.response);
-          resolve && resolve.call(self, self.grant);
+          this.grant = new Grant(r.response);
+          if (pic)
+            this.grant.picture = new Doc(this.grant.picture);
+          if (txt)
+            this.grant.texts = Object.assign(new Map(), this.grant.texts);
+          resolve && resolve.call(this, this.grant);
         }
       }, (err) => {
-        (opts.error || self.error || reject).call(self, self.getError(err));
+        (opts.error || this.error || reject).call(this, this.getError(err, void 0, origin));
       });
     });
   };
-  this.changePassword = (pwd, opts) => {
-    const self = this;
+  changePassword = (pwd, opts) => {
+    const origin = "Session.changePassword";
     opts = opts || {};
     return new Promise((resolve, reject) => {
-      self.req.call(self, self.parameters.apppath + "?action=setpassword&password=" + encodeURIComponent(pwd), void 0, (res, status) => {
-        const r = self.parse(res, status);
-        self.debug("[simplicite.changePassword] HTTP status = " + status + ", response type = " + r.type);
+      this.req(`${this.parameters.apppath}?action=setpassword&password=${encodeURIComponent(pwd)}`, void 0, (res, status) => {
+        const r = this.parse(res, status);
+        this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
         if (r.type === "error")
-          (opts.error || self.error || reject).call(self, r.response);
+          (opts.error || this.error || reject).call(this, this.getError(r.response, void 0, origin));
         else
-          resolve && resolve.call(self, r.response);
+          resolve && resolve.call(this, r.response);
       }, (err) => {
-        (opts.error || self.error || reject).call(self, self.getError(err));
+        (opts.error || this.error || reject).call(this, this.getError(err, void 0, origin));
       });
     });
   };
-  this.getAppInfo = (opts) => {
-    const self = this;
+  appinfo;
+  getAppInfo = (opts) => {
+    const origin = "Session.getAppInfo";
     opts = opts || {};
     return new Promise((resolve, reject) => {
-      self.req.call(self, self.parameters.apppath + "?action=getinfo", void 0, (res, status) => {
-        const r = self.parse(res, status);
-        self.debug("[simplicite.getAppInfo] HTTP status = " + status + ", response type = " + r.type);
+      this.req(`${this.parameters.apppath}?action=getinfo`, void 0, (res, status) => {
+        const r = this.parse(res, status);
+        this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
         if (r.type === "error") {
-          (opts.error || self.error || reject).call(self, r.response);
+          (opts.error || this.error || reject).call(this, this.getError(r.response, void 0, origin));
         } else {
-          self.appinfo = r.response;
-          resolve && resolve.call(self, self.appinfo);
+          this.appinfo = r.response;
+          resolve && resolve.call(this, this.appinfo);
         }
       }, (err) => {
-        (opts.error || self.error || reject).call(self, self.getError(err));
+        (opts.error || this.error || reject).call(this, this.getError(err, void 0, origin));
       });
     });
   };
-  this.getSysInfo = (opts) => {
-    const self = this;
+  sysinfo;
+  getSysInfo = (opts) => {
+    const origin = "Session.getSysInfo";
     opts = opts || {};
     return new Promise((resolve, reject) => {
-      self.req.call(self, self.parameters.apppath + "?action=sysinfo", void 0, (res, status) => {
-        const r = self.parse(res, status);
-        self.debug("[simplicite.getSysInfo] HTTP status = " + status + ", response type = " + r.type);
+      this.req(`${this.parameters.apppath}?action=sysinfo`, void 0, (res, status) => {
+        const r = this.parse(res, status);
+        this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
         if (r.type === "error") {
-          (opts.error || self.error || reject).call(self, r.response);
+          (opts.error || this.error || reject).call(this, this.getError(r.response, void 0, origin));
         } else {
-          self.sysinfo = r.response;
-          resolve && resolve.call(self, self.sysinfo);
+          this.sysinfo = r.response;
+          resolve && resolve.call(this, this.sysinfo);
         }
       }, (err) => {
-        (opts.error || self.error || reject).call(self, self.getError(err));
+        (opts.error || this.error || reject).call(this, this.getError(err, void 0, origin));
       });
     });
   };
-  this.getDevInfo = (module, opts) => {
-    const self = this;
+  devinfo;
+  getDevInfo = (module, opts) => {
+    const origin = "Session.getDevInfo";
     opts = opts || {};
     return new Promise((resolve, reject) => {
       let p = "";
       if (module)
         p += "&module=" + encodeURIComponent(module);
-      self.req.call(self, self.parameters.apppath + "?action=devinfo" + p, void 0, (res, status) => {
-        const r = self.parse(res, status);
-        self.debug("[simplicite.getDevInfo] HTTP status = " + status + ", response type = " + r.type);
+      this.req(`${this.parameters.apppath}?action=devinfo${p}`, void 0, (res, status) => {
+        const r = this.parse(res, status);
+        this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
         if (r.type === "error") {
-          (opts.error || self.error || reject).call(self, r.response);
+          (opts.error || this.error || reject).call(this, this.getError(r.response, void 0, origin));
         } else {
           if (!module)
-            self.devinfo = r.response;
-          resolve && resolve.call(self, r.response);
+            this.devinfo = r.response;
+          resolve && resolve.call(this, r.response);
         }
       }, (err) => {
-        (opts.error || self.error || reject).call(self, self.getError(err));
+        (opts.error || this.error || reject).call(this, this.getError(err, void 0, origin));
       });
     });
   };
-  this.getNews = (opts) => {
-    const self = this;
+  news;
+  getNews = (opts) => {
+    const origin = "Session.getHealth";
     opts = opts || {};
     return new Promise((resolve, reject) => {
       let p = "";
-      if (opts.inlineImages)
-        p += "&inline_images=" + !!opts.inlineImages;
-      self.req.call(self, self.parameters.apppath + "?action=news" + p, void 0, (res, status) => {
-        const r = self.parse(res, status);
-        self.debug("[simplicite.getNews] HTTP status = " + status + ", response type = " + r.type);
+      const img = !!opts.inlineImages || !!opts.images;
+      if (img)
+        p += "&inline_images=true";
+      this.req(`${this.parameters.apppath}?action=news${p}`, void 0, (res, status) => {
+        const r = this.parse(res, status);
+        this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
         if (r.type === "error") {
-          (opts.error || self.error || reject).call(self, r.response);
+          (opts.error || this.error || reject).call(this, this.getError(r.response, void 0, origin));
         } else {
-          self.news = r.response;
-          resolve && resolve.call(self, self.news);
+          this.news = r.response;
+          for (const n of this.news)
+            n.image = new Doc(n.image);
+          resolve && resolve.call(this, this.news);
         }
       }, (err) => {
-        (opts.error || self.error || reject).call(self, self.getError(err));
+        (opts.error || this.error || reject).call(this, this.getError(err, void 0, origin));
       });
     });
   };
-  this.indexSearch = (request, object, opts) => {
-    const self = this;
+  indexSearch = (query, object, opts) => {
+    const origin = "Session.indexSearch";
     opts = opts || {};
     return new Promise((resolve, reject) => {
       let p = "";
@@ -446,138 +490,181 @@ function Session(params) {
         p += "&_md=true";
       if (opts.context)
         p += "&context=" + encodeURIComponent(opts.context);
-      self.req.call(self, self.parameters.apppath + "?action=indexsearch&request=" + encodeURIComponent(request ? request : "") + (object ? "&object=" + encodeURIComponent(object) : "") + p, void 0, (res, status) => {
-        const r = self.parse(res, status);
-        self.debug("[simplicite.indexSearch] HTTP status = " + status + ", response type = " + r.type);
+      this.req(`${this.parameters.apppath}?action=indexsearch&request=${encodeURIComponent(query ? query : "")}${object ? "&object=" + encodeURIComponent(object) : ""}${p}`, void 0, (res, status) => {
+        const r = this.parse(res, status);
+        this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
         if (r.type === "error")
-          (opts.error || self.error || reject).call(self, r.response);
+          (opts.error || this.error || reject).call(this, this.getError(r.response, void 0, origin));
         else
-          resolve && resolve.call(self, r.response);
+          resolve && resolve.call(this, r.response);
       }, (err) => {
-        (opts.error || self.error || reject).call(self, self.getError(err));
+        (opts.error || this.error || reject).call(this, this.getError(err, void 0, origin));
       });
     });
   };
-  this.getBusinessObject = (name, instance) => {
+  getBusinessObject = (name, instance) => {
     const cacheKey = this.getBusinessObjectCacheKey(name, instance);
-    let obj = businessObjectCache[cacheKey];
+    let obj = this.businessObjectCache[cacheKey];
     if (!obj) {
       obj = new BusinessObject(this, name, instance);
-      businessObjectCache[cacheKey] = obj;
+      this.businessObjectCache[cacheKey] = obj;
     }
     return obj;
   };
-  this.getExternalObject = (name) => {
+  getExternalObject = (name) => {
     return new ExternalObject(this, name);
   };
-  this.getResourceURL = (code, type, object, objId) => {
+  getResourceURL = (code, type, object, objId) => {
     return this.parameters.url + this.parameters.respath + "?code=" + encodeURIComponent(code) + "&type=" + encodeURIComponent(type || "IMG") + (object ? "&object=" + encodeURIComponent(object) : "") + (objId ? "&objid=" + encodeURIComponent(objId) : "") + (this.authtoken ? "_x_simplicite_authorization_=" + encodeURIComponent(this.authtoken) : "");
   };
 }
-function Grant() {
-  this.getUserId = () => {
-    return this.userid;
-  };
-  this.getUsername = () => {
-    return this.login;
-  };
-  this.getLogin = this.getUsername;
-  this.getLang = () => {
-    return this.lang;
-  };
-  this.getEmail = () => {
-    return this.email;
-  };
-  this.getFirstname = () => {
-    return this.firstname;
-  };
-  this.getFirstName = this.getFirstname;
-  this.getLastname = () => {
-    return this.lastname;
-  };
-  this.getLastName = this.getLastname;
-  this.getPictureURL = () => {
-    if (this.picture)
-      return "data:" + this.picture.mime + ";base64," + this.picture.content;
-  };
-  this.hasResponsibility = (group) => {
-    return this.responsibilities && this.responsibilities.indexOf(group) !== -1;
-  };
-  this.T = (code) => {
-    return this.texts ? this.texts[code] || "" : "";
-  };
-}
-function Document() {
-  this.getId = () => {
+class Doc {
+  constructor(value) {
+    Object.assign(this, value);
+  }
+  id;
+  mime;
+  filename;
+  content;
+  thumbnail;
+  getId = () => {
     return this.id;
   };
-  this.getMIMEType = () => {
+  getMIMEType = () => {
     return this.mime;
   };
-  this.getMimeType = this.getMIMEType;
-  this.setMIMEType = (mime) => {
+  getMimeType = this.getMIMEType;
+  setMIMEType = (mime) => {
     this.mime = mime;
   };
-  this.setMimeType = this.setMIMEType;
-  this.getFilename = () => {
+  setMimeType = this.setMIMEType;
+  getFilename = () => {
     return this.filename;
   };
-  this.getFileName = this.getFilename;
-  this.setFilename = (filename) => {
+  getFileName = this.getFilename;
+  setFilename = (filename) => {
     this.filename = filename;
   };
-  this.setFileName = this.setFilename;
-  this.getContent = () => {
+  setFileName = this.setFilename;
+  getContent = () => {
     return this.content;
   };
-  this.getThumbnail = () => {
+  getThumbnail = () => {
     return this.thumbnail;
   };
-  function getBuffer(data) {
-    return buffer.Buffer.from(data, "base64");
+  getBuffer(data) {
+    return Buffer.from(data, "base64");
   }
-  this.getContentAsArrayBuffer = () => {
-    return getBuffer(this.content).buffer;
+  getContentAsArrayBuffer = () => {
+    return this.getBuffer(this.content).buffer;
   };
-  this.getThumbnailAsArrayBuffer = () => {
-    return getBuffer(this.thumbnail || "").buffer;
+  getThumbnailAsArrayBuffer = () => {
+    return this.getBuffer(this.thumbnail || "").buffer;
   };
-  this.getContentAsText = (encoding) => {
-    return getBuffer(this.content).toString(encoding || "utf-8");
+  getContentAsText = () => {
+    return this.getBuffer(this.content).toString("utf-8");
   };
-  this.setContent = (content) => {
+  setContent = (content) => {
     this.content = content;
   };
-  this.setContentFromText = (content, encoding) => {
-    this.content = buffer.Buffer.from(content, encoding || "utf-8").toString("base64");
+  setContentFromText = (content) => {
+    this.content = Buffer.from(content, "utf-8").toString("base64");
   };
-  this.getDataURL = (thumbnail) => {
+  getDataURL = (thumbnail) => {
     if (this.content)
       return "data:" + this.mime + ";base64," + (thumbnail && this.thumbnail ? this.thumbnail : this.content);
   };
-  this.getValue = () => {
+  getValue = () => {
     return JSON.parse(JSON.stringify(this));
   };
 }
-function BusinessObjectMetadata(name, instance) {
-  this.name = name;
-  this.instance = instance;
-  this.rowidfield = constants.DEFAULT_ROW_ID_NAME;
-  this.label = name;
-  this.help = "";
-  this.fields = [];
+class Grant {
+  constructor(grant) {
+    Object.assign(this, grant);
+  }
+  userid;
+  login;
+  lang;
+  email;
+  firstname;
+  lastname;
+  picture;
+  responsibilities;
+  texts;
+  getUserId = () => {
+    return this.userid;
+  };
+  getUsername = () => {
+    return this.login;
+  };
+  getLogin = this.getUsername;
+  getLang = () => {
+    return this.lang;
+  };
+  getEmail = () => {
+    return this.email;
+  };
+  getFirstname = () => {
+    return this.firstname;
+  };
+  getFirstName = this.getFirstname;
+  getLastname = () => {
+    return this.lastname;
+  };
+  getLastName = this.getLastname;
+  getPictureURL = () => {
+    if (this.picture)
+      return "data:" + this.picture.mime + ";base64," + this.picture.content;
+  };
+  hasResponsibility = (group) => {
+    return this.responsibilities && this.responsibilities.indexOf(group) !== -1;
+  };
+  T = (code) => {
+    return this.texts ? this.texts[code] || "" : "";
+  };
 }
-function BusinessObject(ses, name, instance) {
-  instance = instance || "js_" + name;
-  this.session = ses;
-  this.metadata = new BusinessObjectMetadata(name, instance);
-  this.cacheKey = this.session.getBusinessObjectCacheKey(name, instance);
-  this.path = this.session.parameters.objpath + "?object=" + encodeURIComponent(name) + "&inst=" + encodeURIComponent(instance);
-  this.item = {};
-  this.filters = {};
-  this.list = [];
-  this.getMetaData = (opts) => {
-    const self = this;
+class BusinessObjectMetadata {
+  constructor(name, instance) {
+    this.name = name;
+    this.instance = instance;
+    this.rowidfield = constants.DEFAULT_ROW_ID_NAME;
+    this.label = name;
+    this.help = "";
+    this.fields = new Array();
+  }
+  id;
+  name;
+  instance;
+  rowidfield;
+  label;
+  help;
+  fields;
+  links;
+}
+class BusinessObject {
+  constructor(session2, name, instance) {
+    this.session = session2;
+    const inst = instance || "api_" + name;
+    this.metadata = new BusinessObjectMetadata(name, inst);
+    this.cacheKey = this.session.getBusinessObjectCacheKey(name, inst);
+    this.path = this.session.parameters.objpath + "?object=" + encodeURIComponent(name) + "&inst=" + encodeURIComponent(inst);
+    this.item = {};
+    this.filters = {};
+    this.list = [];
+  }
+  session;
+  metadata;
+  cacheKey;
+  path;
+  item;
+  filters;
+  list;
+  count;
+  page;
+  maxpage;
+  getMetaData = (opts) => {
+    const origin = "BusinessObject.getMetaData";
+    const ses = this.session;
     opts = opts || {};
     return new Promise((resolve, reject) => {
       let p = "";
@@ -585,95 +672,99 @@ function BusinessObject(ses, name, instance) {
         p += "&context=" + encodeURIComponent(opts.context);
       if (opts.contextParam)
         p += "&contextparam=" + encodeURIComponent(opts.contextParam);
-      self.session.req.call(self.session, self.path + "&action=metadata" + p, void 0, (res, status) => {
-        const r = self.session.parse(res, status);
-        self.session.debug("[simplicite.BusinessObject.getMetaData] HTTP status = " + status + ", response type = " + r.type);
+      ses.req(this.path + "&action=metadata" + p, void 0, (res, status) => {
+        const r = ses.parse(res, status);
+        ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
         if (r.type === "error") {
-          (opts.error || self.session.error || reject).call(self, r.response);
+          (opts.error || ses.error || reject).call(this, ses.getError(r.response, void 0, origin));
         } else {
-          self.metadata = r.response;
-          resolve && resolve.call(self, self.metadata);
+          this.metadata = r.response;
+          resolve && resolve.call(this, this.metadata);
         }
       }, (err) => {
-        (opts.error || self.session.error || reject).call(self, self.session.getError(err));
+        (opts.error || ses.error || reject).call(this, ses.getError(err, void 0, origin));
       });
     });
   };
-  this.getMetadata = this.getMetaData;
-  this.getName = () => {
+  getMetadata = this.getMetaData;
+  getName = () => {
     return this.metadata.name;
   };
-  this.getInstance = () => {
+  getInstance = () => {
     return this.metadata.instance;
   };
-  this.getLabel = () => {
+  getLabel = () => {
     return this.metadata.label;
   };
-  this.getHelp = () => {
+  getHelp = () => {
     return this.metadata.help;
   };
-  this.getFields = () => {
+  getFields = () => {
     return this.metadata.fields;
   };
-  this.getField = (fieldName) => {
-    let n = 0;
+  getField = (fieldName) => {
     const fs = this.getFields();
+    let n = 0;
     while (n < fs.length && fs[n].name !== fieldName)
       n++;
     if (n < fs.length)
       return fs[n];
   };
-  this.getRowIdFieldName = () => {
+  getRowIdFieldName = () => {
     return this.metadata.rowidfield;
   };
-  this.getRowIdField = () => {
+  getRowIdField = () => {
     return this.getField(this.getRowIdFieldName());
   };
-  this.getLinks = () => {
+  getLinks = () => {
     return this.metadata.links;
   };
-  this.getFieldType = (field) => {
+  getFieldType = (field) => {
     if (typeof field === "string")
       field = this.getField(field);
     if (field)
       return field.type;
   };
-  this.getFieldLabel = (field) => {
+  getFieldLabel = (field) => {
     if (typeof field === "string")
       field = this.getField(field);
     if (field)
       return field.label;
   };
-  this.getFieldValue = (field, item) => {
+  getFieldValue = (field, item) => {
     if (!item)
       item = this.item;
     if (field && item) {
-      return item[typeof field === "string" ? field : field.name];
+      const val = item[typeof field === "string" ? field : field.name];
+      if (val && val.mime)
+        return new Doc(val);
+      else
+        return val;
     }
   };
-  this.getFieldListValue = (field, item) => {
+  getFieldListValue = (field, item) => {
     if (typeof field === "string")
       field = this.getField(field);
     const val = this.getFieldValue(field, item);
     return field && field.listOfValues ? this.getListValue(field.listOfValues, val) : val;
   };
-  this.getFieldDataURL = (field, item) => {
+  getFieldDataURL = (field, item) => {
     if (typeof field !== "string")
       field = field.fullinput || field.name;
     const val = this.getFieldValue(field, item);
     if (val && val.mime)
       return "data:" + val.mime + ";base64," + (val.content || val.thumbnail);
   };
-  this.getFieldDocument = (field, item) => {
+  getFieldDocument = (field, item) => {
     if (typeof field !== "string")
       field = field.fullinput || field.input || field.name;
     const val = this.getFieldValue(field, item);
     if (val && val.mime)
-      return Object.assign(new Document(), val);
+      return new Doc(val);
     else
       return val;
   };
-  this.getFieldDocumentURL = (field, item, thumbnail) => {
+  getFieldDocumentURL = (field, item, thumbnail) => {
     if (typeof field !== "string")
       field = field.fullinput || field.input || field.name;
     let val = this.getFieldValue(field, item);
@@ -682,7 +773,7 @@ function BusinessObject(ses, name, instance) {
     if (val)
       return this.session.parameters.url + this.session.parameters.docpath + "?object=" + encodeURIComponent(this.metadata.name) + "&inst=" + encodeURIComponent(this.metadata.instance) + "&field=" + encodeURIComponent(field) + "&row_id=" + encodeURIComponent(this.getRowId(item)) + "&doc_id=" + encodeURIComponent(val) + (thumbnail ? "&thumbnail=true" : "") + (this.session.authtoken ? "&_x_simplicite_authorization_=" + encodeURIComponent(this.session.authtoken) : "");
   };
-  this.getListValue = (list, code) => {
+  getListValue = (list, code) => {
     if (list) {
       for (let i = 0; i < list.length; i++) {
         const l = list[i];
@@ -692,22 +783,23 @@ function BusinessObject(ses, name, instance) {
     }
     return code;
   };
-  this.setFieldValue = (field, value, item) => {
+  setFieldValue = (field, value, item) => {
     if (!item)
       item = this.item;
     if (field && item) {
-      item[typeof field === "string" ? field : field.name] = value instanceof Document ? value.getValue() : value;
+      item[typeof field === "string" ? field : field.name] = value instanceof Doc ? value.getValue() : value;
     }
   };
-  this.isRowIdField = (field) => {
+  isRowIdField = (field) => {
     return !field.ref && field.name === this.metadata.rowidfield;
   };
-  this.isTimestampField = (field) => {
+  isTimestampField = (field) => {
     const n = field.name;
     return !field.ref && (n === "created_by" || n === "created_dt" || n === "updated_by" || n === "updated_dt");
   };
-  this.getFilters = (opts) => {
-    const self = this;
+  getFilters = (opts) => {
+    const origin = "BusinessObject.getFilters";
+    const ses = this.session;
     opts = opts || {};
     return new Promise((resolve, reject) => {
       let p = "";
@@ -715,21 +807,21 @@ function BusinessObject(ses, name, instance) {
         p += "&context=" + encodeURIComponent(opts.context);
       if (opts.reset)
         p += "&reset=" + !!opts.reset;
-      self.session.req.call(self.session, self.path + "&action=filters" + p, void 0, (res, status) => {
-        const r = self.session.parse(res, status);
-        self.session.debug("[simplicite.BusinessObject.getFilters] HTTP status = " + status + ", response type = " + r.type);
+      ses.req(this.path + "&action=filters" + p, void 0, (res, status) => {
+        const r = ses.parse(res, status);
+        ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
         if (r.type === "error") {
-          (opts.error || self.session.error || reject).call(self, r.response);
+          (opts.error || ses.error || reject).call(this, ses.getError(r.response, void 0, origin));
         } else {
-          self.filters = r.response;
-          resolve && resolve.call(self, self.filters);
+          this.filters = r.response;
+          resolve && resolve.call(this, this.filters);
         }
       }, (err) => {
-        (opts.error || self.session.error || reject).call(self, self.session.getError(err));
+        (opts.error || ses.error || reject).call(this, ses.getError(err, void 0, origin));
       });
     });
   };
-  function getReqOptions(options) {
+  getReqOptions = (options) => {
     let opts = "";
     if (options.context)
       opts += "&context=" + encodeURIComponent(options.context);
@@ -743,13 +835,13 @@ function BusinessObject(ses, name, instance) {
     if (io)
       opts += "&inline_objects=" + encodeURIComponent(io.join ? io.join(",") : io);
     return opts;
-  }
-  function getReqParams(data) {
+  };
+  getReqParams = (data) => {
     let p = "";
     if (!data)
       return p;
     let n = 0;
-    for (let i in data) {
+    for (const i in data) {
       const d = data[i] || "";
       if (d.name && d.content) {
         if (d.content.startsWith("data:"))
@@ -765,66 +857,68 @@ function BusinessObject(ses, name, instance) {
       }
     }
     return p;
-  }
-  this.count = (filters, opts) => {
-    const self = this;
+  };
+  getCount = (filters, opts) => {
+    const origin = "BusinessObject.getCount";
+    const ses = this.session;
     opts = opts || {};
     return new Promise((resolve, reject) => {
-      self.filters = filters || {};
-      self.session.req.call(self.session, self.path + "&action=count", getReqParams(self.filters), (res, status) => {
-        const r = self.session.parse(res, status);
-        self.session.debug("[simplicite.BusinessObject.getCount] HTTP status = " + status + ", response type = " + r.type);
+      this.filters = filters || {};
+      ses.req(`${this.path}&action=count`, this.getReqParams(this.filters), (res, status) => {
+        const r = ses.parse(res, status);
+        ses.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
         if (r.type === "error") {
-          (opts.error || self.session.error || reject).call(self, r.response);
+          (opts.error || ses.error || reject).call(this, ses.getError(r.response, void 0, origin));
         } else {
-          self.count = r.response.count;
-          self.page = r.response.page >= 0 ? r.response.page + 1 : void 0;
-          self.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : void 0;
-          self.list = [];
-          resolve && resolve.call(self, self.count);
+          this.count = r.response.count;
+          this.page = r.response.page >= 0 ? r.response.page + 1 : void 0;
+          this.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : void 0;
+          this.list = [];
+          resolve && resolve.call(this, this.count);
         }
       }, (err) => {
-        (opts.error || self.session.error || reject).call(self, self.session.getError(err));
+        (opts.error || ses.error || reject).call(this, ses.getError(err, void 0, origin));
       });
     });
   };
-  this.getCount = this.count;
-  this.search = (filters, opts) => {
-    const self = this;
+  search = (filters, opts) => {
+    const origin = "BusinessObject.search";
+    const ses = this.session;
     opts = opts || {};
     return new Promise((resolve, reject) => {
-      let p = getReqOptions(opts);
+      let p = this.getReqOptions(opts);
       if (opts.page > 0)
         p += "&page=" + (opts.page - 1);
       if (opts.metadata === true)
         p += "&_md=true";
       if (opts.visible === true)
         p += "&_visible=true";
-      self.filters = filters || {};
-      self.session.req.call(self.session, self.path + "&action=search" + p, getReqParams(self.filters), (res, status) => {
-        const r = self.session.parse(res, status);
-        self.session.debug("[simplicite.BusinessObject.search] HTTP status = " + status + ", response type = " + r.type);
+      this.filters = filters || {};
+      ses.req(this.path + "&action=search" + p, this.getReqParams(this.filters), (res, status) => {
+        const r = ses.parse(res, status);
+        ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
         if (r.type === "error") {
-          (opts.error || self.session.error || reject).call(self, r.response);
+          (opts.error || ses.error || reject).call(this, ses.getError(r.response, void 0, origin));
         } else {
           if (res.meta)
-            self.metadata = r.response.meta;
-          self.count = r.response.count;
-          self.page = r.response.page >= 0 ? r.response.page + 1 : void 0;
-          self.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : void 0;
-          self.list = r.response.list;
-          resolve && resolve.call(self, self.list);
+            this.metadata = r.response.meta;
+          this.count = r.response.count;
+          this.page = r.response.page >= 0 ? r.response.page + 1 : void 0;
+          this.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : void 0;
+          this.list = r.response.list;
+          resolve && resolve.call(this, this.list);
         }
       }, (err) => {
-        (opts.error || self.session.error || reject).call(self, self.session.getError(err));
+        (opts.error || ses.error || reject).call(this, ses.getError(err, void 0, origin));
       });
     });
   };
-  this.get = (rowId, opts) => {
-    const self = this;
+  get = (rowId, opts) => {
+    const origin = "BusinessObject.get";
+    const ses = this.session;
     opts = opts || {};
     return new Promise((resolve, reject) => {
-      let p = getReqOptions(opts);
+      let p = this.getReqOptions(opts);
       const tv = opts.treeView;
       if (tv)
         p += "&treeview=" + encodeURIComponent(tv);
@@ -837,78 +931,79 @@ function BusinessObject(ses, name, instance) {
         p += "&_md=true";
       if (opts.social)
         p += "&_social=true";
-      self.session.req.call(self.session, self.path + "&action=get&" + self.metadata.rowidfield + "=" + encodeURIComponent(rowId) + p, void 0, (res, status) => {
-        const r = self.session.parse(res, status);
-        self.session.debug("[simplicite.BusinessObject.get] HTTP status = " + status + ", response type = " + r.type);
+      ses.req(this.path + "&action=get&" + this.metadata.rowidfield + "=" + encodeURIComponent(rowId) + p, void 0, (res, status) => {
+        const r = ses.parse(res, status);
+        ses.debug("[simplicite.BusinessObject.get] HTTP status = " + status + ", response type = " + r.type);
         if (r.type === "error") {
-          (opts.error || self.session.error || reject).call(self, r.response);
+          (opts.error || ses.error || reject).call(this, ses.getError(r.response, void 0, origin));
         } else {
           if (r.response.meta)
-            self.metadata = r.response.meta;
+            this.metadata = r.response.meta;
           if (r.response.data)
-            self.item = tv ? r.response.data.item : r.response.data;
+            this.item = tv ? r.response.data.item : r.response.data;
           else
-            self.item = tv ? r.response.item : r.response;
-          resolve && resolve.call(self, tv ? r.response : self.item);
+            this.item = tv ? r.response.item : r.response;
+          resolve && resolve.call(this, tv ? r.response : this.item);
         }
       }, (err) => {
-        (opts.error || self.session.error || reject).call(self, self.session.getError(err));
+        (opts.error || ses.error || reject).call(this, ses.getError(err, void 0, origin));
       });
     });
   };
-  this.getForCreate = (opts) => {
+  getForCreate = (opts) => {
     opts = opts || {};
     delete opts.treeview;
     delete opts.fields;
     opts.context = constants.CONTEXT_CREATE;
     return this.get(this.session.constants.DEFAULT_ROW_ID, opts);
   };
-  this.getForUpdate = (rowId, opts) => {
+  getForUpdate = (rowId, opts) => {
     opts = opts || {};
     delete opts.treeview;
     delete opts.fields;
     opts.context = constants.CONTEXT_UPDATE;
     return this.get(rowId, opts);
   };
-  this.getForCopy = (rowId, opts) => {
+  getForCopy = (rowId, opts) => {
     opts = opts || {};
     delete opts.treeview;
     delete opts.fields;
     opts.context = constants.CONTEXT_COPY;
     return this.get(rowId, opts);
   };
-  this.getForDelete = (rowId, opts) => {
+  getForDelete = (rowId, opts) => {
     opts = opts || {};
     delete opts.treeview;
     delete opts.fields;
     opts.context = constants.CONTEXT_DELETE;
     return this.get(rowId, opts);
   };
-  this.getRowId = (item) => {
+  getRowId = (item) => {
     item = item || this.item;
     if (item)
       return item[this.getRowIdFieldName()];
   };
-  this.populate = (rowId, opts) => {
-    const self = this;
+  populate = (rowId, opts) => {
+    const origin = "BusinessObject.populate";
+    const ses = this.session;
     opts = opts || {};
     return new Promise((resolve, reject) => {
-      let p = getReqOptions(opts);
-      self.session.req.call(self.session, self.path + "&action=populate&" + self.metadata.rowidfield + "=" + encodeURIComponent(rowId) + p, void 0, (res, status) => {
-        const r = self.session.parse(res, status);
-        self.session.debug("[simplicite.BusinessObject.populate] HTTP status = " + status + ", response type = " + r.type);
+      const p = this.getReqOptions(opts);
+      ses.req(this.path + "&action=populate&" + this.metadata.rowidfield + "=" + encodeURIComponent(rowId) + p, void 0, (res, status) => {
+        const r = ses.parse(res, status);
+        ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
         if (r.type === "error") {
-          (opts.error || self.session.error || reject).call(self, r.response);
+          (opts.error || ses.error || reject).call(this, ses.getError(r.response, void 0, origin));
         } else {
-          self.item = r.response.data ? r.response.data : r.response;
-          resolve && resolve.call(self, self.item);
+          this.item = r.response.data ? r.response.data : r.response;
+          resolve && resolve.call(this, this.item);
         }
       }, (err) => {
-        (opts.error || self.session.error || reject).call(self, self.session.getError(err));
+        (opts.error || ses.error || reject).call(this, ses.getError(err, void 0, origin));
       });
     });
   };
-  this.save = (item, opts) => {
+  save = (item, opts) => {
     if (item)
       this.item = item;
     const rowId = this.item[this.metadata.rowidfield];
@@ -917,192 +1012,207 @@ function BusinessObject(ses, name, instance) {
     else
       return this.update(item, opts);
   };
-  this.create = (item, opts) => {
-    const self = this;
+  create = (item, opts) => {
+    const origin = "BusinessObject.create";
+    const ses = this.session;
     opts = opts || {};
     return new Promise((resolve, reject) => {
       if (item)
-        self.item = item;
-      self.item.row_id = self.session.constants.DEFAULT_ROW_ID;
-      let p = getReqOptions(opts);
-      self.session.req.call(self.session, self.path + "&action=create" + p, getReqParams(self.item), (res, status) => {
-        const r = self.session.parse(res, status);
-        self.session.debug("[simplicite.BusinessObject.create] HTTP status = " + status + ", response type = " + r.type);
+        this.item = item;
+      this.item.row_id = ses.constants.DEFAULT_ROW_ID;
+      const p = this.getReqOptions(opts);
+      ses.req(`${this.path}&action=create${p}`, this.getReqParams(this.item), (res, status) => {
+        const r = ses.parse(res, status);
+        ses.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
         if (r.type === "error") {
-          (opts.error || self.session.error || reject).call(self, r.response);
+          (opts.error || ses.error || reject).call(this, ses.getError(r.response, void 0, origin));
         } else {
-          self.item = r.response.data ? r.response.data : r.response;
-          resolve && resolve.call(self, self.item);
+          this.item = r.response.data ? r.response.data : r.response;
+          resolve && resolve.call(this, this.item);
         }
       }, (err) => {
-        (opts.error || self.session.error || reject).call(self, self.session.getError(err));
+        (opts.error || ses.error || reject).call(this, ses.getError(err, void 0, origin));
       });
     });
   };
-  this.update = (item, opts) => {
-    const self = this;
+  update = (item, opts) => {
+    const origin = "BusinessObject.update";
+    const ses = this.session;
     opts = opts || {};
     return new Promise((resolve, reject) => {
       if (item)
-        self.item = item;
-      let p = getReqOptions(opts);
-      self.session.req.call(self.session, self.path + "&action=update" + p, getReqParams(self.item), (res, status) => {
-        const r = self.session.parse(res, status);
-        self.session.debug("[simplicite.BusinessObject.update] HTTP status = " + status + ", response type = " + r.type);
+        this.item = item;
+      const p = this.getReqOptions(opts);
+      ses.req(this.path + "&action=update" + p, this.getReqParams(this.item), (res, status) => {
+        const r = ses.parse(res, status);
+        ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
         if (r.type === "error") {
-          (opts.error || self.session.error || reject).call(self, r.response);
+          (opts.error || ses.error || reject).call(this, ses.getError(r.response, void 0, origin));
         } else {
-          self.item = r.response.data ? r.response.data : r.response;
-          resolve && resolve.call(self, self.item);
+          this.item = r.response.data ? r.response.data : r.response;
+          resolve && resolve.call(this, this.item);
         }
       }, (err) => {
-        (opts.error || self.session.error || reject).call(self, self.session.getError(err));
+        (opts.error || ses.error || reject).call(this, ses.getError(err, void 0, origin));
       });
     });
   };
-  this.del = (item, opts) => {
-    const self = this;
+  del = (item, opts) => {
+    const origin = "BusinessObject.del";
+    const ses = this.session;
     opts = opts || {};
     return new Promise((resolve, reject) => {
       if (item)
-        self.item = item;
-      self.session.req.call(self.session, self.path + "&action=delete&" + self.metadata.rowidfield + "=" + encodeURIComponent(self.item[self.metadata.rowidfield]), void 0, (res, status) => {
-        const r = self.session.parse(res, status);
-        self.session.debug("[simplicite.BusinessObject.del] HTTP status = " + status + ", response type = " + r.type);
+        this.item = item;
+      ses.req(this.path + "&action=delete&" + this.metadata.rowidfield + "=" + encodeURIComponent(this.item[this.metadata.rowidfield]), void 0, (res, status) => {
+        const r = ses.parse(res, status);
+        ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
         if (r.type === "error") {
-          (opts.error || self.session.error || reject).call(self, r.response);
+          (opts.error || ses.error || reject).call(this, ses.getError(r.response, void 0, origin));
         } else {
-          self.item = void 0;
+          this.item = void 0;
           delete r.response.undoredo;
-          resolve && resolve.call(self, r.response);
+          resolve && resolve.call(this, r.response);
         }
       }, (err) => {
-        (opts.error || self.session.error || reject).call(self, self.session.getError(err));
+        (opts.error || ses.error || reject).call(this, ses.getError(err, void 0, origin));
       });
     });
   };
-  this.action = (action, rowId, opts) => {
-    const self = this;
+  action = (action, rowId, opts) => {
+    const origin = `BusinessObject.action(${action})`;
+    const ses = this.session;
     opts = opts || {};
     return new Promise((resolve, reject) => {
-      self.session.req.call(self.session, self.path + "&action=" + encodeURIComponent(action) + (rowId ? "&" + self.getRowIdFieldName() + "=" + encodeURIComponent(rowId) : ""), getReqParams(opts.parameters), (res, status) => {
-        const r = self.session.parse(res, status);
-        self.session.debug("[simplicite.BusinessObject.action(" + action + ")] HTTP status = " + status + ", response type = " + r.type);
+      ses.req(this.path + "&action=" + encodeURIComponent(action) + (rowId ? "&" + this.getRowIdFieldName() + "=" + encodeURIComponent(rowId) : ""), this.getReqParams(opts.parameters), (res, status) => {
+        const r = ses.parse(res, status);
+        ses.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
         if (r.type === "error") {
-          (opts.error || self.session.error || reject).call(self, r.response);
+          (opts.error || ses.error || reject).call(this, ses.getError(r.response, void 0, origin));
         } else {
           const result = r.response.result;
-          resolve && resolve.call(self, result);
+          resolve && resolve.call(this, result);
         }
       }, (err) => {
-        (opts.error || self.session.error || reject).call(self, self.session.getError(err));
+        (opts.error || ses.error || reject).call(this, ses.getError(err, void 0, origin));
       });
     });
   };
-  this.crosstab = (crosstab, opts) => {
-    const self = this;
+  crosstab = (ctb, opts) => {
+    const origin = `BusinessObject.crosstab(${ctb})`;
+    const ses = this.session;
     opts = opts || {};
     return new Promise((resolve, reject) => {
       if (opts.filters)
-        self.filters = opts.filters;
-      self.session.req.call(self.session, self.path + "&action=crosstab&crosstab=" + encodeURIComponent(crosstab), getReqParams(self.filters), (res, status) => {
-        const r = self.session.parse(res, status);
-        self.session.debug("[simplicite.BusinessObject.crosstab(" + crosstab + ")] HTTP status = " + status + ", response type = " + r.type);
+        this.filters = opts.filters;
+      ses.req(this.path + "&action=crosstab&crosstab=" + encodeURIComponent(ctb), this.getReqParams(this.filters), (res, status) => {
+        const r = ses.parse(res, status);
+        ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
         if (r.type === "error") {
-          (opts.error || self.session.error || reject).call(self, r.response);
+          (opts.error || ses.error || reject).call(this, ses.getError(r.response, void 0, origin));
         } else {
-          self.crosstabdata = r.response;
-          resolve && resolve.call(self, self.crosstabdata);
+          resolve && resolve.call(this, r.response);
         }
       }, (err) => {
-        (opts.error || self.session.error || reject).call(self, self.session.getError(err));
+        (opts.error || ses.error || reject).call(this, ses.getError(err, void 0, origin));
       });
     });
   };
-  this.print = (prt, rowId, opts) => {
-    const self = this;
+  print = (prt, rowId, opts) => {
+    const origin = `BusinessObject.print(${prt})`;
+    const ses = this.session;
     opts = opts || {};
     return new Promise((resolve, reject) => {
       if (opts.filters)
-        self.filters = opts.filters;
+        this.filters = opts.filters;
       let p = "";
       if (opts.all)
         p += "&all=" + !!opts.all;
       if (opts.mailing)
         p += "&mailing=" + !!opts.mailing;
-      self.session.req.call(self.session, self.path + "&action=print&printtemplate=" + encodeURIComponent(prt) + (rowId ? "&" + self.getRowIdFieldName() + "=" + encodeURIComponent(rowId) : "") + p, void 0, (res, status) => {
-        const r = self.session.parse(res, status);
-        self.session.debug("[simplicite.BusinessObject.print(" + prt + ")] HTTP status = " + status + ", response type = " + r.type);
+      ses.req(this.path + "&action=print&printtemplate=" + encodeURIComponent(prt) + (rowId ? "&" + this.getRowIdFieldName() + "=" + encodeURIComponent(rowId) : "") + p, void 0, (res, status) => {
+        const r = ses.parse(res, status);
+        ses.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
         if (r.type === "error") {
-          (opts.error || self.session.error || reject).call(self, r.response);
+          (opts.error || ses.error || reject).call(this, ses.getError(r.response, void 0, origin));
         } else {
-          resolve && resolve.call(self, Object.assign(new Document(), r.response));
+          resolve && resolve.call(this, new Doc(r.response));
         }
       }, (err) => {
-        (opts.error || self.session.error || reject).call(self, self.session.getError(err));
+        (opts.error || ses.error || reject).call(this, ses.getError(err, void 0, origin));
       });
     });
   };
-  this.setParameter = (param, value, opts) => {
-    const self = this;
+  setParameter = (param, value, opts) => {
+    const origin = "BusinessObject.setParameter";
+    const ses = this.session;
     opts = opts || {};
     return new Promise((resolve, reject) => {
-      let p = { name: param };
+      const p = { name: param };
       if (value)
         p.value = value;
-      self.session.req.call(self.session, self.path + "&action=setparameter", getReqParams(p), (res, status) => {
-        const r = self.session.parse(res, status);
-        self.session.debug("[simplicite.BusinessObject.setParameter(" + p.name + ")] HTTP status = " + status + ", response type = " + r.type);
+      ses.req(this.path + "&action=setparameter", this.getReqParams(p), (res, status) => {
+        const r = ses.parse(res, status);
+        ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
         if (r.type === "error") {
-          (opts.error || self.session.error || reject).call(self, r.response);
+          (opts.error || ses.error || reject).call(this, r.response);
         } else {
           const result = r.response.result;
-          resolve && resolve.call(self, result);
+          resolve && resolve.call(this, result);
         }
       }, (err) => {
-        (opts.error || self.session.error || reject).call(self, self.session.getError(err));
+        (opts.error || ses.error || reject).call(this, ses.getError(err));
       });
     });
   };
-  this.getParameter = (param, opts) => {
-    const self = this;
+  getParameter = (param, opts) => {
+    const origin = "BusinessObject.getParameter";
+    const ses = this.session;
     opts = opts || {};
     return new Promise((resolve, reject) => {
-      let p = { name: param };
-      self.session.req.call(self.session, self.path + "&action=getparameter", getReqParams(p), (res, status) => {
-        const r = self.session.parse(res, status);
-        self.session.debug("[simplicite.BusinessObject.getParameter(" + p.name + ")] HTTP status = " + status + ", response type = " + r.type);
+      const p = { name: param };
+      ses.req(this.path + "&action=getparameter", this.getReqParams(p), (res, status) => {
+        const r = ses.parse(res, status);
+        ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
         if (r.type === "error") {
-          (opts.error || self.session.error || reject).call(self, r.response);
+          (opts.error || ses.error || reject).call(this, r.response);
         } else {
           const result = r.response.result;
-          resolve && resolve.call(self, result);
+          resolve && resolve.call(this, result);
         }
       }, (err) => {
-        (opts.error || self.session.error || reject).call(self, self.session.getError(err));
+        (opts.error || ses.error || reject).call(this, ses.getError(err));
       });
     });
   };
-  this.getResourceURL = (code, type) => {
+  getResourceURL = (code, type) => {
     return this.session.getResourceURL(code, type, this.metadata.name, this.metadata.id);
   };
 }
-function ExternalObjectMetadata(name) {
-  this.name = name;
+class ExternalObjectMetadata {
+  constructor(name) {
+    this.name = name;
+  }
+  name;
 }
-function ExternalObject(ses, name) {
-  this.session = ses;
-  this.metadata = new ExternalObjectMetadata(name);
-  this.path = this.session.parameters.extpath + "/" + encodeURIComponent(name);
-  this.getName = () => {
+class ExternalObject {
+  constructor(session2, name) {
+    this.session = session2;
+    this.metadata = new ExternalObjectMetadata(name);
+    this.path = this.session.parameters.extpath + "/" + encodeURIComponent(name);
+  }
+  session;
+  metadata;
+  path;
+  getName = () => {
     return this.metadata.name;
   };
-  this.callParams = (params) => {
+  callParams = (params) => {
     let p = "";
     if (!params)
       return p;
     let n = 0;
-    for (let i in params) {
+    for (const i in params) {
       const v = params[i] || "";
       if (v.sort) {
         for (let j = 0; j < v.length; j++)
@@ -1113,13 +1223,14 @@ function ExternalObject(ses, name) {
     }
     return p;
   };
-  this.call = (params, data, opts) => {
-    const self = this;
+  call = (params, data, opts) => {
+    const origin = "ExternalObject.call";
+    const ses = this.session;
     opts = opts || {};
     return new Promise((resolve, reject) => {
       let p = "";
       if (params)
-        p = "?" + self.callParams(params);
+        p = "?" + this.callParams(params);
       const m = opts.method ? opts.method.toUpperCase() : data ? "POST" : "GET";
       const h = {};
       if (opts.contentType) {
@@ -1127,55 +1238,58 @@ function ExternalObject(ses, name) {
       } else if (data) {
         h["Content-Type"] = typeof data === "string" ? "application/x-www-form-urlencoded" : "application/json";
       }
-      let b = self.session.getBearerTokenHeader();
+      let b = ses.getBearerTokenHeader();
       if (b) {
         h["X-Simplicite-Authorization"] = b;
       } else {
-        b = self.session.getBasicAuthHeader();
+        b = ses.getBasicAuthHeader();
         if (b)
           h.Authorization = b;
       }
-      const u = self.session.parameters.url + self.path + p;
+      const u = ses.parameters.url + this.path + p;
       const d = data ? typeof data === "string" ? data : JSON.stringify(data) : void 0;
-      self.session.debug("[simplicite.ExternalObject.call] " + m + " " + u + " with " + (d ? " with " + d : ""));
+      ses.debug("[simplicite.ExternalObject.call] " + m + " " + u + " with " + (d ? " with " + d : ""));
       fetch(u, {
         method: m,
         headers: h,
-        timeout: self.session.timeout * 1e3,
+        timeout: ses.parameters.timeout * 1e3,
         mode: "cors",
         credentials: "include",
         body: d
       }).then((res) => {
         const type = res.headers.get("content-type");
-        self.session.debug("[simplicite.ExternalObject.call(" + p + ")] HTTP status = " + res.status + ", response content type = " + type);
+        ses.debug(`[${origin}] HTTP status = ${res.status}, response content type = ${type}`);
         if (type && type.startsWith("application/json")) {
           res.json().then((jsonData) => {
-            resolve && resolve.call(self, jsonData, res.status, res.headers);
+            resolve && resolve.call(this, jsonData, res.status, res.headers);
           }).catch((err) => {
-            (opts.error || self.error || reject).call(self, self.getError(err));
+            (opts.error || ses.error || reject).call(this, ses.getError(err, void 0, origin));
           });
         } else if (type && type.startsWith("text/")) {
           res.text().then((textData) => {
-            resolve && resolve.call(self, textData, res.status, res.headers);
+            resolve && resolve.call(this, textData, res.status, res.headers);
           }).catch((err) => {
-            (opts.error || self.error || reject).call(self, self.getError(err));
+            (opts.error || ses.error || reject).call(this, ses.getError(err, void 0, origin));
           });
         } else {
           res.arrayBuffer().then((binData) => {
-            resolve && resolve.call(self, binData, res.status, res.headers);
+            resolve && resolve.call(this, binData, res.status, res.headers);
           }).catch((err) => {
-            (opts.error || self.error || reject).call(self, self.getError(err));
+            (opts.error || ses.error || reject).call(this, ses.getError(err, void 0, origin));
           });
         }
       }).catch((err) => {
-        (opts.error || self.error || reject).call(self, self.getError(err));
+        (opts.error || ses.error || reject).call(this, ses.getError(err, void 0, origin));
       });
     });
   };
+  invoke = this.call;
 }
 export default {
+  constants,
   session,
   Session,
+  Doc,
   Grant,
   BusinessObject,
   BusinessObjectMetadata,

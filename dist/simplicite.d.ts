@@ -1,14 +1,85 @@
 declare namespace _default {
+    export { constants };
     export { session };
     export { Session };
+    export { Doc };
     export { Grant };
     export { BusinessObject };
     export { BusinessObjectMetadata };
     export { ExternalObject };
 }
 export default _default;
+declare namespace constants {
+    const MODULE_VERSION: string;
+    const DEFAULT_ROW_ID_NAME: string;
+    const DEFAULT_ROW_ID: string;
+    const CONTEXT_NONE: number;
+    const CONTEXT_SEARCH: number;
+    const CONTEXT_LIST: number;
+    const CONTEXT_CREATE: number;
+    const CONTEXT_COPY: number;
+    const CONTEXT_UPDATE: number;
+    const CONTEXT_DELETE: number;
+    const CONTEXT_GRAPH: number;
+    const CONTEXT_CROSSTAB: number;
+    const CONTEXT_PRINTTMPL: number;
+    const CONTEXT_UPDATEALL: number;
+    const CONTEXT_REFSELECT: number;
+    const CONTEXT_DATAMAPSELECT: number;
+    const CONTEXT_PREVALIDATE: number;
+    const CONTEXT_POSTVALIDATE: number;
+    const CONTEXT_STATETRANSITION: number;
+    const CONTEXT_EXPORT: number;
+    const CONTEXT_IMPORT: number;
+    const CONTEXT_ASSOCIATE: number;
+    const CONTEXT_PANELLIST: number;
+    const TYPE_ID: number;
+    const TYPE_INT: number;
+    const TYPE_FLOAT: number;
+    const TYPE_STRING: number;
+    const TYPE_DATE: number;
+    const TYPE_DATETIME: number;
+    const TYPE_TIME: number;
+    const TYPE_ENUM: number;
+    const TYPE_BOOLEAN: number;
+    const TYPE_PASSWORD: number;
+    const TYPE_URL: number;
+    const TYPE_HTML: number;
+    const TYPE_EMAIL: number;
+    const TYPE_LONG_STRING: number;
+    const TYPE_ENUM_MULTI: number;
+    const TYPE_REGEXP: number;
+    const TYPE_DOC: number;
+    const TYPE_FLOAT_EMPTY: number;
+    const TYPE_EXTFILE: number;
+    const TYPE_IMAGE: number;
+    const TYPE_NOTEPAD: number;
+    const TYPE_PHONENUM: number;
+    const TYPE_COLOR: number;
+    const TYPE_OBJECT: number;
+    const TYPE_GEOCOORDS: number;
+    const VIS_NOT: number;
+    const VIS_HIDDEN: number;
+    const VIS_LIST: number;
+    const VIS_FORM: number;
+    const VIS_BOTH: number;
+    const SEARCH_NONE: number;
+    const SEARCH_MONO: number;
+    const SEARCH_MULTI_CHECK: number;
+    const SEARCH_MULTI_LIST: number;
+    const SEARCH_PERIOD: number;
+    const TRUE: string;
+    const FALSE: string;
+    const ERRLEVEL_FATAL: number;
+    const ERRLEVEL_ERROR: number;
+    const ERRLEVEL_WARNING: number;
+    const RESOURCE_TYPE_IMAGE: string;
+    const RESOURCE_TYPE_ICON: string;
+    const RESOURCE_TYPE_STYLESHEET: string;
+    const RESOURCE_TYPE_JAVASCRIPT: string;
+}
 /**
- * Simplicite application session.
+ * Simplicite application session. Same as <code>new Session(parameter)</code>.
  * @param {object} params Parameters (see session class for details)
  * @return {Session} session
 */
@@ -33,356 +104,386 @@ declare function session(params: object): Session;
  * @param {function} [params.logHandler] Log handler function
  * @class
  */
-declare function Session(params: {
-    url: string;
-    scheme: string;
-    host: string;
-    port: number;
-    root: string;
-    endpoint?: boolean;
-    username?: string;
-    password?: string;
-    authtoken?: string;
-    debug?: boolean;
-    debugHandler?: Function;
-    infoHandler?: Function;
-    warningHandler?: Function;
-    errorHandler?: Function;
-    logHandler?: Function;
-}): void;
 declare class Session {
     /**
-     * Simplicite application session.
-     * @param {object} params Parameters
-     * @param {string} params.url Base URL of the Simplicite application
-     * @param {string} params.scheme URL scheme (e.g. <code>'https'</code>) of the Simplicite application (not needed if <code>url</code> is set)
-     * @param {string} params.host Hostname or IP address (e.g. <code>'myhost.mydomain.com'</code>) of the Simplicite application (not needed if <code>url</code> is set)
-     * @param {number} params.port Port (e.g. <code>443</code>) of the Simplicite application (not needed if <code>url</code> is set)
-     * @param {string} params.root Root context URL (e.g. <code>'/myapp'</code>) the Simplicite application (not needed if <code>url</code> is set)
-     * @param {boolean} [params.endpoint='api'] Endpoint (<code>'api'|'ui'|'public'</code>)
-     * @param {string} [params.username] Username (not needed for public endpoint)
-     * @param {string} [params.password] Password (not needed for public endpoint)
-     * @param {string} [params.authtoken] Auth token (if set, username and password are not needed; not needed for public endpoint)
-     * @param {boolean} [params.debug=false] Debug mode?
-     * @param {function} [params.debugHandler] Debug handler function
-     * @param {function} [params.infoHandler] Info handler function
-     * @param {function} [params.warningHandler] Warning handler function
-     * @param {function} [params.errorHandler] Error handler function
-     * @param {function} [params.logHandler] Log handler function
-     * @class
+     * Constructor
+     * @param params {object} Parameters
      */
-    constructor(params: {
+    constructor(params: object);
+    /**
+     * Endpoint
+     * @member {string}
+     */
+    endpoint: any;
+    /**
+     * Log handler
+     * @param {...any} args Arguments
+     * @function
+     */
+    log: any;
+    /**
+     * Info handler
+     * @param {...any} args Arguments
+     * @function
+     */
+    info: any;
+    /**
+     * Warning handler
+     * @param {...any} args Arguments
+     * @function
+     */
+    warn: any;
+    /**
+     * Error handler
+     * @param {...any} args Arguments
+     * @function
+     */
+    error: any;
+    /**
+     * Debug mode enabled?
+     * @member {boolean}
+     */
+    debugMode: boolean;
+    /**
+     * Debug handler
+     * @param {...any} args Arguments
+     * @function
+     */
+    debug: any;
+    /**
+     * Parameters
+     * @member {object}
+     */
+    parameters: {
+        scheme: any;
+        host: any;
+        port: any;
+        root: any;
         url: string;
-        scheme: string;
-        host: string;
-        port: number;
-        root: string;
-        endpoint?: boolean;
-        username?: string;
-        password?: string;
-        authtoken?: string;
-        debug?: boolean;
-        debugHandler?: Function;
-        infoHandler?: Function;
-        warningHandler?: Function;
-        errorHandler?: Function;
-        logHandler?: Function;
-    });
+        timeout: any;
+        healthpath: string;
+        apppath: string;
+        objpath: string;
+        extpath: string;
+        docpath: string;
+        respath: string;
+    };
+    /**
+     * Username
+     * @member {string}
+     */
+    username: any;
+    /**
+     * Password
+     * @member {string}
+     */
+    password: any;
+    /**
+     * Auth token
+     * @member {string}
+     */
+    authtoken: any;
+    /**
+     * Business objects cache
+     * @member {object}
+     * @private
+     */
+    private businessObjectCache;
     /**
      * Constants
-     * @constant
+     * @member
      */
     constants: {
         /**
          * API client module version
-         * @const {string}
+         * @constant {string}
          */
         MODULE_VERSION: string;
         /**
          * Default row ID field name
-         * @const {string}
+         * @constant {string}
          */
         DEFAULT_ROW_ID_NAME: string;
         /**
          * Default row ID value
-         * @const {string}
+         * @constant {string}
          */
         DEFAULT_ROW_ID: string;
         /**
          * Default context
-         * @const {number}
+         * @constant {number}
          */
         CONTEXT_NONE: number;
         /**
          * Search context
-         * @const {number}
+         * @constant {number}
          */
         CONTEXT_SEARCH: number;
         /**
          * List context
-         * @const {number}
+         * @constant {number}
          */
         CONTEXT_LIST: number;
         /**
          * Creation context
-         * @const {number}
+         * @constant {number}
          */
         CONTEXT_CREATE: number;
         /**
          * Copy context
-         * @const {number}
+         * @constant {number}
          */
         CONTEXT_COPY: number;
         /**
          * Update context
-         * @const {number}
+         * @constant {number}
          */
         CONTEXT_UPDATE: number;
         /**
          * Delete context
-         * @const {number}
+         * @constant {number}
          */
         CONTEXT_DELETE: number;
         /**
          * Chart context
-         * @const {number}
+         * @constant {number}
          */
         CONTEXT_GRAPH: number;
         /**
          * Pivot table context
-         * @const {number}
+         * @constant {number}
          */
         CONTEXT_CROSSTAB: number;
         /**
          * Publication context
-         * @const {number}
+         * @constant {number}
          */
         CONTEXT_PRINTTMPL: number;
         /**
          * Bulk update context
-         * @const {number}
+         * @constant {number}
          */
         CONTEXT_UPDATEALL: number;
         /**
          * Reference selection context
-         * @const {number}
+         * @constant {number}
          */
         CONTEXT_REFSELECT: number;
         /**
          * Datamap selection context
-         * @const {number}
+         * @constant {number}
          */
         CONTEXT_DATAMAPSELECT: number;
         /**
          * Pre validation context
-         * @const {number}
+         * @constant {number}
          */
         CONTEXT_PREVALIDATE: number;
         /**
          * Post validation context
-         * @const {number}
+         * @constant {number}
          */
         CONTEXT_POSTVALIDATE: number;
         /**
          * State transition context
-         * @const {number}
+         * @constant {number}
          */
         CONTEXT_STATETRANSITION: number;
         /**
          * Export context
-         * @const {number}
+         * @constant {number}
          */
         CONTEXT_EXPORT: number;
         /**
          * Import context
-         * @const {number}
+         * @constant {number}
          */
         CONTEXT_IMPORT: number;
         /**
          * Association context
-         * @const {number}
+         * @constant {number}
          */
         CONTEXT_ASSOCIATE: number;
         /**
          * Panle list context
-         * @const {number}
+         * @constant {number}
          */
         CONTEXT_PANELLIST: number;
         /**
          * Foreign key (reference) type
-         * @const {number}
+         * @constant {number}
          */
         TYPE_ID: number;
         /**
          * Integer type
-         * @const {number}
+         * @constant {number}
          */
         TYPE_INT: number;
         /**
          * Decimal type
-         * @const {number}
+         * @constant {number}
          */
         TYPE_FLOAT: number;
         /**
          * Short string type
-         * @const {number}
+         * @constant {number}
          */
         TYPE_STRING: number;
         /**
          * Date type
-         * @const {number}
+         * @constant {number}
          */
         TYPE_DATE: number;
         /**
          * Date and time type
-         * @const {number}
+         * @constant {number}
          */
         TYPE_DATETIME: number;
         /**
          * Time type
-         * @const {number}
+         * @constant {number}
          */
         TYPE_TIME: number;
         /**
          * Simple enumeration type
-         * @const {number}
+         * @constant {number}
          */
         TYPE_ENUM: number;
         /**
          * Boolean type
-         * @const {number}
+         * @constant {number}
          */
         TYPE_BOOLEAN: number;
         /**
          * Password type
-         * @const {number}
+         * @constant {number}
          */
         TYPE_PASSWORD: number;
         /**
          * URL type
-         * @const {number}
+         * @constant {number}
          */
         TYPE_URL: number;
         /**
          * HTML content type
-         * @const {number}
+         * @constant {number}
          */
         TYPE_HTML: number;
         /**
          * Email type
-         * @const {number}
+         * @constant {number}
          */
         TYPE_EMAIL: number;
         /**
          * Long string type
-         * @const {number}
+         * @constant {number}
          */
         TYPE_LONG_STRING: number;
         /**
          * Multiple enumeration type
-         * @const {number}
+         * @constant {number}
          */
         TYPE_ENUM_MULTI: number;
         /**
          * Validated string type
-         * @const {number}
+         * @constant {number}
          */
         TYPE_REGEXP: number;
         /**
          * Document type
-         * @const {number}
+         * @constant {number}
          */
         TYPE_DOC: number;
         /**
          * Decimal type
-         * @const {number}
+         * @constant {number}
          * @deprecated
          */
         TYPE_FLOAT_EMPTY: number;
         /**
          * External file type
-         * @const {number}
+         * @constant {number}
          * @deprecated
          */
         TYPE_EXTFILE: number;
         /**
          * Image type
-         * @const {number}
+         * @constant {number}
          */
         TYPE_IMAGE: number;
         /**
          * Notepad type
-         * @const {number}
+         * @constant {number}
          */
         TYPE_NOTEPAD: number;
         /**
          * Phone number type
-         * @const {number}
+         * @constant {number}
          */
         TYPE_PHONENUM: number;
         /**
          * RGB color type
-         * @const {number}
+         * @constant {number}
          */
         TYPE_COLOR: number;
         /**
          * Object type
-         * @const {number}
+         * @constant {number}
          */
         TYPE_OBJECT: number;
         /**
          * Geocoordinates type
-         * @const {number}
+         * @constant {number}
          */
         TYPE_GEOCOORDS: number;
         /**
          * Not visible
-         * @const {number}
+         * @constant {number}
          */
         VIS_NOT: number;
         /**
          * Hiiden (same as not visible)
-         * @const {number}
+         * @constant {number}
          */
         VIS_HIDDEN: number;
         /**
          * Visible on lists only
-         * @const {number}
+         * @constant {number}
          */
         VIS_LIST: number;
         /**
          * Visible on forms only
-         * @const {number}
+         * @constant {number}
          */
         VIS_FORM: number;
         /**
          * Visible on both lists and forms only
-         * @const {number}
+         * @constant {number}
          */
         VIS_BOTH: number;
         /**
          * No search
-         * @const {number}
+         * @constant {number}
          */
         SEARCH_NONE: number;
         /**
          * Simple search
-         * @const {number}
+         * @constant {number}
          */
         SEARCH_MONO: number;
         /**
          * Multiple search (checkboxes)
-         * @const {number}
+         * @constant {number}
          */
         SEARCH_MULTI_CHECK: number;
         /**
          * Multiple search (listbox)
-         * @const {number}
+         * @constant {number}
          */
         SEARCH_MULTI_LIST: number;
         /**
          * Search by period (date/time)
-         * @const {number}
+         * @constant {number}
          */
         SEARCH_PERIOD: number;
         /**
@@ -397,103 +498,40 @@ declare class Session {
         FALSE: string;
         /**
          * Fatal error level
-         * @const {number}
+         * @constant {number}
          */
         ERRLEVEL_FATAL: number;
         /**
          * Error level
-         * @const {number}
+         * @constant {number}
          */
         ERRLEVEL_ERROR: number;
         /**
          * Warning level
-         * @const {number}
+         * @constant {number}
          */
         ERRLEVEL_WARNING: number;
         /**
          * Image resource type
-         * @const {number}
+         * @constant {number}
          */
         RESOURCE_TYPE_IMAGE: string;
         /**
          * Icon resource type
-         * @const {number}
+         * @constant {number}
          */
         RESOURCE_TYPE_ICON: string;
         /**
          * Stylesheet resource type
-         * @const {number}
+         * @constant {number}
          */
         RESOURCE_TYPE_STYLESHEET: string;
         /**
          * Javascript resource type
-         * @const {number}
+         * @constant {number}
          */
         RESOURCE_TYPE_JAVASCRIPT: string;
     };
-    /**
-     * Is used within generic UI?
-     * @constant
-     */
-    endpoint: string | true;
-    /**
-     * Log handler
-     * @param {...any} args Arguments
-     * @function
-     */
-    log: Function;
-    /**
-     * Info handler
-     * @param {...any} args Arguments
-     * @function
-     */
-    info: any;
-    /**
-     * Warning handler
-     * @param {...any} args Arguments
-     * @function
-     */
-    warn: Function;
-    /**
-     * Error handler
-     * @param {...any} args Arguments
-     * @function
-     */
-    error: Function;
-    /**
-     * Debug handler
-     * @param {...any} args Arguments
-     * @function
-     */
-    debug: Function;
-    /**
-     * Timeout (seconds)
-     * @default 30
-     * @member {number}
-     */
-    timeout: any;
-    /**
-     * Parameters
-     * @constant {object}
-     */
-    parameters: {
-        scheme: string;
-        host: string;
-        port: number;
-        root: string;
-        url: string;
-        healthpath: string;
-        apppath: string;
-        objpath: string;
-        extpath: string;
-        docpath: string;
-        respath: string;
-    };
-    /**
-     * Username
-     * @member {string}
-     */
-    username: any;
     /**
      * Set username
      * @param {string} usr Username
@@ -501,27 +539,22 @@ declare class Session {
      */
     setUsername: (usr: string) => void;
     /**
-     * Password
-     * @member {string}
-     */
-    password: any;
-    /**
      * Set password
      * @param {string} pwd Password
      * @function
      */
     setPassword: (pwd: string) => void;
     /**
-     * Auth token
+     * Session ID
      * @member {string}
      */
-    authtoken: any;
+    sessionid: any;
     /**
      * Set auth token
-     * @param {string} tkn Auth token
+     * @param {string} token Auth token
      * @function
      */
-    setAuthToken: (tkn: string) => void;
+    setAuthToken: (token: string) => void;
     /**
      * Get business object cache key
      * @param {string} name Business object name
@@ -535,22 +568,48 @@ declare class Session {
      * @function
      */
     clear: () => void;
-    sessionid: any;
-    grant: any;
-    appinfo: any;
-    sysinfo: any;
-    devinfo: any;
-    userinfo: any;
     /**
-     * Basic HTTP authorization header
+     * Grant
+     * @member {Grant}
+     */
+    grant: any;
+    /**
+     * Application info
+     * @member {object}
+     */
+    appinfo: any;
+    /**
+     * System info
+     * @member {object}
+     */
+    sysinfo: any;
+    /**
+     * Development info
+     * @member {object}
+     */
+    devinfo: any;
+    /**
+     * Basic HTTP authorization header value
+     * @return {string} HTTP authorization header value
      * @private
      */
     private getBasicAuthHeader;
     /**
-     * Get bearer token header
+     * Get bearer token header value
+     * @return {string} Bearer token header value
      * @private
      */
     private getBearerTokenHeader;
+    /**
+     * Get error object
+     * @param {(string|object)} err Error
+     * @param {string} err.message Error message
+     * @param {number} [status] Optional error status (defaults to 200)
+     * @param {string} [origin] Optional error origin
+     * @return {object} Error object
+     * @private
+     */
+    private getError;
     /**
      * Request
      * @param {string} path Path
@@ -561,17 +620,10 @@ declare class Session {
      */
     private req;
     /**
-     * Get error object
-     * @param {(string|object)} err Error
-     * @param {string} err.message Error message
-     * @param {number} [status] Error status
-     * @private
-     */
-    private getError;
-    /**
      * Parse result
      * @param {object} res Response to parse
      * @param {number} [status=200] HTTP status
+     * @return {object} Error object
      * @private
      */
     private parse;
@@ -671,6 +723,11 @@ declare class Session {
         error?: Function;
     }) => any;
     /**
+     * News
+     * @member {array}
+     */
+    news: any;
+    /**
      * Get news
      * @param {object} [opts] Options
      * @param {boolean} [opts.inlineImages=false] Inline news images?
@@ -684,7 +741,7 @@ declare class Session {
     }) => any;
     /**
      * Index search
-     * @param {string} request Index search request
+     * @param {string} query Index search query
      * @param {string} [object] Object
      * @param {object} [opts] Options
      * @param {boolean} [opts.metadata=false] Add meta data for each result
@@ -693,7 +750,7 @@ declare class Session {
      * @return {promise<array>} A promise to a list of index search records
      * @function
      */
-    indexSearch: (request: string, object?: string, opts?: {
+    indexSearch: (query: string, object?: string, opts?: {
         metadata?: boolean;
         context?: number;
         error?: Function;
@@ -723,13 +780,212 @@ declare class Session {
     getResourceURL: (code: string, type?: string, object?: string, objId?: string) => string;
 }
 /**
+ * Document
+ * @class
+ */
+declare class Doc {
+    /**
+     * Constructor
+     * @param value {object} Document value
+     */
+    constructor(value: object);
+    /**
+     * Document ID
+     * @member {string}
+     */
+    id: any;
+    /**
+     * Document MIME type
+     * @member {string}
+     */
+    mime: any;
+    /**
+     * Document file name
+     * @member {string}
+     */
+    filename: any;
+    /**
+     * Document content as base 64
+     * @member {string}
+     */
+    content: any;
+    /**
+     * Document thumbnail as base 64
+     * @member {string}
+     */
+    thumbnail: any;
+    /**
+     * Get the document ID
+     * @return {string} ID
+     * @function
+     */
+    getId: () => string;
+    /**
+     * Get the document MIME type
+     * @return {string} MIME type
+     * @function
+     */
+    getMIMEType: () => string;
+    /**
+     * Alias to <code>getMIMEType</code>
+     * @return {string} MIME type
+     * @function
+     */
+    getMimeType: () => string;
+    /**
+     * Set the document MIME type
+     * @param {string} mime MIME type
+     * @function
+     */
+    setMIMEType: (mime: string) => void;
+    /**
+     * Alias to <code>setMIMEType</code>
+     * @param {string} mime MIME type
+     * @function
+     */
+    setMimeType: (mime: string) => void;
+    /**
+     * Get the document file name
+     * @return {string} File name
+     * @function
+     */
+    getFilename: () => string;
+    /**
+     * Alias to <code>getFilename</code>
+     * @return {string} File name
+     * @function
+     */
+    getFileName: () => string;
+    /**
+     * Set the document file name
+     * @param {string} filename File name
+     * @function
+     */
+    setFilename: (filename: string) => void;
+    /**
+     * Alias to <code>setFilename</code>
+     * @param {string} filename File name
+     * @function
+     */
+    setFileName: (filename: string) => void;
+    /**
+     * Get the document content (encoded in base 64)
+     * @return {string} Content
+     * @function
+     */
+    getContent: () => string;
+    /**
+     * Get the document thumbnail (encoded in base 64)
+     * @return {string} Thumbnail
+     * @function
+     */
+    getThumbnail: () => string;
+    /**
+     * Get the document content as a buffer
+     * @param {any} data Content data
+     * @return {buffer} Content data as buffer
+     * @private
+     */
+    private getBuffer;
+    /**
+     * Get the document content as an array buffer
+     * @return {ArrayBuffer} Content as an array buffer
+     * @function
+     */
+    getContentAsArrayBuffer: () => ArrayBuffer;
+    /**
+     * Get the document thumbnail as an array buffer
+     * @return {ArrayBuffer} Thumbnail as an array buffer
+     * @function
+     */
+    getThumbnailAsArrayBuffer: () => ArrayBuffer;
+    /**
+     * Get the document content as a text
+     * @return {string} Content as plain text
+     * @function
+     */
+    getContentAsText: () => string;
+    /**
+     * Set the document content
+     * @param {string} content Content (encoded in base 64)
+     * @function
+     */
+    setContent: (content: string) => void;
+    /**
+     * Set the document content from plain text string
+     * @param {string} content Content as plain text string
+     * @function
+     */
+    setContentFromText: (content: string) => void;
+    /**
+     * Get the document data URL
+     * @param {boolean} [thumbnail=false] Thumbnail? If thumbnail does not exists the content is used.
+     * @return {string} Data URL or nothing if content is empty
+     */
+    getDataURL: (thumbnail?: boolean) => string;
+    /**
+     * Get the document as a simple value
+     * @return {object} Value
+     */
+    getValue: () => object;
+}
+/**
  * Grant (user).
  * <br/><span style="color: red;">You <strong>should never</strong> instanciate this class directly
  * but rather use it from the <code>data</code> variable got using <code>getGrant</code></span>.
  * @class
  */
-declare function Grant(): void;
 declare class Grant {
+    /**
+     * Constructor
+     * @param grant {object} Grant object
+     */
+    constructor(grant: object);
+    /**
+     * User ID
+     * @member {string}
+     */
+    userid: any;
+    /**
+     * User name
+     * @member {string}
+     */
+    login: any;
+    /**
+     * User language
+     * @member {string}
+     */
+    lang: any;
+    /**
+     * User email address
+     * @member {string}
+     */
+    email: any;
+    /**
+     * User first name
+     * @member {string}
+     */
+    firstname: any;
+    /**
+     * User last name
+     * @member {string}
+     */
+    lastname: any;
+    /**
+     * User picture
+     * @member {Doc}
+     */
+    picture: any;
+    /**
+     * User responsibilities
+     * @member {array}
+     */
+    responsibilities: any;
+    /**
+     * Translated texts
+     * @member {object}
+     */
+    texts: any;
     /**
      * Get user ID
      * @return {string} User ID
@@ -749,8 +1005,8 @@ declare class Grant {
      */
     getLogin: () => string;
     /**
-     * Get language
-     * @return {string} Language
+     * Get user language
+     * @return {string} User language
      * @function
      */
     getLang: () => string;
@@ -786,10 +1042,10 @@ declare class Grant {
     getLastName: () => string;
     /**
      * Get picture data URL
-     * @return {string} Picture data URL
+     * @return {Doc} Picture data URL
      * @function
      */
-    getPictureURL: () => string;
+    getPictureURL: () => Doc;
     /**
      * Has responsibility
      * @param {string} group Group name
@@ -798,34 +1054,29 @@ declare class Grant {
      */
     hasResponsibility: (group: string) => boolean;
     /**
-     * Get text
+     * Get text value
      * @param {string} code Text code
+     * @return {string} Text value
      */
-    T: (code: string) => any;
+    T: (code: string) => string;
 }
 /**
  * Business object.
  * <br/><span style="color: red;">ou <strong>should never</strong> instanciate this class directly
  * but rather call <code>getBusinessObject</code> to get a cached instance</span>.
- * @param {object} ses Session
- * @param {string} name Business object name
- * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
  * @class
  */
-declare function BusinessObject(ses: object, name: string, instance?: string): void;
 declare class BusinessObject {
     /**
-     * Business object.
-     * <br/><span style="color: red;">ou <strong>should never</strong> instanciate this class directly
-     * but rather call <code>getBusinessObject</code> to get a cached instance</span>.
-     * @param {object} ses Session
+     * Constructor
+     * @param {Session} session Session
      * @param {string} name Business object name
      * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
-     * @class
      */
-    constructor(ses: object, name: string, instance?: string);
+    constructor(session: Session, name: string, instance?: string);
     /**
      * Session
+     * @member {Session}
      * @private
      */
     private session;
@@ -837,13 +1088,15 @@ declare class BusinessObject {
     /**
      * Cache key
      * @constant {string}
+     * @private
      */
-    cacheKey: any;
+    private cacheKey;
     /**
      * Path
      * @constant {string}
+     * @private
      */
-    path: string;
+    private path;
     /**
      * Current item
      * @member {object}
@@ -856,9 +1109,24 @@ declare class BusinessObject {
     filters: {};
     /**
      * Current list
-     * @member {object[]}
+     * @member {array}
      */
     list: any[];
+    /**
+     * Current count
+     * @member {number}
+     */
+    count: any;
+    /**
+     * Current page number
+     * @member {number}
+     */
+    page: any;
+    /**
+     * Number of pages
+     * @member {number}
+     */
+    maxpage: any;
     /**
      * Get meta data
      * @param {object} [opts] Options
@@ -952,7 +1220,7 @@ declare class BusinessObject {
     /**
      * Get field label
      * @param {(string|object)} field Field name or definition
-     * @return {string} Value
+     * @return {string} Field label
      * @function
      */
     getFieldLabel: (field: (string | object)) => string;
@@ -960,18 +1228,18 @@ declare class BusinessObject {
      * Get value of field for item (or current item)
      * @param {(string|object)} field Field name or definition
      * @param {object} [item] Item (defaults to current item)
-     * @return {string} Value
+     * @return {string|Doc} Value
      * @function
      */
-    getFieldValue: (field: (string | object), item?: object) => string;
+    getFieldValue: (field: (string | object), item?: object) => string | Doc;
     /**
      * Get the list value of a list of values field for item (or current item)
      * @param {(string|object)} field Field name or definition
-     * @param {string} code Code
-     * @return {string} Value
+     * @param {object} [item] Item (defaults to current item)
+     * @return {string} List value
      * @function
      */
-    getFieldListValue: (field: (string | object), item: any) => string;
+    getFieldListValue: (field: (string | object), item?: object) => string;
     /**
      * Get the data URL of an inlined document/image field for item (or current item)
      * @param {(string|object)} field Field name or definition
@@ -984,10 +1252,10 @@ declare class BusinessObject {
      * Get the field's value as document/image for item (or current item)
      * @param {(string|object)} field Field name or definition
      * @param {object} [item] Item (defaults to current item)
-     * @return {Document} Document/image (or nothing if the field is not of document/image type or if it is empty)
+     * @return {string|Doc} Document/image (or nothing if the field is not of document/image type or if it is empty)
      * @function
      */
-    getFieldDocument: (field: (string | object), item?: object) => Document;
+    getFieldDocument: (field: (string | object), item?: object) => string | Doc;
     /**
      * Get the URL of a document/image field for item (or current item)
      * @param {(string|object)} field Field name or definition
@@ -999,12 +1267,12 @@ declare class BusinessObject {
     getFieldDocumentURL: (field: (string | object), item?: object, thumbnail?: boolean) => string;
     /**
      * Get list value for code
-     * @param {list} list List of values
+     * @param {array} list List of values
      * @param {string} code Code
      * @return {string} Value
      * @function
      */
-    getListValue: (list: any, code: string) => string;
+    getListValue: (list: any[], code: string) => string;
     /**
      * Set value of field for item (or current item)
      * @param {(string|object)} field Field name or definition
@@ -1042,19 +1310,25 @@ declare class BusinessObject {
         error?: Function;
     }) => any;
     /**
-     * Count
+     * Build options parameters
+     * @param {object} options Options
+     * @return {string} Option parameters
+     * @private
+     */
+    private getReqOptions;
+    /**
+     * Build request parameters
+     * @param {object} data Data
+     * @return {string} Request parameters
+     * @private
+     */
+    private getReqParams;
+    /**
+     * Get count
      * @param {object} [filters] Filters, defaults to current filters if not set
      * @param {object} [opts] Options
      * @param {function} [opts.error] Error handler function
      * @return {promise<object>} Promise to the count
-     * @function
-     */
-    count: (filters?: object, opts?: {
-        error?: Function;
-    }) => any;
-    /**
-     * Count, **deprecated**: use <code>count</code> instead
-     * @deprecated
      * @function
      */
     getCount: (filters?: object, opts?: {
@@ -1201,12 +1475,12 @@ declare class BusinessObject {
      * @param {object} item Item (defaults to current item)
      * @param {object} [opts] Options
      * @param {function} [opts.error] Error handler function
-     * @return {promise} Promise (the <code>item</code> member is emptied)
+     * @return {promise<object>} Promise (the <code>item</code> member is emptied)
      * @function
      */
     del: (item: object, opts?: {
         error?: Function;
-    }) => Promise<any>;
+    }) => any;
     /**
      * Invoke a custom action
      * @param {string} action Action name
@@ -1223,14 +1497,14 @@ declare class BusinessObject {
     }) => any;
     /**
      * Build a pivot table
-     * @param {string} crosstab Pivot table name
+     * @param {string} ctb Pivot table name
      * @param {object} [opts] Options
      * @param {object} [opts.filters] Filters, by default current filters are used
      * @param {function} [opts.error] Error handler function
      * @return {promise<object>} A promise to the pivot table data (also avialable as the <code>crosstabdata</code> member)
      * @function
      */
-    crosstab: (crosstab: string, opts?: {
+    crosstab: (ctb: string, opts?: {
         filters?: object;
         error?: Function;
     }) => any;
@@ -1240,7 +1514,7 @@ declare class BusinessObject {
      * @param {string} [rowId] Row ID
      * @param {object} [opts] Options
      * @param {function} [opts.error] Error handler function
-     * @return {promise<Document>} A promise to the document of the publication
+     * @return {promise<Doc>} A promise to the document of the publication
      * @function
      */
     print: (prt: string, rowId?: string, opts?: {
@@ -1273,37 +1547,32 @@ declare class BusinessObject {
      * Get an object resource URL
      * @param {string} code Resource code
      * @param {string} [type=IMG] Resource type (IMG=image (default), ICO=Icon, CSS=stylesheet, JS=Javascript, HTML=HTML)
+     * @return {string} Object resource URL
      * @function
      */
-    getResourceURL: (code: string, type?: string) => any;
+    getResourceURL: (code: string, type?: string) => string;
 }
 /**
  * Business object meta data.
  * <br/><span style="color: red;">You <strong>should never</strong> instanciate this class directly
  * but rather use it from the <code>metadata</code> variable of your <code>BusinessObject</code> instances</span>.
- * @param {string} name Business object name
- * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
  * @class
  */
-declare function BusinessObjectMetadata(name: string, instance?: string): void;
 declare class BusinessObjectMetadata {
     /**
-     * Business object meta data.
-     * <br/><span style="color: red;">You <strong>should never</strong> instanciate this class directly
-     * but rather use it from the <code>metadata</code> variable of your <code>BusinessObject</code> instances</span>.
+     * Constructor
      * @param {string} name Business object name
      * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
-     * @class
      */
     constructor(name: string, instance?: string);
     /**
      * Name
-     * @constant {string}
+     * @member {string}
      */
     name: string;
     /**
      * Instance name
-     * @constant {string}
+     * @member {string}
      */
     instance: string;
     /**
@@ -1326,39 +1595,45 @@ declare class BusinessObjectMetadata {
      * @member {array}
      */
     fields: any[];
+    /**
+     * ID
+     * @member {string}
+     */
+    id: any;
+    /**
+     * Links definitions
+     * @member {array}
+     */
+    links: any;
 }
 /**
  * External object.
  * <br/><span style="color: red;">ou <strong>should never</strong> instanciate this class directly
  * but rather call <code>getExternalObject</code></span>.
- * @param {object} ses Session
- * @param {string} name Business object name
  * @class
  */
-declare function ExternalObject(ses: object, name: string): void;
 declare class ExternalObject {
     /**
-     * External object.
-     * <br/><span style="color: red;">ou <strong>should never</strong> instanciate this class directly
-     * but rather call <code>getExternalObject</code></span>.
-     * @param {object} ses Session
+     * Constructor
+     * @param {Session} session Session
      * @param {string} name Business object name
-     * @class
      */
-    constructor(ses: object, name: string);
+    constructor(session: Session, name: string);
     /**
      * Session
+     * @member {Session}
      * @private
      */
     private session;
     /**
      * Metadata
-     * @constant
+     * @member {ExternalObjectMetadata}
      */
     metadata: ExternalObjectMetadata;
     /**
      * Path
-     * @constant {string}
+     * @member {string}
+     * @parivate
      */
     path: string;
     /**
@@ -1370,6 +1645,7 @@ declare class ExternalObject {
     /**
      * Build URL-encoded parameters
      * @param {object} params URL parameters as key/value pairs
+     * @return {string} URL-encoded parameters
      * @function
      */
     callParams: (params: object) => string;
@@ -1379,7 +1655,7 @@ declare class ExternalObject {
      * @param {object} [data] Optional data (for 'POST' and 'PUT' methods only)
      * @param {object} [opts] Options
      * @param {function} [opts.error] Error handler function
-     * @param {object} [opts.method] Optional method 'GET', 'POST', 'PUT' or 'DELETE' (defaults to 'GET' if data is not set or 'POST" if data is set
+     * @param {object} [opts.method] Optional method 'GET', 'POST', 'PUT' or 'DELETE' (defaults to 'GET' if data is not set or 'POST' if data is set
      * @param {function} [opts.contentType] Optional data content type (for 'POST' and 'PUT' methods only)
      * @return {promise<object>} Promise to the external object content
      * @function
@@ -1389,146 +1665,31 @@ declare class ExternalObject {
         method?: object;
         contentType?: Function;
     }) => any;
-}
-/**
- * Document
- * @class
- */
-declare function Document(): void;
-declare class Document {
     /**
-     * Get the document's ID
-     * @return ID
+     * Alias to <code>call</code>
      * @function
      */
-    getId: () => any;
-    /**
-     * Get the document's MIME type
-     * @return {string} MIME type
-     * @function
-     */
-    getMIMEType: () => string;
-    /**
-     * Alias to <code>getMIMEType</code>
-     * @return {string} MIME type
-     * @function
-     */
-    getMimeType: () => string;
-    /**
-     * Set the document's MIME type
-     * @param {string} mime MIME type
-     * @function
-     */
-    setMIMEType: (mime: string) => void;
-    mime: string;
-    /**
-     * Alias to <code>setMIMEType</code>
-     * @param {string} mime MIME type
-     * @function
-     */
-    setMimeType: (mime: string) => void;
-    /**
-     * Get the document's file name
-     * @return {string} File name
-     * @function
-     */
-    getFilename: () => string;
-    /**
-     * Alias to <code>getFilename</code>
-     * @return {string} File name
-     * @function
-     */
-    getFileName: () => string;
-    /**
-     * Set the document's file name
-     * @param {string} filename File name
-     * @function
-     */
-    setFilename: (filename: string) => void;
-    filename: string;
-    /**
-     * Alias to <code>setFilename</code>
-     * @param {string} filename File name
-     * @function
-     */
-    setFileName: (filename: string) => void;
-    /**
-     * Get the document's content (encoded in base 64)
-     * @return {string} Content
-     * @function
-     */
-    getContent: () => string;
-    /**
-     * Get the document's thumbnail (encoded in base 64)
-     * @return {string} Thumbnail
-     * @function
-     */
-    getThumbnail: () => string;
-    /**
-     * Get the document's content as an array buffer
-     * @return {ArrayBuffer} Content as an array buffer
-     * @function
-     */
-    getContentAsArrayBuffer: () => ArrayBuffer;
-    /**
-     * Get the document's thumbnail as an array buffer
-     * @return {ArrayBuffer} Thumbnail as an array buffer
-     * @function
-     */
-    getThumbnailAsArrayBuffer: () => ArrayBuffer;
-    /**
-     * Get the document's content as a text
-     * @param {string} [encoding] Encoding, defaults to UTF-8
-     * @return {string} Content as plain text
-     * @function
-     */
-    getContentAsText: (encoding?: string) => string;
-    /**
-     * Set the document's content
-     * @param {string} content Content (encoded in base 64)
-     * @function
-     */
-    setContent: (content: string) => void;
-    content: any;
-    /**
-     * Set the document's content from plain text string
-     * @param {string} content Content as plain text string
-     * @param {string} [encoding] Encoding, defaults to UTF-8
-     * @function
-     */
-    setContentFromText: (content: string, encoding?: string) => void;
-    /**
-     * Get the document's data URL
-     * @param {boolean} [thumbnail] Thumbnail? If thumbnail does not exists the content is used.
-     * @return {string} Data URL or nothing if content is empty
-     */
-    getDataURL: (thumbnail?: boolean) => string;
-    /**
-     * Get the document as a simple value
-     * @return Value
-     */
-    getValue: () => any;
+    invoke: (params?: object, data?: object, opts?: {
+        error?: Function;
+        method?: object;
+        contentType?: Function;
+    }) => any;
 }
 /**
  * External object meta data.
  * <br/><span style="color: red;">You <strong>should never</strong> instanciate this class directly
  * but rather use it from the <code>metadata</code> variable of your <code>ExternalObject</code> instances</span>.
- * @param {string} name Business object name
  * @class
  */
-declare function ExternalObjectMetadata(name: string): void;
 declare class ExternalObjectMetadata {
     /**
-     * External object meta data.
-     * <br/><span style="color: red;">You <strong>should never</strong> instanciate this class directly
-     * but rather use it from the <code>metadata</code> variable of your <code>ExternalObject</code> instances</span>.
-     * @param {string} name Business object name
-     * @class
+     * Constructor
+     * @param {string} name External object name
      */
     constructor(name: string);
     /**
      * Name
-     * @constant {string}
+     * @member {string}
      */
     name: string;
 }

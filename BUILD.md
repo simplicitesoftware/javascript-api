@@ -22,7 +22,7 @@ or in **native** JavaScript-based mobile frameworks.
 > **Note**: as of version 2.0.0 this API will not work on old browsers like Internet Explorer.
 > If you need support for such old browsers, you **must** use a 1.x.y version
 
-Install
+Prepare
 -------
 
 Look for updates:
@@ -31,7 +31,7 @@ Look for updates:
 npm run ncu
 ```
 
-Install:
+Install dependencies:
 
 ```bash
 npm install
@@ -42,8 +42,31 @@ Usage
 
 See the [documentation](https://simplicitesoftware.github.io/nodejs-api/) for details.
 
+Build
+-----
+
+Check syntax and rules:
+
+```bash
+npm run lint
+```
+
+Compile
+
+```bash
+npm run compile
+```
+
+Generates distribution file:
+
+```bash
+npm run dist
+```
+
 Test
 ----
+
+### Node.js
 
 Set the environment variables for your Simplicité instance:
 
@@ -63,19 +86,10 @@ Run the unit tests, this generates the `coverage` folder:
 npm run test
 ```
 
-Build
------
-
-Check syntax and rules:
+### Browser
 
 ```bash
-npm run lint
-```
-
-Generates the minified `dist/simplicite.min.js` file:
-
-```bash
-npm run build
+npm run test-browser
 ```
 
 Documentation

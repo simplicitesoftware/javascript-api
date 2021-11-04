@@ -32,7 +32,7 @@ app.getHealth().then(health => {
 }).then(grant => {
 	app.debug('GRANT', grant);
 	app.debug('ABOUT text value: ' + grant.T('ABOUT'));
-	elt('user', 'Hello ' + grant.getFirstname() + ' ' + grant.getLastname() + ' (' + grant.getLogin() + ')' + '<br/><img src="' + grant.picture.getDataURL() + '"/>')
+	elt('user', 'Hello ' + grant.getFirstname() + ' ' + grant.getLastname() + ' (' + grant.getLogin() + ')' + '<br/><img src="' + grant.picture.getDataURL() + '"/>');
 	return app.getAppInfo();
 }).then(appinfo => {
 	app.debug('APPINFO', appinfo);
@@ -54,6 +54,9 @@ app.getHealth().then(health => {
 	h += '</ul>';
 	elt('news', h);
 	obj = app.getBusinessObject('WebNews');
+	return obj.getMetaData();
+}).then(metadata => {
+	app.debug('OBJ METADATA', metadata);
 	return obj.search({ nws_lang: 'ANY' }, { inlineDocuments: [ 'nws_image' ] });
 }).then(list => {
 	app.debug('OBJ', list);
