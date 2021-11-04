@@ -11,7 +11,7 @@ import { Buffer } from 'buffer'; // Browser polyfill for Buffer
 /**
  * Constants
  * @constant
-*/
+ */
 const constants = {
 	/**
 	 * API client module version
@@ -500,13 +500,13 @@ type SessionParams = {
 };
 
 /**
- * Simplicite application session.
+ * Simplicite application session. Same as <code>new Session(parameter)</code>.
  * @param {object} params Parameters (see session class for details)
  * @return {Session} session
 */
-function session(params: any): any {
+const session = (params: SessionParams): Session => {
 	return new Session(params);
-}
+};
 
 /**
  * Simplicite application session.
@@ -533,7 +533,7 @@ class Session {
 	 * Constants
 	 * @member
 	 */
-	 constants = constants;
+	constants = constants;
 
 	/**
 	 * Endpoint
@@ -541,7 +541,7 @@ class Session {
 	 */
 	endpoint: SessionParamEndpoint;
 
-	 /**
+	/**
 	 * Constructor
 	 * @param params {object} Parameters
 	 */
@@ -629,28 +629,28 @@ class Session {
 	 * @param {...any} args Arguments
 	 * @function
 	 */
-	log: Function;
+	log: (...args: any[]) => any;
 
 	/**
 	 * Info handler
 	 * @param {...any} args Arguments
 	 * @function
 	 */
-	info: Function
+	info: (...args: any[]) => any;
 
 	/**
 	 * Warning handler
 	 * @param {...any} args Arguments
 	 * @function
 	 */
-	warn: Function;
+	warn: (...args: any[]) => any;
 	
 	/**
 	 * Error handler
 	 * @param {...any} args Arguments
 	 * @function
 	 */
-	error: Function;
+	error: (...args: any[]) => any;
 
 	/**
 	 * Debug mode enabled?
@@ -663,7 +663,7 @@ class Session {
 	 * @param {...any} args Arguments
 	 * @function
 	 */
-	debug: Function;
+	debug: (...args: any[]) => any;
 
 	/**
 	 * Parameters
@@ -705,15 +705,15 @@ class Session {
 	 * Auth token
 	 * @member {string}
 	 */
-	 authtoken: string;
+	authtoken: string;
 
 	/**
 	 * Session ID
 	 * @member {string}
 	 */
-	 sessionid: string;
+	sessionid: string;
 
-	 /**
+	/**
 	 * Set auth token
 	 * @param {string} token Auth token
 	 * @function
@@ -728,7 +728,8 @@ class Session {
 	 * @private
 	 */
 	businessObjectCache: Map<string, any>;
-	 
+	// TODO: businessObjectCache: Map<string, BusinessObject>;
+
 	/**
 	 * Get business object cache key
 	 * @param {string} name Business object name
@@ -1089,7 +1090,7 @@ class Session {
 	 */
 	sysinfo: any;
 
-	 /**
+	/**
 	 * Get system info
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
@@ -1121,7 +1122,7 @@ class Session {
 	 */
 	devinfo: any;
 
-	 /**
+	/**
 	 * Get development info
 	 * @param {string} [module] Module name
 	 * @param {object} [opts] Options
@@ -1158,7 +1159,7 @@ class Session {
 	 */
 	news: Array<any>;
 
-	 /**
+	/**
 	 * Get news
 	 * @param {object} [opts] Options
 	 * @param {boolean} [opts.inlineImages=false] Inline news images?
@@ -1641,97 +1642,135 @@ class Grant {
  * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
  * @class
  */
-function BusinessObjectMetadata(name: string, instance: string) {
+class BusinessObjectMetadata {
+	constructor(name: string, instance: string) {
+		this.name = name;
+		this.instance = instance;
+		this.rowidfield = constants.DEFAULT_ROW_ID_NAME;
+		this.label = name;
+		this.help = '';
+		this.fields = new Array<any>();
+		// TODO : this.fields = new Array<Field>();
+	}
+
+	/**
+	 * ID
+	 * @member {string}
+	 */
+	id: string;
+
 	/**
 	 * Name
-	 * @constant {string}
+	 * @member {string}
 	 */
-	this.name = name;
+	name: string;
 
 	/**
 	 * Instance name
-	 * @constant {string}
+	 * @member {string}
 	 */
-	this.instance = instance;
+	instance: string;
 
 	/**
 	 * Row ID field name
 	 * @member {string}
 	 */
-	this.rowidfield = constants.DEFAULT_ROW_ID_NAME;
+	rowidfield: string;
 
 	/**
 	 * Display label
 	 * @member {string}
 	 */
-	this.label = name;
+	label: string;
 
 	/**
 	 * Help
 	 * @member {string}
 	 */
-	this.help = '';
+	help: string;
 
 	/**
 	 * Fields definitions
 	 * @member {array}
 	 */
-	this.fields = [];
+	fields: Array<any>;
+	// TODO : fields: Array<Field>;
+
+	/**
+	 * Links definitions
+	 * @member {array}
+	 */
+	links: Array<any>;
+	// TODO : links: Array<Link>;
 }
 
 /**
  * Business object.
  * <br/><span style="color: red;">ou <strong>should never</strong> instanciate this class directly
  * but rather call <code>getBusinessObject</code> to get a cached instance</span>.
- * @param {object} ses Session
+ * @param {object} session Session
  * @param {string} name Business object name
  * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
  * @class
  */
-function BusinessObject(ses: any, name: string, instance: string) {
-	instance = instance || 'js_' + name;
+class BusinessObject {
+	constructor(session: any, name: string, instance?: string) {
+		this.session = session;
+
+		const inst = instance || 'api_' + name;
+		this.metadata = new BusinessObjectMetadata(name, inst);
+		this.cacheKey = this.session.getBusinessObjectCacheKey(name, inst);
+		this.path = this.session.parameters.objpath + '?object=' + encodeURIComponent(name) + '&inst=' + encodeURIComponent(inst);
+
+		this.item = {};
+		this.filters = {};
+		this.list = [];
+	}
 
 	/**
 	 * Session
+	 * @member {Session}
 	 * @private
 	 */
-	this.session = ses;
+	session: Session;
 
 	/**
 	 * Object metadata
 	 * @member {BusinessObjectMetadata}
 	 */
-	this.metadata = new BusinessObjectMetadata(name, instance);
+	metadata: BusinessObjectMetadata;
 
 	/**
 	 * Cache key
 	 * @constant {string}
+	 * @private
 	 */
-	this.cacheKey = this.session.getBusinessObjectCacheKey(name, instance);
+	cacheKey: string;
 
 	/**
 	 * Path
 	 * @constant {string}
+	 * @private
 	 */
-	this.path = this.session.parameters.objpath + '?object=' + encodeURIComponent(name) + '&inst=' + encodeURIComponent(instance);
+	path: string;
 
 	/**
 	 * Current item
 	 * @member {object}
 	 */
-	this.item = {};
+	item: any;
 
 	/**
 	 * Current filters
 	 * @member {object}
 	 */
-	this.filters = {};
+	filters: any;
 
 	/**
 	 * Current list
-	 * @member {object[]}
+	 * @member {array}
 	 */
-	this.list = [];
+	list: Array<any>;
 
 	/**
 	 * Get meta data
@@ -1742,7 +1781,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {promise<BusinessObjectMetadata>} A promise to the object'ts meta data (also available as the <code>metadata</code> member)
 	 * @function
 	 */
-	this.getMetaData = (opts: any): any => {
+	getMetaData = (opts: any): any => {
 		const self: any = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -1775,14 +1814,14 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {promise<BusinessObjectMetadata>} A promise to the object'ts meta data (also available as the <code>metadata</code> member)
 	 * @function
 	 */
-	this.getMetadata = this.getMetaData;
+	getMetadata = this.getMetaData;
 
 	/**
 	 * Get name
 	 * @return {string} Name
 	 * @function
 	 */
-	this.getName = (): string => {
+	getName = (): string => {
 		return this.metadata.name;
 	};
 
@@ -1791,7 +1830,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {string} Instance name
 	 * @function
 	 */
-	this.getInstance = (): string => {
+	getInstance = (): string => {
 		return this.metadata.instance;
 	};
 
@@ -1800,7 +1839,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {string} Display label
 	 * @function
 	 */
-	this.getLabel = (): string => {
+	getLabel = (): string => {
 		return this.metadata.label;
 	};
 
@@ -1809,7 +1848,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {string} Help
 	 * @function
 	 */
-	this.getHelp = (): string => {
+	getHelp = (): string => {
 		return this.metadata.help;
 	};
 
@@ -1818,7 +1857,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {array} Array of field definitions
 	 * @function
 	 */
-	this.getFields = (): Array<any> => {
+	getFields = (): Array<any> => {
 		return this.metadata.fields;
 	};
 
@@ -1828,7 +1867,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {object} Field definition
 	 * @function
 	 */
-	this.getField = (fieldName: string): any => {
+	getField = (fieldName: string): any => {
 		const fs: Array<any> = this.getFields();
 		let n = 0;
 		while (n < fs.length && fs[n].name !== fieldName) n++;
@@ -1841,7 +1880,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {string} Row ID field name
 	 * @function
 	 */
-	this.getRowIdFieldName = (): string => {
+	getRowIdFieldName = (): string => {
 		return this.metadata.rowidfield;
 	};
 
@@ -1850,7 +1889,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {object} Row ID field definition
 	 * @function
 	 */
-	this.getRowIdField = (): any => {
+	getRowIdField = (): any => {
 		return this.getField(this.getRowIdFieldName());
 	};
 
@@ -1859,7 +1898,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {array} Array of links
 	 * @function
 	 */
-	this.getLinks = (): Array<any> => {
+	getLinks = (): Array<any> => {
 		return this.metadata.links;
 	};
 
@@ -1869,7 +1908,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {string} Type (one of <code>constants.TYPE_*</code>)
 	 * @function
 	 */
-	this.getFieldType = (field: string|any): string => {
+	getFieldType = (field: string|any): string => {
 		if (typeof field === 'string')
 			field = this.getField(field);
 		if (field)
@@ -1882,7 +1921,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {string} Field label
 	 * @function
 	 */
-	this.getFieldLabel = (field: string|any): string => {
+	getFieldLabel = (field: string|any): string => {
 		if (typeof field === 'string')
 			field = this.getField(field);
 		if (field)
@@ -1896,7 +1935,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {strin|Document} Value
 	 * @function
 	 */
-	this.getFieldValue = (field: string|any, item: any): string|any => {
+	getFieldValue = (field: string|any, item: any): string|any => {
 		if (!item)
 			item = this.item;
 		if (field && item) {
@@ -1911,7 +1950,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {string} List value
 	 * @function
 	 */
-	this.getFieldListValue = (field: string|any, item: any) => {
+	getFieldListValue = (field: string|any, item: any) => {
 		if (typeof field === 'string')
 			field = this.getField(field);
 		const val: string = this.getFieldValue(field, item);
@@ -1925,7 +1964,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {string} Document/image field data URL (or nothing if the field is not of document/image type or if it is not inlined or if it is empty)
 	 * @function
 	 */
-	this.getFieldDataURL = (field: string|any, item: any): string => {
+	getFieldDataURL = (field: string|any, item: any): string => {
 		if (typeof field !== 'string')
 			field = field.fullinput || field.name;
 		const val: string|any = this.getFieldValue(field, item);
@@ -1940,7 +1979,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {Document} Document/image (or nothing if the field is not of document/image type or if it is empty)
 	 * @function
 	 */
-	this.getFieldDocument = (field: string|any, item: any): any => {
+	getFieldDocument = (field: string|any, item: any): any => {
 		if (typeof field !== 'string')
 			field = field.fullinput || field.input || field.name;
 		const val: string|any = this.getFieldValue(field, item);
@@ -1958,7 +1997,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {string} Document/image field URL (or nothing if the field is not of document/image type or if it is empty)
 	 * @function
 	 */
-	this.getFieldDocumentURL = (field: string|any, item: any, thumbnail: boolean): string => {
+	getFieldDocumentURL = (field: string|any, item: any, thumbnail: boolean): string => {
 		if (typeof field !== 'string')
 			field = field.fullinput || field.input || field.name;
 		let val: string|any = this.getFieldValue(field, item);
@@ -1982,7 +2021,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {string} Value
 	 * @function
 	 */
-	this.getListValue = (list: Array<any>, code: string): string => {
+	getListValue = (list: Array<any>, code: string): string => {
 		if (list) {
 			for (let i = 0; i < list.length; i++) {
 				const l: any = list[i];
@@ -2000,7 +2039,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @param {object} [item] Item (defaults to current item)
 	 * @function
 	 */
-	this.setFieldValue = (field: string|any, value: string|any, item: any): void => {
+	setFieldValue = (field: string|any, value: string|any, item: any): void => {
 		if (!item)
 			item = this.item;
 		if (field && item) {
@@ -2014,7 +2053,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {boolean} True if the field is the row ID field
 	 * @function
 	 */
-	this.isRowIdField = (field: any): boolean => {
+	isRowIdField = (field: any): boolean => {
 		return !field.ref && field.name === this.metadata.rowidfield;
 	};
 
@@ -2024,7 +2063,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {boolean} True if the field is a timestamp field
 	 * @function
 	 */
-	this.isTimestampField = (field: any): boolean => {
+	isTimestampField = (field: any): boolean => {
 		const n = field.name;
 		return !field.ref && (n === 'created_by' || n === 'created_dt' || n === 'updated_by' || n === 'updated_dt');
 	};
@@ -2038,7 +2077,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {promise<object>} Promise to the object's filters (also available as the <code>filters</code> member)
 	 * @function
 	 */
-	this.getFilters =(opts: any): Promise<any> => {
+	getFilters = (opts: any): Promise<any> => {
 		const self: any = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -2069,7 +2108,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {string} Option parameters
 	 * @private
 	 */
-	function getReqOptions(options: any): string {
+	getReqOptions = (options: any): string => {
 		let opts = '';
 		if (options.context)
 			opts += '&context=' + encodeURIComponent(options.context);
@@ -2083,7 +2122,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 		if (io)
 			opts += '&inline_objects=' + encodeURIComponent(io.join ? io.join(',') : io);
 		return opts;
-	}
+	};
 
 	/**
 	 * Build request parameters
@@ -2091,7 +2130,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {string} Request parameters
 	 * @private
 	 */
-	function getReqParams(data: any): string {
+	getReqParams = (data: any): string => {
 		let p = '';
 		if (!data) return p;
 		let n = 0;
@@ -2111,7 +2150,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 			}
 		}
 		return p;
-	}
+	};
 
 	/**
 	 * Count
@@ -2121,12 +2160,12 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {promise<object>} Promise to the count
 	 * @function
 	 */
-	this.count = (filters: any, opts: any): Promise<any> => {
+	count = (filters: any, opts: any): Promise<any> => {
 		const self: any = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			self.filters = filters || {};
-			self.session.req.call(self.session, self.path + '&action=count', getReqParams(self.filters), (res: any, status: number) => {
+			self.session.req.call(self.session, self.path + '&action=count', this.getReqParams(self.filters), (res: any, status: number) => {
 				const r: any = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.getCount] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
@@ -2149,7 +2188,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @deprecated
 	 * @function
 	 */
-	this.getCount = this.count;
+	getCount = this.count;
 
 	/**
 	 * Search
@@ -2162,11 +2201,11 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {promise<array>} Promise to a list of records (also available as the <code>list</code> member)
 	 * @function
 	 */
-	this.search = (filters: any, opts: any): Promise<Array<any>> => {
+	search = (filters: any, opts: any): Promise<Array<any>> => {
 		const self: any = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
-			let p: string = getReqOptions(opts);
+			let p: string = this.getReqOptions(opts);
 			if (opts.page > 0)
 				p += '&page=' + (opts.page - 1);
 			if (opts.metadata===true)
@@ -2174,7 +2213,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 			if (opts.visible===true)
 				p += '&_visible=true';
 			self.filters = filters || {};
-			self.session.req.call(self.session, self.path + '&action=search' + p, getReqParams(self.filters), (res: any, status: number) => {
+			self.session.req.call(self.session, self.path + '&action=search' + p, this.getReqParams(self.filters), (res: any, status: number) => {
 				const r: any = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.search] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
@@ -2205,11 +2244,11 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {promise<object>} Promise to the record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.get = (rowId: string, opts: any): Promise<any> => {
+	get = (rowId: string, opts: any): Promise<any> => {
 		const self: any = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
-			let p: string = getReqOptions(opts);
+			let p: string = this.getReqOptions(opts);
 			const  tv: string = opts.treeView;
 			if (tv)
 				p += '&treeview=' + encodeURIComponent(tv);
@@ -2250,7 +2289,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.getForCreate = (opts: any): Promise<any> => {
+	getForCreate = (opts: any): Promise<any> => {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
@@ -2267,7 +2306,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {promise<object>} Promise to the record to update (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.getForUpdate = (rowId: string, opts: any): Promise<any> => {
+	getForUpdate = (rowId: string, opts: any): Promise<any> => {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
@@ -2284,7 +2323,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.getForCopy = (rowId: string, opts: any): Promise<any> => {
+	getForCopy = (rowId: string, opts: any): Promise<any> => {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
@@ -2301,7 +2340,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {promise<object>} Promise to the record to delete (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.getForDelete = (rowId: string, opts: any): Promise<any> => {
+	getForDelete = (rowId: string, opts: any): Promise<any> => {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
@@ -2315,7 +2354,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {string} Item's row ID value
 	 * @function
 	 */
-	this.getRowId = (item: any): string => {
+	getRowId = (item: any): string => {
 		item = item || this.item;
 		if (item)
 			return item[this.getRowIdFieldName()];
@@ -2329,11 +2368,11 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.populate = (rowId: string, opts: any): Promise<any> => {
+	populate = (rowId: string, opts: any): Promise<any> => {
 		const self: any = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
-			const p: string = getReqOptions(opts);
+			const p: string = this.getReqOptions(opts);
 			self.session.req.call(self.session, self.path + '&action=populate&' + self.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, (res: any, status: number) => {
 				const r: any = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.populate] HTTP status = ' + status + ', response type = ' + r.type);
@@ -2357,7 +2396,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {promise<object>} Promise to the saved record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.save = (item: any, opts: any): Promise<any> => {
+	save = (item: any, opts: any): Promise<any> => {
 		if (item)
 			this.item = item;
 		const rowId: string = this.item[this.metadata.rowidfield];
@@ -2375,15 +2414,15 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {promise<object>} Promise to the created record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.create = (item: any, opts: any): Promise<any> => {
+	create = (item: any, opts: any): Promise<any> => {
 		const self: any = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			if (item)
 				self.item = item;
 			self.item.row_id = self.session.constants.DEFAULT_ROW_ID;
-			const p: string = getReqOptions(opts);
-			self.session.req.call(self.session, self.path + '&action=create' + p, getReqParams(self.item), (res: any, status: number) => {
+			const p: string = this.getReqOptions(opts);
+			self.session.req.call(self.session, self.path + '&action=create' + p, this.getReqParams(self.item), (res: any, status: number) => {
 				const r: any = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.create] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
@@ -2406,14 +2445,14 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {promise<object>} Promise to the updated record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	this.update = (item: any, opts: any): Promise<any> => {
+	update = (item: any, opts: any): Promise<any> => {
 		const self: any = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			if (item)
 				self.item = item;
-			const p: string = getReqOptions(opts);
-			self.session.req.call(self.session, self.path + '&action=update' + p, getReqParams(self.item), (res: any, status: number) => {
+			const p: string = this.getReqOptions(opts);
+			self.session.req.call(self.session, self.path + '&action=update' + p, this.getReqParams(self.item), (res: any, status: number) => {
 				const r: any = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.update] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
@@ -2436,7 +2475,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {promise<object>} Promise (the <code>item</code> member is emptied)
 	 * @function
 	 */
-	this.del = (item: any, opts: any): Promise<any> => {
+	del = (item: any, opts: any): Promise<any> => {
 		const self = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -2468,11 +2507,11 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {promise<string|object>} A promise to the action result
 	 * @function
 	 */
-	this.action = (action: string, rowId: string, opts: any): Promise<string|any> => {
+	action = (action: string, rowId: string, opts: any): Promise<string|any> => {
 		const self: any = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
-			self.session.req.call(self.session, self.path + '&action=' + encodeURIComponent(action) + (rowId ? '&' + self.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : ''), getReqParams(opts.parameters), (res: any, status: number) => {
+			self.session.req.call(self.session, self.path + '&action=' + encodeURIComponent(action) + (rowId ? '&' + self.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : ''), this.getReqParams(opts.parameters), (res: any, status: number) => {
 				const r: any = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.action(' + action + ')] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
@@ -2496,13 +2535,13 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {promise<object>} A promise to the pivot table data (also avialable as the <code>crosstabdata</code> member)
 	 * @function
 	 */
-	this.crosstab = (crosstab: string, opts: any): Promise<any> => {
+	crosstab = (crosstab: string, opts: any): Promise<any> => {
 		const self: any = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			if (opts.filters)
 				self.filters = opts.filters;
-			self.session.req.call(self.session, self.path + '&action=crosstab&crosstab=' + encodeURIComponent(crosstab), getReqParams(self.filters), (res: any, status: number) => {
+			self.session.req.call(self.session, self.path + '&action=crosstab&crosstab=' + encodeURIComponent(crosstab), this.getReqParams(self.filters), (res: any, status: number) => {
 				const r: any = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.crosstab(' + crosstab + ')] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
@@ -2526,7 +2565,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {promise<Document>} A promise to the document of the publication
 	 * @function
 	 */
-	this.print = (prt: string, rowId: string, opts: any): Promise<any> => {
+	print = (prt: string, rowId: string, opts: any): Promise<any> => {
 		const self: any = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -2560,13 +2599,13 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {promise<object>} Promise
 	 * @function
 	 */
-	this.setParameter = (param: string, value: string, opts: any): Promise<any> => {
+	setParameter = (param: string, value: string, opts: any): Promise<any> => {
 		const self: any = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			const p: any = { name: param };
 			if (value) p.value = value;
-			self.session.req.call(self.session, self.path + '&action=setparameter', getReqParams(p), (res: any, status: number) => {
+			self.session.req.call(self.session, self.path + '&action=setparameter', this.getReqParams(p), (res: any, status: number) => {
 				const r: any = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.setParameter(' + p.name + ')] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
@@ -2589,12 +2628,12 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {promise<object>} Promise to the parameter value
 	 * @function
 	 */
-	this.getParameter = (param: string, opts: any): Promise<any> => {
+	getParameter = (param: string, opts: any): Promise<any> => {
 		const self: any = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			const p: any = { name: param };
-			self.session.req.call(self.session, self.path + '&action=getparameter', getReqParams(p), (res: any, status: number) => {
+			self.session.req.call(self.session, self.path + '&action=getparameter', this.getReqParams(p), (res: any, status: number) => {
 				const r: any = self.session.parse(res, status);
 				self.session.debug('[simplicite.BusinessObject.getParameter(' + p.name + ')] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
@@ -2616,7 +2655,7 @@ function BusinessObject(ses: any, name: string, instance: string) {
 	 * @return {string} Object resource URL
 	 * @function
 	 */
-	this.getResourceURL = (code: string, type: string): string => {
+	getResourceURL = (code: string, type: string): string => {
 		return this.session.getResourceURL(code, type, this.metadata.name, this.metadata.id);
 	};
 }
@@ -2628,47 +2667,60 @@ function BusinessObject(ses: any, name: string, instance: string) {
  * @param {string} name Business object name
  * @class
  */
-function ExternalObjectMetadata(name: string) {
+class ExternalObjectMetadata {
+	constructor(name: string) {
+		this.name = name;
+	}
+
 	/**
 	 * Name
-	 * @constant {string}
+	 * @member {string}
 	 */
-	this.name = name;
+	name: string;
 }
 
 /**
  * External object.
  * <br/><span style="color: red;">ou <strong>should never</strong> instanciate this class directly
  * but rather call <code>getExternalObject</code></span>.
- * @param {object} ses Session
+ * @param {object} session Session
  * @param {string} name Business object name
  * @class
  */
-function ExternalObject(ses: any, name: string) {
+class ExternalObject {
+	constructor(session: any, name: string) {
+		this.session = session;
+	
+		this.metadata = new ExternalObjectMetadata(name);
+		this.path = this.session.parameters.extpath + '/' + encodeURIComponent(name);
+	}
+
 	/**
 	 * Session
+	 * @member {Session}
 	 * @private
 	 */
-	this.session = ses;
+	session: Session;
 
 	/**
 	 * Metadata
-	 * @constant
+	 * @member {ExternalObjectMetadata}
 	 */
-	this.metadata = new ExternalObjectMetadata(name);
+	metadata: ExternalObjectMetadata;
 
 	/**
 	 * Path
-	 * @constant {string}
+	 * @member {string}
+	 * @parivate
 	 */
-	this.path = this.session.parameters.extpath + '/' + encodeURIComponent(name);
+	path: string;
 
 	/**
 	 * Get name
 	 * @return {string} Name
 	 * @function
 	 */
-	this.getName = (): string => {
+	getName = (): string => {
 		return this.metadata.name;
 	};
 
@@ -2678,7 +2730,7 @@ function ExternalObject(ses: any, name: string) {
 	 * @return {string} URL-encoded parameters
 	 * @function
 	 */
-	this.callParams = (params: any): string => {
+	callParams = (params: any): string => {
 		let p = '';
 		if (!params) return p;
 		let n = 0;
@@ -2705,7 +2757,7 @@ function ExternalObject(ses: any, name: string) {
 	 * @return {promise<object>} Promise to the external object content
 	 * @function
 	 */
-	this.call = (params: any, data: any, opts: any) => {
+	call = (params: any, data: any, opts: any) => {
 		const self: any = this;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -2764,6 +2816,12 @@ function ExternalObject(ses: any, name: string) {
 			});
 		});
 	};
+
+	/**
+	 * Alias to <code>call</code>
+	 * @function
+	 */
+	invoke = this.call;
 }
 
 export default {
