@@ -630,7 +630,7 @@ var Session = /** @class */ (function () {
                         if (_this.authtoken)
                             _this.debug("[" + origin + "] Auth token = " + _this.authtoken);
                         // Minimal grant from session data
-                        _this.grant = Object.assign(new Grant(), {
+                        _this.grant = new Grant({
                             login: r.response.login,
                             userid: r.response.userid,
                             firstname: r.response.firstanme,
@@ -700,9 +700,9 @@ var Session = /** @class */ (function () {
                         (opts.error || _this.error || reject).call(_this, _this.getError(r.response, undefined, origin));
                     }
                     else {
-                        _this.grant = Object.assign(new Grant(), r.response); // Set as Grant
+                        _this.grant = new Grant(r.response); // Set as Grant
                         if (pic)
-                            _this.grant.picture = Object.assign(new Document(), _this.grant.picture); // Set picture as Document
+                            _this.grant.picture = new Document(_this.grant.picture); // Set picture as Document
                         if (txt)
                             _this.grant.texts = Object.assign(new Map(), _this.grant.texts); // Set texts as Map
                         resolve && resolve.call(_this, _this.grant);
@@ -845,7 +845,7 @@ var Session = /** @class */ (function () {
                         _this.news = r.response;
                         for (var _i = 0, _a = _this.news; _i < _a.length; _i++) {
                             var n = _a[_i];
-                            n.image = Object.assign(new Document(), n.image);
+                            n.image = new Document(n.image);
                         } // Set image as document
                         resolve && resolve.call(_this, _this.news);
                     }
@@ -1033,7 +1033,11 @@ var Session = /** @class */ (function () {
  * @class
  */
 var Document = /** @class */ (function () {
-    function Document() {
+    /**
+     * Constructor
+     * @param doc {object} Document object
+     */
+    function Document(doc) {
         var _this = this;
         /**
          * Get the document's ID
@@ -1171,6 +1175,7 @@ var Document = /** @class */ (function () {
         this.getValue = function () {
             return JSON.parse(JSON.stringify(_this)); // Strips all functions
         };
+        Object.assign(this, doc);
     }
     /**
      * Get the document's content as a buffer
@@ -1190,7 +1195,11 @@ var Document = /** @class */ (function () {
  * @class
  */
 var Grant = /** @class */ (function () {
-    function Grant() {
+    /**
+     * Constructor
+     * @param grant {object} Grant object
+     */
+    function Grant(grant) {
         var _this = this;
         /**
          * Get user ID
@@ -1284,6 +1293,7 @@ var Grant = /** @class */ (function () {
         this.T = function (code) {
             return _this.texts ? _this.texts[code] || '' : '';
         };
+        Object.assign(this, grant);
     }
     return Grant;
 }());
@@ -1291,11 +1301,14 @@ var Grant = /** @class */ (function () {
  * Business object meta data.
  * <br/><span style="color: red;">You <strong>should never</strong> instanciate this class directly
  * but rather use it from the <code>metadata</code> variable of your <code>BusinessObject</code> instances</span>.
- * @param {string} name Business object name
- * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
  * @class
  */
 var BusinessObjectMetadata = /** @class */ (function () {
+    /**
+     * Constructor
+     * @param {string} name Business object name
+     * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
+     */
     function BusinessObjectMetadata(name, instance) {
         this.name = name;
         this.instance = instance;
@@ -1311,12 +1324,15 @@ var BusinessObjectMetadata = /** @class */ (function () {
  * Business object.
  * <br/><span style="color: red;">ou <strong>should never</strong> instanciate this class directly
  * but rather call <code>getBusinessObject</code> to get a cached instance</span>.
- * @param {object} session Session
- * @param {string} name Business object name
- * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
  * @class
  */
 var BusinessObject = /** @class */ (function () {
+    /**
+     * Constructor
+     * @param {Session} session Session
+     * @param {string} name Business object name
+     * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
+     */
     function BusinessObject(session, name, instance) {
         var _this = this;
         /**
@@ -1517,7 +1533,7 @@ var BusinessObject = /** @class */ (function () {
                 field = field.fullinput || field.input || field.name;
             var val = _this.getFieldValue(field, item);
             if (val && val.mime)
-                return Object.assign(new Document(), val);
+                return new Document(val);
             else
                 return val;
         };
@@ -2104,7 +2120,7 @@ var BusinessObject = /** @class */ (function () {
                         (opts.error || self.session.error || reject).call(self, r.response);
                     }
                     else {
-                        resolve && resolve.call(self, Object.assign(new Document(), r.response));
+                        resolve && resolve.call(self, new Document(r.response));
                     }
                 }, function (err) {
                     (opts.error || self.session.error || reject).call(self, self.session.getError(err));
@@ -2195,10 +2211,13 @@ var BusinessObject = /** @class */ (function () {
  * External object meta data.
  * <br/><span style="color: red;">You <strong>should never</strong> instanciate this class directly
  * but rather use it from the <code>metadata</code> variable of your <code>ExternalObject</code> instances</span>.
- * @param {string} name Business object name
  * @class
  */
 var ExternalObjectMetadata = /** @class */ (function () {
+    /**
+     * Constructor
+     * @param {string} name External object name
+     */
     function ExternalObjectMetadata(name) {
         this.name = name;
     }
@@ -2208,11 +2227,14 @@ var ExternalObjectMetadata = /** @class */ (function () {
  * External object.
  * <br/><span style="color: red;">ou <strong>should never</strong> instanciate this class directly
  * but rather call <code>getExternalObject</code></span>.
- * @param {object} session Session
- * @param {string} name Business object name
  * @class
  */
 var ExternalObject = /** @class */ (function () {
+    /**
+     * Constructor
+     * @param {Session} session Session
+     * @param {string} name Business object name
+     */
     function ExternalObject(session, name) {
         var _this = this;
         /**

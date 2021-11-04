@@ -530,18 +530,6 @@ const session = (params: SessionParams): Session => {
  */
 class Session {
 	/**
-	 * Constants
-	 * @member
-	 */
-	constants = constants;
-
-	/**
-	 * Endpoint
-	 * @member {string}
-	 */
-	endpoint: SessionParamEndpoint;
-
-	/**
 	 * Constructor
 	 * @param params {object} Parameters
 	 */
@@ -623,6 +611,18 @@ class Session {
 		this.businessObjectCache = new Map<string, any>();
 		// TODO : this.businessObjectCache = new Map<string, BusinessObject>();
 	}
+
+	/**
+	 * Constants
+	 * @member
+	 */
+	constants = constants;
+
+	/**
+	 * Endpoint
+	 * @member {string}
+	 */
+	endpoint: SessionParamEndpoint;
 
 	/**
 	 * Log handler
@@ -938,7 +938,7 @@ class Session {
 					if (this.authtoken)
 						this.debug(`[${origin}] Auth token = ${this.authtoken}`);
 					// Minimal grant from session data
-					this.grant = Object.assign(new Grant(), {
+					this.grant =new Grant({
 						login: r.response.login,
 						userid: r.response.userid,
 						firstname: r.response.firstanme,
@@ -1014,9 +1014,9 @@ class Session {
 				if (r.type === 'error') {
 					(opts.error || this.error || reject).call(this, this.getError(r.response, undefined, origin));
 				} else {
-					this.grant = Object.assign(new Grant(), r.response); // Set as Grant
+					this.grant = new Grant(r.response); // Set as Grant
 					if (pic)
-						this.grant.picture = Object.assign(new Document(), this.grant.picture); // Set picture as Document
+						this.grant.picture = new Document(this.grant.picture); // Set picture as Document
 					if (txt)
 						this.grant.texts = Object.assign(new Map<string, string>(), this.grant.texts); // Set texts as Map
 					resolve && resolve.call(this, this.grant);
@@ -1183,7 +1183,7 @@ class Session {
 				} else {
 					this.news = r.response;
 					for (const n of this.news)
-						n.image = Object.assign(new Document(), n.image); // Set image as document
+						n.image = new Document(n.image); // Set image as document
 					resolve && resolve.call(this, this.news);
 				}
 			}, (err: any) => {
@@ -1273,6 +1273,14 @@ class Session {
  * @class
  */
 class Document {
+	/**
+	 * Constructor
+	 * @param doc {object} Document object
+	 */
+	constructor(doc: any) {
+		Object.assign(this, doc);
+	}
+
 	/**
 	 * Document's ID
 	 * @member {string}
@@ -1476,6 +1484,14 @@ class Document {
  */
 class Grant {
 	/**
+	 * Constructor
+	 * @param grant {object} Grant object
+	 */
+	constructor(grant: any) {
+		Object.assign(this, grant);
+	}
+
+	/**
 	 * User ID
 	 * @member {string} 
 	 */
@@ -1638,11 +1654,14 @@ class Grant {
  * Business object meta data.
  * <br/><span style="color: red;">You <strong>should never</strong> instanciate this class directly
  * but rather use it from the <code>metadata</code> variable of your <code>BusinessObject</code> instances</span>.
- * @param {string} name Business object name
- * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
  * @class
  */
 class BusinessObjectMetadata {
+	/**
+	 * Constructor
+	 * @param {string} name Business object name
+	 * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
+	 */
 	constructor(name: string, instance: string) {
 		this.name = name;
 		this.instance = instance;
@@ -1708,12 +1727,15 @@ class BusinessObjectMetadata {
  * Business object.
  * <br/><span style="color: red;">ou <strong>should never</strong> instanciate this class directly
  * but rather call <code>getBusinessObject</code> to get a cached instance</span>.
- * @param {object} session Session
- * @param {string} name Business object name
- * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
  * @class
  */
 class BusinessObject {
+	/**
+	 * Constructor
+	 * @param {Session} session Session
+	 * @param {string} name Business object name
+	 * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
+	 */
 	constructor(session: any, name: string, instance?: string) {
 		this.session = session;
 
@@ -1984,7 +2006,7 @@ class BusinessObject {
 			field = field.fullinput || field.input || field.name;
 		const val: string|any = this.getFieldValue(field, item);
 		if (val && val.mime)
-			return Object.assign(new Document(), val);
+			return new Document(val);
 		else
 			return val;
 	};
@@ -2582,7 +2604,7 @@ class BusinessObject {
 				if (r.type === 'error') {
 					(opts.error || self.session.error || reject).call(self, r.response);
 				} else {
-					resolve && resolve.call(self, Object.assign(new Document(), r.response));
+					resolve && resolve.call(self, new Document(r.response));
 				}
 			}, (err: any) => {
 				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
@@ -2664,10 +2686,13 @@ class BusinessObject {
  * External object meta data.
  * <br/><span style="color: red;">You <strong>should never</strong> instanciate this class directly
  * but rather use it from the <code>metadata</code> variable of your <code>ExternalObject</code> instances</span>.
- * @param {string} name Business object name
  * @class
  */
 class ExternalObjectMetadata {
+	/**
+	 * Constructor
+	 * @param {string} name External object name
+	 */
 	constructor(name: string) {
 		this.name = name;
 	}
@@ -2683,11 +2708,14 @@ class ExternalObjectMetadata {
  * External object.
  * <br/><span style="color: red;">ou <strong>should never</strong> instanciate this class directly
  * but rather call <code>getExternalObject</code></span>.
- * @param {object} session Session
- * @param {string} name Business object name
  * @class
  */
 class ExternalObject {
+	/**
+	 * Constructor
+	 * @param {Session} session Session
+	 * @param {string} name Business object name
+	 */
 	constructor(session: any, name: string) {
 		this.session = session;
 	
