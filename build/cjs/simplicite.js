@@ -418,7 +418,6 @@ var Session = /** @class */ (function () {
         this.setAuthToken = function (token) {
             _this.authtoken = token;
         };
-        // TODO: businessObjectCache: Map<string, BusinessObject>;
         /**
          * Get business object cache key
          * @param {string} name Business object name
@@ -443,7 +442,6 @@ var Session = /** @class */ (function () {
             _this.sysinfo = undefined;
             _this.devinfo = undefined;
             _this.businessObjectCache = new Map();
-            // TODO: this.businessObjectCache = new Map<string, BusinessObject>();
         };
         /**
          * Basic HTTP authorization header value
@@ -1024,7 +1022,6 @@ var Session = /** @class */ (function () {
         this.password = params.password || params.pwd; // naming flexibility
         this.authtoken = params.authtoken || params.token; // naming flexibility
         this.businessObjectCache = new Map();
-        // TODO : this.businessObjectCache = new Map<string, BusinessObject>();
     }
     return Session;
 }());
@@ -1316,7 +1313,6 @@ var BusinessObjectMetadata = /** @class */ (function () {
         this.label = name;
         this.help = '';
         this.fields = new Array();
-        // TODO : this.fields = new Array<Field>();
     }
     return BusinessObjectMetadata;
 }());
@@ -1345,7 +1341,8 @@ var BusinessObject = /** @class */ (function () {
          * @function
          */
         this.getMetaData = function (opts) {
-            var self = _this;
+            var origin = 'BusinessObject.getMetaData';
+            var ses = _this.session;
             opts = opts || {};
             return new Promise(function (resolve, reject) {
                 var p = '';
@@ -1353,18 +1350,18 @@ var BusinessObject = /** @class */ (function () {
                     p += '&context=' + encodeURIComponent(opts.context);
                 if (opts.contextParam)
                     p += '&contextparam=' + encodeURIComponent(opts.contextParam);
-                self.session.req.call(self.session, self.path + '&action=metadata' + p, undefined, function (res, status) {
-                    var r = self.session.parse(res, status);
-                    self.session.debug('[simplicite.BusinessObject.getMetaData] HTTP status = ' + status + ', response type = ' + r.type);
+                ses.req(_this.path + '&action=metadata' + p, undefined, function (res, status) {
+                    var r = ses.parse(res, status);
+                    ses.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
                     if (r.type === 'error') {
-                        (opts.error || self.session.error || reject).call(self, r.response);
+                        (opts.error || ses.error || reject).call(_this, ses.getError(r.response, undefined, origin));
                     }
                     else {
-                        self.metadata = r.response;
-                        resolve && resolve.call(self, self.metadata);
+                        _this.metadata = r.response;
+                        resolve && resolve.call(_this, _this.metadata);
                     }
                 }, function (err) {
-                    (opts.error || self.session.error || reject).call(self, self.session.getError(err));
+                    (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
                 });
             });
         };
@@ -1625,7 +1622,8 @@ var BusinessObject = /** @class */ (function () {
          * @function
          */
         this.getFilters = function (opts) {
-            var self = _this;
+            var origin = 'BusinessObject.getFilters';
+            var ses = _this.session;
             opts = opts || {};
             return new Promise(function (resolve, reject) {
                 var p = '';
@@ -1633,18 +1631,18 @@ var BusinessObject = /** @class */ (function () {
                     p += '&context=' + encodeURIComponent(opts.context);
                 if (opts.reset)
                     p += '&reset=' + !!opts.reset;
-                self.session.req.call(self.session, self.path + '&action=filters' + p, undefined, function (res, status) {
-                    var r = self.session.parse(res, status);
-                    self.session.debug('[simplicite.BusinessObject.getFilters] HTTP status = ' + status + ', response type = ' + r.type);
+                ses.req(_this.path + '&action=filters' + p, undefined, function (res, status) {
+                    var r = ses.parse(res, status);
+                    ses.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
                     if (r.type === 'error') {
-                        (opts.error || self.session.error || reject).call(self, r.response);
+                        (opts.error || ses.error || reject).call(_this, ses.getError(r.response, undefined, origin));
                     }
                     else {
-                        self.filters = r.response;
-                        resolve && resolve.call(self, self.filters);
+                        _this.filters = r.response;
+                        resolve && resolve.call(_this, _this.filters);
                     }
                 }, function (err) {
-                    (opts.error || self.session.error || reject).call(self, self.session.getError(err));
+                    (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
                 });
             });
         };
@@ -1701,42 +1699,37 @@ var BusinessObject = /** @class */ (function () {
             return p;
         };
         /**
-         * Count
+         * Get count
          * @param {object} [filters] Filters, defaults to current filters if not set
          * @param {object} [opts] Options
          * @param {function} [opts.error] Error handler function
          * @return {promise<object>} Promise to the count
          * @function
          */
-        this.count = function (filters, opts) {
-            var self = _this;
+        this.getCount = function (filters, opts) {
+            var origin = 'BusinessObject.getCount';
+            var ses = _this.session;
             opts = opts || {};
             return new Promise(function (resolve, reject) {
-                self.filters = filters || {};
-                self.session.req.call(self.session, self.path + '&action=count', _this.getReqParams(self.filters), function (res, status) {
-                    var r = self.session.parse(res, status);
-                    self.session.debug('[simplicite.BusinessObject.getCount] HTTP status = ' + status + ', response type = ' + r.type);
+                _this.filters = filters || {};
+                ses.req(_this.path + "&action=count", _this.getReqParams(_this.filters), function (res, status) {
+                    var r = ses.parse(res, status);
+                    ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                     if (r.type === 'error') {
-                        (opts.error || self.session.error || reject).call(self, r.response);
+                        (opts.error || ses.error || reject).call(_this, ses.getError(r.response, undefined, origin));
                     }
                     else {
-                        self.count = r.response.count;
-                        self.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
-                        self.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
-                        self.list = [];
-                        resolve && resolve.call(self, self.count);
+                        _this.count = r.response.count;
+                        _this.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
+                        _this.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
+                        _this.list = [];
+                        resolve && resolve.call(_this, _this.count);
                     }
                 }, function (err) {
-                    (opts.error || self.session.error || reject).call(self, self.session.getError(err));
+                    (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
                 });
             });
         };
-        /**
-         * Count, **deprecated**: use <code>count</code> instead
-         * @deprecated
-         * @function
-         */
-        this.getCount = this.count;
         /**
          * Search
          * @param {object} [filters] Filters, defaults to current filters if not set
@@ -1749,7 +1742,8 @@ var BusinessObject = /** @class */ (function () {
          * @function
          */
         this.search = function (filters, opts) {
-            var self = _this;
+            var origin = 'BusinessObject.search';
+            var ses = _this.session;
             opts = opts || {};
             return new Promise(function (resolve, reject) {
                 var p = _this.getReqOptions(opts);
@@ -1759,24 +1753,24 @@ var BusinessObject = /** @class */ (function () {
                     p += '&_md=true';
                 if (opts.visible === true)
                     p += '&_visible=true';
-                self.filters = filters || {};
-                self.session.req.call(self.session, self.path + '&action=search' + p, _this.getReqParams(self.filters), function (res, status) {
-                    var r = self.session.parse(res, status);
-                    self.session.debug('[simplicite.BusinessObject.search] HTTP status = ' + status + ', response type = ' + r.type);
+                _this.filters = filters || {};
+                ses.req(_this.path + '&action=search' + p, _this.getReqParams(_this.filters), function (res, status) {
+                    var r = ses.parse(res, status);
+                    ses.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
                     if (r.type === 'error') {
-                        (opts.error || self.session.error || reject).call(self, r.response);
+                        (opts.error || ses.error || reject).call(_this, ses.getError(r.response, undefined, origin));
                     }
                     else {
                         if (res.meta)
-                            self.metadata = r.response.meta;
-                        self.count = r.response.count;
-                        self.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
-                        self.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
-                        self.list = r.response.list;
-                        resolve && resolve.call(self, self.list);
+                            _this.metadata = r.response.meta;
+                        _this.count = r.response.count;
+                        _this.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
+                        _this.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
+                        _this.list = r.response.list;
+                        resolve && resolve.call(_this, _this.list);
                     }
                 }, function (err) {
-                    (opts.error || self.session.error || reject).call(self, self.session.getError(err));
+                    (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
                 });
             });
         };
@@ -1792,7 +1786,8 @@ var BusinessObject = /** @class */ (function () {
          * @function
          */
         this.get = function (rowId, opts) {
-            var self = _this;
+            var origin = 'BusinessObject.get';
+            var ses = _this.session;
             opts = opts || {};
             return new Promise(function (resolve, reject) {
                 var p = _this.getReqOptions(opts);
@@ -1808,23 +1803,23 @@ var BusinessObject = /** @class */ (function () {
                     p += '&_md=true';
                 if (opts.social)
                     p += '&_social=true';
-                self.session.req.call(self.session, self.path + '&action=get&' + self.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, function (res, status) {
-                    var r = self.session.parse(res, status);
-                    self.session.debug('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response type = ' + r.type);
+                ses.req(_this.path + '&action=get&' + _this.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, function (res, status) {
+                    var r = ses.parse(res, status);
+                    ses.debug('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response type = ' + r.type);
                     if (r.type === 'error') {
-                        (opts.error || self.session.error || reject).call(self, r.response);
+                        (opts.error || ses.error || reject).call(_this, ses.getError(r.response, undefined, origin));
                     }
                     else {
                         if (r.response.meta)
-                            self.metadata = r.response.meta;
+                            _this.metadata = r.response.meta;
                         if (r.response.data)
-                            self.item = tv ? r.response.data.item : r.response.data;
+                            _this.item = tv ? r.response.data.item : r.response.data;
                         else
-                            self.item = tv ? r.response.item : r.response;
-                        resolve && resolve.call(self, tv ? r.response : self.item);
+                            _this.item = tv ? r.response.item : r.response;
+                        resolve && resolve.call(_this, tv ? r.response : _this.item);
                     }
                 }, function (err) {
-                    (opts.error || self.session.error || reject).call(self, self.session.getError(err));
+                    (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
                 });
             });
         };
@@ -1911,22 +1906,23 @@ var BusinessObject = /** @class */ (function () {
          * @function
          */
         this.populate = function (rowId, opts) {
-            var self = _this;
+            var origin = 'BusinessObject.populate';
+            var ses = _this.session;
             opts = opts || {};
             return new Promise(function (resolve, reject) {
                 var p = _this.getReqOptions(opts);
-                self.session.req.call(self.session, self.path + '&action=populate&' + self.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, function (res, status) {
-                    var r = self.session.parse(res, status);
-                    self.session.debug('[simplicite.BusinessObject.populate] HTTP status = ' + status + ', response type = ' + r.type);
+                ses.req(_this.path + '&action=populate&' + _this.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, function (res, status) {
+                    var r = ses.parse(res, status);
+                    ses.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
                     if (r.type === 'error') {
-                        (opts.error || self.session.error || reject).call(self, r.response);
+                        (opts.error || ses.error || reject).call(_this, ses.getError(r.response, undefined, origin));
                     }
                     else {
-                        self.item = r.response.data ? r.response.data : r.response;
-                        resolve && resolve.call(self, self.item);
+                        _this.item = r.response.data ? r.response.data : r.response;
+                        resolve && resolve.call(_this, _this.item);
                     }
                 }, function (err) {
-                    (opts.error || self.session.error || reject).call(self, self.session.getError(err));
+                    (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
                 });
             });
         };
@@ -1956,25 +1952,26 @@ var BusinessObject = /** @class */ (function () {
          * @function
          */
         this.create = function (item, opts) {
-            var self = _this;
+            var origin = 'BusinessObject.create';
+            var ses = _this.session;
             opts = opts || {};
             return new Promise(function (resolve, reject) {
                 if (item)
-                    self.item = item;
-                self.item.row_id = self.session.constants.DEFAULT_ROW_ID;
+                    _this.item = item;
+                _this.item.row_id = ses.constants.DEFAULT_ROW_ID;
                 var p = _this.getReqOptions(opts);
-                self.session.req.call(self.session, self.path + '&action=create' + p, _this.getReqParams(self.item), function (res, status) {
-                    var r = self.session.parse(res, status);
-                    self.session.debug('[simplicite.BusinessObject.create] HTTP status = ' + status + ', response type = ' + r.type);
+                ses.req(_this.path + "&action=create" + p, _this.getReqParams(_this.item), function (res, status) {
+                    var r = ses.parse(res, status);
+                    ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                     if (r.type === 'error') {
-                        (opts.error || self.session.error || reject).call(self, r.response);
+                        (opts.error || ses.error || reject).call(_this, ses.getError(r.response, undefined, origin));
                     }
                     else {
-                        self.item = r.response.data ? r.response.data : r.response;
-                        resolve && resolve.call(self, self.item);
+                        _this.item = r.response.data ? r.response.data : r.response;
+                        resolve && resolve.call(_this, _this.item);
                     }
                 }, function (err) {
-                    (opts.error || self.session.error || reject).call(self, self.session.getError(err));
+                    (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
                 });
             });
         };
@@ -1987,24 +1984,25 @@ var BusinessObject = /** @class */ (function () {
          * @function
          */
         this.update = function (item, opts) {
-            var self = _this;
+            var origin = 'BusinessObject.update';
+            var ses = _this.session;
             opts = opts || {};
             return new Promise(function (resolve, reject) {
                 if (item)
-                    self.item = item;
+                    _this.item = item;
                 var p = _this.getReqOptions(opts);
-                self.session.req.call(self.session, self.path + '&action=update' + p, _this.getReqParams(self.item), function (res, status) {
-                    var r = self.session.parse(res, status);
-                    self.session.debug('[simplicite.BusinessObject.update] HTTP status = ' + status + ', response type = ' + r.type);
+                ses.req(_this.path + '&action=update' + p, _this.getReqParams(_this.item), function (res, status) {
+                    var r = ses.parse(res, status);
+                    ses.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
                     if (r.type === 'error') {
-                        (opts.error || self.session.error || reject).call(self, r.response);
+                        (opts.error || ses.error || reject).call(_this, ses.getError(r.response, undefined, origin));
                     }
                     else {
-                        self.item = r.response.data ? r.response.data : r.response;
-                        resolve && resolve.call(self, self.item);
+                        _this.item = r.response.data ? r.response.data : r.response;
+                        resolve && resolve.call(_this, _this.item);
                     }
                 }, function (err) {
-                    (opts.error || self.session.error || reject).call(self, self.session.getError(err));
+                    (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
                 });
             });
         };
@@ -2017,24 +2015,25 @@ var BusinessObject = /** @class */ (function () {
          * @function
          */
         this.del = function (item, opts) {
-            var self = _this;
+            var origin = 'BusinessObject.del';
+            var ses = _this.session;
             opts = opts || {};
             return new Promise(function (resolve, reject) {
                 if (item)
-                    self.item = item;
-                self.session.req.call(self.session, self.path + '&action=delete&' + self.metadata.rowidfield + '=' + encodeURIComponent(self.item[self.metadata.rowidfield]), undefined, function (res, status) {
-                    var r = self.session.parse(res, status);
-                    self.session.debug('[simplicite.BusinessObject.del] HTTP status = ' + status + ', response type = ' + r.type);
+                    _this.item = item;
+                ses.req(_this.path + '&action=delete&' + _this.metadata.rowidfield + '=' + encodeURIComponent(_this.item[_this.metadata.rowidfield]), undefined, function (res, status) {
+                    var r = ses.parse(res, status);
+                    ses.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
                     if (r.type === 'error') {
-                        (opts.error || self.session.error || reject).call(self, r.response);
+                        (opts.error || ses.error || reject).call(_this, ses.getError(r.response, undefined, origin));
                     }
                     else {
-                        self.item = undefined;
+                        _this.item = undefined;
                         delete r.response.undoredo;
-                        resolve && resolve.call(self, r.response);
+                        resolve && resolve.call(_this, r.response);
                     }
                 }, function (err) {
-                    (opts.error || self.session.error || reject).call(self, self.session.getError(err));
+                    (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
                 });
             });
         };
@@ -2049,51 +2048,52 @@ var BusinessObject = /** @class */ (function () {
          * @function
          */
         this.action = function (action, rowId, opts) {
-            var self = _this;
+            var origin = "BusinessObject.action(" + action + ")";
+            var ses = _this.session;
             opts = opts || {};
             return new Promise(function (resolve, reject) {
-                self.session.req.call(self.session, self.path + '&action=' + encodeURIComponent(action) + (rowId ? '&' + self.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : ''), _this.getReqParams(opts.parameters), function (res, status) {
-                    var r = self.session.parse(res, status);
-                    self.session.debug('[simplicite.BusinessObject.action(' + action + ')] HTTP status = ' + status + ', response type = ' + r.type);
+                ses.req(_this.path + '&action=' + encodeURIComponent(action) + (rowId ? '&' + _this.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : ''), _this.getReqParams(opts.parameters), function (res, status) {
+                    var r = ses.parse(res, status);
+                    ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                     if (r.type === 'error') {
-                        (opts.error || self.session.error || reject).call(self, r.response);
+                        (opts.error || ses.error || reject).call(_this, ses.getError(r.response, undefined, origin));
                     }
                     else {
                         var result = r.response.result;
-                        resolve && resolve.call(self, result);
+                        resolve && resolve.call(_this, result);
                     }
                 }, function (err) {
-                    (opts.error || self.session.error || reject).call(self, self.session.getError(err));
+                    (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
                 });
             });
         };
         /**
          * Build a pivot table
-         * @param {string} crosstab Pivot table name
+         * @param {string} ctb Pivot table name
          * @param {object} [opts] Options
          * @param {object} [opts.filters] Filters, by default current filters are used
          * @param {function} [opts.error] Error handler function
          * @return {promise<object>} A promise to the pivot table data (also avialable as the <code>crosstabdata</code> member)
          * @function
          */
-        this.crosstab = function (crosstab, opts) {
-            var self = _this;
+        this.crosstab = function (ctb, opts) {
+            var origin = "BusinessObject.crosstab(" + ctb + ")";
+            var ses = _this.session;
             opts = opts || {};
             return new Promise(function (resolve, reject) {
                 if (opts.filters)
-                    self.filters = opts.filters;
-                self.session.req.call(self.session, self.path + '&action=crosstab&crosstab=' + encodeURIComponent(crosstab), _this.getReqParams(self.filters), function (res, status) {
-                    var r = self.session.parse(res, status);
-                    self.session.debug('[simplicite.BusinessObject.crosstab(' + crosstab + ')] HTTP status = ' + status + ', response type = ' + r.type);
+                    _this.filters = opts.filters;
+                ses.req(_this.path + '&action=crosstab&crosstab=' + encodeURIComponent(ctb), _this.getReqParams(_this.filters), function (res, status) {
+                    var r = ses.parse(res, status);
+                    ses.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
                     if (r.type === 'error') {
-                        (opts.error || self.session.error || reject).call(self, r.response);
+                        (opts.error || ses.error || reject).call(_this, ses.getError(r.response, undefined, origin));
                     }
                     else {
-                        self.crosstabdata = r.response;
-                        resolve && resolve.call(self, self.crosstabdata);
+                        resolve && resolve.call(_this, r.response);
                     }
                 }, function (err) {
-                    (opts.error || self.session.error || reject).call(self, self.session.getError(err));
+                    (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
                 });
             });
         };
@@ -2107,27 +2107,28 @@ var BusinessObject = /** @class */ (function () {
          * @function
          */
         this.print = function (prt, rowId, opts) {
-            var self = _this;
+            var origin = "BusinessObject.print(" + prt + ")";
+            var ses = _this.session;
             opts = opts || {};
             return new Promise(function (resolve, reject) {
                 if (opts.filters)
-                    self.filters = opts.filters;
+                    _this.filters = opts.filters;
                 var p = '';
                 if (opts.all)
                     p += '&all=' + !!opts.all;
                 if (opts.mailing)
                     p += '&mailing=' + !!opts.mailing;
-                self.session.req.call(self.session, self.path + '&action=print&printtemplate=' + encodeURIComponent(prt) + (rowId ? '&' + self.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : '') + p, undefined, function (res, status) {
-                    var r = self.session.parse(res, status);
-                    self.session.debug('[simplicite.BusinessObject.print(' + prt + ')] HTTP status = ' + status + ', response type = ' + r.type);
+                ses.req(_this.path + '&action=print&printtemplate=' + encodeURIComponent(prt) + (rowId ? '&' + _this.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : '') + p, undefined, function (res, status) {
+                    var r = ses.parse(res, status);
+                    ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                     if (r.type === 'error') {
-                        (opts.error || self.session.error || reject).call(self, r.response);
+                        (opts.error || ses.error || reject).call(_this, ses.getError(r.response, undefined, origin));
                     }
                     else {
-                        resolve && resolve.call(self, new Doc(r.response));
+                        resolve && resolve.call(_this, new Doc(r.response));
                     }
                 }, function (err) {
-                    (opts.error || self.session.error || reject).call(self, self.session.getError(err));
+                    (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
                 });
             });
         };
@@ -2141,24 +2142,25 @@ var BusinessObject = /** @class */ (function () {
          * @function
          */
         this.setParameter = function (param, value, opts) {
-            var self = _this;
+            var origin = 'BusinessObject.setParameter';
+            var ses = _this.session;
             opts = opts || {};
             return new Promise(function (resolve, reject) {
                 var p = { name: param };
                 if (value)
                     p.value = value;
-                self.session.req.call(self.session, self.path + '&action=setparameter', _this.getReqParams(p), function (res, status) {
-                    var r = self.session.parse(res, status);
-                    self.session.debug('[simplicite.BusinessObject.setParameter(' + p.name + ')] HTTP status = ' + status + ', response type = ' + r.type);
+                ses.req(_this.path + '&action=setparameter', _this.getReqParams(p), function (res, status) {
+                    var r = ses.parse(res, status);
+                    ses.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
                     if (r.type === 'error') {
-                        (opts.error || self.session.error || reject).call(self, r.response);
+                        (opts.error || ses.error || reject).call(_this, r.response);
                     }
                     else {
                         var result = r.response.result;
-                        resolve && resolve.call(self, result);
+                        resolve && resolve.call(_this, result);
                     }
                 }, function (err) {
-                    (opts.error || self.session.error || reject).call(self, self.session.getError(err));
+                    (opts.error || ses.error || reject).call(_this, ses.getError(err));
                 });
             });
         };
@@ -2171,22 +2173,23 @@ var BusinessObject = /** @class */ (function () {
          * @function
          */
         this.getParameter = function (param, opts) {
-            var self = _this;
+            var origin = 'BusinessObject.getParameter';
+            var ses = _this.session;
             opts = opts || {};
             return new Promise(function (resolve, reject) {
                 var p = { name: param };
-                self.session.req.call(self.session, self.path + '&action=getparameter', _this.getReqParams(p), function (res, status) {
-                    var r = self.session.parse(res, status);
-                    self.session.debug('[simplicite.BusinessObject.getParameter(' + p.name + ')] HTTP status = ' + status + ', response type = ' + r.type);
+                ses.req(_this.path + '&action=getparameter', _this.getReqParams(p), function (res, status) {
+                    var r = ses.parse(res, status);
+                    ses.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
                     if (r.type === 'error') {
-                        (opts.error || self.session.error || reject).call(self, r.response);
+                        (opts.error || ses.error || reject).call(_this, r.response);
                     }
                     else {
                         var result = r.response.result;
-                        resolve && resolve.call(self, result);
+                        resolve && resolve.call(_this, result);
                     }
                 }, function (err) {
-                    (opts.error || self.session.error || reject).call(self, self.session.getError(err));
+                    (opts.error || ses.error || reject).call(_this, ses.getError(err));
                 });
             });
         };
@@ -2284,12 +2287,13 @@ var ExternalObject = /** @class */ (function () {
          * @function
          */
         this.call = function (params, data, opts) {
-            var self = _this;
+            var origin = 'ExternalObject.call';
+            var ses = _this.session;
             opts = opts || {};
             return new Promise(function (resolve, reject) {
                 var p = '';
                 if (params)
-                    p = '?' + self.callParams(params);
+                    p = '?' + _this.callParams(params);
                 var m = opts.method ? opts.method.toUpperCase() : (data ? 'POST' : 'GET');
                 var h = {};
                 if (opts.contentType) {
@@ -2298,51 +2302,51 @@ var ExternalObject = /** @class */ (function () {
                 else if (data) { // Try to guess type...
                     h['Content-Type'] = typeof data === 'string' ? 'application/x-www-form-urlencoded' : 'application/json';
                 }
-                var b = self.session.getBearerTokenHeader();
+                var b = ses.getBearerTokenHeader();
                 if (b) {
                     h['X-Simplicite-Authorization'] = b;
                 }
                 else {
-                    b = self.session.getBasicAuthHeader();
+                    b = ses.getBasicAuthHeader();
                     if (b)
                         h.Authorization = b;
                 }
-                var u = self.session.parameters.url + self.path + p;
+                var u = ses.parameters.url + _this.path + p;
                 var d = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined;
-                self.session.debug('[simplicite.ExternalObject.call] ' + m + ' ' + u + ' with ' + (d ? ' with ' + d : ''));
+                ses.debug('[simplicite.ExternalObject.call] ' + m + ' ' + u + ' with ' + (d ? ' with ' + d : ''));
                 (0, node_fetch_1.default)(u, {
                     method: m,
                     headers: h,
-                    timeout: self.session.timeout * 1000,
+                    timeout: ses.parameters.timeout * 1000,
                     mode: 'cors',
                     credentials: 'include',
                     body: d
                 }).then(function (res) {
                     var type = res.headers.get('content-type');
-                    self.session.debug('[simplicite.ExternalObject.call(' + p + ')] HTTP status = ' + res.status + ', response content type = ' + type);
+                    ses.debug("[" + origin + "] HTTP status = " + res.status + ", response content type = " + type);
                     if (type && type.startsWith('application/json')) { // JSON
                         res.json().then(function (jsonData) {
-                            resolve && resolve.call(self, jsonData, res.status, res.headers);
+                            resolve && resolve.call(_this, jsonData, res.status, res.headers);
                         }).catch(function (err) {
-                            (opts.error || self.error || reject).call(self, self.getError(err));
+                            (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
                         });
                     }
                     else if (type && type.startsWith('text/')) { // Text
                         res.text().then(function (textData) {
-                            resolve && resolve.call(self, textData, res.status, res.headers);
+                            resolve && resolve.call(_this, textData, res.status, res.headers);
                         }).catch(function (err) {
-                            (opts.error || self.error || reject).call(self, self.getError(err));
+                            (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
                         });
                     }
                     else { // Binary
                         res.arrayBuffer().then(function (binData) {
-                            resolve && resolve.call(self, binData, res.status, res.headers);
+                            resolve && resolve.call(_this, binData, res.status, res.headers);
                         }).catch(function (err) {
-                            (opts.error || self.error || reject).call(self, self.getError(err));
+                            (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
                         });
                     }
                 }).catch(function (err) {
-                    (opts.error || self.error || reject).call(self, self.getError(err));
+                    (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
                 });
             });
         };

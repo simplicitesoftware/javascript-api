@@ -104,7 +104,7 @@ app.getHealth().then(health => {
 	assert.ok(sys.isTimestampField(f) == false);
 	app.info('Resource URL: ' + sys.getResourceURL('TEST'));
 	app.info('Resource URL: ' + sys.getResourceURL('TEST', app.constants.RESOURCE_TYPE_ICON));
-	return sys.count(sysFilters);
+	return sys.getCount(sysFilters);
 }).then(count => {
 	app.debug(count);
 	assert.ok(count >= 0);
