@@ -1,13 +1,13 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.3
+ * @version 2.2.4
  * @license Apache-2.0
  */
 import fetch from "node-fetch";
 import { Buffer } from "buffer";
 const constants = {
-  MODULE_VERSION: "2.2.3",
+  MODULE_VERSION: "2.2.4",
   DEFAULT_ROW_ID_NAME: "row_id",
   DEFAULT_ROW_ID: "0",
   CONTEXT_NONE: 0,

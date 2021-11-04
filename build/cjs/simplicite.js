@@ -2,7 +2,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.3
+ * @version 2.2.4
  * @license Apache-2.0
  */
 var __importDefault = (this && this.__importDefault) || function (mod) {
@@ -20,7 +20,7 @@ var constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '2.2.3',
+    MODULE_VERSION: '2.2.4',
     /**
      * Default row ID field name
      * @constant {string}

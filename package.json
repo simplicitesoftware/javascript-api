@@ -1,7 +1,7 @@
 {
   "name": "simplicite",
   "type": "module",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "description": "Simplicite(R) platform Javascript API (for node.js and browser)",
   "repository": {
     "type": "git",
@@ -54,6 +54,7 @@
     "dist/simplicite.min.js",
     "dist/simplicite.min.js.map"
   ],
+  "main": "dist/simplicite.mjs",
   "module": "dist/simplicite.mjs",
   "browser": "dist/simplicite.min.js",
   "types": "dist/simplicite.d.ts",
