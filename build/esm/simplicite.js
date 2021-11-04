@@ -843,7 +843,7 @@ class Session {
                 else {
                     this.grant = new Grant(r.response); // Set as Grant
                     if (pic)
-                        this.grant.picture = new Document(this.grant.picture); // Set picture as Document
+                        this.grant.picture = new Doc(this.grant.picture); // Set picture as Document
                     if (txt)
                         this.grant.texts = Object.assign(new Map(), this.grant.texts); // Set texts as Map
                     resolve && resolve.call(this, this.grant);
@@ -1005,7 +1005,7 @@ class Session {
                 else {
                     this.news = r.response;
                     for (const n of this.news)
-                        n.image = new Document(n.image); // Set image as document
+                        n.image = new Doc(n.image); // Set image as document
                     resolve && resolve.call(this, this.news);
                 }
             }, (err) => {
@@ -1089,41 +1089,41 @@ class Session {
  * Document
  * @class
  */
-class Document {
+class Doc {
     /**
      * Constructor
-     * @param doc {object} Document object
+     * @param value {object} Document value
      */
-    constructor(doc) {
-        Object.assign(this, doc);
+    constructor(value) {
+        Object.assign(this, value);
     }
     /**
-     * Document's ID
+     * Document ID
      * @member {string}
      */
     id;
     /**
-     * Document's MIME type
+     * Document MIME type
      * @member {string}
      */
     mime;
     /**
-     * Document's file name
+     * Document file name
      * @member {string}
      */
     filename;
     /**
-     * Document's content as base 64
+     * Document content as base 64
      * @member {string}
      */
     content;
     /**
-     * Document's thumbnail as base 64
+     * Document thumbnail as base 64
      * @member {string}
      */
     thumbnail;
     /**
-     * Get the document's ID
+     * Get the document ID
      * @return {string} ID
      * @function
      */
@@ -1131,7 +1131,7 @@ class Document {
         return this.id;
     };
     /**
-     * Get the document's MIME type
+     * Get the document MIME type
      * @return {string} MIME type
      * @function
      */
@@ -1145,7 +1145,7 @@ class Document {
      */
     getMimeType = this.getMIMEType;
     /**
-     * Set the document's MIME type
+     * Set the document MIME type
      * @param {string} mime MIME type
      * @function
      */
@@ -1159,7 +1159,7 @@ class Document {
      */
     setMimeType = this.setMIMEType;
     /**
-     * Get the document's file name
+     * Get the document file name
      * @return {string} File name
      * @function
      */
@@ -1173,7 +1173,7 @@ class Document {
      */
     getFileName = this.getFilename;
     /**
-     * Set the document's file name
+     * Set the document file name
      * @param {string} filename File name
      * @function
      */
@@ -1187,7 +1187,7 @@ class Document {
      */
     setFileName = this.setFilename;
     /**
-     * Get the document's content (encoded in base 64)
+     * Get the document content (encoded in base 64)
      * @return {string} Content
      * @function
      */
@@ -1195,7 +1195,7 @@ class Document {
         return this.content;
     };
     /**
-     * Get the document's thumbnail (encoded in base 64)
+     * Get the document thumbnail (encoded in base 64)
      * @return {string} Thumbnail
      * @function
      */
@@ -1203,7 +1203,7 @@ class Document {
         return this.thumbnail;
     };
     /**
-     * Get the document's content as a buffer
+     * Get the document content as a buffer
      * @param {any} data Content data
      * @return {buffer} Content data as buffer
      * @private
@@ -1212,7 +1212,7 @@ class Document {
         return Buffer.from(data, 'base64');
     }
     /**
-     * Get the document's content as an array buffer
+     * Get the document content as an array buffer
      * @return {ArrayBuffer} Content as an array buffer
      * @function
      */
@@ -1220,7 +1220,7 @@ class Document {
         return this.getBuffer(this.content).buffer;
     };
     /**
-     * Get the document's thumbnail as an array buffer
+     * Get the document thumbnail as an array buffer
      * @return {ArrayBuffer} Thumbnail as an array buffer
      * @function
      */
@@ -1228,7 +1228,7 @@ class Document {
         return this.getBuffer(this.thumbnail || '').buffer;
     };
     /**
-     * Get the document's content as a text
+     * Get the document content as a text
      * @return {string} Content as plain text
      * @function
      */
@@ -1236,7 +1236,7 @@ class Document {
         return this.getBuffer(this.content).toString('utf-8');
     };
     /**
-     * Set the document's content
+     * Set the document content
      * @param {string} content Content (encoded in base 64)
      * @function
      */
@@ -1244,7 +1244,7 @@ class Document {
         this.content = content;
     };
     /**
-     * Set the document's content from plain text string
+     * Set the document content from plain text string
      * @param {string} content Content as plain text string
      * @function
      */
@@ -1252,7 +1252,7 @@ class Document {
         this.content = Buffer.from(content, 'utf-8').toString('base64');
     };
     /**
-     * Get the document's data URL
+     * Get the document data URL
      * @param {boolean} [thumbnail=false] Thumbnail? If thumbnail does not exists the content is used.
      * @return {string} Data URL or nothing if content is empty
      */
@@ -1314,16 +1314,16 @@ class Grant {
     lastname;
     /**
      * User picture
-     * @member {Document}
+     * @member {Doc}
      */
     picture;
     /**
-     * User picture
+     * User responsibilities
      * @member {array}
      */
     responsibilities;
     /**
-     * User picture
+     * Translated texts
      * @member {object}
      */
     texts;
@@ -1395,7 +1395,7 @@ class Grant {
     getLastName = this.getLastname; // Naming flexibility
     /**
      * Get picture data URL
-     * @return {Document} Picture data URL
+     * @return {Doc} Picture data URL
      * @function
      */
     getPictureURL = () => {
@@ -1693,14 +1693,18 @@ class BusinessObject {
      * Get value of field for item (or current item)
      * @param {(string|object)} field Field name or definition
      * @param {object} [item] Item (defaults to current item)
-     * @return {strin|Document} Value
+     * @return {string|Doc} Value
      * @function
      */
     getFieldValue = (field, item) => {
         if (!item)
             item = this.item;
         if (field && item) {
-            return item[typeof field === 'string' ? field : field.name];
+            const val = item[typeof field === 'string' ? field : field.name];
+            if (val && val.mime) // Document?
+                return new Doc(val);
+            else
+                return val;
         }
     };
     /**
@@ -1734,7 +1738,7 @@ class BusinessObject {
      * Get the field's value as document/image for item (or current item)
      * @param {(string|object)} field Field name or definition
      * @param {object} [item] Item (defaults to current item)
-     * @return {Document} Document/image (or nothing if the field is not of document/image type or if it is empty)
+     * @return {string|Doc} Document/image (or nothing if the field is not of document/image type or if it is empty)
      * @function
      */
     getFieldDocument = (field, item) => {
@@ -1742,7 +1746,7 @@ class BusinessObject {
             field = field.fullinput || field.input || field.name;
         const val = this.getFieldValue(field, item);
         if (val && val.mime)
-            return new Document(val);
+            return new Doc(val);
         else
             return val;
     };
@@ -1798,7 +1802,7 @@ class BusinessObject {
         if (!item)
             item = this.item;
         if (field && item) {
-            item[typeof field === 'string' ? field : field.name] = value instanceof Document ? value.getValue() : value;
+            item[typeof field === 'string' ? field : field.name] = value instanceof Doc ? value.getValue() : value;
         }
     };
     /**
@@ -2308,7 +2312,7 @@ class BusinessObject {
      * @param {string} [rowId] Row ID
      * @param {object} [opts] Options
      * @param {function} [opts.error] Error handler function
-     * @return {promise<Document>} A promise to the document of the publication
+     * @return {promise<Doc>} A promise to the document of the publication
      * @function
      */
     print = (prt, rowId, opts) => {
@@ -2329,7 +2333,7 @@ class BusinessObject {
                     (opts.error || self.session.error || reject).call(self, r.response);
                 }
                 else {
-                    resolve && resolve.call(self, new Document(r.response));
+                    resolve && resolve.call(self, new Doc(r.response));
                 }
             }, (err) => {
                 (opts.error || self.session.error || reject).call(self, self.session.getError(err));
@@ -2575,7 +2579,7 @@ export default {
     constants,
     session,
     Session,
-    Document,
+    Doc,
     Grant,
     BusinessObject,
     BusinessObjectMetadata,

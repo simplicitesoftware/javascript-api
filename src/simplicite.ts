@@ -1016,7 +1016,7 @@ class Session {
 				} else {
 					this.grant = new Grant(r.response); // Set as Grant
 					if (pic)
-						this.grant.picture = new Document(this.grant.picture); // Set picture as Document
+						this.grant.picture = new Doc(this.grant.picture); // Set picture as Document
 					if (txt)
 						this.grant.texts = Object.assign(new Map<string, string>(), this.grant.texts); // Set texts as Map
 					resolve && resolve.call(this, this.grant);
@@ -1183,7 +1183,7 @@ class Session {
 				} else {
 					this.news = r.response;
 					for (const n of this.news)
-						n.image = new Document(n.image); // Set image as document
+						n.image = new Doc(n.image); // Set image as document
 					resolve && resolve.call(this, this.news);
 				}
 			}, (err: any) => {
@@ -1272,47 +1272,47 @@ class Session {
  * Document
  * @class
  */
-class Document {
+class Doc {
 	/**
 	 * Constructor
-	 * @param doc {object} Document object
+	 * @param value {object} Document value
 	 */
-	constructor(doc: any) {
-		Object.assign(this, doc);
+	constructor(value: any) {
+		Object.assign(this, value);
 	}
 
 	/**
-	 * Document's ID
+	 * Document ID
 	 * @member {string}
 	 */
 	id?: string;
 
 	/**
-	 * Document's MIME type
+	 * Document MIME type
 	 * @member {string}
 	 */
 	mime?: string;
 
 	/**
-	 * Document's file name
+	 * Document file name
 	 * @member {string}
 	 */
 	filename?: string;
 
 	/**
-	 * Document's content as base 64
+	 * Document content as base 64
 	 * @member {string}
 	 */
 	content?: string;
 
 	/**
-	 * Document's thumbnail as base 64
+	 * Document thumbnail as base 64
 	 * @member {string}
 	 */
 	thumbnail?: string;
 
 	/**
-	 * Get the document's ID
+	 * Get the document ID
 	 * @return {string} ID
 	 * @function
 	 */
@@ -1321,7 +1321,7 @@ class Document {
 	};
 
 	/**
-	 * Get the document's MIME type
+	 * Get the document MIME type
 	 * @return {string} MIME type
 	 * @function
 	 */
@@ -1337,7 +1337,7 @@ class Document {
 	getMimeType = this.getMIMEType;
 
 	/**
-	 * Set the document's MIME type
+	 * Set the document MIME type
 	 * @param {string} mime MIME type
 	 * @function
 	 */
@@ -1353,7 +1353,7 @@ class Document {
 	setMimeType = this.setMIMEType;
 
 	/**
-	 * Get the document's file name
+	 * Get the document file name
 	 * @return {string} File name
 	 * @function
 	 */
@@ -1369,7 +1369,7 @@ class Document {
 	getFileName = this.getFilename;
 
 	/**
-	 * Set the document's file name
+	 * Set the document file name
 	 * @param {string} filename File name
 	 * @function
 	 */
@@ -1385,7 +1385,7 @@ class Document {
 	setFileName = this.setFilename;
 
 	/**
-	 * Get the document's content (encoded in base 64)
+	 * Get the document content (encoded in base 64)
 	 * @return {string} Content
 	 * @function
 	 */
@@ -1394,7 +1394,7 @@ class Document {
 	};
 
 	/**
-	 * Get the document's thumbnail (encoded in base 64)
+	 * Get the document thumbnail (encoded in base 64)
 	 * @return {string} Thumbnail
 	 * @function
 	 */
@@ -1403,7 +1403,7 @@ class Document {
 	};
 
 	/**
-	 * Get the document's content as a buffer
+	 * Get the document content as a buffer
 	 * @param {any} data Content data
 	 * @return {buffer} Content data as buffer
 	 * @private
@@ -1413,7 +1413,7 @@ class Document {
 	}
 
 	/**
-	 * Get the document's content as an array buffer
+	 * Get the document content as an array buffer
 	 * @return {ArrayBuffer} Content as an array buffer
 	 * @function
 	 */
@@ -1422,7 +1422,7 @@ class Document {
 	};
 
 	/**
-	 * Get the document's thumbnail as an array buffer
+	 * Get the document thumbnail as an array buffer
 	 * @return {ArrayBuffer} Thumbnail as an array buffer
 	 * @function
 	 */
@@ -1431,7 +1431,7 @@ class Document {
 	};
 
 	/**
-	 * Get the document's content as a text
+	 * Get the document content as a text
 	 * @return {string} Content as plain text
 	 * @function
 	 */
@@ -1440,7 +1440,7 @@ class Document {
 	};
 
 	/**
-	 * Set the document's content
+	 * Set the document content
 	 * @param {string} content Content (encoded in base 64)
 	 * @function
 	 */
@@ -1449,7 +1449,7 @@ class Document {
 	};
 
 	/**
-	 * Set the document's content from plain text string
+	 * Set the document content from plain text string
 	 * @param {string} content Content as plain text string
 	 * @function
 	 */
@@ -1458,7 +1458,7 @@ class Document {
 	};
 
 	/**
-	 * Get the document's data URL
+	 * Get the document data URL
 	 * @param {boolean} [thumbnail=false] Thumbnail? If thumbnail does not exists the content is used.
 	 * @return {string} Data URL or nothing if content is empty
 	 */
@@ -1493,55 +1493,55 @@ class Grant {
 
 	/**
 	 * User ID
-	 * @member {string} 
+	 * @member {string}
 	 */
 	userid: string;
 
 	/**
 	 * User name
-	 * @member {string} 
+	 * @member {string}
 	 */
 	login: string;
 
 	/**
 	 * User language
-	 * @member {string} 
+	 * @member {string}
 	 */
 	lang: string;
 
 	/**
 	 * User email address
-	 * @member {string} 
+	 * @member {string}
 	 */
 	email: string;
 
 	/**
 	 * User first name
-	 * @member {string} 
+	 * @member {string}
 	 */
 	firstname: string;
 
 	/**
 	 * User last name
-	 * @member {string} 
+	 * @member {string}
 	 */
 	lastname: string;
 
 	/**
 	 * User picture
-	 * @member {Document} 
+	 * @member {Doc}
 	 */
-	picture: Document;
+	picture: Doc;
 
 	/**
-	 * User picture
-	 * @member {array} 
+	 * User responsibilities
+	 * @member {array}
 	 */
 	responsibilities: Array<string>;
 
 	/**
-	 * User picture
-	 * @member {object} 
+	 * Translated texts
+	 * @member {object}
 	 */
 	texts: Map<string, string>;
 
@@ -1622,7 +1622,7 @@ class Grant {
 	
 	/**
 	 * Get picture data URL
-	 * @return {Document} Picture data URL
+	 * @return {Doc} Picture data URL
 	 * @function
 	 */
 	getPictureURL = (): string => {
@@ -1954,14 +1954,18 @@ class BusinessObject {
 	 * Get value of field for item (or current item)
 	 * @param {(string|object)} field Field name or definition
 	 * @param {object} [item] Item (defaults to current item)
-	 * @return {strin|Document} Value
+	 * @return {string|Doc} Value
 	 * @function
 	 */
-	getFieldValue = (field: string|any, item: any): string|any => {
+	getFieldValue = (field: string|any, item?: any): string|any => {
 		if (!item)
 			item = this.item;
 		if (field && item) {
-			return item[typeof field === 'string' ? field : field.name];
+			const val = item[typeof field === 'string' ? field : field.name];
+			if (val && val.mime) // Document?
+				return new Doc(val);
+			else
+				return val;
 		}
 	};
 
@@ -1972,7 +1976,7 @@ class BusinessObject {
 	 * @return {string} List value
 	 * @function
 	 */
-	getFieldListValue = (field: string|any, item: any) => {
+	getFieldListValue = (field: string|any, item?: any) => {
 		if (typeof field === 'string')
 			field = this.getField(field);
 		const val: string = this.getFieldValue(field, item);
@@ -1986,7 +1990,7 @@ class BusinessObject {
 	 * @return {string} Document/image field data URL (or nothing if the field is not of document/image type or if it is not inlined or if it is empty)
 	 * @function
 	 */
-	getFieldDataURL = (field: string|any, item: any): string => {
+	getFieldDataURL = (field: string|any, item?: any): string => {
 		if (typeof field !== 'string')
 			field = field.fullinput || field.name;
 		const val: string|any = this.getFieldValue(field, item);
@@ -1998,15 +2002,15 @@ class BusinessObject {
 	 * Get the field's value as document/image for item (or current item)
 	 * @param {(string|object)} field Field name or definition
 	 * @param {object} [item] Item (defaults to current item)
-	 * @return {Document} Document/image (or nothing if the field is not of document/image type or if it is empty)
+	 * @return {string|Doc} Document/image (or nothing if the field is not of document/image type or if it is empty)
 	 * @function
 	 */
-	getFieldDocument = (field: string|any, item: any): any => {
+	getFieldDocument = (field: string|any, item?: any): any => {
 		if (typeof field !== 'string')
 			field = field.fullinput || field.input || field.name;
 		const val: string|any = this.getFieldValue(field, item);
 		if (val && val.mime)
-			return new Document(val);
+			return new Doc(val);
 		else
 			return val;
 	};
@@ -2019,7 +2023,7 @@ class BusinessObject {
 	 * @return {string} Document/image field URL (or nothing if the field is not of document/image type or if it is empty)
 	 * @function
 	 */
-	getFieldDocumentURL = (field: string|any, item: any, thumbnail: boolean): string => {
+	getFieldDocumentURL = (field: string|any, item?: any, thumbnail?: boolean): string => {
 		if (typeof field !== 'string')
 			field = field.fullinput || field.input || field.name;
 		let val: string|any = this.getFieldValue(field, item);
@@ -2061,11 +2065,11 @@ class BusinessObject {
 	 * @param {object} [item] Item (defaults to current item)
 	 * @function
 	 */
-	setFieldValue = (field: string|any, value: string|any, item: any): void => {
+	setFieldValue = (field: string|any, value: string|any, item?: any): void => {
 		if (!item)
 			item = this.item;
 		if (field && item) {
-			item[typeof field === 'string' ? field : field.name] = value instanceof Document ? (value as Document).getValue() : value;
+			item[typeof field === 'string' ? field : field.name] = value instanceof Doc ? (value as Doc).getValue() : value;
 		}
 	};
 
@@ -2584,7 +2588,7 @@ class BusinessObject {
 	 * @param {string} [rowId] Row ID
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
-	 * @return {promise<Document>} A promise to the document of the publication
+	 * @return {promise<Doc>} A promise to the document of the publication
 	 * @function
 	 */
 	print = (prt: string, rowId: string, opts: any): Promise<any> => {
@@ -2604,7 +2608,7 @@ class BusinessObject {
 				if (r.type === 'error') {
 					(opts.error || self.session.error || reject).call(self, r.response);
 				} else {
-					resolve && resolve.call(self, new Document(r.response));
+					resolve && resolve.call(self, new Doc(r.response));
 				}
 			}, (err: any) => {
 				(opts.error || self.session.error || reject).call(self, self.session.getError(err));
@@ -2856,7 +2860,7 @@ export default {
 	constants,
 	session,
 	Session,
-	Document,
+	Doc,
 	Grant,
 	BusinessObject,
 	BusinessObjectMetadata,
