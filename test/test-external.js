@@ -6,8 +6,9 @@ const adminPassword = process.env.TEST_SIMPLICITE_ADMIN_PASSWORD || 'designer';
 
 const app = simplicite.session({
 	url: process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080',
-	username: adminUsername, password: adminPassword,
-	debug: process.env.TEST_SIMPLICITE_DEBUG == 'true'
+	username: adminUsername,
+	password: adminPassword,
+	debug: process.env.TEST_SIMPLICITE_DEBUG === 'true'
 });
 
 app.debug('Parameters', app.parameters);
@@ -20,26 +21,27 @@ let ext;
 
 app.login().then(user => {
 	app.debug(user);
-	assert.ok(user.login == adminUsername);
+	assert.ok(user.login === adminUsername);
 	app.info('Logged in as ' + user.login);
 	ext = app.getExternalObject(extName);
 	return ext.call(params); // GET call
 }).then(res => {
-	app.info(res);
-	assert.ok(res.method == 'get');
+	app.debug(res);
+	assert.ok(res.method === 'get');
 	return ext.call(null, data); // POST call without params
 }).then(res => {
-	app.info(res);
-	assert.ok(res.method == 'post');
+	app.debug(res);
+	assert.ok(res.method === 'post');
 	return ext.call(params, data); // POST call with params
 }).then(res => {
-	app.info(res);
-	assert.ok(res.method == 'post');
+	app.debug(res);
+	assert.ok(res.method === 'post');
 	return app.logout();
 }).then(logout => {
 	app.debug(logout);
 	assert.ok(logout.result);
 	app.info('Logged out');
+	app.info('OK');
 }).catch(err => {
 	app.error(err);
 });

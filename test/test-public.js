@@ -1,11 +1,10 @@
 import simplicite from '../dist/esm/simplicite.js';
 import assert from 'assert';
 
-const debug = process.env.TEST_SIMPLICITE_DEBUG == 'true';
 const app = simplicite.session({
 	url: process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080',
 	endpoint: 'public',
-	debug: debug
+	debug: process.env.TEST_SIMPLICITE_DEBUG === 'true'
 });
 
 app.debug('Parameters', app.parameters);
@@ -16,6 +15,7 @@ obj.search().then(res => {
 	app.debug(res);
 	assert.ok(res);
 	assert.ok(res.length);
+	app.info('OK');
 }).catch(err => {
 	app.error(err);
 });

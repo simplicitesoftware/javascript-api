@@ -11,9 +11,9 @@ const elt = (id, html) => {
 	return el;
 };
 
-const error = err => {
+function error(err) {
 	elt('message', '<span style="color: red;">Error: ' + err.message + '</span>');
-};
+}
 
 const app = simplicite.session({ url: url, debug: debug, errorHandler: error });
 app.debug('PARAMS', app.parameters);

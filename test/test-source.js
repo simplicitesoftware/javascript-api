@@ -7,7 +7,7 @@ const adminPassword = process.env.TEST_SIMPLICITE_ADMIN_PASSWORD || 'designer';
 const app = simplicite.session({
 	url: process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080',
 	username: adminUsername, password: adminPassword,
-	debug: process.env.TEST_SIMPLICITE_DEBUG == 'true'
+	debug: process.env.TEST_SIMPLICITE_DEBUG === 'true'
 });
 
 app.debug('Parameters', app.parameters);
@@ -15,9 +15,9 @@ app.debug('Parameters', app.parameters);
 let obj;
 const objName = 'AppTestSrc';
 
-app.login().then(res => {
-	app.debug(res);
-	app.info('Logged in as ' + res.login);
+app.login().then(user => {
+	app.debug('User', user);
+	app.info('Logged in as ' + user.login);
 	return app.getDevInfo();
 }).then(devinfo => {
 	app.debug('DevInfo', devinfo);
@@ -31,15 +31,15 @@ app.login().then(res => {
 	return obj.search({ obo_name: objName });
 }).then(list => {
 	app.debug('List', list);
-	if (list.length != 1)
-		throw 'Object ' + objName + ' not found';
+	if (list.length !== 1)
+		throw new Error('Object ' + objName + ' not found');
 	return obj.getForUpdate(list[0].row_id, { inlineDocuments: true });
 }).then(item => {
 	app.debug(item);
 	let doc = obj.getFieldDocument('obo_script_id');
 	app.debug('Document', doc);
 	if (!doc)
-		throw 'No source for object ' + objName;
+		throw new Error('No source for object ' + objName);
 	let src = doc.getContentAsText();
 	app.debug(src);
 	doc.setContentFromText(src += '\n// ' + new Date()); 
@@ -48,8 +48,10 @@ app.login().then(res => {
 }).then(item => {
 	app.debug('Item', item);
 	return app.logout();
-}).then(() => {
+}).then(logout => {
+	app.debug('Logout', logout);
 	app.info('Logged out');
+	app.info('OK');
 }).catch(err => {
 	app.error(err);
 });

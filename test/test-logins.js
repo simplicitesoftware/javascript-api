@@ -14,7 +14,7 @@ const testPassword = process.env.TEST_SIMPLICITE_PASSWORD || 'simplicite';
 const app = simplicite.session({
 	url: process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080',
 	//errorHandler: myErrorHandler,
-	debug: process.env.TEST_SIMPLICITE_DEBUG == 'true'
+	debug: process.env.TEST_SIMPLICITE_DEBUG === 'true'
 });
 
 app.debug(app.parameters);
@@ -31,11 +31,11 @@ app.setPassword(adminPassword);
 app.login().then(user => {
 	app.debug(user);
 	app.info('Logged in as ' + user.login + ' with authentication token ' + user.authtoken);
-	assert.ok(user.login == adminUsername);
+	assert.ok(user.login === adminUsername);
 	return app.getGrant({ inlinePicture: true, includeTexts: true });
 }).then(grant => {
 	app.debug(grant);
-	assert.ok(grant.getLogin() == adminUsername);
+	assert.ok(grant.getLogin() === adminUsername);
 	app.info('Hello ' + grant.getFirstName() + ' ' + grant.getLastName() + ' (' + grant.getLogin() + ')');
 	app.info(grant.T('SAVE'));
 	return app.logout();
@@ -46,26 +46,27 @@ app.login().then(user => {
 	return app.login({ username: testUsername, password: testPassword });
 }).then(res => {
 	app.debug(res);
-	assert.ok(res.login == testUsername);
+	assert.ok(res.login = testUsername);
 	app.info('Logged in as ' + res.login);
 	return app.getGrant({ inlinePicture: false });
 }).then(grant => {
 	app.debug(grant);
-	assert.ok(grant.getLogin() == testUsername);
+	assert.ok(grant.getLogin() === testUsername);
 	app.info('Hello ' + grant.getFirstName() + ' ' + grant.getLastName() + ' (' + grant.getLogin() + ')');
 	return app.logout();
 }).then(logout => {
 	app.debug(logout);
 	assert.ok(logout.result);
 	app.info('Logged out');
-	return app.login({ username: 'unknown', password: 'unknown', error: err => {
-		app.debug(err);
-		app.info('Status: ' + err.status + ', message: ' + err.message);
-		assert.ok(err.status == 401);
-		return app.login({ authtoken: 'unknown', error: err => {
-			app.debug(err);
-			app.info('Status: ' + err.status + ', message: ' + err.message);
-			assert.ok(err.status == 401);
+	return app.login({ username: 'unknown', password: 'unknown', error: err1 => {
+		app.debug(err1);
+		app.info('Status: ' + err1.status + ', message: ' + err1.message);
+		assert.ok(err1.status === 401);
+		return app.login({ authtoken: 'unknown', error: err2 => {
+			app.debug(err2);
+			app.info('Status: ' + err2.status + ', message: ' + err2.message);
+			assert.ok(err2.status === 401);
+			app.info('OK');
 		}});
 	}});	
 }).catch(err => {

@@ -7,7 +7,7 @@
 
 import fetch from 'node-fetch'; // Node.js polyfill for fetch
 import { Buffer } from 'buffer'; // Browser polyfill for Buffer
- 
+
 /**
  * Constants
  * @constant
@@ -503,7 +503,7 @@ type SessionParams = {
  * Simplicite application session. Same as <code>new Session(parameter)</code>.
  * @param {object} params Parameters (see session class for details)
  * @return {Session} session
-*/
+ */
 const session = (params: SessionParams): Session => {
 	return new Session(params);
 };
@@ -535,16 +535,36 @@ class Session {
 	 */
 	constructor(params: SessionParams) {
 		if (!params)
-			throw 'No session parammeters';
-		
+			throw new Error('No session parammeters');
+
 		this.endpoint = params.endpoint || SessionParamEndpoint.API;
-		
-		this.log = params.logHandler || ((...args: any): void => { console.log(args); });
-		this.info = params.infoHandler || ((...args: any): void => { console.info('INFO', args); });
-		this.warn = params.warningHandler || ((...args: any): void => { console.warn('WARN', args); });
-		this.error = params.errorHandler || ((...args: any): void => { console.error('ERROR', args); });
+
+		this.log = params.logHandler || ((...args: any): void => {
+			// tslint:disable-next-line: no-console
+			console.log(args);
+		});
+
+		this.info = params.infoHandler || ((...args: any): void => {
+			// tslint:disable-next-line: no-console
+			console.info('INFO', args);
+		});
+
+		this.warn = params.warningHandler || ((...args: any): void => {
+			// tslint:disable-next-line: no-console
+			console.warn('WARN', args);
+		});
+
+		this.error = params.errorHandler || ((...args: any): void => {
+			// tslint:disable-next-line: no-console
+			console.error('ERROR', args);
+		});
+
 		this.debugMode = !!params.debug;
-		this.debug = params.debugHandler || ((...args: any): void => { if (this.debugMode) console.log('DEBUG', args); });
+		this.debug = params.debugHandler || ((...args: any): void => {
+			if (this.debugMode)
+				// tslint:disable-next-line: no-console
+				console.log('DEBUG', args);
+		});
 
 		if (params.url) {
 			try {
@@ -568,7 +588,7 @@ class Session {
 				return;
 			}
 		}
-		
+
 		const scheme = params.scheme || (params.port === 443 ? 'https' : 'http');
 		if (scheme !== 'http' && scheme !== 'https') {
 			this.error('Incorrect scheme [' + params.scheme + ']');
@@ -579,24 +599,24 @@ class Session {
 		let root = params.root || '';
 		if (root === '/')
 			root = '';
-		
+
 		let url = scheme + '://' + host;
-		if ((scheme === 'http' && port != 80) || (scheme === 'https' && port != 443))
+		if ((scheme === 'http' && port !== 80) || (scheme === 'https' && port !== 443))
 			url += ':' + port;
 		if (root !== '')
 			url += root.startsWith('/') ? root : '/' + root;
 		this.debug('[simplicite] Base URL = ' + url);
-	
-		const ep = this.endpoint == 'public' ? '' : '/' + this.endpoint;
-	
+
+		const ep = this.endpoint === 'public' ? '' : '/' + this.endpoint;
+
 		this.parameters = {
-			scheme: scheme,
-			host: host,
-			port: port,
-			root: root,
-			url: url,
+			scheme,
+			host,
+			port,
+			root,
+			url,
 			timeout: params.timeout || 30,
-			healthpath: (ep == '/ui' ? ep : '') + '/health?format=json',
+			healthpath: (ep === '/ui' ? ep : '') + '/health?format=json',
 			apppath: ep + '/json/app',
 			objpath: ep + '/json/obj',
 			extpath: ep + '/ext',
@@ -643,7 +663,7 @@ class Session {
 	 * @function
 	 */
 	warn: (...args: any[]) => any;
-	
+
 	/**
 	 * Error handler
 	 * @param {...any} args Arguments
@@ -791,10 +811,10 @@ class Session {
 	 */
 	getError = (err: string|any, status?: number, origin?: string): any => {
 		if (typeof err === 'string') { // plain text error
-			return { message: err, status: status || 200, origin: origin };
+			return { message: err, status: status || 200, origin };
 		} else if (err.response) { // wrapped error
 			if (typeof err.response === 'string') {
-				return { message: err.response, status: status || 200, origin: origin };
+				return { message: err.response, status: status || 200, origin };
 			} else {
 				if (origin)
 					try { err.response.origin = origin; } catch(e) { /* ignore */ }
@@ -806,7 +826,7 @@ class Session {
 			return err;
 		}
 	};
-	
+
 	/**
 	 * Request
 	 * @param {string} path Path
@@ -827,7 +847,7 @@ class Session {
 		} else {
 			b = this.getBasicAuthHeader();
 			if (b)
-				h['Authorization'] = b;
+				h.Authorization = b;
 		}
 		const u: string = this.parameters.url + path || '/';
 		const d: any = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined;
@@ -890,7 +910,7 @@ class Session {
 				if (r.type === 'error') {
 					(opts.error || this.error || reject).call(this, this.getError(r.response, undefined, origin));
 				} else {
-					resolve && resolve.call(this, r);
+					if (resolve) resolve.call(this, r);
 				}
 			}, (err: any) => {
 				(opts.error || this.error || reject).call(this, this.getError(err, undefined, origin));
@@ -908,17 +928,17 @@ class Session {
 	 * @return {promise<object>} Promise to the login result
 	 * @function
 	 */
-	login = (opts): Promise<any> => {
+	login = (opts: any): Promise<any> => {
 		const origin = 'Session.login';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			if ((opts.username || opts.login) && (opts.password || opts.pwd)) {
 				this.clear();
 				this.username = opts.username || opts.login;
-				this.password = opts.password || opts.pwd;	
+				this.password = opts.password || opts.pwd;
 			} else if (opts.authtoken || opts.authToken || opts.token) {
 				this.clear();
-				this.authtoken = opts.authtoken || opts.authToken || opts.token;	
+				this.authtoken = opts.authtoken || opts.authToken || opts.token;
 			}
 			this.req(`${this.parameters.apppath}?action=session`, undefined, (res: any, status: number) => {
 				const r: any = this.parse(res, status);
@@ -942,7 +962,7 @@ class Session {
 						lastname: r.response.lastname,
 						email: r.response.email
 					});
-					resolve && resolve.call(this, r.response);
+					if (resolve) resolve.call(this, r.response);
 				}
 			}, (err: any) => {
 				(opts.error || this.error || reject).call(this, this.getError(err, undefined, origin));
@@ -969,7 +989,7 @@ class Session {
 					(opts.error || this.error || reject).call(this, this.getError(r.response, undefined, origin));
 				} else {
 					this.clear();
-					resolve && resolve.call(this, r.response);
+					if (resolve) resolve.call(this, r.response);
 				}
 			}, (err: any) => {
 				if (err.status === 401) // Removes (expired or deleted) token if any
@@ -1016,7 +1036,7 @@ class Session {
 						this.grant.picture = new Doc(this.grant.picture); // Set picture as Document
 					if (txt)
 						this.grant.texts = Object.assign(new Map<string, string>(), this.grant.texts); // Set texts as Map
-					resolve && resolve.call(this, this.grant);
+					if (resolve) resolve.call(this, this.grant);
 				}
 			}, (err: any) => {
 				(opts.error || this.error || reject).call(this, this.getError(err, undefined, origin));
@@ -1039,10 +1059,11 @@ class Session {
 			this.req(`${this.parameters.apppath}?action=setpassword&password=${encodeURIComponent(pwd)}`, undefined, (res: any, status: number) => {
 				const r: any = this.parse(res, status);
 				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
-				if (r.type === 'error')
+				if (r.type === 'error') {
 					(opts.error || this.error || reject).call(this, this.getError(r.response, undefined, origin));
-				else
-					resolve && resolve.call(this, r.response);
+				} else {
+					if (resolve) resolve.call(this, r.response);
+				}
 			}, (err: any) => {
 				(opts.error || this.error || reject).call(this, this.getError(err, undefined, origin));
 			});
@@ -1073,7 +1094,7 @@ class Session {
 					(opts.error || this.error || reject).call(this, this.getError(r.response, undefined, origin));
 				} else {
 					this.appinfo = r.response;
-					resolve && resolve.call(this, this.appinfo);
+					if (resolve) resolve.call(this, this.appinfo);
 				}
 			}, (err: any) => {
 				(opts.error || this.error || reject).call(this, this.getError(err, undefined, origin));
@@ -1105,11 +1126,11 @@ class Session {
 					(opts.error || this.error || reject).call(this, this.getError(r.response, undefined, origin));
 				} else {
 					this.sysinfo = r.response;
-					resolve && resolve.call(this, this.sysinfo);
+					if (resolve) resolve.call(this, this.sysinfo);
 				}
 			}, (err: any) => {
 				(opts.error || this.error || reject).call(this, this.getError(err, undefined, origin));
-			});	
+			});
 		});
 	};
 
@@ -1142,11 +1163,11 @@ class Session {
 				} else {
 					if (!module)
 						this.devinfo = r.response;
-					resolve && resolve.call(this, r.response);
+					if (resolve) resolve.call(this, r.response);
 				}
 			}, (err: any) => {
 				(opts.error || this.error || reject).call(this, this.getError(err, undefined, origin));
-			});	
+			});
 		});
 	};
 
@@ -1154,7 +1175,7 @@ class Session {
 	 * News
 	 * @member {array}
 	 */
-	news: Array<any>;
+	news: any[];
 
 	/**
 	 * Get news
@@ -1164,7 +1185,7 @@ class Session {
 	 * @return {promise<array>} A promise to the list of news (also avialable as the <code>news</code> member)
 	 * @function
 	 */
-	getNews = (opts: any): Promise<Array<any>> => {
+	getNews = (opts: any): Promise<any[]> => {
 		const origin = 'Session.getHealth';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -1181,7 +1202,7 @@ class Session {
 					this.news = r.response;
 					for (const n of this.news)
 						n.image = new Doc(n.image); // Set image as document
-					resolve && resolve.call(this, this.news);
+					if (resolve) resolve.call(this, this.news);
 				}
 			}, (err: any) => {
 				(opts.error || this.error || reject).call(this, this.getError(err, undefined, origin));
@@ -1200,7 +1221,7 @@ class Session {
 	 * @return {promise<array>} A promise to a list of index search records
 	 * @function
 	 */
-	indexSearch = (query: string, object: string, opts: any): Promise<Array<any>> => {
+	indexSearch = (query: string, object: string, opts: any): Promise<any[]> => {
 		const origin = 'Session.indexSearch';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -1212,10 +1233,11 @@ class Session {
 			this.req(`${this.parameters.apppath}?action=indexsearch&request=${encodeURIComponent(query ? query : '')}${object ? '&object=' + encodeURIComponent(object) : ''}${p}`, undefined, (res: any, status: number) => {
 				const r: any = this.parse(res, status);
 				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
-				if (r.type === 'error')
+				if (r.type === 'error') {
 					(opts.error || this.error || reject).call(this, this.getError(r.response, undefined, origin));
-				else
-					resolve && resolve.call(this, r.response);
+				} else {
+					if (resolve) resolve.call(this, r.response);
+				}
 			}, (err: any) => {
 				(opts.error || this.error || reject).call(this, this.getError(err, undefined, origin));
 			});
@@ -1251,7 +1273,7 @@ class Session {
 	/**
 	 * Get a resource URL
 	 * @param {string} code Resource code
-	 * @param {string} [type=IMG] Resource type (IMG=image (default), ICO=Icon, CSS=stylesheet, JS=Javascript, HTML=HTML) 
+	 * @param {string} [type=IMG] Resource type (IMG=image (default), ICO=Icon, CSS=stylesheet, JS=Javascript, HTML=HTML)
 	 * @param {string} [object] Object name (not required for global resources)
 	 * @param {string} [objId] Object ID (not required for global resources)
 	 * @function
@@ -1534,7 +1556,7 @@ class Grant {
 	 * User responsibilities
 	 * @member {array}
 	 */
-	responsibilities: Array<string>;
+	responsibilities: string[];
 
 	/**
 	 * Translated texts
@@ -1575,7 +1597,7 @@ class Grant {
 	getLang = (): string => {
 		return this.lang;
 	};
-	
+
 	/**
 	 * Get email address
 	 * @return {string} Email address
@@ -1584,7 +1606,7 @@ class Grant {
 	getEmail = (): string => {
 		return this.email;
 	};
-	
+
 	/**
 	 * Get first name
 	 * @return {string} First name
@@ -1593,14 +1615,14 @@ class Grant {
 	getFirstname = (): string => {
 		return this.firstname;
 	};
-	
+
 	/**
 	 * Alias to <code>getFirstname</code>
 	 * @return {string} First name
 	 * @function
 	 */
 	getFirstName = this.getFirstname; // Naming flexibility
-	
+
 	/**
 	 * Get last name
 	 * @return {string} Last name
@@ -1609,14 +1631,14 @@ class Grant {
 	getLastname = (): string => {
 		return this.lastname;
 	};
-	
+
 	/**
 	 * Alias to <code>getLastname</code>
 	 * @return {string} Last name
 	 * @function
 	 */
 	getLastName = this.getLastname; // Naming flexibility
-	
+
 	/**
 	 * Get picture data URL
 	 * @return {Doc} Picture data URL
@@ -1708,13 +1730,13 @@ class BusinessObjectMetadata {
 	 * Fields definitions
 	 * @member {array}
 	 */
-	fields: Array<any>;
+	fields: any[];
 
 	/**
 	 * Links definitions
 	 * @member {array}
 	 */
-	links: Array<any>;
+	links: any[];
 }
 
 /**
@@ -1726,12 +1748,12 @@ class BusinessObjectMetadata {
 class BusinessObject {
 	/**
 	 * Constructor
-	 * @param {Session} session Session
+	 * @param {Session} ses Session
 	 * @param {string} name Business object name
 	 * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
 	 */
-	constructor(session: any, name: string, instance?: string) {
-		this.session = session;
+	constructor(ses: Session, name: string, instance?: string) {
+		this.session = ses;
 
 		const inst = instance || 'api_' + name;
 		this.metadata = new BusinessObjectMetadata(name, inst);
@@ -1786,7 +1808,7 @@ class BusinessObject {
 	 * Current list
 	 * @member {array}
 	 */
-	list: Array<any>;
+	list: any[];
 
 	/**
 	 * Current count
@@ -1832,7 +1854,7 @@ class BusinessObject {
 					(opts.error || ses.error || reject).call(this, ses.getError(r.response, undefined, origin));
 				} else {
 					this.metadata = r.response;
-					resolve && resolve.call(this, this.metadata);
+					if (resolve) resolve.call(this, this.metadata);
 				}
 			}, (err: any) => {
 				(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
@@ -1892,7 +1914,7 @@ class BusinessObject {
 	 * @return {array} Array of field definitions
 	 * @function
 	 */
-	getFields = (): Array<any> => {
+	getFields = (): any[] => {
 		return this.metadata.fields;
 	};
 
@@ -1903,7 +1925,7 @@ class BusinessObject {
 	 * @function
 	 */
 	getField = (fieldName: string): any => {
-		const fs: Array<any> = this.getFields();
+		const fs: any[] = this.getFields();
 		let n = 0;
 		while (n < fs.length && fs[n].name !== fieldName) n++;
 		if (n < fs.length)
@@ -1933,7 +1955,7 @@ class BusinessObject {
 	 * @return {array} Array of links
 	 * @function
 	 */
-	getLinks = (): Array<any> => {
+	getLinks = (): any[] => {
 		return this.metadata.links;
 	};
 
@@ -2042,7 +2064,7 @@ class BusinessObject {
 		let val: string|any = this.getFieldValue(field, item);
 		if (val && val.mime) // Inlined
 			val = val.id;
-		if (val) 
+		if (val)
 			return this.session.parameters.url + this.session.parameters.docpath
 				+ '?object=' + encodeURIComponent(this.metadata.name)
 				+ '&inst=' + encodeURIComponent(this.metadata.instance)
@@ -2060,10 +2082,9 @@ class BusinessObject {
 	 * @return {string} Value
 	 * @function
 	 */
-	getListValue = (list: Array<any>, code: string): string => {
+	getListValue = (list: any[], code: string): string => {
 		if (list) {
-			for (let i = 0; i < list.length; i++) {
-				const l: any = list[i];
+			for (const l of list) {
 				if (l.code === code)
 					return l.value;
 			}
@@ -2133,7 +2154,7 @@ class BusinessObject {
 					(opts.error || ses.error || reject).call(this, ses.getError(r.response, undefined, origin));
 				} else {
 					this.filters = r.response;
-					resolve && resolve.call(this, this.filters);
+					if (resolve) resolve.call(this, this.filters);
 				}
 			}, (err: any) => {
 				(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
@@ -2172,20 +2193,20 @@ class BusinessObject {
 	getReqParams = (data: any): string => {
 		let p = '';
 		if (!data) return p;
-		let n = 0;
-		for (const i in data) {
-			const d = data[i] || '';
+		for (const i of Object.entries(data)) {
+			const k: string = i[0];
+			const d: any = i[1] || '';
 			if (d.name && d.content) { // Document ?
 				if (d.content.startsWith('data:')) // Flexibility = extract content fron data URL
 					d.content = d.content.replace(/data:.*;base64,/, '');
-				p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent('id|' + (d.id ? d.id : '0') + '|name|' + d.name + '|content|' + d.content);
+				p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent('id|' + (d.id ? d.id : '0') + '|name|' + d.name + '|content|' + d.content);
 			} else if (d.object && d.row_id) { // Object ?
-				p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent('object|' + d.object + '|row_id|' + d.row_id);
+				p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent('object|' + d.object + '|row_id|' + d.row_id);
 			} else if (d.sort) { // Array ?
-				for (let j = 0; j < d.length; j++)
-					p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent(d[j]);
+				for (const dd of d)
+					p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(dd);
 			} else {
-				p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent(d);
+				p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(d);
 			}
 		}
 		return p;
@@ -2215,7 +2236,7 @@ class BusinessObject {
 					this.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
 					this.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
 					this.list = [];
-					resolve && resolve.call(this, this.count);
+					if (resolve) resolve.call(this, this.count);
 				}
 			}, (err: any) => {
 				(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
@@ -2234,7 +2255,7 @@ class BusinessObject {
 	 * @return {promise<array>} Promise to a list of records (also available as the <code>list</code> member)
 	 * @function
 	 */
-	search = (filters: any, opts: any): Promise<Array<any>> => {
+	search = (filters: any, opts: any): Promise<any[]> => {
 		const origin = 'BusinessObject.search';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2259,7 +2280,7 @@ class BusinessObject {
 					this.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
 					this.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
 					this.list = r.response.list;
-					resolve && resolve.call(this, this.list);
+					if (resolve) resolve.call(this, this.list);
 				}
 			}, (err: any) => {
 				(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
@@ -2288,9 +2309,8 @@ class BusinessObject {
 			if (tv)
 				p += '&treeview=' + encodeURIComponent(tv);
 			if (opts.fields) {
-				for (let i = 0; i < opts.fields.length; i++) {
-					p += '&fields=' + encodeURIComponent(opts.fields[i].replace('.', '__'));
-				}
+				for (const f of opts.fields.length)
+					p += '&fields=' + encodeURIComponent(f.replace('.', '__'));
 			}
 			if (opts.metadata)
 				p += '&_md=true';
@@ -2308,7 +2328,7 @@ class BusinessObject {
 						this.item = tv ? r.response.data.item : r.response.data;
 					else
 						this.item = tv ? r.response.item : r.response;
-					resolve && resolve.call(this, tv ? r.response : this.item);
+					if (resolve) resolve.call(this, tv ? r.response : this.item);
 				}
 			}, (err: any) => {
 				(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
@@ -2416,7 +2436,7 @@ class BusinessObject {
 					(opts.error || ses.error || reject).call(this, ses.getError(r.response, undefined, origin));
 				} else {
 					this.item = r.response.data ? r.response.data : r.response;
-					resolve && resolve.call(this, this.item);
+					if (resolve) resolve.call(this, this.item);
 				}
 			}, (err: any) => {
 				(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
@@ -2466,7 +2486,7 @@ class BusinessObject {
 					(opts.error || ses.error || reject).call(this, ses.getError(r.response, undefined, origin));
 				} else {
 					this.item = r.response.data ? r.response.data : r.response;
-					resolve && resolve.call(this, this.item);
+					if (resolve) resolve.call(this, this.item);
 				}
 			}, (err: any) => {
 				(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
@@ -2497,7 +2517,7 @@ class BusinessObject {
 					(opts.error || ses.error || reject).call(this, ses.getError(r.response, undefined, origin));
 				} else {
 					this.item = r.response.data ? r.response.data : r.response;
-					resolve && resolve.call(this, this.item);
+					if (resolve) resolve.call(this, this.item);
 				}
 			}, (err: any) => {
 				(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
@@ -2528,7 +2548,7 @@ class BusinessObject {
 				} else {
 					this.item = undefined;
 					delete r.response.undoredo;
-					resolve && resolve.call(this, r.response);
+					if (resolve) resolve.call(this, r.response);
 				}
 			}, (err: any) => {
 				(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
@@ -2558,7 +2578,7 @@ class BusinessObject {
 					(opts.error || ses.error || reject).call(this, ses.getError(r.response, undefined, origin));
 				} else {
 					const result = r.response.result;
-					resolve && resolve.call(this, result);
+					if (resolve) resolve.call(this, result);
 				}
 			}, (err: any) => {
 				(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
@@ -2588,7 +2608,7 @@ class BusinessObject {
 				if (r.type === 'error') {
 					(opts.error || ses.error || reject).call(this, ses.getError(r.response, undefined, origin));
 				} else {
-					resolve && resolve.call(this, r.response);
+					if (resolve) resolve.call(this, r.response);
 				}
 			}, (err: any) => {
 				(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
@@ -2623,7 +2643,7 @@ class BusinessObject {
 				if (r.type === 'error') {
 					(opts.error || ses.error || reject).call(this, ses.getError(r.response, undefined, origin));
 				} else {
-					resolve && resolve.call(this, new Doc(r.response));
+					if (resolve) resolve.call(this, new Doc(r.response));
 				}
 			}, (err: any) => {
 				(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
@@ -2654,7 +2674,7 @@ class BusinessObject {
 					(opts.error || ses.error || reject).call(this, r.response);
 				} else {
 					const result = r.response.result;
-					resolve && resolve.call(this, result);
+					if (resolve) resolve.call(this, result);
 				}
 			}, (err: any) => {
 				(opts.error || ses.error || reject).call(this, ses.getError(err));
@@ -2683,7 +2703,7 @@ class BusinessObject {
 					(opts.error || ses.error || reject).call(this, r.response);
 				} else {
 					const result = r.response.result;
-					resolve && resolve.call(this, result);
+					if (resolve) resolve.call(this, result);
 				}
 			}, (err: any) => {
 				(opts.error || ses.error || reject).call(this, ses.getError(err));
@@ -2734,12 +2754,12 @@ class ExternalObjectMetadata {
 class ExternalObject {
 	/**
 	 * Constructor
-	 * @param {Session} session Session
+	 * @param {Session} ses Session
 	 * @param {string} name Business object name
 	 */
-	constructor(session: any, name: string) {
-		this.session = session;
-	
+	constructor(ses: Session, name: string) {
+		this.session = ses;
+
 		this.metadata = new ExternalObjectMetadata(name);
 		this.path = this.session.parameters.extpath + '/' + encodeURIComponent(name);
 	}
@@ -2782,14 +2802,14 @@ class ExternalObject {
 	callParams = (params: any): string => {
 		let p = '';
 		if (!params) return p;
-		let n = 0;
-		for (const i in params) {
-			const v: any = params[i] || '';
+		for (const i of Object.entries(params)) {
+			const k: string = i[0];
+			const v: any = i[1] || '';
 			if (v.sort) { // Array ?
-				for (let j = 0; j < v.length; j++)
-					p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent(v[j]);
+				for (const vv of v)
+					p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(vv);
 			} else {
-				p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent(v);
+				p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(v);
 			}
 		}
 		return p;
@@ -2844,19 +2864,19 @@ class ExternalObject {
 				ses.debug(`[${origin}] HTTP status = ${res.status}, response content type = ${type}`);
 				if (type && type.startsWith('application/json')) { // JSON
 					res.json().then(jsonData => {
-						resolve && resolve.call(this, jsonData, res.status, res.headers);
+						if (resolve) resolve.call(this, jsonData, res.status, res.headers);
 					}).catch((err: any) => {
 						(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
 					});
 				} else if (type && type.startsWith('text/')) { // Text
 					res.text().then(textData => {
-						resolve && resolve.call(this, textData, res.status, res.headers);
+						if (resolve) resolve.call(this, textData, res.status, res.headers);
 					}).catch((err: any) => {
 						(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
 					});
 				} else { // Binary
 					res.arrayBuffer().then(binData => {
-						resolve && resolve.call(this, binData, res.status, res.headers);
+						if (resolve) resolve.call(this, binData, res.status, res.headers);
 					}).catch((err: any) => {
 						(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
 					});

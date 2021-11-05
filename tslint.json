@@ -1,0 +1,23 @@
+{
+    "extends": "tslint:recommended",
+    "rules": {
+        "max-line-length": {
+            "options": [255]
+        },
+        "no-console": {
+            "severity": "warning",
+            "options": ["log", "error", "warn", "info", "debug"]
+        },
+        "max-classes-per-file": false
+    },
+    "jsRules": {
+        "max-line-length": {
+            "options": [255]
+        }
+    },
+    "linterOptions": {
+        "exclude": [
+            "test/index.js"
+        ]
+    }
+}

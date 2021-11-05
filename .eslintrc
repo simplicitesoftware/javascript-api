@@ -14,16 +14,14 @@
     "plugins": ["@typescript-eslint"],
     "rules": {
         "indent": [ "error", "tab" ],
-       "linebreak-style": [ "error", "unix" ],
+        "linebreak-style": [ "error", "unix" ],
         "quotes": [ "error", "single" ],
-        "semi": [ "error", "always" ],
-        "@typescript-eslint/no-explicit-any": "off"
+        "semi": [ "error", "always" ]
     },
     "ignorePatterns": [
         "test/index.js"
     ],
     "extends": [
-        "eslint:recommended",
-        "plugin:@typescript-eslint/recommended"
+        "eslint:recommended"
     ]
 }
