@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.7
+ * @version 2.2.8
  * @license Apache-2.0
  */
 import fetch from 'node-fetch'; // Node.js polyfill for fetch
@@ -15,7 +15,7 @@ const constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '2.2.7',
+    MODULE_VERSION: '2.2.8',
     /**
      * Default row ID field name
      * @constant {string}
@@ -677,7 +677,6 @@ class Session {
         fetch(u, {
             method: m,
             headers: h,
-            timeout: this.parameters.timeout * 1000,
             mode: 'cors',
             credentials: 'include',
             body: d
@@ -2590,7 +2589,6 @@ class ExternalObject {
             fetch(u, {
                 method: m,
                 headers: h,
-                timeout: ses.parameters.timeout * 1000,
                 mode: 'cors',
                 credentials: 'include',
                 body: d

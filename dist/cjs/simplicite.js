@@ -2,7 +2,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.7
+ * @version 2.2.8
  * @license Apache-2.0
  */
 var __importDefault = (this && this.__importDefault) || function (mod) {
@@ -20,7 +20,7 @@ var constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '2.2.7',
+    MODULE_VERSION: '2.2.8',
     /**
      * Default row ID field name
      * @constant {string}
@@ -527,7 +527,6 @@ var Session = /** @class */ (function () {
             (0, node_fetch_1.default)(u, {
                 method: m,
                 headers: h,
-                timeout: _this.parameters.timeout * 1000,
                 mode: 'cors',
                 credentials: 'include',
                 body: d
@@ -2352,7 +2351,6 @@ var ExternalObject = /** @class */ (function () {
                 (0, node_fetch_1.default)(u, {
                     method: m,
                     headers: h,
-                    timeout: ses.parameters.timeout * 1000,
                     mode: 'cors',
                     credentials: 'include',
                     body: d

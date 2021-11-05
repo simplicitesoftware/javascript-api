@@ -1,7 +1,7 @@
 {
   "name": "simplicite",
   "type": "module",
-  "version": "2.2.7",
+  "version": "2.2.8",
   "description": "Simplicite(R) platform Javascript API (for node.js and browser)",
   "repository": {
     "type": "git",
@@ -42,8 +42,8 @@
     "build": "tsc --declaration --sourceMap --moduleResolution node --module esnext --target esnext --outDir ./dist/esm ./src/simplicite.ts && tsc --declaration --sourceMap --module commonjs --target es5 --esModuleInterop true --outDir ./dist/cjs ./src/simplicite.ts && webpack build ./src/browser.js",
     "doc": "jsdoc -t node_modules/docdash -d docs ./dist/esm/simplicite.js README.md && replace '#fc83ff' '#98cbff' docs/styles/jsdoc.css && replace '#6d426d' '#2e76bd' docs/styles/jsdoc.css && replace '#CA79CA' '#edb8b8' docs/styles/jsdoc.css && replace '#606' '#094e93' docs/styles/jsdoc.css",
     "test": "jest --coverage -- ./test/simplicite.test.js",
-    "test-browser": "webpack build --config=./test/webpack.config.cjs ./test/browser.js && serve -l 3000 test",
-    "serve": "serve -l 3000 dist",
+    "test-browser": "webpack build --config=./test/webpack.config.cjs ./test/test-browser.js && serve -l 3000 test",
+    "test-browser-bundle": "serve -l 3000 dist",
     "ncu": "ncu"
   },
   "engines": {
