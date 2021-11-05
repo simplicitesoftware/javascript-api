@@ -1,4 +1,4 @@
-import simplicite from '../build/esm/simplicite.js';
+import simplicite from '../dist/esm/simplicite.js';
 import assert from 'assert';
 
 const debug = process.env.TEST_SIMPLICITE_DEBUG == 'true';

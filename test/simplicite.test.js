@@ -1,4 +1,4 @@
-import simplicite from '../build/esm/simplicite.js';
+import simplicite from '../dist/esm/simplicite.js';
 import { jest } from '@jest/globals';
 
 const scheme = process.env.TEST_SIMPLICITE_SCHEME || 'http';

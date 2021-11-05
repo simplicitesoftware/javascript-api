@@ -1,4 +1,4 @@
-import simplicite from '../build/esm/simplicite.js';
+import simplicite from '../dist/esm/simplicite.js';
 
 const url = 'http://localhost:8080';
 const debug = true;

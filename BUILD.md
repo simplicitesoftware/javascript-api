@@ -51,16 +51,10 @@ Check syntax and rules:
 npm run lint
 ```
 
-Compile
+Compile and package
 
 ```bash
-npm run compile
-```
-
-Generates distribution file:
-
-```bash
-npm run dist
+npm run build
 ```
 
 Test
