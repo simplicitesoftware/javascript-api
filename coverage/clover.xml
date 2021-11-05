@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1636148083480" clover="3.2.0">
-  <project timestamp="1636148083480" name="All files">
+<coverage generated="1636152725393" clover="3.2.0">
+  <project timestamp="1636152725393" name="All files">
     <metrics statements="816" coveredstatements="474" conditionals="659" coveredconditionals="206" methods="190" coveredmethods="82" elements="1665" coveredelements="762" complexity="0" loc="816" ncloc="816" packages="1" files="1" classes="1"/>
     <file name="simplicite.ts" path="D:\dev\git\github\nodejs-api\src\simplicite.ts">
       <metrics statements="816" coveredstatements="474" conditionals="659" coveredconditionals="206" methods="190" coveredmethods="82"/>

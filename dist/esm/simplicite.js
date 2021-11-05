@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.8
+ * @version 2.2.9
  * @license Apache-2.0
  */
 import fetch from 'node-fetch'; // Node.js polyfill for fetch
@@ -15,7 +15,7 @@ const constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '2.2.8',
+    MODULE_VERSION: '2.2.9',
     /**
      * Default row ID field name
      * @constant {string}

@@ -37,17 +37,17 @@ app.getHealth().then(health => {
 	app.debug(currentId, grant);
 	app.debug(currentId, 'Text value: ' + grant.T('ABOUT'));
 	elt(currentId, 'Hello ' + grant.getFirstname() + ' ' + grant.getLastname() + ' (' + grant.getLogin() + ')' + '<br/><img src="' + grant.picture.getDataURL() + '"/>');
-	return app.getAppInfo();
+	return app.getAppInfo({ error: error });
 }).then(appinfo => {
 	currentId = 'appinfo';
 	app.debug(currentId, appinfo);
 	elt(currentId, JSON.stringify(appinfo, null, 2));
-	return app.getSysInfo();
+	return app.getSysInfo({ error: error });
 }).then(sysinfo => {
 	currentId = 'sysinfo';
 	app.debug(currentId, sysinfo);
 	elt(currentId, JSON.stringify(sysinfo, null, 2));
-	return app.getDevInfo();
+	return app.getDevInfo({ error: error });
 }).then(devinfo => {
 	currentId = 'devinfo';
 	app.debug(currentId, devinfo);
