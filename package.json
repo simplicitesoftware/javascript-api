@@ -1,7 +1,7 @@
 {
   "name": "simplicite",
   "type": "module",
-  "version": "2.2.6",
+  "version": "2.2.7",
   "description": "Simplicite(R) platform Javascript API (for node.js and browser)",
   "repository": {
     "type": "git",
@@ -48,9 +48,10 @@
     "node": ">=14"
   },
   "files": [
-    "./src",
-    "./dist",
-    "./test"
+    "src",
+    "dist",
+    "test",
+    "docs"
   ],
   "main": "./dist/esm/simplicite.d.ts",
   "types": "./dist/esm/simplicite.d.ts",
