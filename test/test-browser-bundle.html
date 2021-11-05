@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+<pre id="health"></pre>
+<script src="./simplicite.min.js"></script>
+<script>
+console.log(simplicite.constants.MODULE_VERSION);
+var app = simplicite.session({ url: "https://demo.dev.simplicite.io", endpoint: "public" });
+console.log(app.parameters);
+app.getHealth().then(function(health) {
+    console.log(health);
+    document.getElementById("health").innerHTML = JSON.stringify(health, null, 2)
+}).catch(function(err) {
+    console.error(err);
+});
+</script>
+</body>
+</html>

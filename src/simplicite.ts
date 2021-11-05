@@ -855,7 +855,6 @@ class Session {
 		fetch(u, {
 			method: m,
 			headers: h,
-			timeout: this.parameters.timeout * 1000, // useless because there is no timeout in fetch API
 			mode: 'cors',
 			credentials: 'include',
 			body: d
@@ -2850,7 +2849,6 @@ class ExternalObject {
 			fetch(u, {
 				method: m,
 				headers: h,
-				timeout: ses.parameters.timeout * 1000, // useless because there is no timeout in fetch API
 				mode: 'cors',
 				credentials: 'include',
 				body: d
