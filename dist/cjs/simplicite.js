@@ -358,7 +358,7 @@ var constants = {
  * Simplicite application session. Same as <code>new Session(parameter)</code>.
  * @param {object} params Parameters (see session class for details)
  * @return {Session} session
-*/
+ */
 var session = function (params) {
     return new Session(params);
 };
@@ -519,7 +519,7 @@ var Session = /** @class */ (function () {
             else {
                 b = _this.getBasicAuthHeader();
                 if (b)
-                    h['Authorization'] = b;
+                    h.Authorization = b;
             }
             var u = _this.parameters.url + path || '/';
             var d = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined;
@@ -582,7 +582,8 @@ var Session = /** @class */ (function () {
                         (opts.error || _this.error || reject).call(_this, _this.getError(r.response, undefined, origin));
                     }
                     else {
-                        resolve && resolve.call(_this, r);
+                        if (resolve)
+                            resolve.call(_this, r);
                     }
                 }, function (err) {
                     (opts.error || _this.error || reject).call(_this, _this.getError(err, undefined, origin));
@@ -635,7 +636,8 @@ var Session = /** @class */ (function () {
                             lastname: r.response.lastname,
                             email: r.response.email
                         });
-                        resolve && resolve.call(_this, r.response);
+                        if (resolve)
+                            resolve.call(_this, r.response);
                     }
                 }, function (err) {
                     (opts.error || _this.error || reject).call(_this, _this.getError(err, undefined, origin));
@@ -662,7 +664,8 @@ var Session = /** @class */ (function () {
                     }
                     else {
                         _this.clear();
-                        resolve && resolve.call(_this, r.response);
+                        if (resolve)
+                            resolve.call(_this, r.response);
                     }
                 }, function (err) {
                     if (err.status === 401) // Removes (expired or deleted) token if any
@@ -703,7 +706,8 @@ var Session = /** @class */ (function () {
                             _this.grant.picture = new Doc(_this.grant.picture); // Set picture as Document
                         if (txt)
                             _this.grant.texts = Object.assign(new Map(), _this.grant.texts); // Set texts as Map
-                        resolve && resolve.call(_this, _this.grant);
+                        if (resolve)
+                            resolve.call(_this, _this.grant);
                     }
                 }, function (err) {
                     (opts.error || _this.error || reject).call(_this, _this.getError(err, undefined, origin));
@@ -725,10 +729,13 @@ var Session = /** @class */ (function () {
                 _this.req(_this.parameters.apppath + "?action=setpassword&password=" + encodeURIComponent(pwd), undefined, function (res, status) {
                     var r = _this.parse(res, status);
                     _this.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
-                    if (r.type === 'error')
+                    if (r.type === 'error') {
                         (opts.error || _this.error || reject).call(_this, _this.getError(r.response, undefined, origin));
-                    else
-                        resolve && resolve.call(_this, r.response);
+                    }
+                    else {
+                        if (resolve)
+                            resolve.call(_this, r.response);
+                    }
                 }, function (err) {
                     (opts.error || _this.error || reject).call(_this, _this.getError(err, undefined, origin));
                 });
@@ -753,7 +760,8 @@ var Session = /** @class */ (function () {
                     }
                     else {
                         _this.appinfo = r.response;
-                        resolve && resolve.call(_this, _this.appinfo);
+                        if (resolve)
+                            resolve.call(_this, _this.appinfo);
                     }
                 }, function (err) {
                     (opts.error || _this.error || reject).call(_this, _this.getError(err, undefined, origin));
@@ -779,7 +787,8 @@ var Session = /** @class */ (function () {
                     }
                     else {
                         _this.sysinfo = r.response;
-                        resolve && resolve.call(_this, _this.sysinfo);
+                        if (resolve)
+                            resolve.call(_this, _this.sysinfo);
                     }
                 }, function (err) {
                     (opts.error || _this.error || reject).call(_this, _this.getError(err, undefined, origin));
@@ -810,7 +819,8 @@ var Session = /** @class */ (function () {
                     else {
                         if (!module)
                             _this.devinfo = r.response;
-                        resolve && resolve.call(_this, r.response);
+                        if (resolve)
+                            resolve.call(_this, r.response);
                     }
                 }, function (err) {
                     (opts.error || _this.error || reject).call(_this, _this.getError(err, undefined, origin));
@@ -845,7 +855,8 @@ var Session = /** @class */ (function () {
                             var n = _a[_i];
                             n.image = new Doc(n.image);
                         } // Set image as document
-                        resolve && resolve.call(_this, _this.news);
+                        if (resolve)
+                            resolve.call(_this, _this.news);
                     }
                 }, function (err) {
                     (opts.error || _this.error || reject).call(_this, _this.getError(err, undefined, origin));
@@ -875,10 +886,13 @@ var Session = /** @class */ (function () {
                 _this.req(_this.parameters.apppath + "?action=indexsearch&request=" + encodeURIComponent(query ? query : '') + (object ? '&object=' + encodeURIComponent(object) : '') + p, undefined, function (res, status) {
                     var r = _this.parse(res, status);
                     _this.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
-                    if (r.type === 'error')
+                    if (r.type === 'error') {
                         (opts.error || _this.error || reject).call(_this, _this.getError(r.response, undefined, origin));
-                    else
-                        resolve && resolve.call(_this, r.response);
+                    }
+                    else {
+                        if (resolve)
+                            resolve.call(_this, r.response);
+                    }
                 }, function (err) {
                     (opts.error || _this.error || reject).call(_this, _this.getError(err, undefined, origin));
                 });
@@ -924,13 +938,14 @@ var Session = /** @class */ (function () {
                 + (_this.authtoken ? '_x_simplicite_authorization_=' + encodeURIComponent(_this.authtoken) : '');
         };
         if (!params)
-            throw 'No session parammeters';
+            throw new Error('No session parammeters');
         this.endpoint = params.endpoint || "api" /* API */;
         this.log = params.logHandler || (function () {
             var args = [];
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
+            // tslint:disable-next-line: no-console
             console.log(args);
         });
         this.info = params.infoHandler || (function () {
@@ -938,6 +953,7 @@ var Session = /** @class */ (function () {
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
+            // tslint:disable-next-line: no-console
             console.info('INFO', args);
         });
         this.warn = params.warningHandler || (function () {
@@ -945,6 +961,7 @@ var Session = /** @class */ (function () {
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
+            // tslint:disable-next-line: no-console
             console.warn('WARN', args);
         });
         this.error = params.errorHandler || (function () {
@@ -952,6 +969,7 @@ var Session = /** @class */ (function () {
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
+            // tslint:disable-next-line: no-console
             console.error('ERROR', args);
         });
         this.debugMode = !!params.debug;
@@ -961,6 +979,7 @@ var Session = /** @class */ (function () {
                 args[_i] = arguments[_i];
             }
             if (_this.debugMode)
+                // tslint:disable-next-line: no-console
                 console.log('DEBUG', args);
         });
         if (params.url) {
@@ -998,12 +1017,12 @@ var Session = /** @class */ (function () {
         if (root === '/')
             root = '';
         var url = scheme + '://' + host;
-        if ((scheme === 'http' && port != 80) || (scheme === 'https' && port != 443))
+        if ((scheme === 'http' && port !== 80) || (scheme === 'https' && port !== 443))
             url += ':' + port;
         if (root !== '')
             url += root.startsWith('/') ? root : '/' + root;
         this.debug('[simplicite] Base URL = ' + url);
-        var ep = this.endpoint == 'public' ? '' : '/' + this.endpoint;
+        var ep = this.endpoint === 'public' ? '' : '/' + this.endpoint;
         this.parameters = {
             scheme: scheme,
             host: host,
@@ -1011,7 +1030,7 @@ var Session = /** @class */ (function () {
             root: root,
             url: url,
             timeout: params.timeout || 30,
-            healthpath: (ep == '/ui' ? ep : '') + '/health?format=json',
+            healthpath: (ep === '/ui' ? ep : '') + '/health?format=json',
             apppath: ep + '/json/app',
             objpath: ep + '/json/obj',
             extpath: ep + '/ext',
@@ -1325,11 +1344,11 @@ var BusinessObjectMetadata = /** @class */ (function () {
 var BusinessObject = /** @class */ (function () {
     /**
      * Constructor
-     * @param {Session} session Session
+     * @param {Session} ses Session
      * @param {string} name Business object name
      * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
      */
-    function BusinessObject(session, name, instance) {
+    function BusinessObject(ses, name, instance) {
         var _this = this;
         /**
          * Get meta data
@@ -1358,7 +1377,8 @@ var BusinessObject = /** @class */ (function () {
                     }
                     else {
                         _this.metadata = r.response;
-                        resolve && resolve.call(_this, _this.metadata);
+                        if (resolve)
+                            resolve.call(_this, _this.metadata);
                     }
                 }, function (err) {
                     (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
@@ -1367,11 +1387,6 @@ var BusinessObject = /** @class */ (function () {
         };
         /**
          * Get meta data (alias to getMetaData)
-         * @param {object} [opts] Options
-         * @param {number} [opts.context] Context
-         * @param {string} [opts.contextParam] Context parameter
-         * @param {function} [opts.error] Error handler function
-         * @return {promise<BusinessObjectMetadata>} A promise to the object'ts meta data (also available as the <code>metadata</code> member)
          * @function
          */
         this.getMetadata = this.getMetaData;
@@ -1571,8 +1586,8 @@ var BusinessObject = /** @class */ (function () {
          */
         this.getListValue = function (list, code) {
             if (list) {
-                for (var i = 0; i < list.length; i++) {
-                    var l = list[i];
+                for (var _i = 0, list_1 = list; _i < list_1.length; _i++) {
+                    var l = list_1[_i];
                     if (l.code === code)
                         return l.value;
                 }
@@ -1639,7 +1654,8 @@ var BusinessObject = /** @class */ (function () {
                     }
                     else {
                         _this.filters = r.response;
-                        resolve && resolve.call(_this, _this.filters);
+                        if (resolve)
+                            resolve.call(_this, _this.filters);
                     }
                 }, function (err) {
                     (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
@@ -1677,23 +1693,26 @@ var BusinessObject = /** @class */ (function () {
             var p = '';
             if (!data)
                 return p;
-            var n = 0;
-            for (var i in data) {
-                var d = data[i] || '';
+            for (var _i = 0, _a = Object.entries(data); _i < _a.length; _i++) {
+                var i = _a[_i];
+                var k = i[0];
+                var d = i[1] || '';
                 if (d.name && d.content) { // Document ?
                     if (d.content.startsWith('data:')) // Flexibility = extract content fron data URL
                         d.content = d.content.replace(/data:.*;base64,/, '');
-                    p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent('id|' + (d.id ? d.id : '0') + '|name|' + d.name + '|content|' + d.content);
+                    p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent('id|' + (d.id ? d.id : '0') + '|name|' + d.name + '|content|' + d.content);
                 }
                 else if (d.object && d.row_id) { // Object ?
-                    p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent('object|' + d.object + '|row_id|' + d.row_id);
+                    p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent('object|' + d.object + '|row_id|' + d.row_id);
                 }
                 else if (d.sort) { // Array ?
-                    for (var j = 0; j < d.length; j++)
-                        p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent(d[j]);
+                    for (var _b = 0, d_1 = d; _b < d_1.length; _b++) {
+                        var dd = d_1[_b];
+                        p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(dd);
+                    }
                 }
                 else {
-                    p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent(d);
+                    p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(d);
                 }
             }
             return p;
@@ -1723,7 +1742,8 @@ var BusinessObject = /** @class */ (function () {
                         _this.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
                         _this.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
                         _this.list = [];
-                        resolve && resolve.call(_this, _this.count);
+                        if (resolve)
+                            resolve.call(_this, _this.count);
                     }
                 }, function (err) {
                     (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
@@ -1767,7 +1787,8 @@ var BusinessObject = /** @class */ (function () {
                         _this.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
                         _this.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
                         _this.list = r.response.list;
-                        resolve && resolve.call(_this, _this.list);
+                        if (resolve)
+                            resolve.call(_this, _this.list);
                     }
                 }, function (err) {
                     (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
@@ -1795,8 +1816,9 @@ var BusinessObject = /** @class */ (function () {
                 if (tv)
                     p += '&treeview=' + encodeURIComponent(tv);
                 if (opts.fields) {
-                    for (var i = 0; i < opts.fields.length; i++) {
-                        p += '&fields=' + encodeURIComponent(opts.fields[i].replace('.', '__'));
+                    for (var _i = 0, _a = opts.fields.length; _i < _a.length; _i++) {
+                        var f = _a[_i];
+                        p += '&fields=' + encodeURIComponent(f.replace('.', '__'));
                     }
                 }
                 if (opts.metadata)
@@ -1816,7 +1838,8 @@ var BusinessObject = /** @class */ (function () {
                             _this.item = tv ? r.response.data.item : r.response.data;
                         else
                             _this.item = tv ? r.response.item : r.response;
-                        resolve && resolve.call(_this, tv ? r.response : _this.item);
+                        if (resolve)
+                            resolve.call(_this, tv ? r.response : _this.item);
                     }
                 }, function (err) {
                     (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
@@ -1919,7 +1942,8 @@ var BusinessObject = /** @class */ (function () {
                     }
                     else {
                         _this.item = r.response.data ? r.response.data : r.response;
-                        resolve && resolve.call(_this, _this.item);
+                        if (resolve)
+                            resolve.call(_this, _this.item);
                     }
                 }, function (err) {
                     (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
@@ -1968,7 +1992,8 @@ var BusinessObject = /** @class */ (function () {
                     }
                     else {
                         _this.item = r.response.data ? r.response.data : r.response;
-                        resolve && resolve.call(_this, _this.item);
+                        if (resolve)
+                            resolve.call(_this, _this.item);
                     }
                 }, function (err) {
                     (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
@@ -1999,7 +2024,8 @@ var BusinessObject = /** @class */ (function () {
                     }
                     else {
                         _this.item = r.response.data ? r.response.data : r.response;
-                        resolve && resolve.call(_this, _this.item);
+                        if (resolve)
+                            resolve.call(_this, _this.item);
                     }
                 }, function (err) {
                     (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
@@ -2030,7 +2056,8 @@ var BusinessObject = /** @class */ (function () {
                     else {
                         _this.item = undefined;
                         delete r.response.undoredo;
-                        resolve && resolve.call(_this, r.response);
+                        if (resolve)
+                            resolve.call(_this, r.response);
                     }
                 }, function (err) {
                     (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
@@ -2060,7 +2087,8 @@ var BusinessObject = /** @class */ (function () {
                     }
                     else {
                         var result = r.response.result;
-                        resolve && resolve.call(_this, result);
+                        if (resolve)
+                            resolve.call(_this, result);
                     }
                 }, function (err) {
                     (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
@@ -2090,7 +2118,8 @@ var BusinessObject = /** @class */ (function () {
                         (opts.error || ses.error || reject).call(_this, ses.getError(r.response, undefined, origin));
                     }
                     else {
-                        resolve && resolve.call(_this, r.response);
+                        if (resolve)
+                            resolve.call(_this, r.response);
                     }
                 }, function (err) {
                     (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
@@ -2125,7 +2154,8 @@ var BusinessObject = /** @class */ (function () {
                         (opts.error || ses.error || reject).call(_this, ses.getError(r.response, undefined, origin));
                     }
                     else {
-                        resolve && resolve.call(_this, new Doc(r.response));
+                        if (resolve)
+                            resolve.call(_this, new Doc(r.response));
                     }
                 }, function (err) {
                     (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
@@ -2157,7 +2187,8 @@ var BusinessObject = /** @class */ (function () {
                     }
                     else {
                         var result = r.response.result;
-                        resolve && resolve.call(_this, result);
+                        if (resolve)
+                            resolve.call(_this, result);
                     }
                 }, function (err) {
                     (opts.error || ses.error || reject).call(_this, ses.getError(err));
@@ -2186,7 +2217,8 @@ var BusinessObject = /** @class */ (function () {
                     }
                     else {
                         var result = r.response.result;
-                        resolve && resolve.call(_this, result);
+                        if (resolve)
+                            resolve.call(_this, result);
                     }
                 }, function (err) {
                     (opts.error || ses.error || reject).call(_this, ses.getError(err));
@@ -2203,7 +2235,7 @@ var BusinessObject = /** @class */ (function () {
         this.getResourceURL = function (code, type) {
             return _this.session.getResourceURL(code, type, _this.metadata.name, _this.metadata.id);
         };
-        this.session = session;
+        this.session = ses;
         var inst = instance || 'api_' + name;
         this.metadata = new BusinessObjectMetadata(name, inst);
         this.cacheKey = this.session.getBusinessObjectCacheKey(name, inst);
@@ -2239,10 +2271,10 @@ var ExternalObjectMetadata = /** @class */ (function () {
 var ExternalObject = /** @class */ (function () {
     /**
      * Constructor
-     * @param {Session} session Session
+     * @param {Session} ses Session
      * @param {string} name Business object name
      */
-    function ExternalObject(session, name) {
+    function ExternalObject(ses, name) {
         var _this = this;
         /**
          * Get name
@@ -2262,15 +2294,18 @@ var ExternalObject = /** @class */ (function () {
             var p = '';
             if (!params)
                 return p;
-            var n = 0;
-            for (var i in params) {
-                var v = params[i] || '';
+            for (var _i = 0, _a = Object.entries(params); _i < _a.length; _i++) {
+                var i = _a[_i];
+                var k = i[0];
+                var v = i[1] || '';
                 if (v.sort) { // Array ?
-                    for (var j = 0; j < v.length; j++)
-                        p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent(v[j]);
+                    for (var _b = 0, v_1 = v; _b < v_1.length; _b++) {
+                        var vv = v_1[_b];
+                        p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(vv);
+                    }
                 }
                 else {
-                    p += (n++ !== 0 ? '&' : '') + i + '=' + encodeURIComponent(v);
+                    p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(v);
                 }
             }
             return p;
@@ -2326,21 +2361,24 @@ var ExternalObject = /** @class */ (function () {
                     ses.debug("[" + origin + "] HTTP status = " + res.status + ", response content type = " + type);
                     if (type && type.startsWith('application/json')) { // JSON
                         res.json().then(function (jsonData) {
-                            resolve && resolve.call(_this, jsonData, res.status, res.headers);
+                            if (resolve)
+                                resolve.call(_this, jsonData, res.status, res.headers);
                         }).catch(function (err) {
                             (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
                         });
                     }
                     else if (type && type.startsWith('text/')) { // Text
                         res.text().then(function (textData) {
-                            resolve && resolve.call(_this, textData, res.status, res.headers);
+                            if (resolve)
+                                resolve.call(_this, textData, res.status, res.headers);
                         }).catch(function (err) {
                             (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
                         });
                     }
                     else { // Binary
                         res.arrayBuffer().then(function (binData) {
-                            resolve && resolve.call(_this, binData, res.status, res.headers);
+                            if (resolve)
+                                resolve.call(_this, binData, res.status, res.headers);
                         }).catch(function (err) {
                             (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
                         });
@@ -2355,7 +2393,7 @@ var ExternalObject = /** @class */ (function () {
          * @function
          */
         this.invoke = this.call;
-        this.session = session;
+        this.session = ses;
         this.metadata = new ExternalObjectMetadata(name);
         this.path = this.session.parameters.extpath + '/' + encodeURIComponent(name);
     }

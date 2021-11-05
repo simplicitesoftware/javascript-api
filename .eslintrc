@@ -16,12 +16,14 @@
         "indent": [ "error", "tab" ],
         "linebreak-style": [ "error", "unix" ],
         "quotes": [ "error", "single" ],
-        "semi": [ "error", "always" ]
+        "semi": [ "error", "always" ],
+        "@typescript-eslint/no-explicit-any": "off"
     },
     "ignorePatterns": [
         "test/index.js"
     ],
     "extends": [
-        "eslint:recommended"
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended"
     ]
 }

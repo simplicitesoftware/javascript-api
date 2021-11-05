@@ -36,13 +36,13 @@ app.login().then(user => {
 	return obj.getForUpdate(list[0].row_id, { inlineDocuments: true });
 }).then(item => {
 	app.debug(item);
-	let doc = obj.getFieldDocument('obo_script_id');
+	const doc = obj.getFieldDocument('obo_script_id');
 	app.debug('Document', doc);
 	if (!doc)
 		throw new Error('No source for object ' + objName);
 	let src = doc.getContentAsText();
 	app.debug(src);
-	doc.setContentFromText(src += '\n// ' + new Date()); 
+	doc.setContentFromText(src += '\n// ' + new Date());
 	obj.setFieldValue('obo_script_id', doc);
 	return obj.update(item, { inlineDocuments: true });
 }).then(item => {

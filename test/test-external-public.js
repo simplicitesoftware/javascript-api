@@ -12,7 +12,7 @@ app.debug('Parameters', app.parameters);
 const params = { name: 'Simplicite public (URL parameter)' };
 const data = { name: 'Simplicite public (posted in JSON)' };
 
-let ext = app.getExternalObject('AppExt2');
+const ext = app.getExternalObject('AppExt2');
 ext.call(params).then(res => { // GET call
 	app.info(res);
 	assert.ok(res.method === 'get');

@@ -755,7 +755,7 @@ class Session {
 	 * @return {object} Business object cache key
 	 * @private
 	 */
-	getBusinessObjectCacheKey = (name: string, instance: string): any => {
+	getBusinessObjectCacheKey = (name: string, instance?: string): any => {
 		return name + ':' + (instance || 'js_' + name);
 	};
 
@@ -835,7 +835,7 @@ class Session {
 	 * @param {function} [errorHandler] Error handler
 	 * @private
 	 */
-	req = (path: string, data: any, callback: (testData: string, status: number, headers: any) => void, errorHandler: (err: any) => void): void => {
+	req = (path: string, data?: any, callback?: (testData: string, status: number, headers: any) => void, errorHandler?: (err: any) => void): void => {
 		const origin = 'Session.req';
 		const m: string = data ? 'POST' : 'GET';
 		const h: any = {};
@@ -882,7 +882,7 @@ class Session {
 	 * @return {object} Error object
 	 * @private
 	 */
-	parse = (res: any, status: number): any => {
+	parse = (res: any, status?: number): any => {
 		try {
 			if (status !== 200)
 				return { type: 'error', response: this.getError('HTTP status: ' + status, status) };
@@ -900,7 +900,7 @@ class Session {
 	 * @return {promise<object>} Promise to the health data
 	 * @function
 	 */
-	getHealth = (opts: any): Promise<any> => {
+	getHealth = (opts?: any): Promise<any> => {
 		const origin = 'Session.getHealth';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -928,7 +928,7 @@ class Session {
 	 * @return {promise<object>} Promise to the login result
 	 * @function
 	 */
-	login = (opts: any): Promise<any> => {
+	login = (opts?: any): Promise<any> => {
 		const origin = 'Session.login';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -978,7 +978,7 @@ class Session {
 	 * @return {promise<object>} Promise to the logout result
 	 * @function
 	 */
-	logout = (opts: any): Promise<any> => {
+	logout = (opts?: any): Promise<any> => {
 		const origin = 'Session.logout';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -1014,7 +1014,7 @@ class Session {
 	 * @return {promise<Grant>} A promise to the grant (also available as the <code>grant</code> member)
 	 * @function
 	 */
-	getGrant = (opts: any): Promise<any> => {
+	getGrant = (opts?: any): Promise<any> => {
 		const origin = 'Session.getGrant';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -1052,7 +1052,7 @@ class Session {
 	 * @return {promise<object>} A promise to the change password result
 	 * @function
 	 */
-	changePassword = (pwd: string, opts: any): Promise<any> => {
+	changePassword = (pwd: string, opts?: any): Promise<any> => {
 		const origin = 'Session.changePassword';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -1083,7 +1083,7 @@ class Session {
 	 * @return {promise<object>} A promise to the application info (also avialable as the <code>appinfo</code> member)
 	 * @function
 	 */
-	getAppInfo = (opts: any): Promise<any> => {
+	getAppInfo = (opts?: any): Promise<any> => {
 		const origin = 'Session.getAppInfo';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -1115,7 +1115,7 @@ class Session {
 	 * @return {promise<object>} A promise to the system info (also avialable as the <code>sysinfo</code> member)
 	 * @function
 	 */
-	getSysInfo = (opts: any): Promise<any> => {
+	getSysInfo = (opts?: any): Promise<any> => {
 		const origin = 'Session.getSysInfo';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -1148,7 +1148,7 @@ class Session {
 	 * @return {promise<object>} A promise to the develoment info (also avialable as the <code>devinfo</code> member)
 	 * @function
 	 */
-	getDevInfo = (module: string, opts: any): Promise<any> => {
+	getDevInfo = (module?: string, opts?: any): Promise<any> => {
 		const origin = 'Session.getDevInfo';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -1185,7 +1185,7 @@ class Session {
 	 * @return {promise<array>} A promise to the list of news (also avialable as the <code>news</code> member)
 	 * @function
 	 */
-	getNews = (opts: any): Promise<any[]> => {
+	getNews = (opts?: any): Promise<any[]> => {
 		const origin = 'Session.getHealth';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -1221,7 +1221,7 @@ class Session {
 	 * @return {promise<array>} A promise to a list of index search records
 	 * @function
 	 */
-	indexSearch = (query: string, object: string, opts: any): Promise<any[]> => {
+	indexSearch = (query: string, object?: string, opts?: any): Promise<any[]> => {
 		const origin = 'Session.indexSearch';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -1251,7 +1251,7 @@ class Session {
 	 * @return {BusinessObject} Business object
 	 * @function
 	 */
-	getBusinessObject = (name: string, instance: string): any => {
+	getBusinessObject = (name: string, instance?: string): any => {
 		const cacheKey: string = this.getBusinessObjectCacheKey(name, instance);
 		let obj: any = this.businessObjectCache[cacheKey];
 		if (!obj) {
@@ -1278,7 +1278,7 @@ class Session {
 	 * @param {string} [objId] Object ID (not required for global resources)
 	 * @function
 	 */
-	getResourceURL = (code: string, type: string, object: any, objId: string) => {
+	getResourceURL = (code: string, type?: string, object?: any, objId?: string) => {
 		return this.parameters.url + this.parameters.respath
 			+ '?code=' + encodeURIComponent(code) + '&type=' + encodeURIComponent(type || 'IMG')
 			+ (object ? '&object=' + encodeURIComponent(object) : '')
@@ -1481,7 +1481,7 @@ class Doc {
 	 * @param {boolean} [thumbnail=false] Thumbnail? If thumbnail does not exists the content is used.
 	 * @return {string} Data URL or nothing if content is empty
 	 */
-	getDataURL = (thumbnail: boolean): string => {
+	getDataURL = (thumbnail?: boolean): string => {
 		if (this.content)
 			return 'data:' + this.mime + ';base64,' + (thumbnail && this.thumbnail ? this.thumbnail : this.content);
 	};
@@ -1681,7 +1681,7 @@ class BusinessObjectMetadata {
 	 * @param {string} name Business object name
 	 * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
 	 */
-	constructor(name: string, instance: string) {
+	constructor(name: string, instance?: string) {
 		this.name = name;
 		this.instance = instance;
 		this.rowidfield = constants.DEFAULT_ROW_ID_NAME;
@@ -1837,7 +1837,7 @@ class BusinessObject {
 	 * @return {promise<BusinessObjectMetadata>} A promise to the object'ts meta data (also available as the <code>metadata</code> member)
 	 * @function
 	 */
-	getMetaData = (opts: any): any => {
+	getMetaData = (opts?: any): any => {
 		const origin = 'BusinessObject.getMetaData';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -1864,11 +1864,6 @@ class BusinessObject {
 
 	/**
 	 * Get meta data (alias to getMetaData)
-	 * @param {object} [opts] Options
-	 * @param {number} [opts.context] Context
-	 * @param {string} [opts.contextParam] Context parameter
-	 * @param {function} [opts.error] Error handler function
-	 * @return {promise<BusinessObjectMetadata>} A promise to the object'ts meta data (also available as the <code>metadata</code> member)
 	 * @function
 	 */
 	getMetadata = this.getMetaData;
@@ -2137,7 +2132,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the object's filters (also available as the <code>filters</code> member)
 	 * @function
 	 */
-	getFilters = (opts: any): Promise<any> => {
+	getFilters = (opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.getFilters';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2220,7 +2215,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the count
 	 * @function
 	 */
-	getCount = (filters: any, opts: any): Promise<any> => {
+	getCount = (filters?: any, opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.getCount';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2255,7 +2250,7 @@ class BusinessObject {
 	 * @return {promise<array>} Promise to a list of records (also available as the <code>list</code> member)
 	 * @function
 	 */
-	search = (filters: any, opts: any): Promise<any[]> => {
+	search = (filters?: any, opts?: any): Promise<any[]> => {
 		const origin = 'BusinessObject.search';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2299,7 +2294,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	get = (rowId: string, opts: any): Promise<any> => {
+	get = (rowId: string, opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.get';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2344,7 +2339,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
 	 * @function
 	 */
-	getForCreate = (opts: any): Promise<any> => {
+	getForCreate = (opts?: any): Promise<any> => {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
@@ -2361,7 +2356,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the record to update (also available as the <code>item</code> member)
 	 * @function
 	 */
-	getForUpdate = (rowId: string, opts: any): Promise<any> => {
+	getForUpdate = (rowId: string, opts?: any): Promise<any> => {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
@@ -2378,7 +2373,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
 	 * @function
 	 */
-	getForCopy = (rowId: string, opts: any): Promise<any> => {
+	getForCopy = (rowId: string, opts?: any): Promise<any> => {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
@@ -2395,7 +2390,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the record to delete (also available as the <code>item</code> member)
 	 * @function
 	 */
-	getForDelete = (rowId: string, opts: any): Promise<any> => {
+	getForDelete = (rowId: string, opts?: any): Promise<any> => {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
@@ -2423,7 +2418,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	populate = (rowId: string, opts: any): Promise<any> => {
+	populate = (rowId: string, opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.populate';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2452,7 +2447,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the saved record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	save = (item: any, opts: any): Promise<any> => {
+	save = (item: any, opts?: any): Promise<any> => {
 		if (item)
 			this.item = item;
 		const rowId: string = this.item[this.metadata.rowidfield];
@@ -2470,7 +2465,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the created record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	create = (item: any, opts: any): Promise<any> => {
+	create = (item: any, opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.create';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2502,7 +2497,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the updated record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	update = (item: any, opts: any): Promise<any> => {
+	update = (item: any, opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.update';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2533,7 +2528,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise (the <code>item</code> member is emptied)
 	 * @function
 	 */
-	del = (item: any, opts: any): Promise<any> => {
+	del = (item: any, opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.del';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2566,7 +2561,7 @@ class BusinessObject {
 	 * @return {promise<string|object>} A promise to the action result
 	 * @function
 	 */
-	action = (action: string, rowId: string, opts: any): Promise<string|any> => {
+	action = (action: string, rowId?: string, opts?: any): Promise<string|any> => {
 		const origin = `BusinessObject.action(${action})`;
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2595,7 +2590,7 @@ class BusinessObject {
 	 * @return {promise<object>} A promise to the pivot table data (also avialable as the <code>crosstabdata</code> member)
 	 * @function
 	 */
-	crosstab = (ctb: string, opts: any): Promise<any> => {
+	crosstab = (ctb: string, opts?: any): Promise<any> => {
 		const origin = `BusinessObject.crosstab(${ctb})`;
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2625,7 +2620,7 @@ class BusinessObject {
 	 * @return {promise<Doc>} A promise to the document of the publication
 	 * @function
 	 */
-	print = (prt: string, rowId: string, opts: any): Promise<any> => {
+	print = (prt: string, rowId?: string, opts?: any): Promise<any> => {
 		const origin = `BusinessObject.print(${prt})`;
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2660,7 +2655,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise
 	 * @function
 	 */
-	setParameter = (param: string, value: string, opts: any): Promise<any> => {
+	setParameter = (param: string, value: string, opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.setParameter';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2690,7 +2685,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the parameter value
 	 * @function
 	 */
-	getParameter = (param: string, opts: any): Promise<any> => {
+	getParameter = (param: string, opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.getParameter';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2718,7 +2713,7 @@ class BusinessObject {
 	 * @return {string} Object resource URL
 	 * @function
 	 */
-	getResourceURL = (code: string, type: string): string => {
+	getResourceURL = (code: string, type?: string): string => {
 		return this.session.getResourceURL(code, type, this.metadata.name, this.metadata.id);
 	};
 }
@@ -2826,7 +2821,7 @@ class ExternalObject {
 	 * @return {promise<object>} Promise to the external object content
 	 * @function
 	 */
-	call = (params: any, data: any, opts: any) => {
+	call = (params?: any, data?: any, opts?: any) => {
 		const origin = 'ExternalObject.call';
 		const ses: Session = this.session;
 		opts = opts || {};

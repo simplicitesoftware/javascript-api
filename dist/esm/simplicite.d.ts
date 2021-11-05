@@ -589,7 +589,7 @@ declare class Session {
      * @return {object} Business object cache key
      * @private
      */
-    getBusinessObjectCacheKey: (name: string, instance: string) => any;
+    getBusinessObjectCacheKey: (name: string, instance?: string) => any;
     /**
      * Clears all data (credentials, objects, ...)
      * @function
@@ -625,7 +625,7 @@ declare class Session {
      * @param {function} [errorHandler] Error handler
      * @private
      */
-    req: (path: string, data: any, callback: (testData: string, status: number, headers: any) => void, errorHandler: (err: any) => void) => void;
+    req: (path: string, data?: any, callback?: (testData: string, status: number, headers: any) => void, errorHandler?: (err: any) => void) => void;
     /**
      * Parse result
      * @param {object} res Response to parse
@@ -633,7 +633,7 @@ declare class Session {
      * @return {object} Error object
      * @private
      */
-    parse: (res: any, status: number) => any;
+    parse: (res: any, status?: number) => any;
     /**
      * Get health check (no need to be authenticated)
      * @param {object} [opts] Options
@@ -642,7 +642,7 @@ declare class Session {
      * @return {promise<object>} Promise to the health data
      * @function
      */
-    getHealth: (opts: any) => Promise<any>;
+    getHealth: (opts?: any) => Promise<any>;
     /**
      * Login
      * @param {object} [opts] Options
@@ -653,7 +653,7 @@ declare class Session {
      * @return {promise<object>} Promise to the login result
      * @function
      */
-    login: (opts: any) => Promise<any>;
+    login: (opts?: any) => Promise<any>;
     /**
      * Logout
      * @param {function} callback Callback (called upon success)
@@ -662,7 +662,7 @@ declare class Session {
      * @return {promise<object>} Promise to the logout result
      * @function
      */
-    logout: (opts: any) => Promise<any>;
+    logout: (opts?: any) => Promise<any>;
     /**
      * Grant
      * @member {Grant}
@@ -677,7 +677,7 @@ declare class Session {
      * @return {promise<Grant>} A promise to the grant (also available as the <code>grant</code> member)
      * @function
      */
-    getGrant: (opts: any) => Promise<any>;
+    getGrant: (opts?: any) => Promise<any>;
     /**
      * Change password
      * @param {string} pwd Password
@@ -686,7 +686,7 @@ declare class Session {
      * @return {promise<object>} A promise to the change password result
      * @function
      */
-    changePassword: (pwd: string, opts: any) => Promise<any>;
+    changePassword: (pwd: string, opts?: any) => Promise<any>;
     /**
      * Application info
      * @member {object}
@@ -699,7 +699,7 @@ declare class Session {
      * @return {promise<object>} A promise to the application info (also avialable as the <code>appinfo</code> member)
      * @function
      */
-    getAppInfo: (opts: any) => Promise<any>;
+    getAppInfo: (opts?: any) => Promise<any>;
     /**
      * System info
      * @member {object}
@@ -712,7 +712,7 @@ declare class Session {
      * @return {promise<object>} A promise to the system info (also avialable as the <code>sysinfo</code> member)
      * @function
      */
-    getSysInfo: (opts: any) => Promise<any>;
+    getSysInfo: (opts?: any) => Promise<any>;
     /**
      * Development info
      * @member {object}
@@ -726,12 +726,12 @@ declare class Session {
      * @return {promise<object>} A promise to the develoment info (also avialable as the <code>devinfo</code> member)
      * @function
      */
-    getDevInfo: (module: string, opts: any) => Promise<any>;
+    getDevInfo: (module?: string, opts?: any) => Promise<any>;
     /**
      * News
      * @member {array}
      */
-    news: Array<any>;
+    news: any[];
     /**
      * Get news
      * @param {object} [opts] Options
@@ -740,7 +740,7 @@ declare class Session {
      * @return {promise<array>} A promise to the list of news (also avialable as the <code>news</code> member)
      * @function
      */
-    getNews: (opts: any) => Promise<Array<any>>;
+    getNews: (opts?: any) => Promise<any[]>;
     /**
      * Index search
      * @param {string} query Index search query
@@ -752,7 +752,7 @@ declare class Session {
      * @return {promise<array>} A promise to a list of index search records
      * @function
      */
-    indexSearch: (query: string, object: string, opts: any) => Promise<Array<any>>;
+    indexSearch: (query: string, object?: string, opts?: any) => Promise<any[]>;
     /**
      * Get business object
      * @param {string} name Business object name
@@ -760,7 +760,7 @@ declare class Session {
      * @return {BusinessObject} Business object
      * @function
      */
-    getBusinessObject: (name: string, instance: string) => any;
+    getBusinessObject: (name: string, instance?: string) => any;
     /**
      * Get an external object
      * @param {string} name External object name
@@ -775,7 +775,7 @@ declare class Session {
      * @param {string} [objId] Object ID (not required for global resources)
      * @function
      */
-    getResourceURL: (code: string, type: string, object: any, objId: string) => string;
+    getResourceURL: (code: string, type?: string, object?: any, objId?: string) => string;
 }
 /**
  * Document
@@ -920,7 +920,7 @@ declare class Doc {
      * @param {boolean} [thumbnail=false] Thumbnail? If thumbnail does not exists the content is used.
      * @return {string} Data URL or nothing if content is empty
      */
-    getDataURL: (thumbnail: boolean) => string;
+    getDataURL: (thumbnail?: boolean) => string;
     /**
      * Get the document as a simple value
      * @return {object} Value
@@ -978,7 +978,7 @@ declare class Grant {
      * User responsibilities
      * @member {array}
      */
-    responsibilities: Array<string>;
+    responsibilities: string[];
     /**
      * Translated texts
      * @member {object}
@@ -1070,7 +1070,7 @@ declare class BusinessObjectMetadata {
      * @param {string} name Business object name
      * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
      */
-    constructor(name: string, instance: string);
+    constructor(name: string, instance?: string);
     /**
      * ID
      * @member {string}
@@ -1105,12 +1105,12 @@ declare class BusinessObjectMetadata {
      * Fields definitions
      * @member {array}
      */
-    fields: Array<any>;
+    fields: any[];
     /**
      * Links definitions
      * @member {array}
      */
-    links: Array<any>;
+    links: any[];
 }
 /**
  * Business object.
@@ -1121,11 +1121,11 @@ declare class BusinessObjectMetadata {
 declare class BusinessObject {
     /**
      * Constructor
-     * @param {Session} session Session
+     * @param {Session} ses Session
      * @param {string} name Business object name
      * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
      */
-    constructor(session: any, name: string, instance?: string);
+    constructor(ses: Session, name: string, instance?: string);
     /**
      * Session
      * @member {Session}
@@ -1163,7 +1163,7 @@ declare class BusinessObject {
      * Current list
      * @member {array}
      */
-    list: Array<any>;
+    list: any[];
     /**
      * Current count
      * @member {number}
@@ -1188,17 +1188,12 @@ declare class BusinessObject {
      * @return {promise<BusinessObjectMetadata>} A promise to the object'ts meta data (also available as the <code>metadata</code> member)
      * @function
      */
-    getMetaData: (opts: any) => any;
+    getMetaData: (opts?: any) => any;
     /**
      * Get meta data (alias to getMetaData)
-     * @param {object} [opts] Options
-     * @param {number} [opts.context] Context
-     * @param {string} [opts.contextParam] Context parameter
-     * @param {function} [opts.error] Error handler function
-     * @return {promise<BusinessObjectMetadata>} A promise to the object'ts meta data (also available as the <code>metadata</code> member)
      * @function
      */
-    getMetadata: (opts: any) => any;
+    getMetadata: (opts?: any) => any;
     /**
      * Get name
      * @return {string} Name
@@ -1228,7 +1223,7 @@ declare class BusinessObject {
      * @return {array} Array of field definitions
      * @function
      */
-    getFields: () => Array<any>;
+    getFields: () => any[];
     /**
      * Get a field definition
      * @param {string} fieldName Field name
@@ -1253,7 +1248,7 @@ declare class BusinessObject {
      * @return {array} Array of links
      * @function
      */
-    getLinks: () => Array<any>;
+    getLinks: () => any[];
     /**
      * Get field type
      * @param {(string|object)} field Field name or definition
@@ -1316,7 +1311,7 @@ declare class BusinessObject {
      * @return {string} Value
      * @function
      */
-    getListValue: (list: Array<any>, code: string) => string;
+    getListValue: (list: any[], code: string) => string;
     /**
      * Set value of field for item (or current item)
      * @param {(string|object)} field Field name or definition
@@ -1348,7 +1343,7 @@ declare class BusinessObject {
      * @return {promise<object>} Promise to the object's filters (also available as the <code>filters</code> member)
      * @function
      */
-    getFilters: (opts: any) => Promise<any>;
+    getFilters: (opts?: any) => Promise<any>;
     /**
      * Build options parameters
      * @param {object} options Options
@@ -1371,7 +1366,7 @@ declare class BusinessObject {
      * @return {promise<object>} Promise to the count
      * @function
      */
-    getCount: (filters: any, opts: any) => Promise<any>;
+    getCount: (filters?: any, opts?: any) => Promise<any>;
     /**
      * Search
      * @param {object} [filters] Filters, defaults to current filters if not set
@@ -1383,7 +1378,7 @@ declare class BusinessObject {
      * @return {promise<array>} Promise to a list of records (also available as the <code>list</code> member)
      * @function
      */
-    search: (filters: any, opts: any) => Promise<Array<any>>;
+    search: (filters?: any, opts?: any) => Promise<any[]>;
     /**
      * Get
      * @param {string} rowId Row ID
@@ -1395,7 +1390,7 @@ declare class BusinessObject {
      * @return {promise<object>} Promise to the record (also available as the <code>item</code> member)
      * @function
      */
-    get: (rowId: string, opts: any) => Promise<any>;
+    get: (rowId: string, opts?: any) => Promise<any>;
     /**
      * Get for create
      * @param {object} [opts] Options
@@ -1404,7 +1399,7 @@ declare class BusinessObject {
      * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
      * @function
      */
-    getForCreate: (opts: any) => Promise<any>;
+    getForCreate: (opts?: any) => Promise<any>;
     /**
      * Get for update
      * @param {string} rowId Row ID
@@ -1414,7 +1409,7 @@ declare class BusinessObject {
      * @return {promise<object>} Promise to the record to update (also available as the <code>item</code> member)
      * @function
      */
-    getForUpdate: (rowId: string, opts: any) => Promise<any>;
+    getForUpdate: (rowId: string, opts?: any) => Promise<any>;
     /**
      * Get for copy
      * @param {string} rowId Row ID to copy
@@ -1424,7 +1419,7 @@ declare class BusinessObject {
      * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
      * @function
      */
-    getForCopy: (rowId: string, opts: any) => Promise<any>;
+    getForCopy: (rowId: string, opts?: any) => Promise<any>;
     /**
      * Get for delete
      * @param {string} rowId Row ID
@@ -1434,7 +1429,7 @@ declare class BusinessObject {
      * @return {promise<object>} Promise to the record to delete (also available as the <code>item</code> member)
      * @function
      */
-    getForDelete: (rowId: string, opts: any) => Promise<any>;
+    getForDelete: (rowId: string, opts?: any) => Promise<any>;
     /**
      * Get specified or current item's row ID value
      * @param {object} [item] Item, defaults to current item
@@ -1450,7 +1445,7 @@ declare class BusinessObject {
      * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
      * @function
      */
-    populate: (rowId: string, opts: any) => Promise<any>;
+    populate: (rowId: string, opts?: any) => Promise<any>;
     /**
      * Save (create or update depending on item row ID value)
      * @param {object} item Item (defaults to current item)
@@ -1459,7 +1454,7 @@ declare class BusinessObject {
      * @return {promise<object>} Promise to the saved record (also available as the <code>item</code> member)
      * @function
      */
-    save: (item: any, opts: any) => Promise<any>;
+    save: (item: any, opts?: any) => Promise<any>;
     /**
      * Create (create or update)
      * @param {object} item Item (defaults to current item)
@@ -1468,7 +1463,7 @@ declare class BusinessObject {
      * @return {promise<object>} Promise to the created record (also available as the <code>item</code> member)
      * @function
      */
-    create: (item: any, opts: any) => Promise<any>;
+    create: (item: any, opts?: any) => Promise<any>;
     /**
      * Update
      * @param {object} item Item (defaults to current item)
@@ -1477,7 +1472,7 @@ declare class BusinessObject {
      * @return {promise<object>} Promise to the updated record (also available as the <code>item</code> member)
      * @function
      */
-    update: (item: any, opts: any) => Promise<any>;
+    update: (item: any, opts?: any) => Promise<any>;
     /**
      * Delete
      * @param {object} item Item (defaults to current item)
@@ -1486,7 +1481,7 @@ declare class BusinessObject {
      * @return {promise<object>} Promise (the <code>item</code> member is emptied)
      * @function
      */
-    del: (item: any, opts: any) => Promise<any>;
+    del: (item: any, opts?: any) => Promise<any>;
     /**
      * Invoke a custom action
      * @param {string} action Action name
@@ -1497,7 +1492,7 @@ declare class BusinessObject {
      * @return {promise<string|object>} A promise to the action result
      * @function
      */
-    action: (action: string, rowId: string, opts: any) => Promise<string | any>;
+    action: (action: string, rowId?: string, opts?: any) => Promise<string | any>;
     /**
      * Build a pivot table
      * @param {string} ctb Pivot table name
@@ -1507,7 +1502,7 @@ declare class BusinessObject {
      * @return {promise<object>} A promise to the pivot table data (also avialable as the <code>crosstabdata</code> member)
      * @function
      */
-    crosstab: (ctb: string, opts: any) => Promise<any>;
+    crosstab: (ctb: string, opts?: any) => Promise<any>;
     /**
      * Build a custom publication
      * @param {string} prt Publication name
@@ -1517,7 +1512,7 @@ declare class BusinessObject {
      * @return {promise<Doc>} A promise to the document of the publication
      * @function
      */
-    print: (prt: string, rowId: string, opts: any) => Promise<any>;
+    print: (prt: string, rowId?: string, opts?: any) => Promise<any>;
     /**
      * Set an object parameter
      * @param {string} param Parameter name
@@ -1527,7 +1522,7 @@ declare class BusinessObject {
      * @return {promise<object>} Promise
      * @function
      */
-    setParameter: (param: string, value: string, opts: any) => Promise<any>;
+    setParameter: (param: string, value: string, opts?: any) => Promise<any>;
     /**
      * Get an object parameter
      * @param {string} param Parameter name
@@ -1536,7 +1531,7 @@ declare class BusinessObject {
      * @return {promise<object>} Promise to the parameter value
      * @function
      */
-    getParameter: (param: string, opts: any) => Promise<any>;
+    getParameter: (param: string, opts?: any) => Promise<any>;
     /**
      * Get an object resource URL
      * @param {string} code Resource code
@@ -1544,7 +1539,7 @@ declare class BusinessObject {
      * @return {string} Object resource URL
      * @function
      */
-    getResourceURL: (code: string, type: string) => string;
+    getResourceURL: (code: string, type?: string) => string;
 }
 /**
  * External object meta data.
@@ -1573,10 +1568,10 @@ declare class ExternalObjectMetadata {
 declare class ExternalObject {
     /**
      * Constructor
-     * @param {Session} session Session
+     * @param {Session} ses Session
      * @param {string} name Business object name
      */
-    constructor(session: any, name: string);
+    constructor(ses: Session, name: string);
     /**
      * Session
      * @member {Session}
@@ -1618,12 +1613,12 @@ declare class ExternalObject {
      * @return {promise<object>} Promise to the external object content
      * @function
      */
-    call: (params: any, data: any, opts: any) => Promise<unknown>;
+    call: (params?: any, data?: any, opts?: any) => Promise<unknown>;
     /**
      * Alias to <code>call</code>
      * @function
      */
-    invoke: (params: any, data: any, opts: any) => Promise<unknown>;
+    invoke: (params?: any, data?: any, opts?: any) => Promise<unknown>;
 }
 declare const _default: {
     constants: {

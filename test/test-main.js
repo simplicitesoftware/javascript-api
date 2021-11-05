@@ -48,7 +48,7 @@ app.getHealth().then(health => {
 	app.log('Picture URL: ' + app.grant.getPictureURL().substr(0, 80) + '...');
 	app.log('Resource URL: ' + app.getResourceURL('TEST'));
 	app.log('Resource URL: ' + app.getResourceURL('TEST', app.constants.RESOURCE_TYPE_ICON));
-	app.log('Resource URL: ' + app.getResourceURL('TEST', app.constants.RESOURCE_TYPE_JAVASCRIPT, sysName, 1));
+	app.log('Resource URL: ' + app.getResourceURL('TEST', app.constants.RESOURCE_TYPE_JAVASCRIPT, sysName, '1'));
 	return app.getAppInfo();
 }).then(appinfo => {
 	app.debug(appinfo);
@@ -76,7 +76,7 @@ app.getHealth().then(health => {
 	assert.ok(results.length > 0);
 	app.info('Found ' + results.length + ' results');
 	for (let i = 0; i < results.length; i++) {
-		let result = results[i];
+		const result = results[i];
 		app.info('- Result[' + i + ']: ' + result.object + '(' + result.row_id + ') = ' + result.key);
 	}
 	return app.getNews();
@@ -118,7 +118,7 @@ app.getHealth().then(health => {
 	assert.ok(list.length);
 	app.info('Found ' + list.length + ' items');
 	for (let i = 0; i < list.length; i++) {
-		let item = list[i];
+		const item = list[i];
 		app.info('- item[' + i + ']: ' + item.row_id + ' ' + item.sys_code + ' ' + item.sys_value);
 	}
 	app.info('Current filter: ' + sys.filters);
@@ -133,7 +133,7 @@ app.getHealth().then(health => {
 	app.debug(item);
 	assert.ok(item.row_id === sysId);
 	app.info('Got item: ' + item.row_id + ' ' + item.sys_code + ' ' + item.sys_value);
-	sys.create({ sys_code: '', sys_value: '' }, { error: function(err) {
+	sys.create({ sys_code: '', sys_value: '' }, { error: err => {
 		app.info('Invalid create error caught: ' + JSON.stringify(err));
 	}});
 	return sys.getForCreate();
@@ -162,7 +162,7 @@ app.getHealth().then(health => {
 	assert.ok(item.sys_value === sysValue);
 	app.info('Got item for update with row ID: ' + item.row_id);
 	item.sys_value = '';
-	sys.update(item, { error: function(err) {
+	sys.update(item, { error: err => {
 		app.info('Invalid update error caught: ' + JSON.stringify(err));
 	}});
 	item.sys_value = sysValue + ' updated';
@@ -196,12 +196,12 @@ app.getHealth().then(health => {
 	assert.ok(list[0].usr_login === app.grant.getLogin());
 	assert.ok(list[0].usr_image_id.mime && list[0].usr_image_id.content);
 	app.info('Got users list for current user (with picture): ' + usr.getFieldValue('usr_login', list[0]));
-	let m = usr.getField('row_module_id__mdl_name');
+	const m = usr.getField('row_module_id__mdl_name');
 	app.info(usr.getFieldLabel(m) + ': ' + usr.getFieldValue(m, list[0]));
-	var s = usr.getFieldListValue('usr_active', list[0]);
+	const s = usr.getFieldListValue('usr_active', list[0]);
 	app.info('Status: ' + s + ' (code: ' + list[0].usr_active + ')');
 	assert.ok(s !== list[0].usr_active);
-	var u = usr.getFieldDataURL('usr_image_id', list[0]);
+	const u = usr.getFieldDataURL('usr_image_id', list[0]);
 	app.info('Picture URL: ' + u.substr(0, 80) + '...');
 	assert.ok(u === app.grant.getPictureURL());
 	return usr.print('User-VCARD', list[0].row_id);
