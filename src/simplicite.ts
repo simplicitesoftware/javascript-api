@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.9
+ * @version 2.2.10
  * @license Apache-2.0
  */
 
@@ -17,7 +17,7 @@ const constants = {
 	 * API client module version
 	 * @constant {string}
 	 */
-	MODULE_VERSION: '2.2.9',
+	MODULE_VERSION: '2.2.10',
 
 	/**
 	 * Default row ID field name
@@ -907,12 +907,14 @@ class Session {
 				const r: any = this.parse(res, status);
 				this.debug(`[${origin}] HTTP status = ${status}, response type = ${res}`);
 				if (r.type === 'error') {
-					(opts.error || this.error || reject).call(this, this.getError(r.response, undefined, origin));
+					const err = this.getError(r.response, undefined, origin);
+					if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 				} else {
-					if (resolve) resolve.call(this, r);
+					resolve.call(this, r);
 				}
 			}, (err: any) => {
-				(opts.error || this.error || reject).call(this, this.getError(err, undefined, origin));
+				err = this.getError(err, undefined, origin);
+				if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 			});
 		});
 	};
@@ -943,7 +945,8 @@ class Session {
 				const r: any = this.parse(res, status);
 				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
-					(opts.error || this.error || reject).call(this, this.getError(r.response, undefined, origin));
+					const err = this.getError(r.response, undefined, origin);
+					if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 				} else {
 					this.sessionid = r.response.id;
 					this.debug(`[${origin}] Session ID = ${this.sessionid}`);
@@ -961,10 +964,11 @@ class Session {
 						lastname: r.response.lastname,
 						email: r.response.email
 					});
-					if (resolve) resolve.call(this, r.response);
+					resolve.call(this, r.response);
 				}
 			}, (err: any) => {
-				(opts.error || this.error || reject).call(this, this.getError(err, undefined, origin));
+				err = this.getError(err, undefined, origin);
+				if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 			});
 		});
 	};
@@ -985,15 +989,17 @@ class Session {
 				const r: any = this.parse(res, status);
 				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
-					(opts.error || this.error || reject).call(this, this.getError(r.response, undefined, origin));
+					const err = this.getError(r.response, undefined, origin);
+					if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 				} else {
 					this.clear();
-					if (resolve) resolve.call(this, r.response);
+					resolve.call(this, r.response);
 				}
 			}, (err: any) => {
+				err = this.getError(err, undefined, origin);
 				if (err.status === 401) // Removes (expired or deleted) token if any
 					this.authtoken = undefined;
-				(opts.error || this.error || reject).call(this, this.getError(err, undefined, origin));
+				if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 			});
 		});
 	};
@@ -1028,17 +1034,19 @@ class Session {
 				const r: any = this.parse(res, status);
 				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
-					(opts.error || this.error || reject).call(this, this.getError(r.response, undefined, origin));
+					const err = this.getError(r.response, undefined, origin);
+					if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 				} else {
 					this.grant = new Grant(r.response); // Set as Grant
 					if (pic)
 						this.grant.picture = new Doc(this.grant.picture); // Set picture as Document
 					if (txt)
 						this.grant.texts = Object.assign(new Map<string, string>(), this.grant.texts); // Set texts as Map
-					if (resolve) resolve.call(this, this.grant);
+					resolve.call(this, this.grant);
 				}
 			}, (err: any) => {
-				(opts.error || this.error || reject).call(this, this.getError(err, undefined, origin));
+				err = this.getError(err, undefined, origin);
+				if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 			});
 		});
 	};
@@ -1059,12 +1067,14 @@ class Session {
 				const r: any = this.parse(res, status);
 				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
-					(opts.error || this.error || reject).call(this, this.getError(r.response, undefined, origin));
+					const err = this.getError(r.response, undefined, origin);
+					if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 				} else {
-					if (resolve) resolve.call(this, r.response);
+					resolve.call(this, r.response);
 				}
 			}, (err: any) => {
-				(opts.error || this.error || reject).call(this, this.getError(err, undefined, origin));
+				err = this.getError(err, undefined, origin);
+				if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 			});
 		});
 	};
@@ -1090,13 +1100,15 @@ class Session {
 				const r: any = this.parse(res, status);
 				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
-					(opts.error || this.error || reject).call(this, this.getError(r.response, undefined, origin));
+					const err = this.getError(r.response, undefined, origin);
+					if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 				} else {
 					this.appinfo = r.response;
-					if (resolve) resolve.call(this, this.appinfo);
+					resolve.call(this, this.appinfo);
 				}
 			}, (err: any) => {
-				(opts.error || this.error || reject).call(this, this.getError(err, undefined, origin));
+				err = this.getError(err, undefined, origin);
+				if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 			});
 		});
 	};
@@ -1122,13 +1134,15 @@ class Session {
 				const r: any = this.parse(res, status);
 				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
-					(opts.error || this.error || reject).call(this, this.getError(r.response, undefined, origin));
+					const err = this.getError(r.response, undefined, origin);
+					if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 				} else {
 					this.sysinfo = r.response;
-					if (resolve) resolve.call(this, this.sysinfo);
+					resolve.call(this, this.sysinfo);
 				}
 			}, (err: any) => {
-				(opts.error || this.error || reject).call(this, this.getError(err, undefined, origin));
+				err = this.getError(err, undefined, origin);
+				if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 			});
 		});
 	};
@@ -1158,14 +1172,16 @@ class Session {
 				const r: any = this.parse(res, status);
 				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
-					(opts.error || this.error || reject).call(this, this.getError(r.response, undefined, origin));
+					const err = this.getError(r.response, undefined, origin);
+					if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 				} else {
 					if (!module)
 						this.devinfo = r.response;
-					if (resolve) resolve.call(this, r.response);
+					resolve.call(this, r.response);
 				}
 			}, (err: any) => {
-				(opts.error || this.error || reject).call(this, this.getError(err, undefined, origin));
+				err = this.getError(err, undefined, origin);
+				if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 			});
 		});
 	};
@@ -1196,15 +1212,17 @@ class Session {
 				const r: any = this.parse(res, status);
 				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
-					(opts.error || this.error || reject).call(this, this.getError(r.response, undefined, origin));
+					const err = this.getError(r.response, undefined, origin);
+					if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 				} else {
 					this.news = r.response;
 					for (const n of this.news)
 						n.image = new Doc(n.image); // Set image as document
-					if (resolve) resolve.call(this, this.news);
+					resolve.call(this, this.news);
 				}
 			}, (err: any) => {
-				(opts.error || this.error || reject).call(this, this.getError(err, undefined, origin));
+				err = this.getError(err, undefined, origin);
+				if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 			});
 		});
 	};
@@ -1233,12 +1251,14 @@ class Session {
 				const r: any = this.parse(res, status);
 				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
-					(opts.error || this.error || reject).call(this, this.getError(r.response, undefined, origin));
+					const err = this.getError(r.response, undefined, origin);
+					if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 				} else {
-					if (resolve) resolve.call(this, r.response);
+					resolve.call(this, r.response);
 				}
 			}, (err: any) => {
-				(opts.error || this.error || reject).call(this, this.getError(err, undefined, origin));
+				err = this.getError(err, undefined, origin);
+				if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 			});
 		});
 	};
@@ -1850,13 +1870,15 @@ class BusinessObject {
 				const r: any = ses.parse(res, status);
 				ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
-					(opts.error || ses.error || reject).call(this, ses.getError(r.response, undefined, origin));
+					const err = ses.getError(r.response, undefined, origin);
+					if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 				} else {
 					this.metadata = r.response;
-					if (resolve) resolve.call(this, this.metadata);
+					resolve.call(this, this.metadata);
 				}
 			}, (err: any) => {
-				(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
+				err = ses.getError(err, undefined, origin);
+				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
 	};
@@ -2145,13 +2167,15 @@ class BusinessObject {
 				const r: any = ses.parse(res, status);
 				ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
-					(opts.error || ses.error || reject).call(this, ses.getError(r.response, undefined, origin));
+					const err = ses.getError(r.response, undefined, origin);
+					if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 				} else {
 					this.filters = r.response;
-					if (resolve) resolve.call(this, this.filters);
+					resolve.call(this, this.filters);
 				}
 			}, (err: any) => {
-				(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
+				err = ses.getError(err, undefined, origin);
+				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
 	};
@@ -2224,16 +2248,18 @@ class BusinessObject {
 				const r: any = ses.parse(res, status);
 				ses.debug('['+origin+'] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
-					(opts.error || ses.error || reject).call(this, ses.getError(r.response, undefined, origin));
+					const err = ses.getError(r.response, undefined, origin);
+					if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 				} else {
 					this.count = r.response.count;
 					this.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
 					this.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
 					this.list = [];
-					if (resolve) resolve.call(this, this.count);
+					resolve.call(this, this.count);
 				}
 			}, (err: any) => {
-				(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
+				err = ses.getError(err, undefined, origin);
+				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
 	};
@@ -2266,7 +2292,8 @@ class BusinessObject {
 				const r: any = ses.parse(res, status);
 				ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
-					(opts.error || ses.error || reject).call(this, ses.getError(r.response, undefined, origin));
+					const err = ses.getError(r.response, undefined, origin);
+					if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 				} else {
 					if (res.meta)
 						this.metadata = r.response.meta;
@@ -2274,10 +2301,11 @@ class BusinessObject {
 					this.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
 					this.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
 					this.list = r.response.list;
-					if (resolve) resolve.call(this, this.list);
+					resolve.call(this, this.list);
 				}
 			}, (err: any) => {
-				(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
+				err = ses.getError(err, undefined, origin);
+				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
 	};
@@ -2314,7 +2342,8 @@ class BusinessObject {
 				const r: any = ses.parse(res, status);
 				ses.debug('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
-					(opts.error || ses.error || reject).call(this, ses.getError(r.response, undefined, origin));
+					const err = ses.getError(r.response, undefined, origin);
+					if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 				} else {
 					if (r.response.meta)
 						this.metadata = r.response.meta;
@@ -2322,10 +2351,11 @@ class BusinessObject {
 						this.item = tv ? r.response.data.item : r.response.data;
 					else
 						this.item = tv ? r.response.item : r.response;
-					if (resolve) resolve.call(this, tv ? r.response : this.item);
+					resolve.call(this, tv ? r.response : this.item);
 				}
 			}, (err: any) => {
-				(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
+				err = ses.getError(err, undefined, origin);
+				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
 	};
@@ -2427,13 +2457,15 @@ class BusinessObject {
 				const r: any = ses.parse(res, status);
 				ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
-					(opts.error || ses.error || reject).call(this, ses.getError(r.response, undefined, origin));
+					const err = ses.getError(r.response, undefined, origin);
+					if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 				} else {
 					this.item = r.response.data ? r.response.data : r.response;
-					if (resolve) resolve.call(this, this.item);
+					resolve.call(this, this.item);
 				}
 			}, (err: any) => {
-				(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
+				err = ses.getError(err, undefined, origin);
+				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
 	};
@@ -2477,13 +2509,15 @@ class BusinessObject {
 				const r: any = ses.parse(res, status);
 				ses.debug('['+origin+'] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
-					(opts.error || ses.error || reject).call(this, ses.getError(r.response, undefined, origin));
+					const err = ses.getError(r.response, undefined, origin);
+					if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 				} else {
 					this.item = r.response.data ? r.response.data : r.response;
-					if (resolve) resolve.call(this, this.item);
+					resolve.call(this, this.item);
 				}
 			}, (err: any) => {
-				(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
+				err = ses.getError(err, undefined, origin);
+				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
 	};
@@ -2508,13 +2542,15 @@ class BusinessObject {
 				const r: any = ses.parse(res, status);
 				ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
-					(opts.error || ses.error || reject).call(this, ses.getError(r.response, undefined, origin));
+					const err = ses.getError(r.response, undefined, origin);
+					if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 				} else {
 					this.item = r.response.data ? r.response.data : r.response;
-					if (resolve) resolve.call(this, this.item);
+					resolve.call(this, this.item);
 				}
 			}, (err: any) => {
-				(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
+				err = ses.getError(err, undefined, origin);
+				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
 	};
@@ -2538,14 +2574,16 @@ class BusinessObject {
 				const r = ses.parse(res, status);
 				ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
-					(opts.error || ses.error || reject).call(this, ses.getError(r.response, undefined, origin));
+					const err = ses.getError(r.response, undefined, origin);
+					if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 				} else {
 					this.item = undefined;
 					delete r.response.undoredo;
-					if (resolve) resolve.call(this, r.response);
+					resolve.call(this, r.response);
 				}
 			}, (err: any) => {
-				(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
+				err = ses.getError(err, undefined, origin);
+				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
 	};
@@ -2569,13 +2607,15 @@ class BusinessObject {
 				const r: any = ses.parse(res, status);
 				ses.debug('['+origin+'] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
-					(opts.error || ses.error || reject).call(this, ses.getError(r.response, undefined, origin));
+					const err = ses.getError(r.response, undefined, origin);
+					if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 				} else {
 					const result = r.response.result;
-					if (resolve) resolve.call(this, result);
+					resolve.call(this, result);
 				}
 			}, (err: any) => {
-				(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
+				err = ses.getError(err, undefined, origin);
+				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
 	};
@@ -2600,12 +2640,14 @@ class BusinessObject {
 				const r: any = ses.parse(res, status);
 				ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
-					(opts.error || ses.error || reject).call(this, ses.getError(r.response, undefined, origin));
+					const err = ses.getError(r.response, undefined, origin);
+					if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 				} else {
-					if (resolve) resolve.call(this, r.response);
+					resolve.call(this, r.response);
 				}
 			}, (err: any) => {
-				(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
+				err = ses.getError(err, undefined, origin);
+				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
 	};
@@ -2635,12 +2677,14 @@ class BusinessObject {
 				const r: any = ses.parse(res, status);
 				ses.debug('['+origin+'] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
-					(opts.error || ses.error || reject).call(this, ses.getError(r.response, undefined, origin));
+					const err = ses.getError(r.response, undefined, origin);
+					if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 				} else {
-					if (resolve) resolve.call(this, new Doc(r.response));
+					resolve.call(this, new Doc(r.response));
 				}
 			}, (err: any) => {
-				(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
+				err = ses.getError(err, undefined, origin);
+				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
 	};
@@ -2665,13 +2709,15 @@ class BusinessObject {
 				const r: any = ses.parse(res, status);
 				ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
-					(opts.error || ses.error || reject).call(this, r.response);
+					const err = ses.getError(r.response, undefined, origin);
+					if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 				} else {
 					const result = r.response.result;
-					if (resolve) resolve.call(this, result);
+					resolve.call(this, result);
 				}
 			}, (err: any) => {
-				(opts.error || ses.error || reject).call(this, ses.getError(err));
+				err = ses.getError(err, undefined, origin);
+				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
 	};
@@ -2694,13 +2740,15 @@ class BusinessObject {
 				const r: any = ses.parse(res, status);
 				ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
-					(opts.error || ses.error || reject).call(this, r.response);
+					const err = ses.getError(r.response, undefined, origin);
+					if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 				} else {
 					const result = r.response.result;
-					if (resolve) resolve.call(this, result);
+					resolve.call(this, result);
 				}
 			}, (err: any) => {
-				(opts.error || ses.error || reject).call(this, ses.getError(err));
+				err = ses.getError(err, undefined, origin);
+				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
 	};
@@ -2857,25 +2905,29 @@ class ExternalObject {
 				ses.debug(`[${origin}] HTTP status = ${res.status}, response content type = ${type}`);
 				if (type && type.startsWith('application/json')) { // JSON
 					res.json().then(jsonData => {
-						if (resolve) resolve.call(this, jsonData, res.status, res.headers);
+						resolve.call(this, jsonData, res.status, res.headers);
 					}).catch((err: any) => {
-						(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
+						err = ses.getError(err, undefined, origin);
+						if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 					});
 				} else if (type && type.startsWith('text/')) { // Text
 					res.text().then(textData => {
-						if (resolve) resolve.call(this, textData, res.status, res.headers);
+						resolve.call(this, textData, res.status, res.headers);
 					}).catch((err: any) => {
-						(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
+						err = ses.getError(err, undefined, origin);
+						if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 					});
 				} else { // Binary
 					res.arrayBuffer().then(binData => {
-						if (resolve) resolve.call(this, binData, res.status, res.headers);
+						resolve.call(this, binData, res.status, res.headers);
 					}).catch((err: any) => {
-						(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
+						err = ses.getError(err, undefined, origin);
+						if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 					});
 				}
 			}).catch((err: any) => {
-				(opts.error || ses.error || reject).call(this, ses.getError(err, undefined, origin));
+				err = ses.getError(err, undefined, origin);
+				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
 	};
