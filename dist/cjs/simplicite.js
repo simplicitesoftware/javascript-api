@@ -2,7 +2,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.9
+ * @version 2.2.10
  * @license Apache-2.0
  */
 var __importDefault = (this && this.__importDefault) || function (mod) {
@@ -20,7 +20,7 @@ var constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '2.2.9',
+    MODULE_VERSION: '2.2.10',
     /**
      * Default row ID field name
      * @constant {string}
@@ -527,6 +527,7 @@ var Session = /** @class */ (function () {
             (0, node_fetch_1.default)(u, {
                 method: m,
                 headers: h,
+                cache: 'no-cache',
                 mode: 'cors',
                 credentials: 'include',
                 body: d
@@ -578,14 +579,17 @@ var Session = /** @class */ (function () {
                     var r = _this.parse(res, status);
                     _this.debug("[" + origin + "] HTTP status = " + status + ", response type = " + res);
                     if (r.type === 'error') {
-                        (opts.error || _this.error || reject).call(_this, _this.getError(r.response, undefined, origin));
+                        var err = _this.getError(r.response, undefined, origin);
+                        if (!(opts.error || _this.error).call(_this, err))
+                            reject.call(_this, err);
                     }
                     else {
-                        if (resolve)
-                            resolve.call(_this, r);
+                        resolve.call(_this, r);
                     }
                 }, function (err) {
-                    (opts.error || _this.error || reject).call(_this, _this.getError(err, undefined, origin));
+                    err = _this.getError(err, undefined, origin);
+                    if (!(opts.error || _this.error).call(_this, err))
+                        reject.call(_this, err);
                 });
             });
         };
@@ -616,7 +620,9 @@ var Session = /** @class */ (function () {
                     var r = _this.parse(res, status);
                     _this.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
                     if (r.type === 'error') {
-                        (opts.error || _this.error || reject).call(_this, _this.getError(r.response, undefined, origin));
+                        var err = _this.getError(r.response, undefined, origin);
+                        if (!(opts.error || _this.error).call(_this, err))
+                            reject.call(_this, err);
                     }
                     else {
                         _this.sessionid = r.response.id;
@@ -635,11 +641,12 @@ var Session = /** @class */ (function () {
                             lastname: r.response.lastname,
                             email: r.response.email
                         });
-                        if (resolve)
-                            resolve.call(_this, r.response);
+                        resolve.call(_this, r.response);
                     }
                 }, function (err) {
-                    (opts.error || _this.error || reject).call(_this, _this.getError(err, undefined, origin));
+                    err = _this.getError(err, undefined, origin);
+                    if (!(opts.error || _this.error).call(_this, err))
+                        reject.call(_this, err);
                 });
             });
         };
@@ -659,17 +666,20 @@ var Session = /** @class */ (function () {
                     var r = _this.parse(res, status);
                     _this.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
                     if (r.type === 'error') {
-                        (opts.error || _this.error || reject).call(_this, _this.getError(r.response, undefined, origin));
+                        var err = _this.getError(r.response, undefined, origin);
+                        if (!(opts.error || _this.error).call(_this, err))
+                            reject.call(_this, err);
                     }
                     else {
                         _this.clear();
-                        if (resolve)
-                            resolve.call(_this, r.response);
+                        resolve.call(_this, r.response);
                     }
                 }, function (err) {
+                    err = _this.getError(err, undefined, origin);
                     if (err.status === 401) // Removes (expired or deleted) token if any
                         _this.authtoken = undefined;
-                    (opts.error || _this.error || reject).call(_this, _this.getError(err, undefined, origin));
+                    if (!(opts.error || _this.error).call(_this, err))
+                        reject.call(_this, err);
                 });
             });
         };
@@ -697,7 +707,9 @@ var Session = /** @class */ (function () {
                     var r = _this.parse(res, status);
                     _this.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
                     if (r.type === 'error') {
-                        (opts.error || _this.error || reject).call(_this, _this.getError(r.response, undefined, origin));
+                        var err = _this.getError(r.response, undefined, origin);
+                        if (!(opts.error || _this.error).call(_this, err))
+                            reject.call(_this, err);
                     }
                     else {
                         _this.grant = new Grant(r.response); // Set as Grant
@@ -705,11 +717,12 @@ var Session = /** @class */ (function () {
                             _this.grant.picture = new Doc(_this.grant.picture); // Set picture as Document
                         if (txt)
                             _this.grant.texts = Object.assign(new Map(), _this.grant.texts); // Set texts as Map
-                        if (resolve)
-                            resolve.call(_this, _this.grant);
+                        resolve.call(_this, _this.grant);
                     }
                 }, function (err) {
-                    (opts.error || _this.error || reject).call(_this, _this.getError(err, undefined, origin));
+                    err = _this.getError(err, undefined, origin);
+                    if (!(opts.error || _this.error).call(_this, err))
+                        reject.call(_this, err);
                 });
             });
         };
@@ -729,14 +742,17 @@ var Session = /** @class */ (function () {
                     var r = _this.parse(res, status);
                     _this.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
                     if (r.type === 'error') {
-                        (opts.error || _this.error || reject).call(_this, _this.getError(r.response, undefined, origin));
+                        var err = _this.getError(r.response, undefined, origin);
+                        if (!(opts.error || _this.error).call(_this, err))
+                            reject.call(_this, err);
                     }
                     else {
-                        if (resolve)
-                            resolve.call(_this, r.response);
+                        resolve.call(_this, r.response);
                     }
                 }, function (err) {
-                    (opts.error || _this.error || reject).call(_this, _this.getError(err, undefined, origin));
+                    err = _this.getError(err, undefined, origin);
+                    if (!(opts.error || _this.error).call(_this, err))
+                        reject.call(_this, err);
                 });
             });
         };
@@ -755,15 +771,18 @@ var Session = /** @class */ (function () {
                     var r = _this.parse(res, status);
                     _this.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
                     if (r.type === 'error') {
-                        (opts.error || _this.error || reject).call(_this, _this.getError(r.response, undefined, origin));
+                        var err = _this.getError(r.response, undefined, origin);
+                        if (!(opts.error || _this.error).call(_this, err))
+                            reject.call(_this, err);
                     }
                     else {
                         _this.appinfo = r.response;
-                        if (resolve)
-                            resolve.call(_this, _this.appinfo);
+                        resolve.call(_this, _this.appinfo);
                     }
                 }, function (err) {
-                    (opts.error || _this.error || reject).call(_this, _this.getError(err, undefined, origin));
+                    err = _this.getError(err, undefined, origin);
+                    if (!(opts.error || _this.error).call(_this, err))
+                        reject.call(_this, err);
                 });
             });
         };
@@ -782,15 +801,18 @@ var Session = /** @class */ (function () {
                     var r = _this.parse(res, status);
                     _this.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
                     if (r.type === 'error') {
-                        (opts.error || _this.error || reject).call(_this, _this.getError(r.response, undefined, origin));
+                        var err = _this.getError(r.response, undefined, origin);
+                        if (!(opts.error || _this.error).call(_this, err))
+                            reject.call(_this, err);
                     }
                     else {
                         _this.sysinfo = r.response;
-                        if (resolve)
-                            resolve.call(_this, _this.sysinfo);
+                        resolve.call(_this, _this.sysinfo);
                     }
                 }, function (err) {
-                    (opts.error || _this.error || reject).call(_this, _this.getError(err, undefined, origin));
+                    err = _this.getError(err, undefined, origin);
+                    if (!(opts.error || _this.error).call(_this, err))
+                        reject.call(_this, err);
                 });
             });
         };
@@ -813,16 +835,19 @@ var Session = /** @class */ (function () {
                     var r = _this.parse(res, status);
                     _this.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
                     if (r.type === 'error') {
-                        (opts.error || _this.error || reject).call(_this, _this.getError(r.response, undefined, origin));
+                        var err = _this.getError(r.response, undefined, origin);
+                        if (!(opts.error || _this.error).call(_this, err))
+                            reject.call(_this, err);
                     }
                     else {
                         if (!module)
                             _this.devinfo = r.response;
-                        if (resolve)
-                            resolve.call(_this, r.response);
+                        resolve.call(_this, r.response);
                     }
                 }, function (err) {
-                    (opts.error || _this.error || reject).call(_this, _this.getError(err, undefined, origin));
+                    err = _this.getError(err, undefined, origin);
+                    if (!(opts.error || _this.error).call(_this, err))
+                        reject.call(_this, err);
                 });
             });
         };
@@ -846,7 +871,9 @@ var Session = /** @class */ (function () {
                     var r = _this.parse(res, status);
                     _this.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
                     if (r.type === 'error') {
-                        (opts.error || _this.error || reject).call(_this, _this.getError(r.response, undefined, origin));
+                        var err = _this.getError(r.response, undefined, origin);
+                        if (!(opts.error || _this.error).call(_this, err))
+                            reject.call(_this, err);
                     }
                     else {
                         _this.news = r.response;
@@ -854,11 +881,12 @@ var Session = /** @class */ (function () {
                             var n = _a[_i];
                             n.image = new Doc(n.image);
                         } // Set image as document
-                        if (resolve)
-                            resolve.call(_this, _this.news);
+                        resolve.call(_this, _this.news);
                     }
                 }, function (err) {
-                    (opts.error || _this.error || reject).call(_this, _this.getError(err, undefined, origin));
+                    err = _this.getError(err, undefined, origin);
+                    if (!(opts.error || _this.error).call(_this, err))
+                        reject.call(_this, err);
                 });
             });
         };
@@ -886,14 +914,17 @@ var Session = /** @class */ (function () {
                     var r = _this.parse(res, status);
                     _this.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
                     if (r.type === 'error') {
-                        (opts.error || _this.error || reject).call(_this, _this.getError(r.response, undefined, origin));
+                        var err = _this.getError(r.response, undefined, origin);
+                        if (!(opts.error || _this.error).call(_this, err))
+                            reject.call(_this, err);
                     }
                     else {
-                        if (resolve)
-                            resolve.call(_this, r.response);
+                        resolve.call(_this, r.response);
                     }
                 }, function (err) {
-                    (opts.error || _this.error || reject).call(_this, _this.getError(err, undefined, origin));
+                    err = _this.getError(err, undefined, origin);
+                    if (!(opts.error || _this.error).call(_this, err))
+                        reject.call(_this, err);
                 });
             });
         };
@@ -1372,15 +1403,18 @@ var BusinessObject = /** @class */ (function () {
                     var r = ses.parse(res, status);
                     ses.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
                     if (r.type === 'error') {
-                        (opts.error || ses.error || reject).call(_this, ses.getError(r.response, undefined, origin));
+                        var err = ses.getError(r.response, undefined, origin);
+                        if (!(opts.error || ses.error).call(_this, err))
+                            reject.call(_this, err);
                     }
                     else {
                         _this.metadata = r.response;
-                        if (resolve)
-                            resolve.call(_this, _this.metadata);
+                        resolve.call(_this, _this.metadata);
                     }
                 }, function (err) {
-                    (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
+                    err = ses.getError(err, undefined, origin);
+                    if (!(opts.error || ses.error).call(_this, err))
+                        reject.call(_this, err);
                 });
             });
         };
@@ -1649,15 +1683,18 @@ var BusinessObject = /** @class */ (function () {
                     var r = ses.parse(res, status);
                     ses.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
                     if (r.type === 'error') {
-                        (opts.error || ses.error || reject).call(_this, ses.getError(r.response, undefined, origin));
+                        var err = ses.getError(r.response, undefined, origin);
+                        if (!(opts.error || ses.error).call(_this, err))
+                            reject.call(_this, err);
                     }
                     else {
                         _this.filters = r.response;
-                        if (resolve)
-                            resolve.call(_this, _this.filters);
+                        resolve.call(_this, _this.filters);
                     }
                 }, function (err) {
-                    (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
+                    err = ses.getError(err, undefined, origin);
+                    if (!(opts.error || ses.error).call(_this, err))
+                        reject.call(_this, err);
                 });
             });
         };
@@ -1734,18 +1771,21 @@ var BusinessObject = /** @class */ (function () {
                     var r = ses.parse(res, status);
                     ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                     if (r.type === 'error') {
-                        (opts.error || ses.error || reject).call(_this, ses.getError(r.response, undefined, origin));
+                        var err = ses.getError(r.response, undefined, origin);
+                        if (!(opts.error || ses.error).call(_this, err))
+                            reject.call(_this, err);
                     }
                     else {
                         _this.count = r.response.count;
                         _this.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
                         _this.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
                         _this.list = [];
-                        if (resolve)
-                            resolve.call(_this, _this.count);
+                        resolve.call(_this, _this.count);
                     }
                 }, function (err) {
-                    (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
+                    err = ses.getError(err, undefined, origin);
+                    if (!(opts.error || ses.error).call(_this, err))
+                        reject.call(_this, err);
                 });
             });
         };
@@ -1777,7 +1817,9 @@ var BusinessObject = /** @class */ (function () {
                     var r = ses.parse(res, status);
                     ses.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
                     if (r.type === 'error') {
-                        (opts.error || ses.error || reject).call(_this, ses.getError(r.response, undefined, origin));
+                        var err = ses.getError(r.response, undefined, origin);
+                        if (!(opts.error || ses.error).call(_this, err))
+                            reject.call(_this, err);
                     }
                     else {
                         if (res.meta)
@@ -1786,11 +1828,12 @@ var BusinessObject = /** @class */ (function () {
                         _this.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
                         _this.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
                         _this.list = r.response.list;
-                        if (resolve)
-                            resolve.call(_this, _this.list);
+                        resolve.call(_this, _this.list);
                     }
                 }, function (err) {
-                    (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
+                    err = ses.getError(err, undefined, origin);
+                    if (!(opts.error || ses.error).call(_this, err))
+                        reject.call(_this, err);
                 });
             });
         };
@@ -1828,7 +1871,9 @@ var BusinessObject = /** @class */ (function () {
                     var r = ses.parse(res, status);
                     ses.debug('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response type = ' + r.type);
                     if (r.type === 'error') {
-                        (opts.error || ses.error || reject).call(_this, ses.getError(r.response, undefined, origin));
+                        var err = ses.getError(r.response, undefined, origin);
+                        if (!(opts.error || ses.error).call(_this, err))
+                            reject.call(_this, err);
                     }
                     else {
                         if (r.response.meta)
@@ -1837,11 +1882,12 @@ var BusinessObject = /** @class */ (function () {
                             _this.item = tv ? r.response.data.item : r.response.data;
                         else
                             _this.item = tv ? r.response.item : r.response;
-                        if (resolve)
-                            resolve.call(_this, tv ? r.response : _this.item);
+                        resolve.call(_this, tv ? r.response : _this.item);
                     }
                 }, function (err) {
-                    (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
+                    err = ses.getError(err, undefined, origin);
+                    if (!(opts.error || ses.error).call(_this, err))
+                        reject.call(_this, err);
                 });
             });
         };
@@ -1937,15 +1983,18 @@ var BusinessObject = /** @class */ (function () {
                     var r = ses.parse(res, status);
                     ses.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
                     if (r.type === 'error') {
-                        (opts.error || ses.error || reject).call(_this, ses.getError(r.response, undefined, origin));
+                        var err = ses.getError(r.response, undefined, origin);
+                        if (!(opts.error || ses.error).call(_this, err))
+                            reject.call(_this, err);
                     }
                     else {
                         _this.item = r.response.data ? r.response.data : r.response;
-                        if (resolve)
-                            resolve.call(_this, _this.item);
+                        resolve.call(_this, _this.item);
                     }
                 }, function (err) {
-                    (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
+                    err = ses.getError(err, undefined, origin);
+                    if (!(opts.error || ses.error).call(_this, err))
+                        reject.call(_this, err);
                 });
             });
         };
@@ -1987,15 +2036,18 @@ var BusinessObject = /** @class */ (function () {
                     var r = ses.parse(res, status);
                     ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                     if (r.type === 'error') {
-                        (opts.error || ses.error || reject).call(_this, ses.getError(r.response, undefined, origin));
+                        var err = ses.getError(r.response, undefined, origin);
+                        if (!(opts.error || ses.error).call(_this, err))
+                            reject.call(_this, err);
                     }
                     else {
                         _this.item = r.response.data ? r.response.data : r.response;
-                        if (resolve)
-                            resolve.call(_this, _this.item);
+                        resolve.call(_this, _this.item);
                     }
                 }, function (err) {
-                    (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
+                    err = ses.getError(err, undefined, origin);
+                    if (!(opts.error || ses.error).call(_this, err))
+                        reject.call(_this, err);
                 });
             });
         };
@@ -2019,15 +2071,18 @@ var BusinessObject = /** @class */ (function () {
                     var r = ses.parse(res, status);
                     ses.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
                     if (r.type === 'error') {
-                        (opts.error || ses.error || reject).call(_this, ses.getError(r.response, undefined, origin));
+                        var err = ses.getError(r.response, undefined, origin);
+                        if (!(opts.error || ses.error).call(_this, err))
+                            reject.call(_this, err);
                     }
                     else {
                         _this.item = r.response.data ? r.response.data : r.response;
-                        if (resolve)
-                            resolve.call(_this, _this.item);
+                        resolve.call(_this, _this.item);
                     }
                 }, function (err) {
-                    (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
+                    err = ses.getError(err, undefined, origin);
+                    if (!(opts.error || ses.error).call(_this, err))
+                        reject.call(_this, err);
                 });
             });
         };
@@ -2050,16 +2105,19 @@ var BusinessObject = /** @class */ (function () {
                     var r = ses.parse(res, status);
                     ses.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
                     if (r.type === 'error') {
-                        (opts.error || ses.error || reject).call(_this, ses.getError(r.response, undefined, origin));
+                        var err = ses.getError(r.response, undefined, origin);
+                        if (!(opts.error || ses.error).call(_this, err))
+                            reject.call(_this, err);
                     }
                     else {
                         _this.item = undefined;
                         delete r.response.undoredo;
-                        if (resolve)
-                            resolve.call(_this, r.response);
+                        resolve.call(_this, r.response);
                     }
                 }, function (err) {
-                    (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
+                    err = ses.getError(err, undefined, origin);
+                    if (!(opts.error || ses.error).call(_this, err))
+                        reject.call(_this, err);
                 });
             });
         };
@@ -2082,15 +2140,18 @@ var BusinessObject = /** @class */ (function () {
                     var r = ses.parse(res, status);
                     ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                     if (r.type === 'error') {
-                        (opts.error || ses.error || reject).call(_this, ses.getError(r.response, undefined, origin));
+                        var err = ses.getError(r.response, undefined, origin);
+                        if (!(opts.error || ses.error).call(_this, err))
+                            reject.call(_this, err);
                     }
                     else {
                         var result = r.response.result;
-                        if (resolve)
-                            resolve.call(_this, result);
+                        resolve.call(_this, result);
                     }
                 }, function (err) {
-                    (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
+                    err = ses.getError(err, undefined, origin);
+                    if (!(opts.error || ses.error).call(_this, err))
+                        reject.call(_this, err);
                 });
             });
         };
@@ -2114,14 +2175,17 @@ var BusinessObject = /** @class */ (function () {
                     var r = ses.parse(res, status);
                     ses.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
                     if (r.type === 'error') {
-                        (opts.error || ses.error || reject).call(_this, ses.getError(r.response, undefined, origin));
+                        var err = ses.getError(r.response, undefined, origin);
+                        if (!(opts.error || ses.error).call(_this, err))
+                            reject.call(_this, err);
                     }
                     else {
-                        if (resolve)
-                            resolve.call(_this, r.response);
+                        resolve.call(_this, r.response);
                     }
                 }, function (err) {
-                    (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
+                    err = ses.getError(err, undefined, origin);
+                    if (!(opts.error || ses.error).call(_this, err))
+                        reject.call(_this, err);
                 });
             });
         };
@@ -2150,14 +2214,17 @@ var BusinessObject = /** @class */ (function () {
                     var r = ses.parse(res, status);
                     ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                     if (r.type === 'error') {
-                        (opts.error || ses.error || reject).call(_this, ses.getError(r.response, undefined, origin));
+                        var err = ses.getError(r.response, undefined, origin);
+                        if (!(opts.error || ses.error).call(_this, err))
+                            reject.call(_this, err);
                     }
                     else {
-                        if (resolve)
-                            resolve.call(_this, new Doc(r.response));
+                        resolve.call(_this, new Doc(r.response));
                     }
                 }, function (err) {
-                    (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
+                    err = ses.getError(err, undefined, origin);
+                    if (!(opts.error || ses.error).call(_this, err))
+                        reject.call(_this, err);
                 });
             });
         };
@@ -2182,15 +2249,18 @@ var BusinessObject = /** @class */ (function () {
                     var r = ses.parse(res, status);
                     ses.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
                     if (r.type === 'error') {
-                        (opts.error || ses.error || reject).call(_this, r.response);
+                        var err = ses.getError(r.response, undefined, origin);
+                        if (!(opts.error || ses.error).call(_this, err))
+                            reject.call(_this, err);
                     }
                     else {
                         var result = r.response.result;
-                        if (resolve)
-                            resolve.call(_this, result);
+                        resolve.call(_this, result);
                     }
                 }, function (err) {
-                    (opts.error || ses.error || reject).call(_this, ses.getError(err));
+                    err = ses.getError(err, undefined, origin);
+                    if (!(opts.error || ses.error).call(_this, err))
+                        reject.call(_this, err);
                 });
             });
         };
@@ -2212,15 +2282,18 @@ var BusinessObject = /** @class */ (function () {
                     var r = ses.parse(res, status);
                     ses.debug("[" + origin + "] HTTP status = " + status + ", response type = " + r.type);
                     if (r.type === 'error') {
-                        (opts.error || ses.error || reject).call(_this, r.response);
+                        var err = ses.getError(r.response, undefined, origin);
+                        if (!(opts.error || ses.error).call(_this, err))
+                            reject.call(_this, err);
                     }
                     else {
                         var result = r.response.result;
-                        if (resolve)
-                            resolve.call(_this, result);
+                        resolve.call(_this, result);
                     }
                 }, function (err) {
-                    (opts.error || ses.error || reject).call(_this, ses.getError(err));
+                    err = ses.getError(err, undefined, origin);
+                    if (!(opts.error || ses.error).call(_this, err))
+                        reject.call(_this, err);
                 });
             });
         };
@@ -2351,6 +2424,7 @@ var ExternalObject = /** @class */ (function () {
                 (0, node_fetch_1.default)(u, {
                     method: m,
                     headers: h,
+                    cache: 'no-cache',
                     mode: 'cors',
                     credentials: 'include',
                     body: d
@@ -2359,30 +2433,35 @@ var ExternalObject = /** @class */ (function () {
                     ses.debug("[" + origin + "] HTTP status = " + res.status + ", response content type = " + type);
                     if (type && type.startsWith('application/json')) { // JSON
                         res.json().then(function (jsonData) {
-                            if (resolve)
-                                resolve.call(_this, jsonData, res.status, res.headers);
+                            resolve.call(_this, jsonData, res.status, res.headers);
                         }).catch(function (err) {
-                            (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
+                            err = ses.getError(err, undefined, origin);
+                            if (!(opts.error || ses.error).call(_this, err))
+                                reject.call(_this, err);
                         });
                     }
                     else if (type && type.startsWith('text/')) { // Text
                         res.text().then(function (textData) {
-                            if (resolve)
-                                resolve.call(_this, textData, res.status, res.headers);
+                            resolve.call(_this, textData, res.status, res.headers);
                         }).catch(function (err) {
-                            (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
+                            err = ses.getError(err, undefined, origin);
+                            if (!(opts.error || ses.error).call(_this, err))
+                                reject.call(_this, err);
                         });
                     }
                     else { // Binary
                         res.arrayBuffer().then(function (binData) {
-                            if (resolve)
-                                resolve.call(_this, binData, res.status, res.headers);
+                            resolve.call(_this, binData, res.status, res.headers);
                         }).catch(function (err) {
-                            (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
+                            err = ses.getError(err, undefined, origin);
+                            if (!(opts.error || ses.error).call(_this, err))
+                                reject.call(_this, err);
                         });
                     }
                 }).catch(function (err) {
-                    (opts.error || ses.error || reject).call(_this, ses.getError(err, undefined, origin));
+                    err = ses.getError(err, undefined, origin);
+                    if (!(opts.error || ses.error).call(_this, err))
+                        reject.call(_this, err);
                 });
             });
         };

@@ -135,6 +135,7 @@ app.getHealth().then(health => {
 	app.info('Got item: ' + item.row_id + ' ' + item.sys_code + ' ' + item.sys_value);
 	sys.create({ sys_code: '', sys_value: '' }, { error: err => {
 		app.info('Invalid create error caught: ' + JSON.stringify(err));
+		return true; // returning true means the error is handled => no catch
 	}});
 	return sys.getForCreate();
 }).then(item => {
@@ -164,6 +165,7 @@ app.getHealth().then(health => {
 	item.sys_value = '';
 	sys.update(item, { error: err => {
 		app.info('Invalid update error caught: ' + JSON.stringify(err));
+		return true; // returning true means the error is handled => no catch
 	}});
 	item.sys_value = sysValue + ' updated';
 	return sys.update(item);

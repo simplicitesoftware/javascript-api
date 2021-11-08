@@ -855,6 +855,7 @@ class Session {
 		fetch(u, {
 			method: m,
 			headers: h,
+			cache: 'no-cache',
 			mode: 'cors',
 			credentials: 'include',
 			body: d
@@ -2897,6 +2898,7 @@ class ExternalObject {
 			fetch(u, {
 				method: m,
 				headers: h,
+				cache: 'no-cache',
 				mode: 'cors',
 				credentials: 'include',
 				body: d

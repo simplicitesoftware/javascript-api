@@ -14,13 +14,6 @@ const app = simplicite.session({
 
 app.debug(app.parameters);
 
-// app.login({ username: 'unknown', password: 'unknown' }).catch(myErrorHandler);
-// app.login({ username: 'unknown', password: 'unknown', error: myErrorHandler });
-// app.login({ username: 'unknown', password: 'unknown' });
-// app.login({ authtoken: 'unknown', error: myErrorHandler });
-// app.login({ authtoken: 'unknown' }).catch(myErrorHandler);
-// app.login({ authtoken: 'unknown' });
-
 app.setUsername(adminUsername);
 app.setPassword(adminPassword);
 app.login().then(user => {
@@ -53,17 +46,17 @@ app.login().then(user => {
 	app.debug(logout);
 	assert.ok(logout.result);
 	app.info('Logged out');
-	return app.login({ username: 'unknown', password: 'unknown', error: err1 => {
+	app.login({ username: 'unknown', password: 'unknown' }).catch(err1 => {
 		app.debug(err1);
 		app.info('Status: ' + err1.status + ', message: ' + err1.message);
 		assert.ok(err1.status === 401);
-		return app.login({ authtoken: 'unknown', error: err2 => {
+		app.login({ authtoken: 'unknown' }).catch(err2 => {
 			app.debug(err2);
 			app.info('Status: ' + err2.status + ', message: ' + err2.message);
 			assert.ok(err2.status === 401);
 			app.info('OK');
-		}});
-	}});
+		});
+	});
 }).catch(err => {
 	app.error(err);
 });
