@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.10
+ * @version 2.2.11
  * @license Apache-2.0
  */
 
@@ -17,7 +17,7 @@ const constants = {
 	 * API client module version
 	 * @constant {string}
 	 */
-	MODULE_VERSION: '2.2.10',
+	MODULE_VERSION: '2.2.11',
 
 	/**
 	 * Default row ID field name
@@ -545,25 +545,42 @@ class Session {
 		});
 
 		this.info = params.infoHandler || ((...args: any): void => {
-			// tslint:disable-next-line: no-console
-			console.info('INFO', args);
+			if (args && args.length === 1 && typeof args[0] === 'string')
+				// tslint:disable-next-line: no-console
+				console.info(`INFO - ${args[0] as string}`);
+			else
+				// tslint:disable-next-line: no-console
+				console.info('INFO', args);
 		});
 
 		this.warn = params.warningHandler || ((...args: any): void => {
-			// tslint:disable-next-line: no-console
-			console.warn('WARN', args);
+			if (args && args.length === 1 && typeof args[0] === 'string')
+				// tslint:disable-next-line: no-console
+				console.info(`WARN - ${args[0] as string}`);
+			else
+				// tslint:disable-next-line: no-console
+				console.warn(`WARN${args && args.length > 0 && args[0].message ? ` - ${args[0].message}` : ''}`, args);
 		});
 
 		this.error = params.errorHandler || ((...args: any): void => {
-			// tslint:disable-next-line: no-console
-			console.error('ERROR', args);
+			if (args && args.length === 1 && typeof args[0] === 'string')
+				// tslint:disable-next-line: no-console
+				console.info(`ERROR - ${args[0] as string}`);
+			else
+				// tslint:disable-next-line: no-console
+				console.error(`ERROR${args && args.length > 0 && args[0].message ? ` - ${args[0].message}` : ''}`, args);
 		});
 
 		this.debugMode = !!params.debug;
 		this.debug = params.debugHandler || ((...args: any): void => {
-			if (this.debugMode)
-				// tslint:disable-next-line: no-console
-				console.log('DEBUG', args);
+			if (this.debugMode) {
+				if (args && args.length === 1 && typeof args[0] === 'string')
+					// tslint:disable-next-line: no-console
+					console.info(`DEBUG - ${args[0] as string}`);
+				else
+					// tslint:disable-next-line: no-console
+					console.log('DEBUG', args);
+			}
 		});
 
 		if (params.url) {

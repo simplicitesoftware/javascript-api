@@ -8,8 +8,6 @@ const elt = (id, html, append) => {
 };
 
 const error = (id, err, append) => {
-	// tslint:disable-next-line: no-console
-	console.error(err);
 	elt(id || 'message', '<span class="error">Error: ' + JSON.stringify(err) + '</span>', append);
 };
 
