@@ -1,10 +1,10 @@
 .tern-project
-node_modules
 .scannerwork
+node_modules
+test/index.js
 **.bak
 **.new
 **.tmp
 **/Thumbs.db
 **/.DS_Store
-test/index.js
 simplicite-*.tgz
