@@ -3,17 +3,15 @@
 
 <a href="https://www.simplicite.io"><img src="https://img.shields.io/badge/author-Simplicite_Software-blue.svg?style=flat-square" alt="Author"></a>&nbsp;<img src="https://img.shields.io/badge/license-Apache--2.0-orange.svg?style=flat-square" alt="License">
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=simplicitesoftware_nodejs-api&metric=alert_status)](https://sonarcloud.io/dashboard?id=simplicitesoftware_nodejs-api)
-
 Simplicit&eacute;&reg; node.js&reg; &amp; browser JavaScript API
 ================================================================
 
 Introduction
 ------------
 
-This is the node.js&reg; &amp; browser **JavaScript API client module** for the [Simplicit&eacute;&reg; platform](http://www.simplicitesoftware.com).
+This is the node.js&reg; &amp; browser **JavaScript API client module** for the [Simplicit&eacute;&reg; platform](https://www.simplicitesoftware.com).
 
-> **Note**: Versions 2.x.y are packaged as ES6 modules. For ES5 CommonJS module packaging, use 1.x.y versions.
+> **Note**: Versions 2.x.y are packaged as ES6 modules. For ES5 (CommonJS) module packaging, use 1.x.y versions.
 > ES6 module packaging is not suitable for old browsers like Internet Explorer.
 
 Usage

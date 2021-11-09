@@ -1,29 +1,10 @@
 ![Simplicit&eacute; Software](https://www.simplicite.io/resources/logos/logo250-grey.png)
 * * *
 
-<a href="https://www.simplicite.io"><img src="https://img.shields.io/badge/author-Simplicite_Software-blue.svg?style=flat-square" alt="Author"></a>&nbsp;<img src="https://img.shields.io/badge/license-Apache--2.0-orange.svg?style=flat-square" alt="License"> [![Gitter chat](https://badges.gitter.im/org.png)](https://gitter.im/simplicite/Lobby)
-
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=simplicitesoftware_nodejs-api&metric=alert_status)](https://sonarcloud.io/dashboard?id=simplicitesoftware_nodejs-api)
 
-Simplicit&eacute;&reg; node.js&reg; &amp; browser JavaScript API
-================================================================
-
-[![NPM](https://nodei.co/npm/simplicite.png?downloads=true&downloadRank=true)](https://nodei.co/npm/simplicite/) 
-
-Introduction
-------------
-
-This is the node.js&reg; &amp; browser **JavaScript API** for the [Simplicit&eacute;&reg; platform](http://www.simplicitesoftware.com).
-
-It can be used in **server-side** node applications, in a **client-side** web applications
-(e.g. by building a bundle with [browserify](http://browserify.org) and/or by using various dedicated frameworks)
-or in **native** JavaScript-based mobile frameworks.
-
-> **Note**: as of version 2.0.0 this API will not work on old browsers like Internet Explorer.
-> If you need support for such old browsers, you **must** use a 1.x.y version
-
 Prepare
--------
+=======
 
 Look for updates:
 
@@ -37,13 +18,8 @@ Install dependencies:
 npm install
 ```
 
-Usage
------
-
-See the [documentation](https://simplicitesoftware.github.io/nodejs-api/) for details.
-
 Build
------
+=====
 
 Check syntax and rules:
 
@@ -58,9 +34,10 @@ npm run build
 ```
 
 Test
-----
+====
 
-### Node.js
+Node.js
+-------
 
 Set the environment variables for your Simplicité instance:
 
@@ -80,14 +57,15 @@ Run the unit tests, this generates the `coverage` folder:
 npm run test
 ```
 
-### Browser
+Browser
+-------
 
 ```bash
 npm run test-browser
 ```
 
 Documentation
--------------
+=============
 
 Generate documentation:
 
@@ -96,7 +74,7 @@ npm run doc
 ```
 
 Publish
--------
+=======
 
 Check package to be published:
 
