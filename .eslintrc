@@ -20,7 +20,7 @@
         "@typescript-eslint/no-explicit-any": "off"
     },
     "ignorePatterns": [
-        "babel.config.cjs",
+        "dist",
         "jest.config.cjs",
         "webpack.config.cjs",
         "test/index.js",

@@ -61,8 +61,10 @@
     "test",
     "docs"
   ],
-  "main": "./dist/esm/simplicite.js",
-  "types": "./dist/esm/simplicite.d.ts",
-  "exports": "./dist/esm/simplicite.js",
-  "browser": "./dist/cjs/simplicite.js"
+  "main": "./dist/cjs/simplicite.js",
+  "browser": "./dist/cjs/simplicite.js",
+  "exports": {
+    "import": "./dist/esm/simplicite.js",
+    "require": "./dist/cjs/simplicite.js"
+  }
 }
