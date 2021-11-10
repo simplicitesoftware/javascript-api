@@ -7,8 +7,8 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Main tests",
-            "program": "${workspaceFolder}\\test\\test-main.js"
+            "name": "Public tests",
+            "program": "${workspaceFolder}\\test\\test-public.js"
         }, {
             "type": "node",
             "request": "launch",
@@ -17,8 +17,8 @@
         }, {
             "type": "node",
             "request": "launch",
-            "name": "External object tests",
-            "program": "${workspaceFolder}\\test\\test-external.js"
+            "name": "Main tests",
+            "program": "${workspaceFolder}\\test\\test-main.js"
         }, {
             "type": "node",
             "request": "launch",
@@ -32,13 +32,8 @@
         }, {
             "type": "node",
             "request": "launch",
-            "name": "Public tests",
-            "program": "${workspaceFolder}\\test\\test-public.js"
-        }, {
-            "type": "node",
-            "request": "launch",
-            "name": "Public external object tests",
-            "program": "${workspaceFolder}\\test\\test-external-public.js"
+            "name": "External object tests",
+            "program": "${workspaceFolder}\\test\\test-external.js"
         }, {
             "type": "node",
             "request": "launch",

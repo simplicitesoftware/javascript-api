@@ -7,6 +7,7 @@ const app = simplicite.session({
 	debug: process.env.TEST_SIMPLICITE_DEBUG === 'true'
 });
 
+app.info('Version: ' + simplicite.constants.MODULE_VERSION);
 app.debug('Parameters', app.parameters);
 
 const obj = app.getBusinessObject('WebNews');

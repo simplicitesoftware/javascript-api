@@ -112,7 +112,7 @@ test('Objects', () => {
 		expect(list.length);
 		for (let i = 0; i < list.length; i++) {
 			let  item = list[i];
-			expect(item.row_id).not.toBe(app.constants.DEFAULT_ROW_ID);
+			expect(item.row_id).not.toBe(simplicite.constants.DEFAULT_ROW_ID);
 			expect(!!item.sys_code).not.toBe(false);
 			expect(!!item.sys_value).not.toBe(false);
 		}
@@ -126,13 +126,13 @@ test('Objects', () => {
 		expect(item.row_id).toBe(sysId);
 		return sys.getForCreate();
 	}).then(item => {
-		expect(item.row_id).toBe(app.constants.DEFAULT_ROW_ID);
+		expect(item.row_id).toBe(simplicite.constants.DEFAULT_ROW_ID);
 		item.sys_code = sysCode;
 		item.sys_value = sysValue;
 		return sys.create(item);
 	}).then(item => {
 		sysId = item.row_id;
-		expect(sysId).not.toBe(app.constants.DEFAULT_ROW_ID);
+		expect(sysId).not.toBe(simplicite.constants.DEFAULT_ROW_ID);
 		expect(item.sys_code).toBe(sysCode);
 		expect(item.sys_value).toBe(sysValue);
 		return sys.getForUpdate(item.row_id);
@@ -184,14 +184,14 @@ test('Image', () => {
 		obj = app.getBusinessObject('AppObject1');
 		return obj.getForCreate();
 	}).then(item => {
-		expect(item.row_id).toBe(app.constants.DEFAULT_ROW_ID);
+		expect(item.row_id).toBe(simplicite.constants.DEFAULT_ROW_ID);
 		item.appObj1Code = 'TEST';
 		item.appObj1Picture = { name: 'test.png', content: img };
 		return obj.create(item);
 	}).then(item => {
 		rowId = item.row_id;
-		expect(rowId).not.toBe(app.constants.DEFAULT_ROW_ID);
-		expect(item.appObj1Picture && item.appObj1Picture !== app.constants.DEFAULT_ROW_ID).toBe(true);
+		expect(rowId).not.toBe(simplicite.constants.DEFAULT_ROW_ID);
+		expect(item.appObj1Picture && item.appObj1Picture !== simplicite.constants.DEFAULT_ROW_ID).toBe(true);
 		return obj.get(rowId, { inlineDocuments: true, inlineThumbnails: true });
 	}).then(item => {
 		expect(item.row_id).toBe(rowId);

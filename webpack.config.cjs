@@ -2,8 +2,9 @@ const TerserPlugin = require("terser-webpack-plugin");
 
 module.exports = {
   mode: 'production',
+  entry: './src/browser.js',
   output: {
-    filename: 'simplicite.min.js',
+    filename: 'simplicite.min.js'
   },
   optimization: {
     minimize: true,

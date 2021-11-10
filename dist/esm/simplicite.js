@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.12
+ * @version 2.2.13
  * @license Apache-2.0
  */
 import fetch from 'node-fetch'; // Node.js polyfill for fetch
@@ -15,7 +15,7 @@ const constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '2.2.12',
+    MODULE_VERSION: '2.2.13',
     /**
      * Default row ID field name
      * @constant {string}
@@ -1880,7 +1880,7 @@ class BusinessObject {
             delete opts.treeview; // Inhibited in this context
             delete opts.fields; // Inhibited in this context
             opts.context = constants.CONTEXT_CREATE;
-            return this.get(this.session.constants.DEFAULT_ROW_ID, opts);
+            return this.get(constants.DEFAULT_ROW_ID, opts);
         };
         /**
          * Get for update
@@ -2006,7 +2006,7 @@ class BusinessObject {
             return new Promise((resolve, reject) => {
                 if (item)
                     this.item = item;
-                this.item.row_id = ses.constants.DEFAULT_ROW_ID;
+                this.item.row_id = constants.DEFAULT_ROW_ID;
                 const p = this.getReqOptions(opts);
                 ses.req(`${this.path}&action=create${p}`, this.getReqParams(this.item), (res, status) => {
                     const r = ses.parse(res, status);

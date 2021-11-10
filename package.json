@@ -1,7 +1,7 @@
 {
   "name": "simplicite",
   "description": "Simplicite(R) platform Javascript API (for node.js and browser)",
-  "version": "2.2.12",
+  "version": "2.2.13",
   "author": "Simplicite Software <contact@simplicitesoftware.com> (https://www.simplicitesoftware.com/)",
   "license": "Apache-2.0",
   "keywords": [
@@ -18,7 +18,6 @@
     "type": "git",
     "url": "https://github.com/simplicitesoftware/nodejs-api.git"
   },
-  "type": "module",
   "dependencies": {
     "buffer": "^6.0.3",
     "node-fetch": "^2.6.6"
@@ -44,13 +43,20 @@
     "terser-webpack-plugin": "^5.2.5"
   },
   "scripts": {
-    "lint": "tslint src/simplicite.ts test/*.js && eslint test/*.js",
-    "build:esm": "tsc --declaration --sourceMap --moduleResolution node --module es6 --target es6 --outDir ./dist/esm ./src/simplicite.ts",
-    "build:cjs": "tsc --declaration --sourceMap --module commonjs --target es5 --esModuleInterop true --outDir ./dist/cjs ./src/simplicite.ts",
-    "build:bundle": "webpack build ./src/browser.js",
-    "build": "npm run build:esm && npm run build:cjs && npm run build:bundle",
+    "lint": "tslint src/*.ts test/*.js && eslint test/*.js",
+    "build:amd": "rm -fr ./dist/amd && tsc --module amd --target es5 --outFile ./dist/amd/simplicite.js",
+    "build:esm": "rm -fr ./dist/esm && tsc --module es6 --target es6 --outDir ./dist/esm",
+    "build:cjs": "rm -fr ./dist/cjs && tsc --module commonjs --target es5 --esModuleInterop true --outDir ./dist/cjs",
+    "build:bundle": "rm -f ./dist/simplicite.min.* && webpack build",
+    "build": "rm -fr ./dist && npm run build:amd && npm run build:esm && npm run build:cjs && npm run build:bundle",
     "doc": "jsdoc -t node_modules/docdash -d docs ./dist/esm/simplicite.js README.md && replace '#fc83ff' '#98cbff' docs/styles/jsdoc.css && replace '#6d426d' '#2e76bd' docs/styles/jsdoc.css && replace '#CA79CA' '#edb8b8' docs/styles/jsdoc.css && replace '#606' '#094e93' docs/styles/jsdoc.css",
     "test": "jest --coverage -- ./test/simplicite.test.js",
+    "test:public": "node ./test/test-public.js",
+    "test:logins": "node ./test/test-logins.js",
+    "test:main": "node ./test/test-main.js",
+    "test:images": "node ./test/test-images.js",
+    "test:source": "node ./test/test-source.js",
+    "test:external": "node ./test/test-external.js",
     "test:browser": "webpack build --config=./test/webpack.config.cjs ./test/test-browser.js && serve -l 3000 test",
     "test:bundle": "serve -l 3000 dist",
     "ncu": "ncu"
@@ -64,13 +70,13 @@
     "test",
     "docs"
   ],
+  "type": "module",
   "main": "./dist/cjs/simplicite.js",
-  "browser": "./dist/cjs/simplicite.js",
-  "node": "./dist/esm/simplicite.js",
   "exports": {
     "import": "./dist/esm/simplicite.js",
     "require": "./dist/cjs/simplicite.js",
     "node": "./dist/esm/simplicite.js",
+    "script": "./dist/simplicite.min.js",
     "default": "./dist/esm/simplicite.js"
   }
 }

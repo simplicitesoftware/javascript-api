@@ -1,6 +1,13 @@
 {
     "compilerOptions": {
+        "moduleResolution": "Node",
         "declaration": true,
         "sourceMap": true
-    }
+    },
+    "include": [
+        "src/**/*.ts"
+    ],
+    "exclude": [
+		"src/browser.js"
+	]
 }

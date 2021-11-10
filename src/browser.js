@@ -1,13 +1,13 @@
-import s from '../dist/esm/simplicite.js';
+import simplicite from '../dist/esm/simplicite.js';
 
 if (typeof globalThis !== 'undefined')
 	// eslint-disable-next-line no-undef
-	globalThis.simplicite = s;
+	globalThis.simplicite = simplicite;
 else if (typeof self !== 'undefined')
-	self.simplicite = s;
+	self.simplicite = simplicite;
 else if (typeof window !== 'undefined')
-	window.simplicite = s;
+	window.simplicite = simplicite;
 else if (typeof global !== 'undefined')
-	global.simplicite = s;
+	global.simplicite = simplicite;
 else
 	throw new Error('Unable to find global object');

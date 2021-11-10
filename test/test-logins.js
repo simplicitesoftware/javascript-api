@@ -12,7 +12,8 @@ const app = simplicite.session({
 	debug: process.env.TEST_SIMPLICITE_DEBUG === 'true'
 });
 
-app.debug(app.parameters);
+app.info('Version: ' + simplicite.constants.MODULE_VERSION);
+app.debug('Parameters', app.parameters);
 
 app.setUsername(adminUsername);
 app.setPassword(adminPassword);

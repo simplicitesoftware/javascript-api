@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.12
+ * @version 2.2.13
  * @license Apache-2.0
  */
 /// <reference types="node" />

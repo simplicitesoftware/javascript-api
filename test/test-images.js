@@ -10,6 +10,7 @@ const app = simplicite.session({
 	debug: process.env.TEST_SIMPLICITE_DEBUG === 'true'
 });
 
+app.info('Version: ' + simplicite.constants.MODULE_VERSION);
 app.debug('Parameters', app.parameters);
 
 let obj;
@@ -25,16 +26,16 @@ app.login().then(user => {
 	return obj.getForCreate();
 }).then(item => {
 	app.debug('Get for create', item);
-	assert.ok(item.row_id === app.constants.DEFAULT_ROW_ID);
+	assert.ok(item.row_id === simplicite.constants.DEFAULT_ROW_ID);
 	item.appObj1Code = code;
 	item.appObj1Picture = { name: 'test.png', content: img };
 	return obj.create(item);
 }).then(item => {
 	app.debug('Create', item);
 	rowId = item.row_id;
-	assert.ok(rowId !== app.constants.DEFAULT_ROW_ID);
+	assert.ok(rowId !== simplicite.constants.DEFAULT_ROW_ID);
 	assert.ok(item.appObj1Code === code);
-	assert.ok(item.appObj1Picture && item.appObj1Picture !== app.constants.DEFAULT_ROW_ID);
+	assert.ok(item.appObj1Picture && item.appObj1Picture !== simplicite.constants.DEFAULT_ROW_ID);
 	app.info('Created with document ID = ' + item.appObj1Picture);
 	app.info('Document URL (current item) = ' + obj.getFieldDocumentURL('appObj1Picture'));
 	app.info('Document URL (created item) = ' + obj.getFieldDocumentURL('appObj1Picture', item));

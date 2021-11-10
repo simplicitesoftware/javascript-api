@@ -9,7 +9,8 @@ const app = simplicite.session({
 	debug: process.env.TEST_SIMPLICITE_DEBUG === 'true'
 });
 
-app.debug(app.parameters);
+app.info('Version: ' + simplicite.constants.MODULE_VERSION);
+app.debug('Parameters', app.parameters);
 
 // Test default handlers
 app.info('INFO message');
@@ -47,8 +48,8 @@ app.getHealth().then(health => {
 	app.log('Grant: ' + app.grant.getFirstName() + ' ' + app.grant.getLastName() + ' (' + app.grant.getLogin() + ', ID ' + app.grant.getUserId() + ')');
 	app.log('Picture URL: ' + app.grant.getPictureURL().substr(0, 80) + '...');
 	app.log('Resource URL: ' + app.getResourceURL('TEST'));
-	app.log('Resource URL: ' + app.getResourceURL('TEST', app.constants.RESOURCE_TYPE_ICON));
-	app.log('Resource URL: ' + app.getResourceURL('TEST', app.constants.RESOURCE_TYPE_JAVASCRIPT, sysName, '1'));
+	app.log('Resource URL: ' + app.getResourceURL('TEST', simplicite.constants.RESOURCE_TYPE_ICON));
+	app.log('Resource URL: ' + app.getResourceURL('TEST', simplicite.constants.RESOURCE_TYPE_JAVASCRIPT, sysName, '1'));
 	return app.getAppInfo();
 }).then(appinfo => {
 	app.debug(appinfo);
@@ -94,7 +95,7 @@ app.getHealth().then(health => {
 	app.info('Name: ' + sys.getName() + ', instance name: ' + sys.getInstance() + ', label: ' + sys.getLabel());
 	assert.ok(sys.getFields().length > 0);
 	app.info('Number of fields: ' + sys.getFields().length + ', number of links: ' + sys.getLinks().length);
-	assert.ok(sys.getRowIdField().name === app.constants.DEFAULT_ROW_ID_NAME);
+	assert.ok(sys.getRowIdField().name === simplicite.constants.DEFAULT_ROW_ID_NAME);
 	let f = sys.getField(sysCodeName);
 	assert.ok(f.name === sysCodeName);
 	assert.ok(f.type === sys.getFieldType(sysCodeName));
@@ -106,7 +107,7 @@ app.getHealth().then(health => {
 	assert.ok(sys.isRowIdField(f) === false);
 	assert.ok(sys.isTimestampField(f) === false);
 	app.info('Resource URL: ' + sys.getResourceURL('TEST'));
-	app.info('Resource URL: ' + sys.getResourceURL('TEST', app.constants.RESOURCE_TYPE_ICON));
+	app.info('Resource URL: ' + sys.getResourceURL('TEST', simplicite.constants.RESOURCE_TYPE_ICON));
 	return sys.getCount(sysFilters);
 }).then(count => {
 	app.debug(count);
@@ -140,7 +141,7 @@ app.getHealth().then(health => {
 	return sys.getForCreate();
 }).then(item => {
 	app.debug(item);
-	assert.ok(item.row_id === app.constants.DEFAULT_ROW_ID);
+	assert.ok(item.row_id === simplicite.constants.DEFAULT_ROW_ID);
 	app.info('Got new item for creation');
 	item.sys_code = sysCode;
 	item.sys_value = sysValue;
@@ -148,7 +149,7 @@ app.getHealth().then(health => {
 }).then(item => {
 	app.debug(item);
 	sysId = item.row_id;
-	assert.ok(sysId !== app.constants.DEFAULT_ROW_ID);
+	assert.ok(sysId !== simplicite.constants.DEFAULT_ROW_ID);
 	assert.ok(item.sys_code === sysCode);
 	assert.ok(item.sys_value === sysValue);
 	app.info('Created new item with row ID: ' + sysId);
@@ -171,7 +172,7 @@ app.getHealth().then(health => {
 	return sys.update(item);
 }).then(item => {
 	app.debug(item);
-	assert.ok(sysId !== app.constants.DEFAULT_ROW_ID);
+	assert.ok(sysId !== simplicite.constants.DEFAULT_ROW_ID);
 	assert.ok(item.sys_code === sysCode);
 	assert.ok(item.sys_value === sysValue + ' updated');
 	app.info('Updated item with row ID: ' + item.row_id);

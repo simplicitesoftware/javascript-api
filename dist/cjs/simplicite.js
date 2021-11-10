@@ -2,7 +2,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.12
+ * @version 2.2.13
  * @license Apache-2.0
  */
 var __importDefault = (this && this.__importDefault) || function (mod) {
@@ -20,7 +20,7 @@ var constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '2.2.12',
+    MODULE_VERSION: '2.2.13',
     /**
      * Default row ID field name
      * @constant {string}
@@ -1921,7 +1921,7 @@ var BusinessObject = /** @class */ (function () {
             delete opts.treeview; // Inhibited in this context
             delete opts.fields; // Inhibited in this context
             opts.context = constants.CONTEXT_CREATE;
-            return _this.get(_this.session.constants.DEFAULT_ROW_ID, opts);
+            return _this.get(constants.DEFAULT_ROW_ID, opts);
         };
         /**
          * Get for update
@@ -2047,7 +2047,7 @@ var BusinessObject = /** @class */ (function () {
             return new Promise(function (resolve, reject) {
                 if (item)
                     _this.item = item;
-                _this.item.row_id = ses.constants.DEFAULT_ROW_ID;
+                _this.item.row_id = constants.DEFAULT_ROW_ID;
                 var p = _this.getReqOptions(opts);
                 ses.req(_this.path + "&action=create" + p, _this.getReqParams(_this.item), function (res, status) {
                     var r = ses.parse(res, status);
