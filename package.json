@@ -1,7 +1,7 @@
 {
   "name": "simplicite",
   "description": "Simplicite(R) platform Javascript API (for node.js and browser)",
-  "version": "2.2.11",
+  "version": "2.2.12",
   "author": "Simplicite Software <contact@simplicitesoftware.com> (https://www.simplicitesoftware.com/)",
   "license": "Apache-2.0",
   "keywords": [
@@ -45,15 +45,18 @@
   },
   "scripts": {
     "lint": "tslint src/simplicite.ts test/*.js && eslint test/*.js",
-    "build": "tsc --declaration --sourceMap --moduleResolution node --module es6 --target es6 --outDir ./dist/esm ./src/simplicite.ts && tsc --declaration --sourceMap --module commonjs --target es5 --esModuleInterop true --outDir ./dist/cjs ./src/simplicite.ts && webpack build ./src/browser.js",
+    "build:esm": "tsc --declaration --sourceMap --moduleResolution node --module es6 --target es6 --outDir ./dist/esm ./src/simplicite.ts",
+    "build:cjs": "tsc --declaration --sourceMap --module commonjs --target es5 --esModuleInterop true --outDir ./dist/cjs ./src/simplicite.ts",
+    "build:bundle": "webpack build ./src/browser.js",
+    "build": "npm run build:esm && npm run build:cjs && npm run build:bundle",
     "doc": "jsdoc -t node_modules/docdash -d docs ./dist/esm/simplicite.js README.md && replace '#fc83ff' '#98cbff' docs/styles/jsdoc.css && replace '#6d426d' '#2e76bd' docs/styles/jsdoc.css && replace '#CA79CA' '#edb8b8' docs/styles/jsdoc.css && replace '#606' '#094e93' docs/styles/jsdoc.css",
     "test": "jest --coverage -- ./test/simplicite.test.js",
-    "test-browser": "webpack build --config=./test/webpack.config.cjs ./test/test-browser.js && serve -l 3000 test",
-    "test-browser-bundle": "serve -l 3000 dist",
+    "test:browser": "webpack build --config=./test/webpack.config.cjs ./test/test-browser.js && serve -l 3000 test",
+    "test:bundle": "serve -l 3000 dist",
     "ncu": "ncu"
   },
   "engines": {
-    "node": ">=14"
+    "node": ">=12"
   },
   "files": [
     "src",
@@ -63,8 +66,11 @@
   ],
   "main": "./dist/cjs/simplicite.js",
   "browser": "./dist/cjs/simplicite.js",
+  "node": "./dist/esm/simplicite.js",
   "exports": {
     "import": "./dist/esm/simplicite.js",
-    "require": "./dist/cjs/simplicite.js"
+    "require": "./dist/cjs/simplicite.js",
+    "node": "./dist/esm/simplicite.js",
+    "default": "./dist/esm/simplicite.js"
   }
 }
