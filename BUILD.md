@@ -61,7 +61,7 @@ Browser
 -------
 
 ```bash
-npm run test-browser
+npm run test:browser
 ```
 
 Documentation
