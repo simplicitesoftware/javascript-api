@@ -74,12 +74,5 @@
   "type": "module",
   "main": "./dist/cjs/simplicite.js",
   "module": "./dist/esm/simplicite.js",
-  "browser": "./dist/umd/simplicite.js",
-  "exports": {
-    "import": "./dist/esm/simplicite.js",
-    "require": "./dist/cjs/simplicite.js",
-    "node": "./dist/esm/simplicite.js",
-    "script": "./dist/simplicite.min.js",
-    "default": "./dist/esm/simplicite.js"
-  }
+  "browser": "./dist/umd/simplicite.js"
 }

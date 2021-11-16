@@ -11,9 +11,6 @@ Introduction
 
 This is the node.js&reg; &amp; browser **JavaScript API client module** for the [Simplicit&eacute;&reg; platform](https://www.simplicitesoftware.com).
 
-> **Note**: Versions 2.x.y are packaged as ES6 modules. For ES5 (CommonJS) module packaging, use 1.x.y versions.
-> ES6 module packaging is not suitable for old browsers like Internet Explorer.
-
 Usage
 -----
 
