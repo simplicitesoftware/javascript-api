@@ -36,7 +36,13 @@ try {
 Check the [GitHub repository](https://github.com/simplicitesoftware/nodejs-api) `test/test*.js`
 files for other examples of basic usage.
 
-For more advanced examples, check these repositories:
+### Documentation
+
+The JSDoc documentation is [](https://simplicitesoftware.github.io/nodejs-api/).
+
+### Demos
+
+For more advanced usage demos, check these repositories:
 
 - **Server-side**:
 	- [Node.js&reg; demo](https://github.com/simplicitesoftware/nodejs-demo)
