@@ -222,7 +222,7 @@ app.getHealth().then(health => {
 	return app.logout();
 }).then(logout => {
 	app.debug(logout);
-	assert.ok(logout.result);
+	assert.ok(logout.login);
 	app.info('Logged out');
 	app.info('OK');
 }).catch(err => {

@@ -1,6 +1,6 @@
-import simplicite from './dist/esm/simplicite.js';
+import simplicite from '../dist/esm/simplicite.js';
 
-const app = simplicite.session({ url: 'http://localhost:8080', debug: true });
+const app = simplicite.session({ url: 'http://localhost:8080', debug: false });
 app.info(`Version: ${simplicite.constants.MODULE_VERSION}`);
 app.debug('Parameters', app.parameters);
 
@@ -12,6 +12,14 @@ try {
 	const grant = await app.getGrant();
 	app.debug(grant);
 	app.info(`Hello ${grant.getFirstname()} ${grant.getLastname()}`);
+
+	const appinfo = await app.getAppInfo();
+	app.debug(appinfo);
+	app.info(`Using platform version ${appinfo.platformversion}`);
+
+	const devinfo = await app.getDevInfo();
+	app.debug(devinfo);
+	app.info(`Using development version ${devinfo.version}`);
 
 	const sys = app.getBusinessObject('SystemParam');
 	const sysMetaData = await sys.getMetaData();
@@ -26,7 +34,7 @@ try {
 
 	const res = await app.logout();
 	app.debug(res);
-	app.info('Logged out');
+	app.info(`${res.login} logged out`);
 } catch(err) {
-	app.error(err);
+	app.error('Catched error: ' + JSON.stringify(err));
 }

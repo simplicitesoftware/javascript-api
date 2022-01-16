@@ -30,9 +30,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">29.3% </span>
+                <span class="strong">30.51% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>194/662</span>
+                <span class='fraction'>213/698</span>
             </div>
         
             
@@ -54,6 +54,12 @@
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
         </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input oninput="onInput()" type="search" id="fileSearch">
+            </div>
+        </template>
     </div>
     <div class='status-line medium'></div>
     <pre><table class="coverage">
@@ -3027,7 +3033,9 @@
 <a name='L2968'></a><a href='#L2968'>2968</a>
 <a name='L2969'></a><a href='#L2969'>2969</a>
 <a name='L2970'></a><a href='#L2970'>2970</a>
-<a name='L2971'></a><a href='#L2971'>2971</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L2971'></a><a href='#L2971'>2971</a>
+<a name='L2972'></a><a href='#L2972'>2972</a>
+<a name='L2973'></a><a href='#L2973'>2973</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -3656,6 +3664,8 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -6000,7 +6010,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.14
+ * @version 2.2.15
  * @license Apache-2.0
  */
 &nbsp;
@@ -6016,7 +6026,7 @@ const constants = {
 	 * API client module version
 	 * @constant {string}
 	 */
-	MODULE_VERSION: '2.2.14',
+	MODULE_VERSION: '2.2.15',
 &nbsp;
 	/**
 	 * Default row ID field name
@@ -6633,6 +6643,8 @@ class Session {
 			url,
 			timeout: params.timeout || 30,
 			healthpath: (ep === '/ui' ? <span class="branch-0 cbranch-no" title="branch not covered" >ep </span>: '') + '/health?format=json',
+			loginpath: ep === '/api' ? '/api/login?format=json' : <span class="branch-1 cbranch-no" title="branch not covered" >ep + '/json/app?action=session',</span>
+			logoutpath: ep === '/api' ? '/api/logout?format=json' : <span class="branch-1 cbranch-no" title="branch not covered" >ep + '/json/app?action=logout',</span>
 			apppath: ep + '/json/app',
 			objpath: ep + '/json/obj',
 			extpath: ep + '/ext',
@@ -6958,30 +6970,30 @@ class Session {
 <span class="cstat-no" title="statement not covered" >				this.clear();</span>
 <span class="cstat-no" title="statement not covered" >				this.authtoken = opts.authtoken || opts.authToken || opts.token;</span>
 			}
-			this.req(`${this.parameters.apppath}?action=session`, undefined, (res: any, status: number) =&gt; {
+			this.req(this.parameters.loginpath, undefined, (res: any, status: number) =&gt; {
 				const r: any = this.parse(res, status);
-				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
-				<span class="missing-if-branch" title="if path not taken" >I</span>if (r.type === 'error') {
-					const err = <span class="cstat-no" title="statement not covered" >this.getError(r.response, undefined, origin);</span>
+				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type || (r.error ? <span class="branch-0 cbranch-no" title="branch not covered" >'error' </span>: 'login')}`);
+				<span class="missing-if-branch" title="if path not taken" >I</span>if (r.type === 'error' || r.error) {
+					const err = <span class="cstat-no" title="statement not covered" >this.getError(r.response ? r.response : r, undefined, origin);</span>
 <span class="cstat-no" title="statement not covered" >					<span class="missing-if-branch" title="if path not taken" >I</span>if (!(opts.error || this.error).call(this, err)) <span class="cstat-no" title="statement not covered" >reject.call(this, err);</span></span>
 				} else {
-					this.sessionid = r.response.id;
+					this.sessionid = r.response ? <span class="branch-0 cbranch-no" title="branch not covered" >r.response.id </span>: r.sessionid;
 					this.debug(`[${origin}] Session ID = ${this.sessionid}`);
-					this.username = r.response.login;
+					this.username = r.response ? <span class="branch-0 cbranch-no" title="branch not covered" >r.response.login </span>: r.login;
 					if (this.username)
 						this.debug(`[${origin}] Username = ${this.username}`);
-					this.authtoken = r.response.authtoken;
+					this.authtoken = r.response ? <span class="branch-0 cbranch-no" title="branch not covered" >r.response.authtoken </span>: r.authtoken;
 					if (this.authtoken)
 						this.debug(`[${origin}] Auth token = ${this.authtoken}`);
 					// Minimal grant from session data
 					this.grant =new Grant({
-						login: r.response.login,
-						userid: r.response.userid,
-						firstname: r.response.firstanme,
-						lastname: r.response.lastname,
-						email: r.response.email
+						login: this.username,
+						userid: r.response ? <span class="branch-0 cbranch-no" title="branch not covered" >r.response.userid </span>: r.userid,
+						firstname: r.response ? <span class="branch-0 cbranch-no" title="branch not covered" >r.response.firstname </span>: r.firstname,
+						lastname: r.response ? <span class="branch-0 cbranch-no" title="branch not covered" >r.response.lastname </span>: r.lastname,
+						email: r.response ? <span class="branch-0 cbranch-no" title="branch not covered" >r.response.email </span>: r.email
 					});
-					resolve.call(this, r.response);
+					resolve.call(this, r.response || r);
 				}
 			}, <span class="fstat-no" title="function not covered" >(e</span>rr: any) =&gt; {
 <span class="cstat-no" title="statement not covered" >				err = this.getError(err, undefined, origin);</span>
@@ -7002,15 +7014,15 @@ class Session {
 		const origin = 'Session.logout';
 		opts = opts || {};
 		return new Promise((resolve, reject) =&gt; {
-			this.req(`${this.parameters.apppath}?action=logout`, undefined, (res: any, status: number) =&gt; {
+			this.req(this.parameters.logoutpath, undefined, (res: any, status: number) =&gt; {
 				const r: any = this.parse(res, status);
-				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type || (<span class="branch-1 cbranch-no" title="branch not covered" >r.error ? 'error' : 'logout')</span>}`);
 				<span class="missing-if-branch" title="if path not taken" >I</span>if (r.type === 'error') {
-					const err = <span class="cstat-no" title="statement not covered" >this.getError(r.response, undefined, origin);</span>
+					const err = <span class="cstat-no" title="statement not covered" >this.getError(r.response ? r.response : r, undefined, origin);</span>
 <span class="cstat-no" title="statement not covered" >					<span class="missing-if-branch" title="if path not taken" >I</span>if (!(opts.error || this.error).call(this, err)) <span class="cstat-no" title="statement not covered" >reject.call(this, err);</span></span>
 				} else {
 					this.clear();
-					resolve.call(this, r.response);
+					resolve.call(this, r.response || r);
 				}
 			}, <span class="fstat-no" title="function not covered" >(e</span>rr: any) =&gt; {
 <span class="cstat-no" title="statement not covered" >				err = this.getError(err, undefined, origin);</span>
@@ -8973,10 +8985,9 @@ export default {
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
-                <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Tue Nov 16 2021 13:36:29 GMT+0100 (heure normale d’Europe centrale)
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at Sun Jan 16 2022 01:13:20 GMT+0100 (heure normale d’Europe centrale)
             </div>
-        </div>
         <script src="prettify.js"></script>
         <script>
             window.onload = function () {

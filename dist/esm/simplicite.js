@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.14
+ * @version 2.2.15
  * @license Apache-2.0
  */
 import fetch from 'node-fetch'; // Node.js polyfill for fetch
@@ -15,7 +15,7 @@ const constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '2.2.14',
+    MODULE_VERSION: '2.2.15',
     /**
      * Default row ID field name
      * @constant {string}
@@ -610,32 +610,32 @@ class Session {
                     this.clear();
                     this.authtoken = opts.authtoken || opts.authToken || opts.token;
                 }
-                this.req(`${this.parameters.apppath}?action=session`, undefined, (res, status) => {
+                this.req(this.parameters.loginpath, undefined, (res, status) => {
                     const r = this.parse(res, status);
-                    this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
-                    if (r.type === 'error') {
-                        const err = this.getError(r.response, undefined, origin);
+                    this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type || (r.error ? 'error' : 'login')}`);
+                    if (r.type === 'error' || r.error) {
+                        const err = this.getError(r.response ? r.response : r, undefined, origin);
                         if (!(opts.error || this.error).call(this, err))
                             reject.call(this, err);
                     }
                     else {
-                        this.sessionid = r.response.id;
+                        this.sessionid = r.response ? r.response.id : r.sessionid;
                         this.debug(`[${origin}] Session ID = ${this.sessionid}`);
-                        this.username = r.response.login;
+                        this.username = r.response ? r.response.login : r.login;
                         if (this.username)
                             this.debug(`[${origin}] Username = ${this.username}`);
-                        this.authtoken = r.response.authtoken;
+                        this.authtoken = r.response ? r.response.authtoken : r.authtoken;
                         if (this.authtoken)
                             this.debug(`[${origin}] Auth token = ${this.authtoken}`);
                         // Minimal grant from session data
                         this.grant = new Grant({
-                            login: r.response.login,
-                            userid: r.response.userid,
-                            firstname: r.response.firstanme,
-                            lastname: r.response.lastname,
-                            email: r.response.email
+                            login: this.username,
+                            userid: r.response ? r.response.userid : r.userid,
+                            firstname: r.response ? r.response.firstname : r.firstname,
+                            lastname: r.response ? r.response.lastname : r.lastname,
+                            email: r.response ? r.response.email : r.email
                         });
-                        resolve.call(this, r.response);
+                        resolve.call(this, r.response || r);
                     }
                 }, (err) => {
                     err = this.getError(err, undefined, origin);
@@ -656,17 +656,17 @@ class Session {
             const origin = 'Session.logout';
             opts = opts || {};
             return new Promise((resolve, reject) => {
-                this.req(`${this.parameters.apppath}?action=logout`, undefined, (res, status) => {
+                this.req(this.parameters.logoutpath, undefined, (res, status) => {
                     const r = this.parse(res, status);
-                    this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                    this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type || (r.error ? 'error' : 'logout')}`);
                     if (r.type === 'error') {
-                        const err = this.getError(r.response, undefined, origin);
+                        const err = this.getError(r.response ? r.response : r, undefined, origin);
                         if (!(opts.error || this.error).call(this, err))
                             reject.call(this, err);
                     }
                     else {
                         this.clear();
-                        resolve.call(this, r.response);
+                        resolve.call(this, r.response || r);
                     }
                 }, (err) => {
                     err = this.getError(err, undefined, origin);
@@ -1050,6 +1050,8 @@ class Session {
             url,
             timeout: params.timeout || 30,
             healthpath: (ep === '/ui' ? ep : '') + '/health?format=json',
+            loginpath: ep === '/api' ? '/api/login?format=json' : ep + '/json/app?action=session',
+            logoutpath: ep === '/api' ? '/api/logout?format=json' : ep + '/json/app?action=logout',
             apppath: ep + '/json/app',
             objpath: ep + '/json/obj',
             extpath: ep + '/ext',

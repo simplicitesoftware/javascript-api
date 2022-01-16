@@ -49,7 +49,7 @@ test('Logins', () => {
 		expect(grant.getLogin()).toBe(adminUsername);
 		return app.logout();
 	}).then(logout => {
-		expect(logout.result).not.toBeUndefined();
+		expect(logout).not.toBeUndefined();
 		expect(app.username).toBeUndefined();
 		expect(app.password).toBeUndefined();
 		expect(app.authtoken).toBeUndefined();
@@ -61,7 +61,7 @@ test('Logins', () => {
 		expect(grant.getLogin()).toBe(testUsername);
 		return app.logout();
 	}).then(logout => {
-		expect(logout.result).not.toBeUndefined();
+		expect(logout).not.toBeUndefined();
 		expect(app.username).toBeUndefined();
 		expect(app.password).toBeUndefined();
 		expect(app.authtoken).toBeUndefined();
@@ -166,7 +166,7 @@ test('Objects', () => {
 		expect(tree.item.row_id).toBe(app.grant.getUserId()+'');
 		return app.logout();
 	}).then(logout => {
-		expect(logout.result).not.toBeUndefined();
+		expect(logout).not.toBeUndefined();
 		app.info('OK');
 	}).catch(err => {
 		app.error(err);
@@ -200,7 +200,7 @@ test('Image', () => {
 		expect(res.row_id).toBe(rowId);
 		return app.logout();
 	}).then(logout => {
-		expect(logout.result).not.toBeUndefined();
+		expect(logout).not.toBeUndefined();
 		app.info('OK');
 	}).catch(err => {
 		app.error(err);

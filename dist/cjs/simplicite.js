@@ -2,7 +2,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.14
+ * @version 2.2.15
  * @license Apache-2.0
  */
 var __importDefault = (this && this.__importDefault) || function (mod) {
@@ -20,7 +20,7 @@ var constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '2.2.14',
+    MODULE_VERSION: '2.2.15',
     /**
      * Default row ID field name
      * @constant {string}
@@ -616,32 +616,32 @@ var Session = /** @class */ (function () {
                     _this.clear();
                     _this.authtoken = opts.authtoken || opts.authToken || opts.token;
                 }
-                _this.req("".concat(_this.parameters.apppath, "?action=session"), undefined, function (res, status) {
+                _this.req(_this.parameters.loginpath, undefined, function (res, status) {
                     var r = _this.parse(res, status);
-                    _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                    if (r.type === 'error') {
-                        var err = _this.getError(r.response, undefined, origin);
+                    _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type || (r.error ? 'error' : 'login')));
+                    if (r.type === 'error' || r.error) {
+                        var err = _this.getError(r.response ? r.response : r, undefined, origin);
                         if (!(opts.error || _this.error).call(_this, err))
                             reject.call(_this, err);
                     }
                     else {
-                        _this.sessionid = r.response.id;
+                        _this.sessionid = r.response ? r.response.id : r.sessionid;
                         _this.debug("[".concat(origin, "] Session ID = ").concat(_this.sessionid));
-                        _this.username = r.response.login;
+                        _this.username = r.response ? r.response.login : r.login;
                         if (_this.username)
                             _this.debug("[".concat(origin, "] Username = ").concat(_this.username));
-                        _this.authtoken = r.response.authtoken;
+                        _this.authtoken = r.response ? r.response.authtoken : r.authtoken;
                         if (_this.authtoken)
                             _this.debug("[".concat(origin, "] Auth token = ").concat(_this.authtoken));
                         // Minimal grant from session data
                         _this.grant = new Grant({
-                            login: r.response.login,
-                            userid: r.response.userid,
-                            firstname: r.response.firstanme,
-                            lastname: r.response.lastname,
-                            email: r.response.email
+                            login: _this.username,
+                            userid: r.response ? r.response.userid : r.userid,
+                            firstname: r.response ? r.response.firstname : r.firstname,
+                            lastname: r.response ? r.response.lastname : r.lastname,
+                            email: r.response ? r.response.email : r.email
                         });
-                        resolve.call(_this, r.response);
+                        resolve.call(_this, r.response || r);
                     }
                 }, function (err) {
                     err = _this.getError(err, undefined, origin);
@@ -662,17 +662,17 @@ var Session = /** @class */ (function () {
             var origin = 'Session.logout';
             opts = opts || {};
             return new Promise(function (resolve, reject) {
-                _this.req("".concat(_this.parameters.apppath, "?action=logout"), undefined, function (res, status) {
+                _this.req(_this.parameters.logoutpath, undefined, function (res, status) {
                     var r = _this.parse(res, status);
-                    _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                    _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type || (r.error ? 'error' : 'logout')));
                     if (r.type === 'error') {
-                        var err = _this.getError(r.response, undefined, origin);
+                        var err = _this.getError(r.response ? r.response : r, undefined, origin);
                         if (!(opts.error || _this.error).call(_this, err))
                             reject.call(_this, err);
                     }
                     else {
                         _this.clear();
-                        resolve.call(_this, r.response);
+                        resolve.call(_this, r.response || r);
                     }
                 }, function (err) {
                     err = _this.getError(err, undefined, origin);
@@ -1078,6 +1078,8 @@ var Session = /** @class */ (function () {
             url: url,
             timeout: params.timeout || 30,
             healthpath: (ep === '/ui' ? ep : '') + '/health?format=json',
+            loginpath: ep === '/api' ? '/api/login?format=json' : ep + '/json/app?action=session',
+            logoutpath: ep === '/api' ? '/api/logout?format=json' : ep + '/json/app?action=logout',
             apppath: ep + '/json/app',
             objpath: ep + '/json/obj',
             extpath: ep + '/ext',

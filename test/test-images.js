@@ -52,7 +52,7 @@ app.login().then(user => {
 	return app.logout();
 }).then(logout => {
 	app.debug(logout);
-	assert.ok(logout.result);
+	assert.ok(logout);
 	app.info('Logged out');
 	app.info('OK');
 }).catch(err => {

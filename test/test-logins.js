@@ -28,9 +28,9 @@ app.login().then(user => {
 	app.info('Hello ' + grant.getFirstName() + ' ' + grant.getLastName() + ' (' + grant.getLogin() + ')');
 	app.info(grant.T('SAVE'));
 	return app.logout();
-}).then(res => {
-	app.debug(res);
-	assert.ok(res.result);
+}).then(logout => {
+	app.debug(logout);
+	assert.ok(logout);
 	app.info('Logged out');
 	return app.login({ username: testUsername, password: testPassword });
 }).then(res => {
@@ -45,7 +45,7 @@ app.login().then(user => {
 	return app.logout();
 }).then(logout => {
 	app.debug(logout);
-	assert.ok(logout.result);
+	assert.ok(logout);
 	app.info('Logged out');
 	app.login({ username: 'unknown', password: 'unknown' }).catch(err1 => {
 		app.debug(err1);
