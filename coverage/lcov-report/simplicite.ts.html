@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50.15% </span>
+                <span class="strong">50.26% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>478/953</span>
+                <span class='fraction'>480/955</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">30.06% </span>
+                <span class="strong">30.12% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>215/715</span>
+                <span class='fraction'>216/717</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">42.26% </span>
+                <span class="strong">42.56% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>82/194</span>
+                <span class='fraction'>83/195</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">53.41% </span>
+                <span class="strong">53.51% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>477/893</span>
+                <span class='fraction'>479/895</span>
             </div>
         
             
@@ -3069,7 +3069,17 @@
 <a name='L3004'></a><a href='#L3004'>3004</a>
 <a name='L3005'></a><a href='#L3005'>3005</a>
 <a name='L3006'></a><a href='#L3006'>3006</a>
-<a name='L3007'></a><a href='#L3007'>3007</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L3007'></a><a href='#L3007'>3007</a>
+<a name='L3008'></a><a href='#L3008'>3008</a>
+<a name='L3009'></a><a href='#L3009'>3009</a>
+<a name='L3010'></a><a href='#L3010'>3010</a>
+<a name='L3011'></a><a href='#L3011'>3011</a>
+<a name='L3012'></a><a href='#L3012'>3012</a>
+<a name='L3013'></a><a href='#L3013'>3013</a>
+<a name='L3014'></a><a href='#L3014'>3014</a>
+<a name='L3015'></a><a href='#L3015'>3015</a>
+<a name='L3016'></a><a href='#L3016'>3016</a>
+<a name='L3017'></a><a href='#L3017'>3017</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -5299,6 +5309,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">8x</span>
@@ -6078,7 +6098,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.16
+ * @version 2.2.17
  * @license Apache-2.0
  */
 &nbsp;
@@ -6094,7 +6114,7 @@ const constants = {
 	 * API client module version
 	 * @constant {string}
 	 */
-	MODULE_VERSION: '2.2.16',
+	MODULE_VERSION: '2.2.17',
 &nbsp;
 	/**
 	 * Default row ID field name
@@ -8300,6 +8320,16 @@ class BusinessObject {
 	};
 &nbsp;
 	/**
+	 * Convert usual wildcards to filters wildcards
+	 * @param {object} filter Filter
+	 * @return {string} Filter with wildcards converted
+	 * @private
+	 */
+	convertFilterWildCards = (filter) =&gt; {
+		return typeof filter === 'string'? filter.replace(new RegExp('\\*', 'g'), '%').replace(new RegExp('\\?', 'g'), '_') : <span class="branch-1 cbranch-no" title="branch not covered" >filter;</span>
+	};
+&nbsp;
+	/**
 	 * Build request parameters
 	 * @param {object} data Data
 	 * @param {boolean} [filters] Filters? Used to convert wildcards if needed
@@ -8320,9 +8350,9 @@ class BusinessObject {
 <span class="cstat-no" title="statement not covered" >				p += (p !== '' ? '&amp;' : '') + k + '=' + encodeURIComponent('object|' + d.object + '|row_id|' + d.row_id);</span>
 			} else if (d.sort) { // Array ?
 				for (const dd of d)
-<span class="cstat-no" title="statement not covered" >					p += (p !== '' ? '&amp;' : '') + k + '=' + encodeURIComponent(filters ? dd.replace(/\*/g, '%').replace(/\?/g, '_') : dd);</span>
+<span class="cstat-no" title="statement not covered" >					p += (p !== '' ? '&amp;' : '') + k + '=' + encodeURIComponent(filters ? this.convertFilterWildCards(dd) : dd);</span>
 			} else {
-				p += (p !== '' ? '&amp;' : '') + k + '=' + encodeURIComponent(filters ? d.replace(/\*/g, '%').replace(/\?/g, '_') : d);
+				p += (p !== '' ? '&amp;' : '') + k + '=' + encodeURIComponent(filters ? this.convertFilterWildCards(d) : d);
 			}
 		}
 		return p;
@@ -9088,7 +9118,7 @@ export default {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at Tue Jan 18 2022 16:21:53 GMT+0100 (heure normale d’Europe centrale)
+                at Tue Jan 18 2022 17:18:02 GMT+0100 (heure normale d’Europe centrale)
             </div>
         <script src="prettify.js"></script>
         <script>

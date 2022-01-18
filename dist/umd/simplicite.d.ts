@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.16
+ * @version 2.2.17
  * @license Apache-2.0
  */
 /// <reference types="node" />
@@ -1351,6 +1351,13 @@ declare class BusinessObject {
      * @private
      */
     getReqOptions: (options: any) => string;
+    /**
+     * Convert usual wildcards to filters wildcards
+     * @param {object} filter Filter
+     * @return {string} Filter with wildcards converted
+     * @private
+     */
+    convertFilterWildCards: (filter: any) => any;
     /**
      * Build request parameters
      * @param {object} data Data

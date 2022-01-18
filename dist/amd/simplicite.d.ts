@@ -1347,6 +1347,13 @@ declare module "simplicite" {
          */
         getReqOptions: (options: any) => string;
         /**
+         * Convert usual wildcards to filters wildcards
+         * @param {object} filter Filter
+         * @return {string} Filter with wildcards converted
+         * @private
+         */
+        convertFilterWildCards: (filter: any) => any;
+        /**
          * Build request parameters
          * @param {object} data Data
          * @param {boolean} [filters] Filters? Used to convert wildcards if needed

@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.16
+ * @version 2.2.17
  * @license Apache-2.0
  */
 import fetch from 'node-fetch'; // Node.js polyfill for fetch
@@ -15,7 +15,7 @@ const constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '2.2.16',
+    MODULE_VERSION: '2.2.17',
     /**
      * Default row ID field name
      * @constant {string}
@@ -1703,6 +1703,15 @@ class BusinessObject {
             return opts;
         };
         /**
+         * Convert usual wildcards to filters wildcards
+         * @param {object} filter Filter
+         * @return {string} Filter with wildcards converted
+         * @private
+         */
+        this.convertFilterWildCards = (filter) => {
+            return typeof filter === 'string' ? filter.replace(new RegExp('\\*', 'g'), '%').replace(new RegExp('\\?', 'g'), '_') : filter;
+        };
+        /**
          * Build request parameters
          * @param {object} data Data
          * @param {boolean} [filters] Filters? Used to convert wildcards if needed
@@ -1726,10 +1735,10 @@ class BusinessObject {
                 }
                 else if (d.sort) { // Array ?
                     for (const dd of d)
-                        p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(filters ? dd.replace(/\*/g, '%').replace(/\?/g, '_') : dd);
+                        p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(filters ? this.convertFilterWildCards(dd) : dd);
                 }
                 else {
-                    p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(filters ? d.replace(/\*/g, '%').replace(/\?/g, '_') : d);
+                    p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(filters ? this.convertFilterWildCards(d) : d);
                 }
             }
             return p;

@@ -2,7 +2,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.16
+ * @version 2.2.17
  * @license Apache-2.0
  */
 var __importDefault = (this && this.__importDefault) || function (mod) {
@@ -20,7 +20,7 @@ var constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '2.2.16',
+    MODULE_VERSION: '2.2.17',
     /**
      * Default row ID field name
      * @constant {string}
@@ -1739,6 +1739,15 @@ var BusinessObject = /** @class */ (function () {
             return opts;
         };
         /**
+         * Convert usual wildcards to filters wildcards
+         * @param {object} filter Filter
+         * @return {string} Filter with wildcards converted
+         * @private
+         */
+        this.convertFilterWildCards = function (filter) {
+            return typeof filter === 'string' ? filter.replace(new RegExp('\\*', 'g'), '%').replace(new RegExp('\\?', 'g'), '_') : filter;
+        };
+        /**
          * Build request parameters
          * @param {object} data Data
          * @param {boolean} [filters] Filters? Used to convert wildcards if needed
@@ -1764,11 +1773,11 @@ var BusinessObject = /** @class */ (function () {
                 else if (d.sort) { // Array ?
                     for (var _b = 0, d_1 = d; _b < d_1.length; _b++) {
                         var dd = d_1[_b];
-                        p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(filters ? dd.replace(/\*/g, '%').replace(/\?/g, '_') : dd);
+                        p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(filters ? _this.convertFilterWildCards(dd) : dd);
                     }
                 }
                 else {
-                    p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(filters ? d.replace(/\*/g, '%').replace(/\?/g, '_') : d);
+                    p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(filters ? _this.convertFilterWildCards(d) : d);
                 }
             }
             return p;

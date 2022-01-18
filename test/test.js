@@ -5,7 +5,7 @@ app.info(`Version: ${simplicite.constants.MODULE_VERSION}`);
 app.debug('Parameters', app.parameters);
 
 try {
-	const user = await app.login({ username: 'designer', password: '<your password>>' });
+	const user = await app.login({ username: 'designer', password: '<your password>' });
 	app.debug(user);
 	app.info(`Logged in as ${user.login} with authentication token ${user.authtoken}`);
 
