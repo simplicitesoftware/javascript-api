@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.15
+ * @version 2.2.16
  * @license Apache-2.0
  */
 define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (require, exports, node_fetch_1, buffer_1) {
@@ -16,7 +16,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
          * API client module version
          * @constant {string}
          */
-        MODULE_VERSION: '2.2.15',
+        MODULE_VERSION: '2.2.16',
         /**
          * Default row ID field name
          * @constant {string}
@@ -1737,10 +1737,11 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
             /**
              * Build request parameters
              * @param {object} data Data
+             * @param {boolean} [filters] Filters? Used to convert wildcards if needed
              * @return {string} Request parameters
              * @private
              */
-            this.getReqParams = function (data) {
+            this.getReqParams = function (data, filters) {
                 var p = '';
                 if (!data)
                     return p;
@@ -1759,11 +1760,11 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
                     else if (d.sort) { // Array ?
                         for (var _b = 0, d_1 = d; _b < d_1.length; _b++) {
                             var dd = d_1[_b];
-                            p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(dd);
+                            p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(filters ? dd.replace(/\*/g, '%').replace(/\?/g, '_') : dd);
                         }
                     }
                     else {
-                        p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(d);
+                        p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(filters ? d.replace(/\*/g, '%').replace(/\?/g, '_') : d);
                     }
                 }
                 return p;
@@ -1782,7 +1783,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
                 opts = opts || {};
                 return new Promise(function (resolve, reject) {
                     _this.filters = filters || {};
-                    ses.req("".concat(_this.path, "&action=count"), _this.getReqParams(_this.filters), function (res, status) {
+                    ses.req("".concat(_this.path, "&action=count"), _this.getReqParams(_this.filters, true), function (res, status) {
                         var r = ses.parse(res, status);
                         ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                         if (r.type === 'error') {
@@ -1828,7 +1829,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
                     if (opts.visible === true)
                         p += '&_visible=true';
                     _this.filters = filters || {};
-                    ses.req(_this.path + '&action=search' + p, _this.getReqParams(_this.filters), function (res, status) {
+                    ses.req(_this.path + '&action=search' + p, _this.getReqParams(_this.filters, true), function (res, status) {
                         var r = ses.parse(res, status);
                         ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                         if (r.type === 'error') {
@@ -2186,7 +2187,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
                 return new Promise(function (resolve, reject) {
                     if (opts.filters)
                         _this.filters = opts.filters;
-                    ses.req(_this.path + '&action=crosstab&crosstab=' + encodeURIComponent(ctb), _this.getReqParams(_this.filters), function (res, status) {
+                    ses.req(_this.path + '&action=crosstab&crosstab=' + encodeURIComponent(ctb), _this.getReqParams(_this.filters, true), function (res, status) {
                         var r = ses.parse(res, status);
                         ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                         if (r.type === 'error') {
@@ -2235,6 +2236,41 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
                         }
                         else {
                             resolve.call(_this, new Doc(r.response));
+                        }
+                    }, function (err) {
+                        err = ses.getError(err, undefined, origin);
+                        if (!(opts.error || ses.error).call(_this, err))
+                            reject.call(_this, err);
+                    });
+                });
+            };
+            /**
+             * Get placem map data
+             * @param {string} pcm Place map name
+             * @param {string} [filters] Filters
+             * @param {object} [opts] Options
+             * @param {function} [opts.error] Error handler function
+             * @return {promise<any>} A promise to the place map data
+             * @function
+             */
+            this.placemap = function (pcm, filters, opts) {
+                var origin = "BusinessObject.placemap(".concat(pcm, ")");
+                var ses = _this.session;
+                _this.filters = filters || {};
+                opts = opts || {};
+                return new Promise(function (resolve, reject) {
+                    if (opts.filters)
+                        _this.filters = opts.filters;
+                    ses.req(_this.path + '&action=placemap&placemap=' + encodeURIComponent(pcm), _this.getReqParams(_this.filters, true), function (res, status) {
+                        var r = ses.parse(res, status);
+                        ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
+                        if (r.type === 'error') {
+                            var err = ses.getError(r.response, undefined, origin);
+                            if (!(opts.error || ses.error).call(_this, err))
+                                reject.call(_this, err);
+                        }
+                        else {
+                            resolve.call(_this, r.response);
                         }
                     }, function (err) {
                         err = ses.getError(err, undefined, origin);

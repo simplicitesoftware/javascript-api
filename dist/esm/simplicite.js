@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.15
+ * @version 2.2.16
  * @license Apache-2.0
  */
 import fetch from 'node-fetch'; // Node.js polyfill for fetch
@@ -15,7 +15,7 @@ const constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '2.2.15',
+    MODULE_VERSION: '2.2.16',
     /**
      * Default row ID field name
      * @constant {string}
@@ -1705,10 +1705,11 @@ class BusinessObject {
         /**
          * Build request parameters
          * @param {object} data Data
+         * @param {boolean} [filters] Filters? Used to convert wildcards if needed
          * @return {string} Request parameters
          * @private
          */
-        this.getReqParams = (data) => {
+        this.getReqParams = (data, filters) => {
             let p = '';
             if (!data)
                 return p;
@@ -1725,10 +1726,10 @@ class BusinessObject {
                 }
                 else if (d.sort) { // Array ?
                     for (const dd of d)
-                        p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(dd);
+                        p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(filters ? dd.replace(/\*/g, '%').replace(/\?/g, '_') : dd);
                 }
                 else {
-                    p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(d);
+                    p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(filters ? d.replace(/\*/g, '%').replace(/\?/g, '_') : d);
                 }
             }
             return p;
@@ -1747,7 +1748,7 @@ class BusinessObject {
             opts = opts || {};
             return new Promise((resolve, reject) => {
                 this.filters = filters || {};
-                ses.req(`${this.path}&action=count`, this.getReqParams(this.filters), (res, status) => {
+                ses.req(`${this.path}&action=count`, this.getReqParams(this.filters, true), (res, status) => {
                     const r = ses.parse(res, status);
                     ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                     if (r.type === 'error') {
@@ -1793,7 +1794,7 @@ class BusinessObject {
                 if (opts.visible === true)
                     p += '&_visible=true';
                 this.filters = filters || {};
-                ses.req(this.path + '&action=search' + p, this.getReqParams(this.filters), (res, status) => {
+                ses.req(this.path + '&action=search' + p, this.getReqParams(this.filters, true), (res, status) => {
                     const r = ses.parse(res, status);
                     ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
                     if (r.type === 'error') {
@@ -2149,7 +2150,7 @@ class BusinessObject {
             return new Promise((resolve, reject) => {
                 if (opts.filters)
                     this.filters = opts.filters;
-                ses.req(this.path + '&action=crosstab&crosstab=' + encodeURIComponent(ctb), this.getReqParams(this.filters), (res, status) => {
+                ses.req(this.path + '&action=crosstab&crosstab=' + encodeURIComponent(ctb), this.getReqParams(this.filters, true), (res, status) => {
                     const r = ses.parse(res, status);
                     ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
                     if (r.type === 'error') {
@@ -2198,6 +2199,41 @@ class BusinessObject {
                     }
                     else {
                         resolve.call(this, new Doc(r.response));
+                    }
+                }, (err) => {
+                    err = ses.getError(err, undefined, origin);
+                    if (!(opts.error || ses.error).call(this, err))
+                        reject.call(this, err);
+                });
+            });
+        };
+        /**
+         * Get placem map data
+         * @param {string} pcm Place map name
+         * @param {string} [filters] Filters
+         * @param {object} [opts] Options
+         * @param {function} [opts.error] Error handler function
+         * @return {promise<any>} A promise to the place map data
+         * @function
+         */
+        this.placemap = (pcm, filters, opts) => {
+            const origin = `BusinessObject.placemap(${pcm})`;
+            const ses = this.session;
+            this.filters = filters || {};
+            opts = opts || {};
+            return new Promise((resolve, reject) => {
+                if (opts.filters)
+                    this.filters = opts.filters;
+                ses.req(this.path + '&action=placemap&placemap=' + encodeURIComponent(pcm), this.getReqParams(this.filters, true), (res, status) => {
+                    const r = ses.parse(res, status);
+                    ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
+                    if (r.type === 'error') {
+                        const err = ses.getError(r.response, undefined, origin);
+                        if (!(opts.error || ses.error).call(this, err))
+                            reject.call(this, err);
+                    }
+                    else {
+                        resolve.call(this, r.response);
                     }
                 }, (err) => {
                     err = ses.getError(err, undefined, origin);

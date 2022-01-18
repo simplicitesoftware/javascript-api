@@ -5,7 +5,7 @@ app.info(`Version: ${simplicite.constants.MODULE_VERSION}`);
 app.debug('Parameters', app.parameters);
 
 try {
-	const user = await app.login({ username: 'designer', password: 'designer' });
+	const user = await app.login({ username: 'designer', password: '<your password>>' });
 	app.debug(user);
 	app.info(`Logged in as ${user.login} with authentication token ${user.authtoken}`);
 
@@ -21,17 +21,29 @@ try {
 	app.debug(devinfo);
 	app.info(`Using development version ${devinfo.version}`);
 
-	const sys = app.getBusinessObject('SystemParam');
-	const sysMetaData = await sys.getMetaData();
-	app.debug(sysMetaData);
-	const sysType = sys.getField('sys_type');
-	app.debug(sysType);
-	for (const l of sysType.listOfValues)
-		app.info(`${l.code} = ${l.value}`);
-	const list = await sys.search({ 'sys_type': 'APP' });
-	for (const item of list)
-		app.info(`${sys.getFieldValue('sys_code', item)}: ${sys.getFieldValue('sys_type', item)} = ${sys.getFieldListValue('sys_type', item)}`);
+	const prd = app.getBusinessObject('DemoProduct');
+	const prdMetaData = await prd.getMetaData();
+	app.debug(prdMetaData);
+	app.info(prd.getLabel());
+	const prdType = prd.getField('demoPrdType');
+	app.debug(prdType);
+	for (const l of prdType.listOfValues) {
+		app.info(`  ${l.code} = ${l.value}`);
+		const list = await prd.search({ 'demoPrdType': l.code });
+		for (const item of list)
+			app.info(`    ${prd.getFieldValue('demoPrdReference', item)}: ${prd.getFieldValue('demoPrdType', item)} = ${prd.getFieldListValue('demoPrdType', item)}`);
+	}
 
+	const cli = app.getBusinessObject('DemoClient');
+	const cliMetaData = await cli.getMetaData();
+	app.debug(cliMetaData);
+	app.info(cli.getLabel());
+	const data = await cli.placemap('DemoClients', { demoCliLastname: '*R*' });
+	app.debug(data);
+	app.info(`  Placemap ${data.name} = ${data.places.length} places`);
+	for (const p of data.places)
+		app.info(`    ${p.coords}: ${p.label1} / ${p.label2} / ${p.label3}`);
+	
 	const res = await app.logout();
 	app.debug(res);
 	app.info(`${res.login} logged out`);

@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.15
+ * @version 2.2.16
  * @license Apache-2.0
  */
 /// <reference types="node" />
@@ -1354,10 +1354,11 @@ declare class BusinessObject {
     /**
      * Build request parameters
      * @param {object} data Data
+     * @param {boolean} [filters] Filters? Used to convert wildcards if needed
      * @return {string} Request parameters
      * @private
      */
-    getReqParams: (data: any) => string;
+    getReqParams: (data: any, filters?: boolean) => string;
     /**
      * Get count
      * @param {object} [filters] Filters, defaults to current filters if not set
@@ -1513,6 +1514,16 @@ declare class BusinessObject {
      * @function
      */
     print: (prt: string, rowId?: string, opts?: any) => Promise<any>;
+    /**
+     * Get placem map data
+     * @param {string} pcm Place map name
+     * @param {string} [filters] Filters
+     * @param {object} [opts] Options
+     * @param {function} [opts.error] Error handler function
+     * @return {promise<any>} A promise to the place map data
+     * @function
+     */
+    placemap: (pcm: string, filters?: any, opts?: any) => Promise<any>;
     /**
      * Set an object parameter
      * @param {string} param Parameter name
