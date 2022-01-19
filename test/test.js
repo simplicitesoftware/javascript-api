@@ -42,8 +42,23 @@ try {
 	app.debug(data);
 	app.info(`  Placemap ${data.name} = ${data.places.length} places`);
 	for (const p of data.places)
-		app.info(`    ${p.coords}: ${p.label1} / ${p.label2} / ${p.label3}`);
-	
+		app.info(`    ${p.coord}: ${p.label1} / ${p.label2} / ${p.label3}`);
+
+	const ctc = app.getBusinessObject('DemoContact');
+	const ctcMetaData = await ctc.getMetaData();
+	app.debug(ctcMetaData);
+	app.info(ctc.getLabel());
+	const ctcType = ctc.getField('demoCtcType');
+	const ctcSubType = ctc.getField('demoCtcSubType');
+	for (const t of ctcType.listOfValues) {
+		const subTypes = await ctc.getFieldLinkedList(ctcType, ctcSubType, t.code);
+		app.debug(subTypes);
+		app.info(`  Type = ${t.code} (${t.value}) -> sub-types list = ${subTypes.name || '<none>'}`);
+		for (const st of subTypes.items)
+			if (st.code)
+				app.info(`    ${st.code} (${st.value})`);
+	}
+
 	const res = await app.logout();
 	app.debug(res);
 	app.info(`${res.login} logged out`);

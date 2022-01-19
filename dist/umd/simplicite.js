@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.17
+ * @version 2.2.18
  * @license Apache-2.0
  */
 (function (factory) {
@@ -26,7 +26,7 @@
          * API client module version
          * @constant {string}
          */
-        MODULE_VERSION: '2.2.17',
+        MODULE_VERSION: '2.2.18',
         /**
          * Default row ID field name
          * @constant {string}
@@ -2024,6 +2024,51 @@
                         }
                         else {
                             _this.item = r.response.data ? r.response.data : r.response;
+                            resolve.call(_this, _this.item);
+                        }
+                    }, function (err) {
+                        err = ses.getError(err, undefined, origin);
+                        if (!(opts.error || ses.error).call(_this, err))
+                            reject.call(_this, err);
+                    });
+                });
+            };
+            /**
+             * Get the linked list for a list of values field and its specified value(s)
+             * @param {(string|object)} field Field name or definition
+             * @param {(string|object)} linkedField Linked field name or definition
+             * @param {string|boolean} [code] List of values code(s) (if multiple codes use ; as separator), defaults to current field value if empty, means "all" if true
+             * @param {object} [opts] Options
+             * @param {function} [opts.error] Error handler function
+             * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
+             * @function
+             */
+            this.getFieldLinkedList = function (field, linkedField, code, opts) {
+                var origin = 'BusinessObject.create';
+                var ses = _this.session;
+                opts = opts || {};
+                return new Promise(function (resolve, reject) {
+                    if (typeof field !== 'string')
+                        field = field.fullinput || field.name;
+                    if (typeof linkedField !== 'string')
+                        linkedField = linkedField.fullinput || linkedField.name;
+                    var all = false;
+                    if (code === true) {
+                        all = true;
+                        code = undefined;
+                    }
+                    else if (typeof code === 'undefined')
+                        code = _this.getFieldValue(field);
+                    ses.req("".concat(_this.path, "&action=getlinkedlist"), _this.getReqParams({ origin: field, input: linkedField, code: code, all: all }), function (res, status) {
+                        var r = ses.parse(res, status);
+                        ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
+                        if (r.type === 'error') {
+                            var err = ses.getError(r.response, undefined, origin);
+                            if (!(opts.error || ses.error).call(_this, err))
+                                reject.call(_this, err);
+                        }
+                        else {
+                            _this.item = r.response.result ? r.response.result : r.response;
                             resolve.call(_this, _this.item);
                         }
                     }, function (err) {

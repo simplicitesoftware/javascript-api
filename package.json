@@ -1,7 +1,7 @@
 {
   "name": "simplicite",
   "description": "Simplicite(R) platform Javascript API (for node.js and browser)",
-  "version": "2.2.17",
+  "version": "2.2.18",
   "author": "Simplicite Software <contact@simplicitesoftware.com> (https://www.simplicitesoftware.com/)",
   "license": "Apache-2.0",
   "keywords": [
@@ -23,7 +23,7 @@
     "node-fetch": "^2.6.6"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.16.8",
+    "@babel/preset-env": "^7.16.10",
     "@typescript-eslint/parser": "^5.10.0",
     "@typescript-eslint/eslint-plugin": "^5.10.0",
     "docdash": "^1.2.0",
