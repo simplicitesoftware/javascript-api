@@ -38,7 +38,7 @@ files for other examples of basic usage.
 
 ### Documentation
 
-The JSDoc documentation is [](https://simplicitesoftware.github.io/nodejs-api/).
+Read the [JSDoc documentation](https://simplicitesoftware.github.io/nodejs-api/).
 
 ### Demos
 
