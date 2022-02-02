@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.18
+ * @version 2.2.19
  * @license Apache-2.0
  */
 
@@ -17,7 +17,7 @@ const constants = {
 	 * API client module version
 	 * @constant {string}
 	 */
-	MODULE_VERSION: '2.2.18',
+	MODULE_VERSION: '2.2.19',
 
 	/**
 	 * Default row ID field name
@@ -654,73 +654,73 @@ class Session {
 	 * Constants
 	 * @member
 	 */
-	constants = constants;
+	public constants = constants;
 
 	/**
 	 * Endpoint
 	 * @member {string}
 	 */
-	endpoint: SessionParamEndpoint;
+	public endpoint: SessionParamEndpoint;
 
 	/**
 	 * Log handler
 	 * @param {...any} args Arguments
 	 * @function
 	 */
-	log: (...args: any[]) => any;
+	public log: (...args: any[]) => any;
 
 	/**
 	 * Info handler
 	 * @param {...any} args Arguments
 	 * @function
 	 */
-	info: (...args: any[]) => any;
+	public info: (...args: any[]) => any;
 
 	/**
 	 * Warning handler
 	 * @param {...any} args Arguments
 	 * @function
 	 */
-	warn: (...args: any[]) => any;
+	public warn: (...args: any[]) => any;
 
 	/**
 	 * Error handler
 	 * @param {...any} args Arguments
 	 * @function
 	 */
-	error: (...args: any[]) => any;
+	public error: (...args: any[]) => any;
 
 	/**
 	 * Debug mode enabled?
 	 * @member {boolean}
 	 */
-	debugMode: boolean;
+	public debugMode: boolean;
 
 	/**
 	 * Debug handler
 	 * @param {...any} args Arguments
 	 * @function
 	 */
-	debug: (...args: any[]) => any;
+	public debug: (...args: any[]) => any;
 
 	/**
 	 * Parameters
 	 * @member {object}
 	 */
-	parameters: any;
+	public parameters: any;
 
 	/**
 	 * Username
 	 * @member {string}
 	 */
-	username: string;
+	public username: string;
 
 	/**
 	 * Set username
 	 * @param {string} usr Username
 	 * @function
 	 */
-	setUsername = (usr: string): void => {
+	public setUsername = (usr: string): void => {
 		this.username = usr;
 	};
 
@@ -728,14 +728,14 @@ class Session {
 	 * Password
 	 * @member {string}
 	 */
-	password: string;
+	public password: string;
 
 	/**
 	 * Set password
 	 * @param {string} pwd Password
 	 * @function
 	 */
-	setPassword = (pwd: string): void => {
+	public setPassword = (pwd: string): void => {
 		this.password = pwd;
 	};
 
@@ -743,21 +743,45 @@ class Session {
 	 * Auth token
 	 * @member {string}
 	 */
-	authtoken: string;
+	public authtoken: string;
+
+	/**
+	 * Auth token expiry date
+	 * @member {Date}
+	 */
+	public authtokenexpiry: Date;
 
 	/**
 	 * Session ID
 	 * @member {string}
 	 */
-	sessionid: string;
+	public sessionid: string;
 
 	/**
 	 * Set auth token
 	 * @param {string} token Auth token
 	 * @function
 	 */
-	setAuthToken = (token: string): void => {
+	public setAuthToken = (token: string): void => {
 		this.authtoken = token;
+	};
+
+	/**
+	 * Set auth token expiry date
+	 * @param {Date} expiry Auth token expiry
+	 * @function
+	 */
+	public setAuthTokenExpiryDate = (expiry: Date): void => {
+		this.authtokenexpiry = expiry;
+	};
+
+	/**
+	 * Set auth token expiry date
+	 * @param {Date} expiry Auth token expiry
+	 * @function
+	 */
+	public isAuthTokenExpired = (): boolean => {
+		return new Date() > this.authtokenexpiry;
 	};
 
 	/**
@@ -765,16 +789,16 @@ class Session {
 	 * @member {object}
 	 * @private
 	 */
-	businessObjectCache: Map<string, BusinessObject>;
+	private businessObjectCache: Map<string, BusinessObject>;
 
 	/**
 	 * Get business object cache key
 	 * @param {string} name Business object name
 	 * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
 	 * @return {object} Business object cache key
-	 * @private
+	 * @function
 	 */
-	getBusinessObjectCacheKey = (name: string, instance?: string): any => {
+	public getBusinessObjectCacheKey = (name: string, instance?: string): any => {
 		return name + ':' + (instance || 'js_' + name);
 	};
 
@@ -782,10 +806,11 @@ class Session {
 	 * Clears all data (credentials, objects, ...)
 	 * @function
 	 */
-	clear = () => {
+	public clear = () => {
 		this.username = undefined;
 		this.password = undefined;
 		this.authtoken = undefined;
+		this.authtokenexpiry = undefined;
 		this.sessionid = undefined;
 
 		this.grant = undefined;
@@ -800,9 +825,9 @@ class Session {
 	/**
 	 * Basic HTTP authorization header value
 	 * @return {string} HTTP authorization header value
-	 * @private
+	 * @function
 	 */
-	getBasicAuthHeader = (): string => {
+	public getBasicAuthHeader = (): string => {
 		return this.username && this.password
 			? 'Basic ' + Buffer.from(this.username + ':' + this.password).toString('base64')
 			: undefined;
@@ -811,9 +836,9 @@ class Session {
 	/**
 	 * Get bearer token header value
 	 * @return {string} Bearer token header value
-	 * @private
+	 * @function
 	 */
-	getBearerTokenHeader = (): string => {
+	public getBearerTokenHeader = (): string => {
 		return this.authtoken
 			? 'Bearer ' + this.authtoken
 			: undefined;
@@ -826,9 +851,9 @@ class Session {
 	 * @param {number} [status] Optional error status (defaults to 200)
 	 * @param {string} [origin] Optional error origin
 	 * @return {object} Error object
-	 * @private
+	 * @function
 	 */
-	getError = (err: string|any, status?: number, origin?: string): any => {
+	public getError = (err: string|any, status?: number, origin?: string): any => {
 		if (typeof err === 'string') { // plain text error
 			return { message: err, status: status || 200, origin };
 		} else if (err.response) { // wrapped error
@@ -847,14 +872,14 @@ class Session {
 	};
 
 	/**
-	 * Request
+	 * Send request
 	 * @param {string} path Path
 	 * @param {object} [data] Data
 	 * @param {function} [callback] Callback
 	 * @param {function} [errorHandler] Error handler
-	 * @private
+	 * @function
 	 */
-	req = (path: string, data?: any, callback?: (testData: string, status: number, headers: any) => void, errorHandler?: (err: any) => void): void => {
+	public sendRequest = (path: string, data?: any, callback?: (testData: string, status: number, headers: any) => void, errorHandler?: (err: any) => void): void => {
 		const origin = 'Session.req';
 		const m: string = data ? 'POST' : 'GET';
 		const h: any = {};
@@ -895,13 +920,13 @@ class Session {
 	};
 
 	/**
-	 * Parse result
+	 * Parse response
 	 * @param {object} res Response to parse
 	 * @param {number} [status=200] HTTP status
 	 * @return {object} Error object
-	 * @private
+	 * @function
 	 */
-	parse = (res: any, status?: number): any => {
+	public parseResponse = (res: any, status?: number): any => {
 		try {
 			if (status !== 200)
 				return { type: 'error', response: this.getError('HTTP status: ' + status, status) };
@@ -919,12 +944,12 @@ class Session {
 	 * @return {promise<object>} Promise to the health data
 	 * @function
 	 */
-	getHealth = (opts?: any): Promise<any> => {
+	public getHealth = (opts?: any): Promise<any> => {
 		const origin = 'Session.getHealth';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
-			this.req(`${this.parameters.healthpath}&full=${!!opts.full}`, undefined, (res: any, status: number) => {
-				const r: any = this.parse(res, status);
+			this.sendRequest(`${this.parameters.healthpath}&full=${!!opts.full}`, undefined, (res: any, status: number) => {
+				const r: any = this.parseResponse(res, status);
 				this.debug(`[${origin}] HTTP status = ${status}, response type = ${res}`);
 				if (r.type === 'error') {
 					const err = this.getError(r.response, undefined, origin);
@@ -949,7 +974,7 @@ class Session {
 	 * @return {promise<object>} Promise to the login result
 	 * @function
 	 */
-	login = (opts?: any): Promise<any> => {
+	public login = (opts?: any): Promise<any> => {
 		const origin = 'Session.login';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -961,8 +986,8 @@ class Session {
 				this.clear();
 				this.authtoken = opts.authtoken || opts.authToken || opts.token;
 			}
-			this.req(this.parameters.loginpath, undefined, (res: any, status: number) => {
-				const r: any = this.parse(res, status);
+			this.sendRequest(this.parameters.loginpath, undefined, (res: any, status: number) => {
+				const r: any = this.parseResponse(res, status);
 				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type || (r.error ? 'error' : 'login')}`);
 				if (r.type === 'error' || r.error) {
 					const err = this.getError(r.response ? r.response : r, undefined, origin);
@@ -976,6 +1001,15 @@ class Session {
 					this.authtoken = r.response ? r.response.authtoken : r.authtoken;
 					if (this.authtoken)
 						this.debug(`[${origin}] Auth token = ${this.authtoken}`);
+					try {
+						const exp = new Date();
+						exp.setTime(r.response ? r.response.authtokenexpiry : r.authtokenexpiry);
+						this.authtokenexpiry = exp;
+					} catch(e: any) {
+						// Silent
+					}
+					if (this.authtokenexpiry)
+						this.debug(`[${origin}] Auth token expiry date = ${this.authtokenexpiry}`);
 					// Minimal grant from session data
 					this.grant =new Grant({
 						login: this.username,
@@ -1001,12 +1035,12 @@ class Session {
 	 * @return {promise<object>} Promise to the logout result
 	 * @function
 	 */
-	logout = (opts?: any): Promise<any> => {
+	public logout = (opts?: any): Promise<any> => {
 		const origin = 'Session.logout';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
-			this.req(this.parameters.logoutpath, undefined, (res: any, status: number) => {
-				const r: any = this.parse(res, status);
+			this.sendRequest(this.parameters.logoutpath, undefined, (res: any, status: number) => {
+				const r: any = this.parseResponse(res, status);
 				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type || (r.error ? 'error' : 'logout')}`);
 				if (r.type === 'error') {
 					const err = this.getError(r.response ? r.response : r, undefined, origin);
@@ -1028,7 +1062,7 @@ class Session {
 	 * Grant
 	 * @member {Grant}
 	 */
-	grant: Grant;
+	public grant: Grant;
 
 	/**
 	 * Get grant (current user data)
@@ -1039,7 +1073,7 @@ class Session {
 	 * @return {promise<Grant>} A promise to the grant (also available as the <code>grant</code> member)
 	 * @function
 	 */
-	getGrant = (opts?: any): Promise<any> => {
+	public getGrant = (opts?: any): Promise<any> => {
 		const origin = 'Session.getGrant';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -1050,8 +1084,8 @@ class Session {
 			const txt = !!opts.includeTexts || !!opts.texts; // naming flexibility
 			if (txt)
 				p += '&texts=true';
-			this.req(`${this.parameters.apppath}?action=getgrant${p}`, undefined, (res: any, status: number) => {
-				const r: any = this.parse(res, status);
+			this.sendRequest(`${this.parameters.apppath}?action=getgrant${p}`, undefined, (res: any, status: number) => {
+				const r: any = this.parseResponse(res, status);
 				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
 					const err = this.getError(r.response, undefined, origin);
@@ -1079,12 +1113,12 @@ class Session {
 	 * @return {promise<object>} A promise to the change password result
 	 * @function
 	 */
-	changePassword = (pwd: string, opts?: any): Promise<any> => {
+	public changePassword = (pwd: string, opts?: any): Promise<any> => {
 		const origin = 'Session.changePassword';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
-			this.req(`${this.parameters.apppath}?action=setpassword&password=${encodeURIComponent(pwd)}`, undefined, (res: any, status: number) => {
-				const r: any = this.parse(res, status);
+			this.sendRequest(`${this.parameters.apppath}?action=setpassword&password=${encodeURIComponent(pwd)}`, undefined, (res: any, status: number) => {
+				const r: any = this.parseResponse(res, status);
 				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
 					const err = this.getError(r.response, undefined, origin);
@@ -1103,7 +1137,7 @@ class Session {
 	 * Application info
 	 * @member {object}
 	 */
-	appinfo: any;
+	public appinfo: any;
 
 	/**
 	 * Get application info
@@ -1112,12 +1146,12 @@ class Session {
 	 * @return {promise<object>} A promise to the application info (also avialable as the <code>appinfo</code> member)
 	 * @function
 	 */
-	getAppInfo = (opts?: any): Promise<any> => {
+	public getAppInfo = (opts?: any): Promise<any> => {
 		const origin = 'Session.getAppInfo';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
-			this.req(`${this.parameters.apppath}?action=getinfo`, undefined, (res: any, status: number) => {
-				const r: any = this.parse(res, status);
+			this.sendRequest(`${this.parameters.apppath}?action=getinfo`, undefined, (res: any, status: number) => {
+				const r: any = this.parseResponse(res, status);
 				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
 					const err = this.getError(r.response, undefined, origin);
@@ -1137,7 +1171,7 @@ class Session {
 	 * System info
 	 * @member {object}
 	 */
-	sysinfo: any;
+	public sysinfo: any;
 
 	/**
 	 * Get system info
@@ -1146,12 +1180,12 @@ class Session {
 	 * @return {promise<object>} A promise to the system info (also avialable as the <code>sysinfo</code> member)
 	 * @function
 	 */
-	getSysInfo = (opts?: any): Promise<any> => {
+	public getSysInfo = (opts?: any): Promise<any> => {
 		const origin = 'Session.getSysInfo';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
-			this.req(`${this.parameters.apppath}?action=sysinfo`, undefined, (res: any, status: number) => {
-				const r: any = this.parse(res, status);
+			this.sendRequest(`${this.parameters.apppath}?action=sysinfo`, undefined, (res: any, status: number) => {
+				const r: any = this.parseResponse(res, status);
 				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
 					const err = this.getError(r.response, undefined, origin);
@@ -1171,7 +1205,7 @@ class Session {
 	 * Development info
 	 * @member {object}
 	 */
-	devinfo: any;
+	public devinfo: any;
 
 	/**
 	 * Get development info
@@ -1181,15 +1215,15 @@ class Session {
 	 * @return {promise<object>} A promise to the develoment info (also avialable as the <code>devinfo</code> member)
 	 * @function
 	 */
-	getDevInfo = (module?: string, opts?: any): Promise<any> => {
+	public getDevInfo = (module?: string, opts?: any): Promise<any> => {
 		const origin = 'Session.getDevInfo';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			let p = '';
 			if (module)
 				p += '&module=' + encodeURIComponent(module);
-			this.req(`${this.parameters.apppath}?action=devinfo${p}`, undefined, (res: any, status: number) => {
-				const r: any = this.parse(res, status);
+			this.sendRequest(`${this.parameters.apppath}?action=devinfo${p}`, undefined, (res: any, status: number) => {
+				const r: any = this.parseResponse(res, status);
 				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
 					const err = this.getError(r.response, undefined, origin);
@@ -1210,7 +1244,7 @@ class Session {
 	 * News
 	 * @member {array}
 	 */
-	news: any[];
+	public news: any[];
 
 	/**
 	 * Get news
@@ -1220,7 +1254,7 @@ class Session {
 	 * @return {promise<array>} A promise to the list of news (also avialable as the <code>news</code> member)
 	 * @function
 	 */
-	getNews = (opts?: any): Promise<any[]> => {
+	public getNews = (opts?: any): Promise<any[]> => {
 		const origin = 'Session.getHealth';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -1228,8 +1262,8 @@ class Session {
 			const img = !!opts.inlineImages || !!opts.images; // naming flexibility
 			if (img)
 				p += '&inline_images=true';
-			this.req(`${this.parameters.apppath}?action=news${p}`, undefined, (res: any, status: number) => {
-				const r: any = this.parse(res, status);
+			this.sendRequest(`${this.parameters.apppath}?action=news${p}`, undefined, (res: any, status: number) => {
+				const r: any = this.parseResponse(res, status);
 				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
 					const err = this.getError(r.response, undefined, origin);
@@ -1258,7 +1292,7 @@ class Session {
 	 * @return {promise<array>} A promise to a list of index search records
 	 * @function
 	 */
-	indexSearch = (query: string, object?: string, opts?: any): Promise<any[]> => {
+	public indexSearch = (query: string, object?: string, opts?: any): Promise<any[]> => {
 		const origin = 'Session.indexSearch';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -1267,8 +1301,8 @@ class Session {
 				p += '&_md=true';
 			if (opts.context)
 				p += '&context=' + encodeURIComponent(opts.context);
-			this.req(`${this.parameters.apppath}?action=indexsearch&request=${encodeURIComponent(query ? query : '')}${object ? '&object=' + encodeURIComponent(object) : ''}${p}`, undefined, (res: any, status: number) => {
-				const r: any = this.parse(res, status);
+			this.sendRequest(`${this.parameters.apppath}?action=indexsearch&request=${encodeURIComponent(query ? query : '')}${object ? '&object=' + encodeURIComponent(object) : ''}${p}`, undefined, (res: any, status: number) => {
+				const r: any = this.parseResponse(res, status);
 				this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
 					const err = this.getError(r.response, undefined, origin);
@@ -1290,7 +1324,7 @@ class Session {
 	 * @return {BusinessObject} Business object
 	 * @function
 	 */
-	getBusinessObject = (name: string, instance?: string): any => {
+	public getBusinessObject = (name: string, instance?: string): any => {
 		const cacheKey: string = this.getBusinessObjectCacheKey(name, instance);
 		let obj: any = this.businessObjectCache[cacheKey];
 		if (!obj) {
@@ -1305,7 +1339,7 @@ class Session {
 	 * @param {string} name External object name
 	 * @function
 	 */
-	getExternalObject = (name: string): any => {
+	public getExternalObject = (name: string): any => {
 		return new ExternalObject(this, name);
 	};
 
@@ -1317,7 +1351,7 @@ class Session {
 	 * @param {string} [objId] Object ID (not required for global resources)
 	 * @function
 	 */
-	getResourceURL = (code: string, type?: string, object?: any, objId?: string) => {
+	public getResourceURL = (code: string, type?: string, object?: any, objId?: string) => {
 		return this.parameters.url + this.parameters.respath
 			+ '?code=' + encodeURIComponent(code) + '&type=' + encodeURIComponent(type || 'IMG')
 			+ (object ? '&object=' + encodeURIComponent(object) : '')
@@ -1343,38 +1377,38 @@ class Doc {
 	 * Document ID
 	 * @member {string}
 	 */
-	id?: string;
+	public id?: string;
 
 	/**
 	 * Document MIME type
 	 * @member {string}
 	 */
-	mime?: string;
+	public mime?: string;
 
 	/**
 	 * Document file name
 	 * @member {string}
 	 */
-	filename?: string;
+	public filename?: string;
 
 	/**
 	 * Document content as base 64
 	 * @member {string}
 	 */
-	content?: string;
+	public content?: string;
 
 	/**
 	 * Document thumbnail as base 64
 	 * @member {string}
 	 */
-	thumbnail?: string;
+	public thumbnail?: string;
 
 	/**
 	 * Get the document ID
 	 * @return {string} ID
 	 * @function
 	 */
-	getId = (): string => {
+	public getId = (): string => {
 		return this.id;
 	};
 
@@ -1383,7 +1417,7 @@ class Doc {
 	 * @return {string} MIME type
 	 * @function
 	 */
-	getMIMEType = (): string => {
+	public getMIMEType = (): string => {
 		return this.mime;
 	};
 
@@ -1392,14 +1426,14 @@ class Doc {
 	 * @return {string} MIME type
 	 * @function
 	 */
-	getMimeType = this.getMIMEType;
+	public getMimeType = this.getMIMEType;
 
 	/**
 	 * Set the document MIME type
 	 * @param {string} mime MIME type
 	 * @function
 	 */
-	setMIMEType = (mime: string): void => {
+	public setMIMEType = (mime: string): void => {
 		this.mime = mime;
 	};
 
@@ -1408,14 +1442,14 @@ class Doc {
 	 * @param {string} mime MIME type
 	 * @function
 	 */
-	setMimeType = this.setMIMEType;
+	public setMimeType = this.setMIMEType;
 
 	/**
 	 * Get the document file name
 	 * @return {string} File name
 	 * @function
 	 */
-	getFilename = (): string => {
+	public getFilename = (): string => {
 		return this.filename;
 	};
 
@@ -1424,14 +1458,14 @@ class Doc {
 	 * @return {string} File name
 	 * @function
 	 */
-	getFileName = this.getFilename;
+	public getFileName = this.getFilename;
 
 	/**
 	 * Set the document file name
 	 * @param {string} filename File name
 	 * @function
 	 */
-	setFilename = (filename: string): void => {
+	public setFilename = (filename: string): void => {
 		this.filename = filename;
 	};
 
@@ -1440,14 +1474,14 @@ class Doc {
 	 * @param {string} filename File name
 	 * @function
 	 */
-	setFileName = this.setFilename;
+	public setFileName = this.setFilename;
 
 	/**
 	 * Get the document content (encoded in base 64)
 	 * @return {string} Content
 	 * @function
 	 */
-	getContent = (): string => {
+	public getContent = (): string => {
 		return this.content;
 	};
 
@@ -1456,7 +1490,7 @@ class Doc {
 	 * @return {string} Thumbnail
 	 * @function
 	 */
-	getThumbnail = (): string => {
+	public getThumbnail = (): string => {
 		return this.thumbnail;
 	};
 
@@ -1466,7 +1500,7 @@ class Doc {
 	 * @return {buffer} Content data as buffer
 	 * @private
 	 */
-	getBuffer(data: any): Buffer {
+	private getBuffer(data: any): Buffer {
 		return Buffer.from(data, 'base64');
 	}
 
@@ -1475,7 +1509,7 @@ class Doc {
 	 * @return {ArrayBuffer} Content as an array buffer
 	 * @function
 	 */
-	getContentAsArrayBuffer = (): ArrayBuffer => {
+	public getContentAsArrayBuffer = (): ArrayBuffer => {
 		return this.getBuffer(this.content).buffer;
 	};
 
@@ -1484,7 +1518,7 @@ class Doc {
 	 * @return {ArrayBuffer} Thumbnail as an array buffer
 	 * @function
 	 */
-	getThumbnailAsArrayBuffer = (): ArrayBuffer => {
+	public getThumbnailAsArrayBuffer = (): ArrayBuffer => {
 		return this.getBuffer(this.thumbnail || '').buffer;
 	};
 
@@ -1493,7 +1527,7 @@ class Doc {
 	 * @return {string} Content as plain text
 	 * @function
 	 */
-	getContentAsText = (): string => {
+	public getContentAsText = (): string => {
 		return this.getBuffer(this.content).toString('utf-8');
 	};
 
@@ -1502,7 +1536,7 @@ class Doc {
 	 * @param {string} content Content (encoded in base 64)
 	 * @function
 	 */
-	setContent = (content: string): void => {
+	public setContent = (content: string): void => {
 		this.content = content;
 	};
 
@@ -1511,7 +1545,7 @@ class Doc {
 	 * @param {string} content Content as plain text string
 	 * @function
 	 */
-	setContentFromText = (content: string): void => {
+	public setContentFromText = (content: string): void => {
 		this.content = Buffer.from(content, 'utf-8').toString('base64');
 	};
 
@@ -1520,7 +1554,7 @@ class Doc {
 	 * @param {boolean} [thumbnail=false] Thumbnail? If thumbnail does not exists the content is used.
 	 * @return {string} Data URL or nothing if content is empty
 	 */
-	getDataURL = (thumbnail?: boolean): string => {
+	public getDataURL = (thumbnail?: boolean): string => {
 		if (this.content)
 			return 'data:' + this.mime + ';base64,' + (thumbnail && this.thumbnail ? this.thumbnail : this.content);
 	};
@@ -1529,7 +1563,7 @@ class Doc {
 	 * Get the document as a simple value
 	 * @return {object} Value
 	 */
-	getValue = (): any => {
+	public getValue = (): any => {
 		return JSON.parse(JSON.stringify(this)); // Strips all functions
 	};
 }
@@ -1809,63 +1843,63 @@ class BusinessObject {
 	 * @member {Session}
 	 * @private
 	 */
-	session: Session;
+	private session: Session;
 
 	/**
 	 * Object metadata
 	 * @member {BusinessObjectMetadata}
 	 */
-	metadata: BusinessObjectMetadata;
+	public metadata: BusinessObjectMetadata;
 
 	/**
 	 * Cache key
 	 * @constant {string}
 	 * @private
 	 */
-	cacheKey: string;
+	private cacheKey: string;
 
 	/**
 	 * Path
 	 * @constant {string}
 	 * @private
 	 */
-	path: string;
+	private path: string;
 
 	/**
 	 * Current item
 	 * @member {object}
 	 */
-	item: any;
+	public item: any;
 
 	/**
 	 * Current filters
 	 * @member {object}
 	 */
-	filters: any;
+	public filters: any;
 
 	/**
 	 * Current list
 	 * @member {array}
 	 */
-	list: any[];
+	public list: any[];
 
 	/**
 	 * Current count
 	 * @member {number}
 	 */
-	count: number;
+	public count: number;
 
 	/**
 	 * Current page number
 	 * @member {number}
 	 */
-	page: number;
+	public page: number;
 
 	/**
 	 * Number of pages
 	 * @member {number}
 	 */
-	maxpage: number;
+	public maxpage: number;
 
 	/**
 	 * Get meta data
@@ -1876,7 +1910,7 @@ class BusinessObject {
 	 * @return {promise<BusinessObjectMetadata>} A promise to the object'ts meta data (also available as the <code>metadata</code> member)
 	 * @function
 	 */
-	getMetaData = (opts?: any): any => {
+	public getMetaData = (opts?: any): any => {
 		const origin = 'BusinessObject.getMetaData';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -1886,8 +1920,8 @@ class BusinessObject {
 				p += '&context=' + encodeURIComponent(opts.context);
 			if (opts.contextParam)
 				p += '&contextparam=' + encodeURIComponent(opts.contextParam);
-			ses.req(this.path + '&action=metadata' + p, undefined, (res: any, status: number) => {
-				const r: any = ses.parse(res, status);
+			ses.sendRequest(this.path + '&action=metadata' + p, undefined, (res: any, status: number) => {
+				const r: any = ses.parseResponse(res, status);
 				ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
 					const err = ses.getError(r.response, undefined, origin);
@@ -1907,14 +1941,14 @@ class BusinessObject {
 	 * Get meta data (alias to getMetaData)
 	 * @function
 	 */
-	getMetadata = this.getMetaData;
+	public getMetadata = this.getMetaData;
 
 	/**
 	 * Get name
 	 * @return {string} Name
 	 * @function
 	 */
-	getName = (): string => {
+	public getName = (): string => {
 		return this.metadata.name;
 	};
 
@@ -1923,7 +1957,7 @@ class BusinessObject {
 	 * @return {string} Instance name
 	 * @function
 	 */
-	getInstance = (): string => {
+	public getInstance = (): string => {
 		return this.metadata.instance;
 	};
 
@@ -1932,7 +1966,7 @@ class BusinessObject {
 	 * @return {string} Display label
 	 * @function
 	 */
-	getLabel = (): string => {
+	public getLabel = (): string => {
 		return this.metadata.label;
 	};
 
@@ -1941,7 +1975,7 @@ class BusinessObject {
 	 * @return {string} Help
 	 * @function
 	 */
-	getHelp = (): string => {
+	public getHelp = (): string => {
 		return this.metadata.help;
 	};
 
@@ -1950,7 +1984,7 @@ class BusinessObject {
 	 * @return {array} Array of field definitions
 	 * @function
 	 */
-	getFields = (): any[] => {
+	public getFields = (): any[] => {
 		return this.metadata.fields;
 	};
 
@@ -1960,7 +1994,7 @@ class BusinessObject {
 	 * @return {object} Field definition
 	 * @function
 	 */
-	getField = (fieldName: string): any => {
+	public getField = (fieldName: string): any => {
 		const fs: any[] = this.getFields();
 		let n = 0;
 		while (n < fs.length && fs[n].name !== fieldName) n++;
@@ -1973,7 +2007,7 @@ class BusinessObject {
 	 * @return {string} Row ID field name
 	 * @function
 	 */
-	getRowIdFieldName = (): string => {
+	public getRowIdFieldName = (): string => {
 		return this.metadata.rowidfield;
 	};
 
@@ -1982,7 +2016,7 @@ class BusinessObject {
 	 * @return {object} Row ID field definition
 	 * @function
 	 */
-	getRowIdField = (): any => {
+	public getRowIdField = (): any => {
 		return this.getField(this.getRowIdFieldName());
 	};
 
@@ -1991,7 +2025,7 @@ class BusinessObject {
 	 * @return {array} Array of links
 	 * @function
 	 */
-	getLinks = (): any[] => {
+	public getLinks = (): any[] => {
 		return this.metadata.links;
 	};
 
@@ -2001,7 +2035,7 @@ class BusinessObject {
 	 * @return {string} Type (one of <code>constants.TYPE_*</code>)
 	 * @function
 	 */
-	getFieldType = (field: string|any): string => {
+	public getFieldType = (field: string|any): string => {
 		if (typeof field === 'string')
 			field = this.getField(field);
 		if (field)
@@ -2014,7 +2048,7 @@ class BusinessObject {
 	 * @return {string} Field label
 	 * @function
 	 */
-	getFieldLabel = (field: string|any): string => {
+	public getFieldLabel = (field: string|any): string => {
 		if (typeof field === 'string')
 			field = this.getField(field);
 		if (field)
@@ -2028,7 +2062,7 @@ class BusinessObject {
 	 * @return {string|Doc} Value
 	 * @function
 	 */
-	getFieldValue = (field: string|any, item?: any): string|any => {
+	public getFieldValue = (field: string|any, item?: any): string|any => {
 		if (!item)
 			item = this.item;
 		if (field && item) {
@@ -2047,7 +2081,7 @@ class BusinessObject {
 	 * @return {string} List value
 	 * @function
 	 */
-	getFieldListValue = (field: string|any, item?: any) => {
+	public getFieldListValue = (field: string|any, item?: any) => {
 		if (typeof field === 'string')
 			field = this.getField(field);
 		const val: string = this.getFieldValue(field, item);
@@ -2061,7 +2095,7 @@ class BusinessObject {
 	 * @return {string} Document/image field data URL (or nothing if the field is not of document/image type or if it is not inlined or if it is empty)
 	 * @function
 	 */
-	getFieldDataURL = (field: string|any, item?: any): string => {
+	public getFieldDataURL = (field: string|any, item?: any): string => {
 		if (typeof field !== 'string')
 			field = field.fullinput || field.name;
 		const val: string|any = this.getFieldValue(field, item);
@@ -2076,7 +2110,7 @@ class BusinessObject {
 	 * @return {string|Doc} Document/image (or nothing if the field is not of document/image type or if it is empty)
 	 * @function
 	 */
-	getFieldDocument = (field: string|any, item?: any): any => {
+	public getFieldDocument = (field: string|any, item?: any): any => {
 		if (typeof field !== 'string')
 			field = field.fullinput || field.input || field.name;
 		const val: string|any = this.getFieldValue(field, item);
@@ -2094,7 +2128,7 @@ class BusinessObject {
 	 * @return {string} Document/image field URL (or nothing if the field is not of document/image type or if it is empty)
 	 * @function
 	 */
-	getFieldDocumentURL = (field: string|any, item?: any, thumbnail?: boolean): string => {
+	public getFieldDocumentURL = (field: string|any, item?: any, thumbnail?: boolean): string => {
 		if (typeof field !== 'string')
 			field = field.fullinput || field.input || field.name;
 		let val: string|any = this.getFieldValue(field, item);
@@ -2118,7 +2152,7 @@ class BusinessObject {
 	 * @return {string} Value
 	 * @function
 	 */
-	getListValue = (list: any[], code: string): string => {
+	public getListValue = (list: any[], code: string): string => {
 		if (list) {
 			for (const l of list) {
 				if (l.code === code)
@@ -2135,7 +2169,7 @@ class BusinessObject {
 	 * @param {object} [item] Item (defaults to current item)
 	 * @function
 	 */
-	setFieldValue = (field: string|any, value: string|any, item?: any): void => {
+	public setFieldValue = (field: string|any, value: string|any, item?: any): void => {
 		if (!item)
 			item = this.item;
 		if (field && item) {
@@ -2149,7 +2183,7 @@ class BusinessObject {
 	 * @return {boolean} True if the field is the row ID field
 	 * @function
 	 */
-	isRowIdField = (field: any): boolean => {
+	public isRowIdField = (field: any): boolean => {
 		return !field.ref && field.name === this.metadata.rowidfield;
 	};
 
@@ -2159,7 +2193,7 @@ class BusinessObject {
 	 * @return {boolean} True if the field is a timestamp field
 	 * @function
 	 */
-	isTimestampField = (field: any): boolean => {
+	public isTimestampField = (field: any): boolean => {
 		const n = field.name;
 		return !field.ref && (n === 'created_by' || n === 'created_dt' || n === 'updated_by' || n === 'updated_dt');
 	};
@@ -2173,7 +2207,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the object's filters (also available as the <code>filters</code> member)
 	 * @function
 	 */
-	getFilters = (opts?: any): Promise<any> => {
+	public getFilters = (opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.getFilters';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2183,8 +2217,8 @@ class BusinessObject {
 				p += '&context=' + encodeURIComponent(opts.context);
 			if (opts.reset)
 				p += '&reset=' + !!opts.reset;
-			ses.req(this.path + '&action=filters' + p, undefined, (res: any, status: number) => {
-				const r: any = ses.parse(res, status);
+			ses.sendRequest(this.path + '&action=filters' + p, undefined, (res: any, status: number) => {
+				const r: any = ses.parseResponse(res, status);
 				ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
 					const err = ses.getError(r.response, undefined, origin);
@@ -2206,7 +2240,7 @@ class BusinessObject {
 	 * @return {string} Option parameters
 	 * @private
 	 */
-	getReqOptions = (options: any): string => {
+	private getReqOptions = (options: any): string => {
 		let opts = '';
 		if (options.context)
 			opts += '&context=' + encodeURIComponent(options.context);
@@ -2228,7 +2262,7 @@ class BusinessObject {
 	 * @return {string} Filter with wildcards converted
 	 * @private
 	 */
-	convertFilterWildCards = (filter) => {
+	private convertFilterWildCards = (filter) => {
 		return typeof filter === 'string'? filter.replace(new RegExp('\\*', 'g'), '%').replace(new RegExp('\\?', 'g'), '_') : filter;
 	};
 
@@ -2239,7 +2273,7 @@ class BusinessObject {
 	 * @return {string} Request parameters
 	 * @private
 	 */
-	getReqParams = (data: any, filters?: boolean): string => {
+	private getReqParams = (data: any, filters?: boolean): string => {
 		let p = '';
 		if (!data) return p;
 		for (const i of Object.entries(data)) {
@@ -2269,14 +2303,14 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the count
 	 * @function
 	 */
-	getCount = (filters?: any, opts?: any): Promise<any> => {
+	public getCount = (filters?: any, opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.getCount';
 		const ses: Session = this.session;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			this.filters = filters || {};
-			ses.req(`${this.path}&action=count`, this.getReqParams(this.filters, true), (res: any, status: number) => {
-				const r: any = ses.parse(res, status);
+			ses.sendRequest(`${this.path}&action=count`, this.getReqParams(this.filters, true), (res: any, status: number) => {
+				const r: any = ses.parseResponse(res, status);
 				ses.debug('['+origin+'] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
 					const err = ses.getError(r.response, undefined, origin);
@@ -2306,7 +2340,7 @@ class BusinessObject {
 	 * @return {promise<array>} Promise to a list of records (also available as the <code>list</code> member)
 	 * @function
 	 */
-	search = (filters?: any, opts?: any): Promise<any[]> => {
+	public search = (filters?: any, opts?: any): Promise<any[]> => {
 		const origin = 'BusinessObject.search';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2319,8 +2353,8 @@ class BusinessObject {
 			if (opts.visible===true)
 				p += '&_visible=true';
 			this.filters = filters || {};
-			ses.req(this.path + '&action=search' + p, this.getReqParams(this.filters, true), (res: any, status: number) => {
-				const r: any = ses.parse(res, status);
+			ses.sendRequest(this.path + '&action=search' + p, this.getReqParams(this.filters, true), (res: any, status: number) => {
+				const r: any = ses.parseResponse(res, status);
 				ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
 					const err = ses.getError(r.response, undefined, origin);
@@ -2352,7 +2386,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	get = (rowId: string, opts?: any): Promise<any> => {
+	public get = (rowId: string, opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.get';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2369,8 +2403,8 @@ class BusinessObject {
 				p += '&_md=true';
 			if (opts.social)
 				p += '&_social=true';
-			ses.req(this.path + '&action=get&' + this.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, (res: any, status: number) => {
-				const r: any = ses.parse(res, status);
+			ses.sendRequest(this.path + '&action=get&' + this.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, (res: any, status: number) => {
+				const r: any = ses.parseResponse(res, status);
 				ses.debug('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
 					const err = ses.getError(r.response, undefined, origin);
@@ -2399,7 +2433,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
 	 * @function
 	 */
-	getForCreate = (opts?: any): Promise<any> => {
+	public getForCreate = (opts?: any): Promise<any> => {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
@@ -2416,7 +2450,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the record to update (also available as the <code>item</code> member)
 	 * @function
 	 */
-	getForUpdate = (rowId: string, opts?: any): Promise<any> => {
+	public getForUpdate = (rowId: string, opts?: any): Promise<any> => {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
@@ -2433,7 +2467,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
 	 * @function
 	 */
-	getForCopy = (rowId: string, opts?: any): Promise<any> => {
+	public getForCopy = (rowId: string, opts?: any): Promise<any> => {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
@@ -2450,7 +2484,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the record to delete (also available as the <code>item</code> member)
 	 * @function
 	 */
-	getForDelete = (rowId: string, opts?: any): Promise<any> => {
+	public getForDelete = (rowId: string, opts?: any): Promise<any> => {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
@@ -2464,7 +2498,7 @@ class BusinessObject {
 	 * @return {string} Item's row ID value
 	 * @function
 	 */
-	getRowId = (item: any): string => {
+	public getRowId = (item: any): string => {
 		item = item || this.item;
 		if (item)
 			return item[this.getRowIdFieldName()];
@@ -2478,14 +2512,14 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	populate = (rowId: string, opts?: any): Promise<any> => {
+	public populate = (rowId: string, opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.populate';
 		const ses: Session = this.session;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			const p: string = this.getReqOptions(opts);
-			ses.req(this.path + '&action=populate&' + this.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, (res: any, status: number) => {
-				const r: any = ses.parse(res, status);
+			ses.sendRequest(this.path + '&action=populate&' + this.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, (res: any, status: number) => {
+				const r: any = ses.parseResponse(res, status);
 				ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
 					const err = ses.getError(r.response, undefined, origin);
@@ -2511,7 +2545,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	getFieldLinkedList = (field: string|any, linkedField: string|any, code?: string|boolean, opts?: any ): Promise<any> => {
+	public getFieldLinkedList = (field: string|any, linkedField: string|any, code?: string|boolean, opts?: any ): Promise<any> => {
 		const origin = 'BusinessObject.create';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2526,8 +2560,8 @@ class BusinessObject {
 				code = undefined;
 			} else if (typeof code === 'undefined')
 				code = this.getFieldValue(field);
-			ses.req(`${this.path}&action=getlinkedlist`, this.getReqParams({ origin: field, input: linkedField, code, all }), (res: any, status: number) => {
-				const r: any = ses.parse(res, status);
+			ses.sendRequest(`${this.path}&action=getlinkedlist`, this.getReqParams({ origin: field, input: linkedField, code, all }), (res: any, status: number) => {
+				const r: any = ses.parseResponse(res, status);
 				ses.debug('['+origin+'] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
 					const err = ses.getError(r.response, undefined, origin);
@@ -2551,7 +2585,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the saved record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	save = (item: any, opts?: any): Promise<any> => {
+	public save = (item: any, opts?: any): Promise<any> => {
 		if (item)
 			this.item = item;
 		const rowId: string = this.item[this.metadata.rowidfield];
@@ -2569,7 +2603,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the created record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	create = (item: any, opts?: any): Promise<any> => {
+	public create = (item: any, opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.create';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2578,8 +2612,8 @@ class BusinessObject {
 				this.item = item;
 			this.item.row_id = constants.DEFAULT_ROW_ID;
 			const p: string = this.getReqOptions(opts);
-			ses.req(`${this.path}&action=create${p}`, this.getReqParams(this.item), (res: any, status: number) => {
-				const r: any = ses.parse(res, status);
+			ses.sendRequest(`${this.path}&action=create${p}`, this.getReqParams(this.item), (res: any, status: number) => {
+				const r: any = ses.parseResponse(res, status);
 				ses.debug('['+origin+'] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
 					const err = ses.getError(r.response, undefined, origin);
@@ -2603,7 +2637,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the updated record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	update = (item: any, opts?: any): Promise<any> => {
+	public update = (item: any, opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.update';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2611,8 +2645,8 @@ class BusinessObject {
 			if (item)
 				this.item = item;
 			const p: string = this.getReqOptions(opts);
-			ses.req(this.path + '&action=update' + p, this.getReqParams(this.item), (res: any, status: number) => {
-				const r: any = ses.parse(res, status);
+			ses.sendRequest(this.path + '&action=update' + p, this.getReqParams(this.item), (res: any, status: number) => {
+				const r: any = ses.parseResponse(res, status);
 				ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
 					const err = ses.getError(r.response, undefined, origin);
@@ -2636,15 +2670,15 @@ class BusinessObject {
 	 * @return {promise<object>} Promise (the <code>item</code> member is emptied)
 	 * @function
 	 */
-	del = (item: any, opts?: any): Promise<any> => {
+	public del = (item: any, opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.del';
 		const ses: Session = this.session;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			if (item)
 				this.item = item;
-			ses.req(this.path + '&action=delete&' + this.metadata.rowidfield + '=' + encodeURIComponent(this.item[this.metadata.rowidfield]), undefined, (res: any, status: number) => {
-				const r = ses.parse(res, status);
+			ses.sendRequest(this.path + '&action=delete&' + this.metadata.rowidfield + '=' + encodeURIComponent(this.item[this.metadata.rowidfield]), undefined, (res: any, status: number) => {
+				const r = ses.parseResponse(res, status);
 				ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
 					const err = ses.getError(r.response, undefined, origin);
@@ -2671,13 +2705,13 @@ class BusinessObject {
 	 * @return {promise<string|object>} A promise to the action result
 	 * @function
 	 */
-	action = (action: string, rowId?: string, opts?: any): Promise<string|any> => {
+	public action = (action: string, rowId?: string, opts?: any): Promise<string|any> => {
 		const origin = `BusinessObject.action(${action})`;
 		const ses: Session = this.session;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
-			ses.req(this.path + '&action=' + encodeURIComponent(action) + (rowId ? '&' + this.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : ''), this.getReqParams(opts.parameters), (res: any, status: number) => {
-				const r: any = ses.parse(res, status);
+			ses.sendRequest(this.path + '&action=' + encodeURIComponent(action) + (rowId ? '&' + this.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : ''), this.getReqParams(opts.parameters), (res: any, status: number) => {
+				const r: any = ses.parseResponse(res, status);
 				ses.debug('['+origin+'] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
 					const err = ses.getError(r.response, undefined, origin);
@@ -2702,15 +2736,15 @@ class BusinessObject {
 	 * @return {promise<object>} A promise to the pivot table data (also avialable as the <code>crosstabdata</code> member)
 	 * @function
 	 */
-	crosstab = (ctb: string, opts?: any): Promise<any> => {
+	public crosstab = (ctb: string, opts?: any): Promise<any> => {
 		const origin = `BusinessObject.crosstab(${ctb})`;
 		const ses: Session = this.session;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			if (opts.filters)
 				this.filters = opts.filters;
-			ses.req(this.path + '&action=crosstab&crosstab=' + encodeURIComponent(ctb), this.getReqParams(this.filters, true), (res: any, status: number) => {
-				const r: any = ses.parse(res, status);
+			ses.sendRequest(this.path + '&action=crosstab&crosstab=' + encodeURIComponent(ctb), this.getReqParams(this.filters, true), (res: any, status: number) => {
+				const r: any = ses.parseResponse(res, status);
 				ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
 					const err = ses.getError(r.response, undefined, origin);
@@ -2734,7 +2768,7 @@ class BusinessObject {
 	 * @return {promise<Doc>} A promise to the document of the publication
 	 * @function
 	 */
-	print = (prt: string, rowId?: string, opts?: any): Promise<any> => {
+	public print = (prt: string, rowId?: string, opts?: any): Promise<any> => {
 		const origin = `BusinessObject.print(${prt})`;
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2746,8 +2780,8 @@ class BusinessObject {
 				p += '&all=' + !!opts.all;
 			if (opts.mailing)
 				p += '&mailing=' + !!opts.mailing;
-			ses.req(this.path + '&action=print&printtemplate=' + encodeURIComponent(prt) + (rowId ? '&' + this.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : '') + p, undefined, (res: any, status: number) => {
-				const r: any = ses.parse(res, status);
+			ses.sendRequest(this.path + '&action=print&printtemplate=' + encodeURIComponent(prt) + (rowId ? '&' + this.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : '') + p, undefined, (res: any, status: number) => {
+				const r: any = ses.parseResponse(res, status);
 				ses.debug('['+origin+'] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
 					const err = ses.getError(r.response, undefined, origin);
@@ -2771,7 +2805,7 @@ class BusinessObject {
 	 * @return {promise<any>} A promise to the place map data
 	 * @function
 	 */
-	placemap = (pcm: string, filters?: any, opts?: any): Promise<any> => {
+	public placemap = (pcm: string, filters?: any, opts?: any): Promise<any> => {
 		const origin = `BusinessObject.placemap(${pcm})`;
 		const ses: Session = this.session;
 		this.filters = filters || {};
@@ -2779,8 +2813,8 @@ class BusinessObject {
 		return new Promise((resolve, reject) => {
 			if (opts.filters)
 				this.filters = opts.filters;
-			ses.req(this.path + '&action=placemap&placemap=' + encodeURIComponent(pcm), this.getReqParams(this.filters, true), (res: any, status: number) => {
-				const r: any = ses.parse(res, status);
+			ses.sendRequest(this.path + '&action=placemap&placemap=' + encodeURIComponent(pcm), this.getReqParams(this.filters, true), (res: any, status: number) => {
+				const r: any = ses.parseResponse(res, status);
 				ses.debug('['+origin+'] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
 					const err = ses.getError(r.response, undefined, origin);
@@ -2804,15 +2838,15 @@ class BusinessObject {
 	 * @return {promise<object>} Promise
 	 * @function
 	 */
-	setParameter = (param: string, value: string, opts?: any): Promise<any> => {
+	public setParameter = (param: string, value: string, opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.setParameter';
 		const ses: Session = this.session;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			const p: any = { name: param };
 			if (value) p.value = value;
-			ses.req(this.path + '&action=setparameter', this.getReqParams(p), (res: any, status: number) => {
-				const r: any = ses.parse(res, status);
+			ses.sendRequest(this.path + '&action=setparameter', this.getReqParams(p), (res: any, status: number) => {
+				const r: any = ses.parseResponse(res, status);
 				ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
 					const err = ses.getError(r.response, undefined, origin);
@@ -2836,14 +2870,14 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the parameter value
 	 * @function
 	 */
-	getParameter = (param: string, opts?: any): Promise<any> => {
+	public getParameter = (param: string, opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.getParameter';
 		const ses: Session = this.session;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			const p: any = { name: param };
-			ses.req(this.path + '&action=getparameter', this.getReqParams(p), (res: any, status: number) => {
-				const r: any = ses.parse(res, status);
+			ses.sendRequest(this.path + '&action=getparameter', this.getReqParams(p), (res: any, status: number) => {
+				const r: any = ses.parseResponse(res, status);
 				ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
 					const err = ses.getError(r.response, undefined, origin);
@@ -2866,7 +2900,7 @@ class BusinessObject {
 	 * @return {string} Object resource URL
 	 * @function
 	 */
-	getResourceURL = (code: string, type?: string): string => {
+	public getResourceURL = (code: string, type?: string): string => {
 		return this.session.getResourceURL(code, type, this.metadata.name, this.metadata.id);
 	};
 }
@@ -2890,7 +2924,7 @@ class ExternalObjectMetadata {
 	 * Name
 	 * @member {string}
 	 */
-	name: string;
+	public name: string;
 }
 
 /**
@@ -2917,27 +2951,27 @@ class ExternalObject {
 	 * @member {Session}
 	 * @private
 	 */
-	session: Session;
+	private session: Session;
 
 	/**
 	 * Metadata
 	 * @member {ExternalObjectMetadata}
 	 */
-	metadata: ExternalObjectMetadata;
+	public metadata: ExternalObjectMetadata;
 
 	/**
 	 * Path
 	 * @member {string}
-	 * @parivate
+	 * @private
 	 */
-	path: string;
+	private path: string;
 
 	/**
 	 * Get name
 	 * @return {string} Name
 	 * @function
 	 */
-	getName = (): string => {
+	public getName = (): string => {
 		return this.metadata.name;
 	};
 
@@ -2947,7 +2981,7 @@ class ExternalObject {
 	 * @return {string} URL-encoded parameters
 	 * @function
 	 */
-	callParams = (params: any): string => {
+	public callParams = (params: any): string => {
 		let p = '';
 		if (!params) return p;
 		for (const i of Object.entries(params)) {
@@ -2974,7 +3008,7 @@ class ExternalObject {
 	 * @return {promise<object>} Promise to the external object content
 	 * @function
 	 */
-	call = (params?: any, data?: any, opts?: any) => {
+	public call = (params?: any, data?: any, opts?: any) => {
 		const origin = 'ExternalObject.call';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -3043,7 +3077,7 @@ class ExternalObject {
 	 * Alias to <code>call</code>
 	 * @function
 	 */
-	invoke = this.call;
+	public invoke = this.call;
 }
 
 export default {

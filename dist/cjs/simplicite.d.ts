@@ -1,11 +1,9 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.18
+ * @version 2.2.19
  * @license Apache-2.0
  */
-/// <reference types="node" />
-import { Buffer } from 'buffer';
 /**
  * Session parameters endpoints
  */
@@ -566,6 +564,11 @@ declare class Session {
      */
     authtoken: string;
     /**
+     * Auth token expiry date
+     * @member {Date}
+     */
+    authtokenexpiry: Date;
+    /**
      * Session ID
      * @member {string}
      */
@@ -577,17 +580,29 @@ declare class Session {
      */
     setAuthToken: (token: string) => void;
     /**
+     * Set auth token expiry date
+     * @param {Date} expiry Auth token expiry
+     * @function
+     */
+    setAuthTokenExpiryDate: (expiry: Date) => void;
+    /**
+     * Set auth token expiry date
+     * @param {Date} expiry Auth token expiry
+     * @function
+     */
+    isAuthTokenExpired: () => boolean;
+    /**
      * Business objects cache
      * @member {object}
      * @private
      */
-    businessObjectCache: Map<string, BusinessObject>;
+    private businessObjectCache;
     /**
      * Get business object cache key
      * @param {string} name Business object name
      * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
      * @return {object} Business object cache key
-     * @private
+     * @function
      */
     getBusinessObjectCacheKey: (name: string, instance?: string) => any;
     /**
@@ -598,13 +613,13 @@ declare class Session {
     /**
      * Basic HTTP authorization header value
      * @return {string} HTTP authorization header value
-     * @private
+     * @function
      */
     getBasicAuthHeader: () => string;
     /**
      * Get bearer token header value
      * @return {string} Bearer token header value
-     * @private
+     * @function
      */
     getBearerTokenHeader: () => string;
     /**
@@ -614,26 +629,26 @@ declare class Session {
      * @param {number} [status] Optional error status (defaults to 200)
      * @param {string} [origin] Optional error origin
      * @return {object} Error object
-     * @private
+     * @function
      */
     getError: (err: string | any, status?: number, origin?: string) => any;
     /**
-     * Request
+     * Send request
      * @param {string} path Path
      * @param {object} [data] Data
      * @param {function} [callback] Callback
      * @param {function} [errorHandler] Error handler
-     * @private
+     * @function
      */
-    req: (path: string, data?: any, callback?: (testData: string, status: number, headers: any) => void, errorHandler?: (err: any) => void) => void;
+    sendRequest: (path: string, data?: any, callback?: (testData: string, status: number, headers: any) => void, errorHandler?: (err: any) => void) => void;
     /**
-     * Parse result
+     * Parse response
      * @param {object} res Response to parse
      * @param {number} [status=200] HTTP status
      * @return {object} Error object
-     * @private
+     * @function
      */
-    parse: (res: any, status?: number) => any;
+    parseResponse: (res: any, status?: number) => any;
     /**
      * Get health check (no need to be authenticated)
      * @param {object} [opts] Options
@@ -884,7 +899,7 @@ declare class Doc {
      * @return {buffer} Content data as buffer
      * @private
      */
-    getBuffer(data: any): Buffer;
+    private getBuffer;
     /**
      * Get the document content as an array buffer
      * @return {ArrayBuffer} Content as an array buffer
@@ -1131,7 +1146,7 @@ declare class BusinessObject {
      * @member {Session}
      * @private
      */
-    session: Session;
+    private session;
     /**
      * Object metadata
      * @member {BusinessObjectMetadata}
@@ -1142,13 +1157,13 @@ declare class BusinessObject {
      * @constant {string}
      * @private
      */
-    cacheKey: string;
+    private cacheKey;
     /**
      * Path
      * @constant {string}
      * @private
      */
-    path: string;
+    private path;
     /**
      * Current item
      * @member {object}
@@ -1350,14 +1365,14 @@ declare class BusinessObject {
      * @return {string} Option parameters
      * @private
      */
-    getReqOptions: (options: any) => string;
+    private getReqOptions;
     /**
      * Convert usual wildcards to filters wildcards
      * @param {object} filter Filter
      * @return {string} Filter with wildcards converted
      * @private
      */
-    convertFilterWildCards: (filter: any) => any;
+    private convertFilterWildCards;
     /**
      * Build request parameters
      * @param {object} data Data
@@ -1365,7 +1380,7 @@ declare class BusinessObject {
      * @return {string} Request parameters
      * @private
      */
-    getReqParams: (data: any, filters?: boolean) => string;
+    private getReqParams;
     /**
      * Get count
      * @param {object} [filters] Filters, defaults to current filters if not set
@@ -1606,7 +1621,7 @@ declare class ExternalObject {
      * @member {Session}
      * @private
      */
-    session: Session;
+    private session;
     /**
      * Metadata
      * @member {ExternalObjectMetadata}
@@ -1615,9 +1630,9 @@ declare class ExternalObject {
     /**
      * Path
      * @member {string}
-     * @parivate
+     * @private
      */
-    path: string;
+    private path;
     /**
      * Get name
      * @return {string} Name

@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.18
+ * @version 2.2.19
  * @license Apache-2.0
  */
 import fetch from 'node-fetch'; // Node.js polyfill for fetch
@@ -15,7 +15,7 @@ const constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '2.2.18',
+    MODULE_VERSION: '2.2.19',
     /**
      * Default row ID field name
      * @constant {string}
@@ -413,11 +413,27 @@ class Session {
             this.authtoken = token;
         };
         /**
+         * Set auth token expiry date
+         * @param {Date} expiry Auth token expiry
+         * @function
+         */
+        this.setAuthTokenExpiryDate = (expiry) => {
+            this.authtokenexpiry = expiry;
+        };
+        /**
+         * Set auth token expiry date
+         * @param {Date} expiry Auth token expiry
+         * @function
+         */
+        this.isAuthTokenExpired = () => {
+            return new Date() > this.authtokenexpiry;
+        };
+        /**
          * Get business object cache key
          * @param {string} name Business object name
          * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
          * @return {object} Business object cache key
-         * @private
+         * @function
          */
         this.getBusinessObjectCacheKey = (name, instance) => {
             return name + ':' + (instance || 'js_' + name);
@@ -430,6 +446,7 @@ class Session {
             this.username = undefined;
             this.password = undefined;
             this.authtoken = undefined;
+            this.authtokenexpiry = undefined;
             this.sessionid = undefined;
             this.grant = undefined;
             this.appinfo = undefined;
@@ -440,7 +457,7 @@ class Session {
         /**
          * Basic HTTP authorization header value
          * @return {string} HTTP authorization header value
-         * @private
+         * @function
          */
         this.getBasicAuthHeader = () => {
             return this.username && this.password
@@ -450,7 +467,7 @@ class Session {
         /**
          * Get bearer token header value
          * @return {string} Bearer token header value
-         * @private
+         * @function
          */
         this.getBearerTokenHeader = () => {
             return this.authtoken
@@ -464,7 +481,7 @@ class Session {
          * @param {number} [status] Optional error status (defaults to 200)
          * @param {string} [origin] Optional error origin
          * @return {object} Error object
-         * @private
+         * @function
          */
         this.getError = (err, status, origin) => {
             if (typeof err === 'string') { // plain text error
@@ -493,14 +510,14 @@ class Session {
             }
         };
         /**
-         * Request
+         * Send request
          * @param {string} path Path
          * @param {object} [data] Data
          * @param {function} [callback] Callback
          * @param {function} [errorHandler] Error handler
-         * @private
+         * @function
          */
-        this.req = (path, data, callback, errorHandler) => {
+        this.sendRequest = (path, data, callback, errorHandler) => {
             const origin = 'Session.req';
             const m = data ? 'POST' : 'GET';
             const h = {};
@@ -541,13 +558,13 @@ class Session {
             });
         };
         /**
-         * Parse result
+         * Parse response
          * @param {object} res Response to parse
          * @param {number} [status=200] HTTP status
          * @return {object} Error object
-         * @private
+         * @function
          */
-        this.parse = (res, status) => {
+        this.parseResponse = (res, status) => {
             try {
                 if (status !== 200)
                     return { type: 'error', response: this.getError('HTTP status: ' + status, status) };
@@ -569,8 +586,8 @@ class Session {
             const origin = 'Session.getHealth';
             opts = opts || {};
             return new Promise((resolve, reject) => {
-                this.req(`${this.parameters.healthpath}&full=${!!opts.full}`, undefined, (res, status) => {
-                    const r = this.parse(res, status);
+                this.sendRequest(`${this.parameters.healthpath}&full=${!!opts.full}`, undefined, (res, status) => {
+                    const r = this.parseResponse(res, status);
                     this.debug(`[${origin}] HTTP status = ${status}, response type = ${res}`);
                     if (r.type === 'error') {
                         const err = this.getError(r.response, undefined, origin);
@@ -610,8 +627,8 @@ class Session {
                     this.clear();
                     this.authtoken = opts.authtoken || opts.authToken || opts.token;
                 }
-                this.req(this.parameters.loginpath, undefined, (res, status) => {
-                    const r = this.parse(res, status);
+                this.sendRequest(this.parameters.loginpath, undefined, (res, status) => {
+                    const r = this.parseResponse(res, status);
                     this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type || (r.error ? 'error' : 'login')}`);
                     if (r.type === 'error' || r.error) {
                         const err = this.getError(r.response ? r.response : r, undefined, origin);
@@ -627,6 +644,16 @@ class Session {
                         this.authtoken = r.response ? r.response.authtoken : r.authtoken;
                         if (this.authtoken)
                             this.debug(`[${origin}] Auth token = ${this.authtoken}`);
+                        try {
+                            const exp = new Date();
+                            exp.setTime(r.response ? r.response.authtokenexpiry : r.authtokenexpiry);
+                            this.authtokenexpiry = exp;
+                        }
+                        catch (e) {
+                            // Silent
+                        }
+                        if (this.authtokenexpiry)
+                            this.debug(`[${origin}] Auth token expiry date = ${this.authtokenexpiry}`);
                         // Minimal grant from session data
                         this.grant = new Grant({
                             login: this.username,
@@ -656,8 +683,8 @@ class Session {
             const origin = 'Session.logout';
             opts = opts || {};
             return new Promise((resolve, reject) => {
-                this.req(this.parameters.logoutpath, undefined, (res, status) => {
-                    const r = this.parse(res, status);
+                this.sendRequest(this.parameters.logoutpath, undefined, (res, status) => {
+                    const r = this.parseResponse(res, status);
                     this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type || (r.error ? 'error' : 'logout')}`);
                     if (r.type === 'error') {
                         const err = this.getError(r.response ? r.response : r, undefined, origin);
@@ -697,8 +724,8 @@ class Session {
                 const txt = !!opts.includeTexts || !!opts.texts; // naming flexibility
                 if (txt)
                     p += '&texts=true';
-                this.req(`${this.parameters.apppath}?action=getgrant${p}`, undefined, (res, status) => {
-                    const r = this.parse(res, status);
+                this.sendRequest(`${this.parameters.apppath}?action=getgrant${p}`, undefined, (res, status) => {
+                    const r = this.parseResponse(res, status);
                     this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
                     if (r.type === 'error') {
                         const err = this.getError(r.response, undefined, origin);
@@ -732,8 +759,8 @@ class Session {
             const origin = 'Session.changePassword';
             opts = opts || {};
             return new Promise((resolve, reject) => {
-                this.req(`${this.parameters.apppath}?action=setpassword&password=${encodeURIComponent(pwd)}`, undefined, (res, status) => {
-                    const r = this.parse(res, status);
+                this.sendRequest(`${this.parameters.apppath}?action=setpassword&password=${encodeURIComponent(pwd)}`, undefined, (res, status) => {
+                    const r = this.parseResponse(res, status);
                     this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
                     if (r.type === 'error') {
                         const err = this.getError(r.response, undefined, origin);
@@ -761,8 +788,8 @@ class Session {
             const origin = 'Session.getAppInfo';
             opts = opts || {};
             return new Promise((resolve, reject) => {
-                this.req(`${this.parameters.apppath}?action=getinfo`, undefined, (res, status) => {
-                    const r = this.parse(res, status);
+                this.sendRequest(`${this.parameters.apppath}?action=getinfo`, undefined, (res, status) => {
+                    const r = this.parseResponse(res, status);
                     this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
                     if (r.type === 'error') {
                         const err = this.getError(r.response, undefined, origin);
@@ -791,8 +818,8 @@ class Session {
             const origin = 'Session.getSysInfo';
             opts = opts || {};
             return new Promise((resolve, reject) => {
-                this.req(`${this.parameters.apppath}?action=sysinfo`, undefined, (res, status) => {
-                    const r = this.parse(res, status);
+                this.sendRequest(`${this.parameters.apppath}?action=sysinfo`, undefined, (res, status) => {
+                    const r = this.parseResponse(res, status);
                     this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
                     if (r.type === 'error') {
                         const err = this.getError(r.response, undefined, origin);
@@ -825,8 +852,8 @@ class Session {
                 let p = '';
                 if (module)
                     p += '&module=' + encodeURIComponent(module);
-                this.req(`${this.parameters.apppath}?action=devinfo${p}`, undefined, (res, status) => {
-                    const r = this.parse(res, status);
+                this.sendRequest(`${this.parameters.apppath}?action=devinfo${p}`, undefined, (res, status) => {
+                    const r = this.parseResponse(res, status);
                     this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
                     if (r.type === 'error') {
                         const err = this.getError(r.response, undefined, origin);
@@ -861,8 +888,8 @@ class Session {
                 const img = !!opts.inlineImages || !!opts.images; // naming flexibility
                 if (img)
                     p += '&inline_images=true';
-                this.req(`${this.parameters.apppath}?action=news${p}`, undefined, (res, status) => {
-                    const r = this.parse(res, status);
+                this.sendRequest(`${this.parameters.apppath}?action=news${p}`, undefined, (res, status) => {
+                    const r = this.parseResponse(res, status);
                     this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
                     if (r.type === 'error') {
                         const err = this.getError(r.response, undefined, origin);
@@ -902,8 +929,8 @@ class Session {
                     p += '&_md=true';
                 if (opts.context)
                     p += '&context=' + encodeURIComponent(opts.context);
-                this.req(`${this.parameters.apppath}?action=indexsearch&request=${encodeURIComponent(query ? query : '')}${object ? '&object=' + encodeURIComponent(object) : ''}${p}`, undefined, (res, status) => {
-                    const r = this.parse(res, status);
+                this.sendRequest(`${this.parameters.apppath}?action=indexsearch&request=${encodeURIComponent(query ? query : '')}${object ? '&object=' + encodeURIComponent(object) : ''}${p}`, undefined, (res, status) => {
+                    const r = this.parseResponse(res, status);
                     this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
                     if (r.type === 'error') {
                         const err = this.getError(r.response, undefined, origin);
@@ -1383,8 +1410,8 @@ class BusinessObject {
                     p += '&context=' + encodeURIComponent(opts.context);
                 if (opts.contextParam)
                     p += '&contextparam=' + encodeURIComponent(opts.contextParam);
-                ses.req(this.path + '&action=metadata' + p, undefined, (res, status) => {
-                    const r = ses.parse(res, status);
+                ses.sendRequest(this.path + '&action=metadata' + p, undefined, (res, status) => {
+                    const r = ses.parseResponse(res, status);
                     ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
                     if (r.type === 'error') {
                         const err = ses.getError(r.response, undefined, origin);
@@ -1662,8 +1689,8 @@ class BusinessObject {
                     p += '&context=' + encodeURIComponent(opts.context);
                 if (opts.reset)
                     p += '&reset=' + !!opts.reset;
-                ses.req(this.path + '&action=filters' + p, undefined, (res, status) => {
-                    const r = ses.parse(res, status);
+                ses.sendRequest(this.path + '&action=filters' + p, undefined, (res, status) => {
+                    const r = ses.parseResponse(res, status);
                     ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
                     if (r.type === 'error') {
                         const err = ses.getError(r.response, undefined, origin);
@@ -1757,8 +1784,8 @@ class BusinessObject {
             opts = opts || {};
             return new Promise((resolve, reject) => {
                 this.filters = filters || {};
-                ses.req(`${this.path}&action=count`, this.getReqParams(this.filters, true), (res, status) => {
-                    const r = ses.parse(res, status);
+                ses.sendRequest(`${this.path}&action=count`, this.getReqParams(this.filters, true), (res, status) => {
+                    const r = ses.parseResponse(res, status);
                     ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                     if (r.type === 'error') {
                         const err = ses.getError(r.response, undefined, origin);
@@ -1803,8 +1830,8 @@ class BusinessObject {
                 if (opts.visible === true)
                     p += '&_visible=true';
                 this.filters = filters || {};
-                ses.req(this.path + '&action=search' + p, this.getReqParams(this.filters, true), (res, status) => {
-                    const r = ses.parse(res, status);
+                ses.sendRequest(this.path + '&action=search' + p, this.getReqParams(this.filters, true), (res, status) => {
+                    const r = ses.parseResponse(res, status);
                     ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
                     if (r.type === 'error') {
                         const err = ses.getError(r.response, undefined, origin);
@@ -1855,8 +1882,8 @@ class BusinessObject {
                     p += '&_md=true';
                 if (opts.social)
                     p += '&_social=true';
-                ses.req(this.path + '&action=get&' + this.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, (res, status) => {
-                    const r = ses.parse(res, status);
+                ses.sendRequest(this.path + '&action=get&' + this.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, (res, status) => {
+                    const r = ses.parseResponse(res, status);
                     ses.debug('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response type = ' + r.type);
                     if (r.type === 'error') {
                         const err = ses.getError(r.response, undefined, origin);
@@ -1967,8 +1994,8 @@ class BusinessObject {
             opts = opts || {};
             return new Promise((resolve, reject) => {
                 const p = this.getReqOptions(opts);
-                ses.req(this.path + '&action=populate&' + this.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, (res, status) => {
-                    const r = ses.parse(res, status);
+                ses.sendRequest(this.path + '&action=populate&' + this.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, (res, status) => {
+                    const r = ses.parseResponse(res, status);
                     ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
                     if (r.type === 'error') {
                         const err = ses.getError(r.response, undefined, origin);
@@ -2012,8 +2039,8 @@ class BusinessObject {
                 }
                 else if (typeof code === 'undefined')
                     code = this.getFieldValue(field);
-                ses.req(`${this.path}&action=getlinkedlist`, this.getReqParams({ origin: field, input: linkedField, code, all }), (res, status) => {
-                    const r = ses.parse(res, status);
+                ses.sendRequest(`${this.path}&action=getlinkedlist`, this.getReqParams({ origin: field, input: linkedField, code, all }), (res, status) => {
+                    const r = ses.parseResponse(res, status);
                     ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                     if (r.type === 'error') {
                         const err = ses.getError(r.response, undefined, origin);
@@ -2065,8 +2092,8 @@ class BusinessObject {
                     this.item = item;
                 this.item.row_id = constants.DEFAULT_ROW_ID;
                 const p = this.getReqOptions(opts);
-                ses.req(`${this.path}&action=create${p}`, this.getReqParams(this.item), (res, status) => {
-                    const r = ses.parse(res, status);
+                ses.sendRequest(`${this.path}&action=create${p}`, this.getReqParams(this.item), (res, status) => {
+                    const r = ses.parseResponse(res, status);
                     ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                     if (r.type === 'error') {
                         const err = ses.getError(r.response, undefined, origin);
@@ -2100,8 +2127,8 @@ class BusinessObject {
                 if (item)
                     this.item = item;
                 const p = this.getReqOptions(opts);
-                ses.req(this.path + '&action=update' + p, this.getReqParams(this.item), (res, status) => {
-                    const r = ses.parse(res, status);
+                ses.sendRequest(this.path + '&action=update' + p, this.getReqParams(this.item), (res, status) => {
+                    const r = ses.parseResponse(res, status);
                     ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
                     if (r.type === 'error') {
                         const err = ses.getError(r.response, undefined, origin);
@@ -2134,8 +2161,8 @@ class BusinessObject {
             return new Promise((resolve, reject) => {
                 if (item)
                     this.item = item;
-                ses.req(this.path + '&action=delete&' + this.metadata.rowidfield + '=' + encodeURIComponent(this.item[this.metadata.rowidfield]), undefined, (res, status) => {
-                    const r = ses.parse(res, status);
+                ses.sendRequest(this.path + '&action=delete&' + this.metadata.rowidfield + '=' + encodeURIComponent(this.item[this.metadata.rowidfield]), undefined, (res, status) => {
+                    const r = ses.parseResponse(res, status);
                     ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
                     if (r.type === 'error') {
                         const err = ses.getError(r.response, undefined, origin);
@@ -2169,8 +2196,8 @@ class BusinessObject {
             const ses = this.session;
             opts = opts || {};
             return new Promise((resolve, reject) => {
-                ses.req(this.path + '&action=' + encodeURIComponent(action) + (rowId ? '&' + this.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : ''), this.getReqParams(opts.parameters), (res, status) => {
-                    const r = ses.parse(res, status);
+                ses.sendRequest(this.path + '&action=' + encodeURIComponent(action) + (rowId ? '&' + this.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : ''), this.getReqParams(opts.parameters), (res, status) => {
+                    const r = ses.parseResponse(res, status);
                     ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                     if (r.type === 'error') {
                         const err = ses.getError(r.response, undefined, origin);
@@ -2204,8 +2231,8 @@ class BusinessObject {
             return new Promise((resolve, reject) => {
                 if (opts.filters)
                     this.filters = opts.filters;
-                ses.req(this.path + '&action=crosstab&crosstab=' + encodeURIComponent(ctb), this.getReqParams(this.filters, true), (res, status) => {
-                    const r = ses.parse(res, status);
+                ses.sendRequest(this.path + '&action=crosstab&crosstab=' + encodeURIComponent(ctb), this.getReqParams(this.filters, true), (res, status) => {
+                    const r = ses.parseResponse(res, status);
                     ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
                     if (r.type === 'error') {
                         const err = ses.getError(r.response, undefined, origin);
@@ -2243,8 +2270,8 @@ class BusinessObject {
                     p += '&all=' + !!opts.all;
                 if (opts.mailing)
                     p += '&mailing=' + !!opts.mailing;
-                ses.req(this.path + '&action=print&printtemplate=' + encodeURIComponent(prt) + (rowId ? '&' + this.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : '') + p, undefined, (res, status) => {
-                    const r = ses.parse(res, status);
+                ses.sendRequest(this.path + '&action=print&printtemplate=' + encodeURIComponent(prt) + (rowId ? '&' + this.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : '') + p, undefined, (res, status) => {
+                    const r = ses.parseResponse(res, status);
                     ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                     if (r.type === 'error') {
                         const err = ses.getError(r.response, undefined, origin);
@@ -2278,8 +2305,8 @@ class BusinessObject {
             return new Promise((resolve, reject) => {
                 if (opts.filters)
                     this.filters = opts.filters;
-                ses.req(this.path + '&action=placemap&placemap=' + encodeURIComponent(pcm), this.getReqParams(this.filters, true), (res, status) => {
-                    const r = ses.parse(res, status);
+                ses.sendRequest(this.path + '&action=placemap&placemap=' + encodeURIComponent(pcm), this.getReqParams(this.filters, true), (res, status) => {
+                    const r = ses.parseResponse(res, status);
                     ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                     if (r.type === 'error') {
                         const err = ses.getError(r.response, undefined, origin);
@@ -2313,8 +2340,8 @@ class BusinessObject {
                 const p = { name: param };
                 if (value)
                     p.value = value;
-                ses.req(this.path + '&action=setparameter', this.getReqParams(p), (res, status) => {
-                    const r = ses.parse(res, status);
+                ses.sendRequest(this.path + '&action=setparameter', this.getReqParams(p), (res, status) => {
+                    const r = ses.parseResponse(res, status);
                     ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
                     if (r.type === 'error') {
                         const err = ses.getError(r.response, undefined, origin);
@@ -2346,8 +2373,8 @@ class BusinessObject {
             opts = opts || {};
             return new Promise((resolve, reject) => {
                 const p = { name: param };
-                ses.req(this.path + '&action=getparameter', this.getReqParams(p), (res, status) => {
-                    const r = ses.parse(res, status);
+                ses.sendRequest(this.path + '&action=getparameter', this.getReqParams(p), (res, status) => {
+                    const r = ses.parseResponse(res, status);
                     ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
                     if (r.type === 'error') {
                         const err = ses.getError(r.response, undefined, origin);

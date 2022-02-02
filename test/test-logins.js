@@ -19,8 +19,9 @@ app.setUsername(adminUsername);
 app.setPassword(adminPassword);
 app.login().then(user => {
 	app.debug(user);
-	app.info('Logged in as ' + user.login + ' with authentication token ' + user.authtoken);
+	app.info(`Logged in as ${user.login} with authentication token ${user.authtoken}`);
 	assert.ok(user.login === adminUsername);
+	assert.ok(app.isAuthTokenExpired() === false);
 	return app.getGrant({ inlinePicture: true, includeTexts: true });
 }).then(grant => {
 	app.debug(grant);
@@ -33,10 +34,12 @@ app.login().then(user => {
 	assert.ok(logout);
 	app.info('Logged out');
 	return app.login({ username: testUsername, password: testPassword });
-}).then(res => {
-	app.debug(res);
-	assert.ok(res.login = testUsername);
-	app.info('Logged in as ' + res.login);
+}).then(user => {
+	app.debug(user);
+	assert.ok(user.login = testUsername);
+	app.info(`Logged in as ${user.login} with authentication token ${user.authtoken}`);
+	assert.ok(user.login === testUsername);
+	assert.ok(app.isAuthTokenExpired() === false);
 	return app.getGrant({ inlinePicture: false });
 }).then(grant => {
 	app.debug(grant);

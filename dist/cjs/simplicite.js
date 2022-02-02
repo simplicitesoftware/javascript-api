@@ -2,7 +2,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.18
+ * @version 2.2.19
  * @license Apache-2.0
  */
 var __importDefault = (this && this.__importDefault) || function (mod) {
@@ -20,7 +20,7 @@ var constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '2.2.18',
+    MODULE_VERSION: '2.2.19',
     /**
      * Default row ID field name
      * @constant {string}
@@ -419,11 +419,27 @@ var Session = /** @class */ (function () {
             _this.authtoken = token;
         };
         /**
+         * Set auth token expiry date
+         * @param {Date} expiry Auth token expiry
+         * @function
+         */
+        this.setAuthTokenExpiryDate = function (expiry) {
+            _this.authtokenexpiry = expiry;
+        };
+        /**
+         * Set auth token expiry date
+         * @param {Date} expiry Auth token expiry
+         * @function
+         */
+        this.isAuthTokenExpired = function () {
+            return new Date() > _this.authtokenexpiry;
+        };
+        /**
          * Get business object cache key
          * @param {string} name Business object name
          * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
          * @return {object} Business object cache key
-         * @private
+         * @function
          */
         this.getBusinessObjectCacheKey = function (name, instance) {
             return name + ':' + (instance || 'js_' + name);
@@ -436,6 +452,7 @@ var Session = /** @class */ (function () {
             _this.username = undefined;
             _this.password = undefined;
             _this.authtoken = undefined;
+            _this.authtokenexpiry = undefined;
             _this.sessionid = undefined;
             _this.grant = undefined;
             _this.appinfo = undefined;
@@ -446,7 +463,7 @@ var Session = /** @class */ (function () {
         /**
          * Basic HTTP authorization header value
          * @return {string} HTTP authorization header value
-         * @private
+         * @function
          */
         this.getBasicAuthHeader = function () {
             return _this.username && _this.password
@@ -456,7 +473,7 @@ var Session = /** @class */ (function () {
         /**
          * Get bearer token header value
          * @return {string} Bearer token header value
-         * @private
+         * @function
          */
         this.getBearerTokenHeader = function () {
             return _this.authtoken
@@ -470,7 +487,7 @@ var Session = /** @class */ (function () {
          * @param {number} [status] Optional error status (defaults to 200)
          * @param {string} [origin] Optional error origin
          * @return {object} Error object
-         * @private
+         * @function
          */
         this.getError = function (err, status, origin) {
             if (typeof err === 'string') { // plain text error
@@ -499,14 +516,14 @@ var Session = /** @class */ (function () {
             }
         };
         /**
-         * Request
+         * Send request
          * @param {string} path Path
          * @param {object} [data] Data
          * @param {function} [callback] Callback
          * @param {function} [errorHandler] Error handler
-         * @private
+         * @function
          */
-        this.req = function (path, data, callback, errorHandler) {
+        this.sendRequest = function (path, data, callback, errorHandler) {
             var origin = 'Session.req';
             var m = data ? 'POST' : 'GET';
             var h = {};
@@ -547,13 +564,13 @@ var Session = /** @class */ (function () {
             });
         };
         /**
-         * Parse result
+         * Parse response
          * @param {object} res Response to parse
          * @param {number} [status=200] HTTP status
          * @return {object} Error object
-         * @private
+         * @function
          */
-        this.parse = function (res, status) {
+        this.parseResponse = function (res, status) {
             try {
                 if (status !== 200)
                     return { type: 'error', response: _this.getError('HTTP status: ' + status, status) };
@@ -575,8 +592,8 @@ var Session = /** @class */ (function () {
             var origin = 'Session.getHealth';
             opts = opts || {};
             return new Promise(function (resolve, reject) {
-                _this.req("".concat(_this.parameters.healthpath, "&full=").concat(!!opts.full), undefined, function (res, status) {
-                    var r = _this.parse(res, status);
+                _this.sendRequest("".concat(_this.parameters.healthpath, "&full=").concat(!!opts.full), undefined, function (res, status) {
+                    var r = _this.parseResponse(res, status);
                     _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(res));
                     if (r.type === 'error') {
                         var err = _this.getError(r.response, undefined, origin);
@@ -616,8 +633,8 @@ var Session = /** @class */ (function () {
                     _this.clear();
                     _this.authtoken = opts.authtoken || opts.authToken || opts.token;
                 }
-                _this.req(_this.parameters.loginpath, undefined, function (res, status) {
-                    var r = _this.parse(res, status);
+                _this.sendRequest(_this.parameters.loginpath, undefined, function (res, status) {
+                    var r = _this.parseResponse(res, status);
                     _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type || (r.error ? 'error' : 'login')));
                     if (r.type === 'error' || r.error) {
                         var err = _this.getError(r.response ? r.response : r, undefined, origin);
@@ -633,6 +650,16 @@ var Session = /** @class */ (function () {
                         _this.authtoken = r.response ? r.response.authtoken : r.authtoken;
                         if (_this.authtoken)
                             _this.debug("[".concat(origin, "] Auth token = ").concat(_this.authtoken));
+                        try {
+                            var exp = new Date();
+                            exp.setTime(r.response ? r.response.authtokenexpiry : r.authtokenexpiry);
+                            _this.authtokenexpiry = exp;
+                        }
+                        catch (e) {
+                            // Silent
+                        }
+                        if (_this.authtokenexpiry)
+                            _this.debug("[".concat(origin, "] Auth token expiry date = ").concat(_this.authtokenexpiry));
                         // Minimal grant from session data
                         _this.grant = new Grant({
                             login: _this.username,
@@ -662,8 +689,8 @@ var Session = /** @class */ (function () {
             var origin = 'Session.logout';
             opts = opts || {};
             return new Promise(function (resolve, reject) {
-                _this.req(_this.parameters.logoutpath, undefined, function (res, status) {
-                    var r = _this.parse(res, status);
+                _this.sendRequest(_this.parameters.logoutpath, undefined, function (res, status) {
+                    var r = _this.parseResponse(res, status);
                     _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type || (r.error ? 'error' : 'logout')));
                     if (r.type === 'error') {
                         var err = _this.getError(r.response ? r.response : r, undefined, origin);
@@ -703,8 +730,8 @@ var Session = /** @class */ (function () {
                 var txt = !!opts.includeTexts || !!opts.texts; // naming flexibility
                 if (txt)
                     p += '&texts=true';
-                _this.req("".concat(_this.parameters.apppath, "?action=getgrant").concat(p), undefined, function (res, status) {
-                    var r = _this.parse(res, status);
+                _this.sendRequest("".concat(_this.parameters.apppath, "?action=getgrant").concat(p), undefined, function (res, status) {
+                    var r = _this.parseResponse(res, status);
                     _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                     if (r.type === 'error') {
                         var err = _this.getError(r.response, undefined, origin);
@@ -738,8 +765,8 @@ var Session = /** @class */ (function () {
             var origin = 'Session.changePassword';
             opts = opts || {};
             return new Promise(function (resolve, reject) {
-                _this.req("".concat(_this.parameters.apppath, "?action=setpassword&password=").concat(encodeURIComponent(pwd)), undefined, function (res, status) {
-                    var r = _this.parse(res, status);
+                _this.sendRequest("".concat(_this.parameters.apppath, "?action=setpassword&password=").concat(encodeURIComponent(pwd)), undefined, function (res, status) {
+                    var r = _this.parseResponse(res, status);
                     _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                     if (r.type === 'error') {
                         var err = _this.getError(r.response, undefined, origin);
@@ -767,8 +794,8 @@ var Session = /** @class */ (function () {
             var origin = 'Session.getAppInfo';
             opts = opts || {};
             return new Promise(function (resolve, reject) {
-                _this.req("".concat(_this.parameters.apppath, "?action=getinfo"), undefined, function (res, status) {
-                    var r = _this.parse(res, status);
+                _this.sendRequest("".concat(_this.parameters.apppath, "?action=getinfo"), undefined, function (res, status) {
+                    var r = _this.parseResponse(res, status);
                     _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                     if (r.type === 'error') {
                         var err = _this.getError(r.response, undefined, origin);
@@ -797,8 +824,8 @@ var Session = /** @class */ (function () {
             var origin = 'Session.getSysInfo';
             opts = opts || {};
             return new Promise(function (resolve, reject) {
-                _this.req("".concat(_this.parameters.apppath, "?action=sysinfo"), undefined, function (res, status) {
-                    var r = _this.parse(res, status);
+                _this.sendRequest("".concat(_this.parameters.apppath, "?action=sysinfo"), undefined, function (res, status) {
+                    var r = _this.parseResponse(res, status);
                     _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                     if (r.type === 'error') {
                         var err = _this.getError(r.response, undefined, origin);
@@ -831,8 +858,8 @@ var Session = /** @class */ (function () {
                 var p = '';
                 if (module)
                     p += '&module=' + encodeURIComponent(module);
-                _this.req("".concat(_this.parameters.apppath, "?action=devinfo").concat(p), undefined, function (res, status) {
-                    var r = _this.parse(res, status);
+                _this.sendRequest("".concat(_this.parameters.apppath, "?action=devinfo").concat(p), undefined, function (res, status) {
+                    var r = _this.parseResponse(res, status);
                     _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                     if (r.type === 'error') {
                         var err = _this.getError(r.response, undefined, origin);
@@ -867,8 +894,8 @@ var Session = /** @class */ (function () {
                 var img = !!opts.inlineImages || !!opts.images; // naming flexibility
                 if (img)
                     p += '&inline_images=true';
-                _this.req("".concat(_this.parameters.apppath, "?action=news").concat(p), undefined, function (res, status) {
-                    var r = _this.parse(res, status);
+                _this.sendRequest("".concat(_this.parameters.apppath, "?action=news").concat(p), undefined, function (res, status) {
+                    var r = _this.parseResponse(res, status);
                     _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                     if (r.type === 'error') {
                         var err = _this.getError(r.response, undefined, origin);
@@ -910,8 +937,8 @@ var Session = /** @class */ (function () {
                     p += '&_md=true';
                 if (opts.context)
                     p += '&context=' + encodeURIComponent(opts.context);
-                _this.req("".concat(_this.parameters.apppath, "?action=indexsearch&request=").concat(encodeURIComponent(query ? query : '')).concat(object ? '&object=' + encodeURIComponent(object) : '').concat(p), undefined, function (res, status) {
-                    var r = _this.parse(res, status);
+                _this.sendRequest("".concat(_this.parameters.apppath, "?action=indexsearch&request=").concat(encodeURIComponent(query ? query : '')).concat(object ? '&object=' + encodeURIComponent(object) : '').concat(p), undefined, function (res, status) {
+                    var r = _this.parseResponse(res, status);
                     _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                     if (r.type === 'error') {
                         var err = _this.getError(r.response, undefined, origin);
@@ -1418,8 +1445,8 @@ var BusinessObject = /** @class */ (function () {
                     p += '&context=' + encodeURIComponent(opts.context);
                 if (opts.contextParam)
                     p += '&contextparam=' + encodeURIComponent(opts.contextParam);
-                ses.req(_this.path + '&action=metadata' + p, undefined, function (res, status) {
-                    var r = ses.parse(res, status);
+                ses.sendRequest(_this.path + '&action=metadata' + p, undefined, function (res, status) {
+                    var r = ses.parseResponse(res, status);
                     ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                     if (r.type === 'error') {
                         var err = ses.getError(r.response, undefined, origin);
@@ -1698,8 +1725,8 @@ var BusinessObject = /** @class */ (function () {
                     p += '&context=' + encodeURIComponent(opts.context);
                 if (opts.reset)
                     p += '&reset=' + !!opts.reset;
-                ses.req(_this.path + '&action=filters' + p, undefined, function (res, status) {
-                    var r = ses.parse(res, status);
+                ses.sendRequest(_this.path + '&action=filters' + p, undefined, function (res, status) {
+                    var r = ses.parseResponse(res, status);
                     ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                     if (r.type === 'error') {
                         var err = ses.getError(r.response, undefined, origin);
@@ -1796,8 +1823,8 @@ var BusinessObject = /** @class */ (function () {
             opts = opts || {};
             return new Promise(function (resolve, reject) {
                 _this.filters = filters || {};
-                ses.req("".concat(_this.path, "&action=count"), _this.getReqParams(_this.filters, true), function (res, status) {
-                    var r = ses.parse(res, status);
+                ses.sendRequest("".concat(_this.path, "&action=count"), _this.getReqParams(_this.filters, true), function (res, status) {
+                    var r = ses.parseResponse(res, status);
                     ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                     if (r.type === 'error') {
                         var err = ses.getError(r.response, undefined, origin);
@@ -1842,8 +1869,8 @@ var BusinessObject = /** @class */ (function () {
                 if (opts.visible === true)
                     p += '&_visible=true';
                 _this.filters = filters || {};
-                ses.req(_this.path + '&action=search' + p, _this.getReqParams(_this.filters, true), function (res, status) {
-                    var r = ses.parse(res, status);
+                ses.sendRequest(_this.path + '&action=search' + p, _this.getReqParams(_this.filters, true), function (res, status) {
+                    var r = ses.parseResponse(res, status);
                     ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                     if (r.type === 'error') {
                         var err = ses.getError(r.response, undefined, origin);
@@ -1896,8 +1923,8 @@ var BusinessObject = /** @class */ (function () {
                     p += '&_md=true';
                 if (opts.social)
                     p += '&_social=true';
-                ses.req(_this.path + '&action=get&' + _this.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, function (res, status) {
-                    var r = ses.parse(res, status);
+                ses.sendRequest(_this.path + '&action=get&' + _this.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, function (res, status) {
+                    var r = ses.parseResponse(res, status);
                     ses.debug('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response type = ' + r.type);
                     if (r.type === 'error') {
                         var err = ses.getError(r.response, undefined, origin);
@@ -2008,8 +2035,8 @@ var BusinessObject = /** @class */ (function () {
             opts = opts || {};
             return new Promise(function (resolve, reject) {
                 var p = _this.getReqOptions(opts);
-                ses.req(_this.path + '&action=populate&' + _this.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, function (res, status) {
-                    var r = ses.parse(res, status);
+                ses.sendRequest(_this.path + '&action=populate&' + _this.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, function (res, status) {
+                    var r = ses.parseResponse(res, status);
                     ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                     if (r.type === 'error') {
                         var err = ses.getError(r.response, undefined, origin);
@@ -2053,8 +2080,8 @@ var BusinessObject = /** @class */ (function () {
                 }
                 else if (typeof code === 'undefined')
                     code = _this.getFieldValue(field);
-                ses.req("".concat(_this.path, "&action=getlinkedlist"), _this.getReqParams({ origin: field, input: linkedField, code: code, all: all }), function (res, status) {
-                    var r = ses.parse(res, status);
+                ses.sendRequest("".concat(_this.path, "&action=getlinkedlist"), _this.getReqParams({ origin: field, input: linkedField, code: code, all: all }), function (res, status) {
+                    var r = ses.parseResponse(res, status);
                     ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                     if (r.type === 'error') {
                         var err = ses.getError(r.response, undefined, origin);
@@ -2106,8 +2133,8 @@ var BusinessObject = /** @class */ (function () {
                     _this.item = item;
                 _this.item.row_id = constants.DEFAULT_ROW_ID;
                 var p = _this.getReqOptions(opts);
-                ses.req("".concat(_this.path, "&action=create").concat(p), _this.getReqParams(_this.item), function (res, status) {
-                    var r = ses.parse(res, status);
+                ses.sendRequest("".concat(_this.path, "&action=create").concat(p), _this.getReqParams(_this.item), function (res, status) {
+                    var r = ses.parseResponse(res, status);
                     ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                     if (r.type === 'error') {
                         var err = ses.getError(r.response, undefined, origin);
@@ -2141,8 +2168,8 @@ var BusinessObject = /** @class */ (function () {
                 if (item)
                     _this.item = item;
                 var p = _this.getReqOptions(opts);
-                ses.req(_this.path + '&action=update' + p, _this.getReqParams(_this.item), function (res, status) {
-                    var r = ses.parse(res, status);
+                ses.sendRequest(_this.path + '&action=update' + p, _this.getReqParams(_this.item), function (res, status) {
+                    var r = ses.parseResponse(res, status);
                     ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                     if (r.type === 'error') {
                         var err = ses.getError(r.response, undefined, origin);
@@ -2175,8 +2202,8 @@ var BusinessObject = /** @class */ (function () {
             return new Promise(function (resolve, reject) {
                 if (item)
                     _this.item = item;
-                ses.req(_this.path + '&action=delete&' + _this.metadata.rowidfield + '=' + encodeURIComponent(_this.item[_this.metadata.rowidfield]), undefined, function (res, status) {
-                    var r = ses.parse(res, status);
+                ses.sendRequest(_this.path + '&action=delete&' + _this.metadata.rowidfield + '=' + encodeURIComponent(_this.item[_this.metadata.rowidfield]), undefined, function (res, status) {
+                    var r = ses.parseResponse(res, status);
                     ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                     if (r.type === 'error') {
                         var err = ses.getError(r.response, undefined, origin);
@@ -2210,8 +2237,8 @@ var BusinessObject = /** @class */ (function () {
             var ses = _this.session;
             opts = opts || {};
             return new Promise(function (resolve, reject) {
-                ses.req(_this.path + '&action=' + encodeURIComponent(action) + (rowId ? '&' + _this.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : ''), _this.getReqParams(opts.parameters), function (res, status) {
-                    var r = ses.parse(res, status);
+                ses.sendRequest(_this.path + '&action=' + encodeURIComponent(action) + (rowId ? '&' + _this.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : ''), _this.getReqParams(opts.parameters), function (res, status) {
+                    var r = ses.parseResponse(res, status);
                     ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                     if (r.type === 'error') {
                         var err = ses.getError(r.response, undefined, origin);
@@ -2245,8 +2272,8 @@ var BusinessObject = /** @class */ (function () {
             return new Promise(function (resolve, reject) {
                 if (opts.filters)
                     _this.filters = opts.filters;
-                ses.req(_this.path + '&action=crosstab&crosstab=' + encodeURIComponent(ctb), _this.getReqParams(_this.filters, true), function (res, status) {
-                    var r = ses.parse(res, status);
+                ses.sendRequest(_this.path + '&action=crosstab&crosstab=' + encodeURIComponent(ctb), _this.getReqParams(_this.filters, true), function (res, status) {
+                    var r = ses.parseResponse(res, status);
                     ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                     if (r.type === 'error') {
                         var err = ses.getError(r.response, undefined, origin);
@@ -2284,8 +2311,8 @@ var BusinessObject = /** @class */ (function () {
                     p += '&all=' + !!opts.all;
                 if (opts.mailing)
                     p += '&mailing=' + !!opts.mailing;
-                ses.req(_this.path + '&action=print&printtemplate=' + encodeURIComponent(prt) + (rowId ? '&' + _this.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : '') + p, undefined, function (res, status) {
-                    var r = ses.parse(res, status);
+                ses.sendRequest(_this.path + '&action=print&printtemplate=' + encodeURIComponent(prt) + (rowId ? '&' + _this.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : '') + p, undefined, function (res, status) {
+                    var r = ses.parseResponse(res, status);
                     ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                     if (r.type === 'error') {
                         var err = ses.getError(r.response, undefined, origin);
@@ -2319,8 +2346,8 @@ var BusinessObject = /** @class */ (function () {
             return new Promise(function (resolve, reject) {
                 if (opts.filters)
                     _this.filters = opts.filters;
-                ses.req(_this.path + '&action=placemap&placemap=' + encodeURIComponent(pcm), _this.getReqParams(_this.filters, true), function (res, status) {
-                    var r = ses.parse(res, status);
+                ses.sendRequest(_this.path + '&action=placemap&placemap=' + encodeURIComponent(pcm), _this.getReqParams(_this.filters, true), function (res, status) {
+                    var r = ses.parseResponse(res, status);
                     ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                     if (r.type === 'error') {
                         var err = ses.getError(r.response, undefined, origin);
@@ -2354,8 +2381,8 @@ var BusinessObject = /** @class */ (function () {
                 var p = { name: param };
                 if (value)
                     p.value = value;
-                ses.req(_this.path + '&action=setparameter', _this.getReqParams(p), function (res, status) {
-                    var r = ses.parse(res, status);
+                ses.sendRequest(_this.path + '&action=setparameter', _this.getReqParams(p), function (res, status) {
+                    var r = ses.parseResponse(res, status);
                     ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                     if (r.type === 'error') {
                         var err = ses.getError(r.response, undefined, origin);
@@ -2387,8 +2414,8 @@ var BusinessObject = /** @class */ (function () {
             opts = opts || {};
             return new Promise(function (resolve, reject) {
                 var p = { name: param };
-                ses.req(_this.path + '&action=getparameter', _this.getReqParams(p), function (res, status) {
-                    var r = ses.parse(res, status);
+                ses.sendRequest(_this.path + '&action=getparameter', _this.getReqParams(p), function (res, status) {
+                    var r = ses.parseResponse(res, status);
                     ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                     if (r.type === 'error') {
                         var err = ses.getError(r.response, undefined, origin);
