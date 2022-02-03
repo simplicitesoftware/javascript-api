@@ -2,7 +2,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.19
+ * @version 2.2.20
  * @license Apache-2.0
  */
 var __importDefault = (this && this.__importDefault) || function (mod) {
@@ -20,7 +20,7 @@ var constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '2.2.19',
+    MODULE_VERSION: '2.2.20',
     /**
      * Default row ID field name
      * @constant {string}
@@ -427,12 +427,12 @@ var Session = /** @class */ (function () {
             _this.authtokenexpiry = expiry;
         };
         /**
-         * Set auth token expiry date
-         * @param {Date} expiry Auth token expiry
+         * Is the auth token expired?
+         * @return {boolean} true if the auth token is expired
          * @function
          */
         this.isAuthTokenExpired = function () {
-            return new Date() > _this.authtokenexpiry;
+            return _this.authtokenexpiry ? new Date() > _this.authtokenexpiry : false;
         };
         /**
          * Get business object cache key
@@ -656,7 +656,7 @@ var Session = /** @class */ (function () {
                             _this.authtokenexpiry = exp;
                         }
                         catch (e) {
-                            // Silent
+                            _this.authtokenexpiry = undefined;
                         }
                         if (_this.authtokenexpiry)
                             _this.debug("[".concat(origin, "] Auth token expiry date = ").concat(_this.authtokenexpiry));

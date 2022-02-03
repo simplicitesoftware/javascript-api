@@ -581,8 +581,8 @@ declare module "simplicite" {
          */
         setAuthTokenExpiryDate: (expiry: Date) => void;
         /**
-         * Set auth token expiry date
-         * @param {Date} expiry Auth token expiry
+         * Is the auth token expired?
+         * @return {boolean} true if the auth token is expired
          * @function
          */
         isAuthTokenExpired: () => boolean;

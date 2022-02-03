@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.19
+ * @version 2.2.20
  * @license Apache-2.0
  */
 define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (require, exports, node_fetch_1, buffer_1) {
@@ -16,7 +16,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
          * API client module version
          * @constant {string}
          */
-        MODULE_VERSION: '2.2.19',
+        MODULE_VERSION: '2.2.20',
         /**
          * Default row ID field name
          * @constant {string}
@@ -423,12 +423,12 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
                 _this.authtokenexpiry = expiry;
             };
             /**
-             * Set auth token expiry date
-             * @param {Date} expiry Auth token expiry
+             * Is the auth token expired?
+             * @return {boolean} true if the auth token is expired
              * @function
              */
             this.isAuthTokenExpired = function () {
-                return new Date() > _this.authtokenexpiry;
+                return _this.authtokenexpiry ? new Date() > _this.authtokenexpiry : false;
             };
             /**
              * Get business object cache key
@@ -652,7 +652,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
                                 _this.authtokenexpiry = exp;
                             }
                             catch (e) {
-                                // Silent
+                                _this.authtokenexpiry = undefined;
                             }
                             if (_this.authtokenexpiry)
                                 _this.debug("[".concat(origin, "] Auth token expiry date = ").concat(_this.authtokenexpiry));

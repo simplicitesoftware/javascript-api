@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.19
+ * @version 2.2.20
  * @license Apache-2.0
  */
 /**
@@ -586,8 +586,8 @@ declare class Session {
      */
     setAuthTokenExpiryDate: (expiry: Date) => void;
     /**
-     * Set auth token expiry date
-     * @param {Date} expiry Auth token expiry
+     * Is the auth token expired?
+     * @return {boolean} true if the auth token is expired
      * @function
      */
     isAuthTokenExpired: () => boolean;
