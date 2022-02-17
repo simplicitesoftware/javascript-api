@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.20
+ * @version 2.2.21
  * @license Apache-2.0
  */
 /**
@@ -87,6 +87,11 @@ declare type SessionParams = {
      */
     token?: string;
     /**
+     * Ajax key
+     * @constant {string}
+     */
+    ajaxkey?: string;
+    /**
      * Timeout (s)
      * @constant {number}
      */
@@ -134,6 +139,7 @@ declare type SessionParams = {
  * @param {string} [params.username] Username (not needed for public endpoint)
  * @param {string} [params.password] Password (not needed for public endpoint)
  * @param {string} [params.authtoken] Auth token (if set, username and password are not needed; not needed for public endpoint)
+ * @param {string} [params.ajaxkey] Ajax key (only usefull for usage from the generic UI)
  * @param {boolean} [params.debug=false] Debug mode?
  * @param {function} [params.debugHandler] Debug handler function
  * @param {function} [params.infoHandler] Info handler function
@@ -569,6 +575,11 @@ declare class Session {
      */
     authtokenexpiry: Date;
     /**
+     * Ajax key
+     * @member {string}
+     */
+    ajaxkey: string;
+    /**
      * Session ID
      * @member {string}
      */
@@ -591,6 +602,12 @@ declare class Session {
      * @function
      */
     isAuthTokenExpired: () => boolean;
+    /**
+     * Set Ajax key
+     * @param {string} key Ajax key
+     * @function
+     */
+    setAjaxKey: (key: string) => void;
     /**
      * Business objects cache
      * @member {object}

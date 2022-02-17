@@ -82,6 +82,11 @@ declare module "simplicite" {
          */
         token?: string;
         /**
+         * Ajax key
+         * @constant {string}
+         */
+        ajaxkey?: string;
+        /**
          * Timeout (s)
          * @constant {number}
          */
@@ -129,6 +134,7 @@ declare module "simplicite" {
      * @param {string} [params.username] Username (not needed for public endpoint)
      * @param {string} [params.password] Password (not needed for public endpoint)
      * @param {string} [params.authtoken] Auth token (if set, username and password are not needed; not needed for public endpoint)
+     * @param {string} [params.ajaxkey] Ajax key (only usefull for usage from the generic UI)
      * @param {boolean} [params.debug=false] Debug mode?
      * @param {function} [params.debugHandler] Debug handler function
      * @param {function} [params.infoHandler] Info handler function
@@ -564,6 +570,11 @@ declare module "simplicite" {
          */
         authtokenexpiry: Date;
         /**
+         * Ajax key
+         * @member {string}
+         */
+        ajaxkey: string;
+        /**
          * Session ID
          * @member {string}
          */
@@ -586,6 +597,12 @@ declare module "simplicite" {
          * @function
          */
         isAuthTokenExpired: () => boolean;
+        /**
+         * Set Ajax key
+         * @param {string} key Ajax key
+         * @function
+         */
+        setAjaxKey: (key: string) => void;
         /**
          * Business objects cache
          * @member {object}

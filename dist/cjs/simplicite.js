@@ -2,7 +2,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.20
+ * @version 2.2.21
  * @license Apache-2.0
  */
 var __importDefault = (this && this.__importDefault) || function (mod) {
@@ -20,7 +20,7 @@ var constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '2.2.20',
+    MODULE_VERSION: '2.2.21',
     /**
      * Default row ID field name
      * @constant {string}
@@ -374,6 +374,7 @@ var session = function (params) {
  * @param {string} [params.username] Username (not needed for public endpoint)
  * @param {string} [params.password] Password (not needed for public endpoint)
  * @param {string} [params.authtoken] Auth token (if set, username and password are not needed; not needed for public endpoint)
+ * @param {string} [params.ajaxkey] Ajax key (only usefull for usage from the generic UI)
  * @param {boolean} [params.debug=false] Debug mode?
  * @param {function} [params.debugHandler] Debug handler function
  * @param {function} [params.infoHandler] Info handler function
@@ -433,6 +434,14 @@ var Session = /** @class */ (function () {
          */
         this.isAuthTokenExpired = function () {
             return _this.authtokenexpiry ? new Date() > _this.authtokenexpiry : false;
+        };
+        /**
+         * Set Ajax key
+         * @param {string} key Ajax key
+         * @function
+         */
+        this.setAjaxKey = function (key) {
+            _this.ajaxkey = key;
         };
         /**
          * Get business object cache key
@@ -538,7 +547,9 @@ var Session = /** @class */ (function () {
                 if (b)
                     h.Authorization = b;
             }
-            var u = _this.parameters.url + path || '/';
+            var u = _this.parameters.url + (path || '/');
+            if (_this.ajaxkey)
+                u += (u.indexOf('?') >= 0 ? '&' : '?') + '_ajaxkey=' + encodeURIComponent(_this.ajaxkey);
             var d = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined;
             _this.debug("[".concat(origin, "] ").concat(m, " ").concat(u).concat(d ? ' with ' + d : ''));
             (0, node_fetch_1.default)(u, {
@@ -1116,6 +1127,7 @@ var Session = /** @class */ (function () {
         this.username = params.username || params.login; // naming flexibility
         this.password = params.password || params.pwd; // naming flexibility
         this.authtoken = params.authtoken || params.token; // naming flexibility
+        this.ajaxkey = params.ajaxkey;
         this.businessObjectCache = new Map();
     }
     return Session;

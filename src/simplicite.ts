@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.20
+ * @version 2.2.21
  * @license Apache-2.0
  */
 
@@ -17,7 +17,7 @@ const constants = {
 	 * API client module version
 	 * @constant {string}
 	 */
-	MODULE_VERSION: '2.2.20',
+	MODULE_VERSION: '2.2.21',
 
 	/**
 	 * Default row ID field name
@@ -457,6 +457,12 @@ type SessionParams = {
 	token?: string,
 
 	/**
+	 * Ajax key
+	 * @constant {string}
+	 */
+	ajaxkey?: string,
+
+	/**
 	 * Timeout (s)
 	 * @constant {number}
 	 */
@@ -520,6 +526,7 @@ const session = (params: SessionParams): Session => {
  * @param {string} [params.username] Username (not needed for public endpoint)
  * @param {string} [params.password] Password (not needed for public endpoint)
  * @param {string} [params.authtoken] Auth token (if set, username and password are not needed; not needed for public endpoint)
+ * @param {string} [params.ajaxkey] Ajax key (only usefull for usage from the generic UI)
  * @param {boolean} [params.debug=false] Debug mode?
  * @param {function} [params.debugHandler] Debug handler function
  * @param {function} [params.infoHandler] Info handler function
@@ -646,6 +653,7 @@ class Session {
 		this.username = params.username || params.login; // naming flexibility
 		this.password = params.password || params.pwd; // naming flexibility
 		this.authtoken = params.authtoken || params.token; // naming flexibility
+		this.ajaxkey = params.ajaxkey;
 
 		this.businessObjectCache = new Map<string, BusinessObject>();
 	}
@@ -752,6 +760,12 @@ class Session {
 	public authtokenexpiry: Date;
 
 	/**
+	 * Ajax key
+	 * @member {string}
+	 */
+	public ajaxkey: string;
+
+	/**
 	 * Session ID
 	 * @member {string}
 	 */
@@ -782,6 +796,15 @@ class Session {
 	 */
 	public isAuthTokenExpired = (): boolean => {
 		return this.authtokenexpiry ? new Date() > this.authtokenexpiry : false;
+	};
+
+	/**
+	 * Set Ajax key
+	 * @param {string} key Ajax key
+	 * @function
+	 */
+	public setAjaxKey = (key: string): void => {
+		this.ajaxkey = key;
 	};
 
 	/**
@@ -893,7 +916,9 @@ class Session {
 			if (b)
 				h.Authorization = b;
 		}
-		const u: string = this.parameters.url + path || '/';
+		let u: string = this.parameters.url + (path || '/');
+		if (this.ajaxkey)
+			u += (u.indexOf('?') >= 0 ? '&' : '?') + '_ajaxkey=' + encodeURIComponent(this.ajaxkey);
 		const d: any = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined;
 		this.debug(`[${origin}] ${m} ${u}${d ? ' with ' + d : ''}`);
 		fetch(u, {

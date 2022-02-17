@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CDN test</title>
+</head>
+<body>
+<pre id="version"></pre>
+<pre id="health"></pre>
+</body>
+<script src="https://unpkg.com/simplicite@2.2.21/dist/simplicite.min.js"></script>
+<script>
+const app = simplicite.session({ url: 'https://demo.dev.simplicite.io', debug: true });
+app.debug('params', app.parameters);
+document.getElementById('version').innerHTML = `Version: ${simplicite.constants.MODULE_VERSION}`;
+app.getHealth().then(health => document.getElementById('health').innerHTML = JSON.stringify(health, null, 2));
+</script>
+</html>
