@@ -54,7 +54,7 @@ For more advanced usage demos, check these repositories:
 - **Native**:
 	- [ReactNative&reg; demo](https://github.com/simplicitesoftware/react-native-demo)
 - From within the **Simplicit&eacute;&reg; generic web UI**:
-	- [Demo module](https://github.com/simplicitesoftware/module-npmlibdemo)
+	- [Demo module](https://github.com/simplicitesoftware/module-demo-jslib)
 
 See the [documentation](https://simplicitesoftware.github.io/nodejs-api/) for details.
 
