@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.21
+ * @version 2.2.22
  * @license Apache-2.0
  */
 /**
@@ -19,7 +19,7 @@ declare const enum SessionParamEndpoint {
     /**
      * Public UI endpoint
      */
-    PUBLIC = "public"
+    PUBLIC = "uipublic"
 }
 /**
  * Session parameters
@@ -135,7 +135,7 @@ declare type SessionParams = {
  * @param {string} params.host Hostname or IP address (e.g. <code>'myhost.mydomain.com'</code>) of the Simplicite application (not needed if <code>url</code> is set)
  * @param {number} params.port Port (e.g. <code>443</code>) of the Simplicite application (not needed if <code>url</code> is set)
  * @param {string} params.root Root context URL (e.g. <code>'/myapp'</code>) the Simplicite application (not needed if <code>url</code> is set)
- * @param {boolean} [params.endpoint='api'] Endpoint (<code>'api'|'ui'|'public'</code>)
+ * @param {boolean} [params.endpoint='api'] Endpoint (<code>'api'|'ui'|'uipublic'</code>)
  * @param {string} [params.username] Username (not needed for public endpoint)
  * @param {string} [params.password] Password (not needed for public endpoint)
  * @param {string} [params.authtoken] Auth token (if set, username and password are not needed; not needed for public endpoint)

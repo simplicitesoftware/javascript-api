@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.21
+ * @version 2.2.22
  * @license Apache-2.0
  */
 import fetch from 'node-fetch'; // Node.js polyfill for fetch
@@ -15,7 +15,7 @@ const constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '2.2.21',
+    MODULE_VERSION: '2.2.22',
     /**
      * Default row ID field name
      * @constant {string}
@@ -365,7 +365,7 @@ const session = (params) => {
  * @param {string} params.host Hostname or IP address (e.g. <code>'myhost.mydomain.com'</code>) of the Simplicite application (not needed if <code>url</code> is set)
  * @param {number} params.port Port (e.g. <code>443</code>) of the Simplicite application (not needed if <code>url</code> is set)
  * @param {string} params.root Root context URL (e.g. <code>'/myapp'</code>) the Simplicite application (not needed if <code>url</code> is set)
- * @param {boolean} [params.endpoint='api'] Endpoint (<code>'api'|'ui'|'public'</code>)
+ * @param {boolean} [params.endpoint='api'] Endpoint (<code>'api'|'ui'|'uipublic'</code>)
  * @param {string} [params.username] Username (not needed for public endpoint)
  * @param {string} [params.password] Password (not needed for public endpoint)
  * @param {string} [params.authtoken] Auth token (if set, username and password are not needed; not needed for public endpoint)
@@ -997,9 +997,10 @@ class Session {
                 + (objId ? '&objid=' + encodeURIComponent(objId) : '')
                 + (this.authtoken ? '_x_simplicite_authorization_=' + encodeURIComponent(this.authtoken) : '');
         };
-        if (!params)
-            throw new Error('No session parammeters');
-        this.endpoint = params.endpoint || "api" /* API */;
+        params = params || {};
+        // Within the generic web UI if Simplicite is defined
+        const inUI = typeof globalThis.Simplicite !== 'undefined';
+        this.endpoint = params.endpoint || (inUI ? globalThis.Simplicite.ENDPOINT : "api" /* API */);
         this.log = params.logHandler || ((...args) => {
             // tslint:disable-next-line: no-console
             console.log(args);
@@ -1039,10 +1040,11 @@ class Session {
                     console.log('DEBUG', args);
             }
         });
-        if (params.url) {
+        const purl = params.url || (inUI && globalThis.Simplicite.URL);
+        if (purl) {
             try {
-                params.scheme = params.url.replace(/:.*$/, '');
-                const u = params.url.replace(new RegExp('^' + params.scheme + '://'), '').split(':');
+                params.scheme = purl.replace(/:.*$/, '');
+                const u = purl.replace(new RegExp('^' + params.scheme + '://'), '').split(':');
                 if (u.length === 1) {
                     params.host = u[0].replace(/\/.*$/, '');
                     params.port = params.scheme === 'http' ? 80 : 443;
@@ -1059,7 +1061,7 @@ class Session {
                     params.root = '';
             }
             catch (e) {
-                this.error('Unable to parse URL [' + params.url + ']: ' + e.message);
+                this.error('Unable to parse URL [' + purl + ']: ' + e.message);
                 return;
             }
         }
@@ -1079,7 +1081,7 @@ class Session {
         if (root !== '')
             url += root.startsWith('/') ? root : '/' + root;
         this.debug('[simplicite] Base URL = ' + url);
-        const ep = this.endpoint === 'public' ? '' : '/' + this.endpoint;
+        const ep = this.endpoint === 'uipublic' ? '' : '/' + this.endpoint;
         this.parameters = {
             scheme,
             host,
@@ -1099,7 +1101,7 @@ class Session {
         this.username = params.username || params.login; // naming flexibility
         this.password = params.password || params.pwd; // naming flexibility
         this.authtoken = params.authtoken || params.token; // naming flexibility
-        this.ajaxkey = params.ajaxkey;
+        this.ajaxkey = params.ajaxkey || (inUI && globalThis.Simplicite.AJAX_KEY);
         this.businessObjectCache = new Map();
     }
 }
