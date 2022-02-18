@@ -53,6 +53,8 @@ For more advanced usage demos, check these repositories:
 	- [Angular&reg; demo](https://github.com/simplicitesoftware/angular-demo)
 - **Native**:
 	- [ReactNative&reg; demo](https://github.com/simplicitesoftware/react-native-demo)
+- From within the **Simplicit&eacute;&reg; generic web UI**:
+	- [Demo module](https://github.com/simplicitesoftware/module-npmlibdemo)
 
 See the [documentation](https://simplicitesoftware.github.io/nodejs-api/) for details.
 
