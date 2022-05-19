@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.22
+ * @version 2.2.23
  * @license Apache-2.0
  */
 define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (require, exports, node_fetch_1, buffer_1) {
@@ -16,7 +16,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
          * API client module version
          * @constant {string}
          */
-        MODULE_VERSION: '2.2.22',
+        MODULE_VERSION: '2.2.23',
         /**
          * Default row ID field name
          * @constant {string}
@@ -1064,7 +1064,8 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
                         console.log('DEBUG', args);
                 }
             });
-            var purl = params.url || (inUI && globalThis.Simplicite.URL);
+            var purl = params.url || (inUI && globalThis.Simplicite.URL) || (globalThis.window && globalThis.window.location.origin);
+            this.debug('[simplicite] URL parameter = ' + purl);
             if (purl) {
                 try {
                     params.scheme = purl.replace(/:.*$/, '');
@@ -1821,7 +1822,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
             };
             /**
              * Get count
-             * @param {object} [filters] Filters, defaults to current filters if not set
+             * @param {object} [filters] Filters (defaults to current filters)
              * @param {object} [opts] Options
              * @param {function} [opts.error] Error handler function
              * @return {promise<object>} Promise to the count
@@ -1857,7 +1858,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
             };
             /**
              * Search
-             * @param {object} [filters] Filters, defaults to current filters if not set
+             * @param {object} [filters] Filters (defaults to current filters)
              * @param {object} [opts] Options
              * @param {number} [opts.page] Page number, a non paginated list is returned if not set
              * @param {boolean} [opts.metadata=false] Refresh meta data?
@@ -1905,7 +1906,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
             };
             /**
              * Get
-             * @param {string} rowId Row ID
+             * @param {string} [rowId] Row ID (defaults to current item's row ID)
              * @param {object} [opts] Options
              * @param {boolean} [opts.metadata=false] Refresh meta data?
              * @param {string[]} [opts.fields] List of field names to return, all fields are returned by default
@@ -1933,7 +1934,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
                         p += '&_md=true';
                     if (opts.social)
                         p += '&_social=true';
-                    ses.sendRequest(_this.path + '&action=get&' + _this.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, function (res, status) {
+                    ses.sendRequest(_this.path + '&action=get&' + _this.metadata.rowidfield + '=' + encodeURIComponent(rowId || _this.getRowId()) + p, undefined, function (res, status) {
                         var r = ses.parseResponse(res, status);
                         ses.debug('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response type = ' + r.type);
                         if (r.type === 'error') {
@@ -1974,7 +1975,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
             };
             /**
              * Get for update
-             * @param {string} rowId Row ID
+             * @param {string} [rowId] Row ID (defaults to current item's row ID)
              * @param {object} [opts] Options
              * @param {boolean} [opts.metadata=false] Refresh meta data?
              * @param {function} [opts.error] Error handler function
@@ -1986,11 +1987,11 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
                 delete opts.treeview; // Inhibited in this context
                 delete opts.fields; // Inhibited in this context
                 opts.context = constants.CONTEXT_UPDATE;
-                return _this.get(rowId, opts);
+                return _this.get(rowId || _this.getRowId(), opts);
             };
             /**
              * Get for copy
-             * @param {string} rowId Row ID to copy
+             * @param {string} [rowId] Row ID to copy (defaults to current item's row ID)
              * @param {object} [opts] Options
              * @param {boolean} [opts.metadata=false] Refresh meta data?
              * @param {function} [opts.error] Error handler function
@@ -2002,11 +2003,11 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
                 delete opts.treeview; // Inhibited in this context
                 delete opts.fields; // Inhibited in this context
                 opts.context = constants.CONTEXT_COPY;
-                return _this.get(rowId, opts);
+                return _this.get(rowId || _this.getRowId(), opts);
             };
             /**
              * Get for delete
-             * @param {string} rowId Row ID
+             * @param {string} [rowId] Row ID (defaults to current item's row ID)
              * @param {object} [opts] Options
              * @param {boolean} [opts.metadata=false] Refresh meta data?
              * @param {function} [opts.error] Error handler function
@@ -2018,11 +2019,11 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
                 delete opts.treeview; // Inhibited in this context
                 delete opts.fields; // Inhibited in this context
                 opts.context = constants.CONTEXT_DELETE;
-                return _this.get(rowId, opts);
+                return _this.get(rowId || _this.getRowId(), opts);
             };
             /**
              * Get specified or current item's row ID value
-             * @param {object} [item] Item, defaults to current item
+             * @param {object} [item] Item (defaults to current item)
              * @return {string} Item's row ID value
              * @function
              */
@@ -2033,19 +2034,21 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
             };
             /**
              * Populate
-             * @param {string} rowId Row ID
+             * @param {object} [item] Item (defaults to current item)
              * @param {object} [opts] Options
              * @param {function} [opts.error] Error handler function
              * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
              * @function
              */
-            this.populate = function (rowId, opts) {
+            this.populate = function (item, opts) {
                 var origin = 'BusinessObject.populate';
                 var ses = _this.session;
                 opts = opts || {};
                 return new Promise(function (resolve, reject) {
+                    if (item)
+                        _this.item = item;
                     var p = _this.getReqOptions(opts);
-                    ses.sendRequest(_this.path + '&action=populate&' + _this.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, function (res, status) {
+                    ses.sendRequest(_this.path + '&action=populate?' + p, _this.getReqParams(_this.item), function (res, status) {
                         var r = ses.parseResponse(res, status);
                         ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                         if (r.type === 'error') {
@@ -2075,7 +2078,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @function
              */
             this.getFieldLinkedList = function (field, linkedField, code, opts) {
-                var origin = 'BusinessObject.create';
+                var origin = 'BusinessObject.getFieldLinkedList';
                 var ses = _this.session;
                 opts = opts || {};
                 return new Promise(function (resolve, reject) {
@@ -2088,8 +2091,9 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
                         all = true;
                         code = undefined;
                     }
-                    else if (typeof code === 'undefined')
+                    else if (typeof code === 'undefined') {
                         code = _this.getFieldValue(field);
+                    }
                     ses.sendRequest("".concat(_this.path, "&action=getlinkedlist"), _this.getReqParams({ origin: field, input: linkedField, code: code, all: all }), function (res, status) {
                         var r = ses.parseResponse(res, status);
                         ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
@@ -2111,7 +2115,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
             };
             /**
              * Save (create or update depending on item row ID value)
-             * @param {object} item Item (defaults to current item)
+             * @param {object} [item] Item (defaults to current item)
              * @param {object} [opts] Options
              * @param {function} [opts.error] Error handler function
              * @return {promise<object>} Promise to the saved record (also available as the <code>item</code> member)
@@ -2128,7 +2132,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
             };
             /**
              * Create (create or update)
-             * @param {object} item Item (defaults to current item)
+             * @param {object} [item] Item (defaults to current item)
              * @param {object} [opts] Options
              * @param {function} [opts.error] Error handler function
              * @return {promise<object>} Promise to the created record (also available as the <code>item</code> member)
@@ -2164,7 +2168,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
             };
             /**
              * Update
-             * @param {object} item Item (defaults to current item)
+             * @param {object} [item] Item (defaults to current item)
              * @param {object} [opts] Options
              * @param {function} [opts.error] Error handler function
              * @return {promise<object>} Promise to the updated record (also available as the <code>item</code> member)
@@ -2199,7 +2203,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
             };
             /**
              * Delete
-             * @param {object} item Item (defaults to current item)
+             * @param {object} [item] Item (defaults to current item)
              * @param {object} [opts] Options
              * @param {function} [opts.error] Error handler function
              * @return {promise<object>} Promise (the <code>item</code> member is emptied)

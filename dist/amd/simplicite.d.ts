@@ -1395,7 +1395,7 @@ declare module "simplicite" {
         private getReqParams;
         /**
          * Get count
-         * @param {object} [filters] Filters, defaults to current filters if not set
+         * @param {object} [filters] Filters (defaults to current filters)
          * @param {object} [opts] Options
          * @param {function} [opts.error] Error handler function
          * @return {promise<object>} Promise to the count
@@ -1404,7 +1404,7 @@ declare module "simplicite" {
         getCount: (filters?: any, opts?: any) => Promise<any>;
         /**
          * Search
-         * @param {object} [filters] Filters, defaults to current filters if not set
+         * @param {object} [filters] Filters (defaults to current filters)
          * @param {object} [opts] Options
          * @param {number} [opts.page] Page number, a non paginated list is returned if not set
          * @param {boolean} [opts.metadata=false] Refresh meta data?
@@ -1416,7 +1416,7 @@ declare module "simplicite" {
         search: (filters?: any, opts?: any) => Promise<any[]>;
         /**
          * Get
-         * @param {string} rowId Row ID
+         * @param {string} [rowId] Row ID (defaults to current item's row ID)
          * @param {object} [opts] Options
          * @param {boolean} [opts.metadata=false] Refresh meta data?
          * @param {string[]} [opts.fields] List of field names to return, all fields are returned by default
@@ -1425,7 +1425,7 @@ declare module "simplicite" {
          * @return {promise<object>} Promise to the record (also available as the <code>item</code> member)
          * @function
          */
-        get: (rowId: string, opts?: any) => Promise<any>;
+        get: (rowId?: string, opts?: any) => Promise<any>;
         /**
          * Get for create
          * @param {object} [opts] Options
@@ -1437,50 +1437,50 @@ declare module "simplicite" {
         getForCreate: (opts?: any) => Promise<any>;
         /**
          * Get for update
-         * @param {string} rowId Row ID
+         * @param {string} [rowId] Row ID (defaults to current item's row ID)
          * @param {object} [opts] Options
          * @param {boolean} [opts.metadata=false] Refresh meta data?
          * @param {function} [opts.error] Error handler function
          * @return {promise<object>} Promise to the record to update (also available as the <code>item</code> member)
          * @function
          */
-        getForUpdate: (rowId: string, opts?: any) => Promise<any>;
+        getForUpdate: (rowId?: string, opts?: any) => Promise<any>;
         /**
          * Get for copy
-         * @param {string} rowId Row ID to copy
+         * @param {string} [rowId] Row ID to copy (defaults to current item's row ID)
          * @param {object} [opts] Options
          * @param {boolean} [opts.metadata=false] Refresh meta data?
          * @param {function} [opts.error] Error handler function
          * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
          * @function
          */
-        getForCopy: (rowId: string, opts?: any) => Promise<any>;
+        getForCopy: (rowId?: string, opts?: any) => Promise<any>;
         /**
          * Get for delete
-         * @param {string} rowId Row ID
+         * @param {string} [rowId] Row ID (defaults to current item's row ID)
          * @param {object} [opts] Options
          * @param {boolean} [opts.metadata=false] Refresh meta data?
          * @param {function} [opts.error] Error handler function
          * @return {promise<object>} Promise to the record to delete (also available as the <code>item</code> member)
          * @function
          */
-        getForDelete: (rowId: string, opts?: any) => Promise<any>;
+        getForDelete: (rowId?: string, opts?: any) => Promise<any>;
         /**
          * Get specified or current item's row ID value
-         * @param {object} [item] Item, defaults to current item
+         * @param {object} [item] Item (defaults to current item)
          * @return {string} Item's row ID value
          * @function
          */
-        getRowId: (item: any) => string;
+        getRowId: (item?: any) => string;
         /**
          * Populate
-         * @param {string} rowId Row ID
+         * @param {object} [item] Item (defaults to current item)
          * @param {object} [opts] Options
          * @param {function} [opts.error] Error handler function
          * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
          * @function
          */
-        populate: (rowId: string, opts?: any) => Promise<any>;
+        populate: (item?: any, opts?: any) => Promise<any>;
         /**
          * Get the linked list for a list of values field and its specified value(s)
          * @param {(string|object)} field Field name or definition
@@ -1494,40 +1494,40 @@ declare module "simplicite" {
         getFieldLinkedList: (field: string | any, linkedField: string | any, code?: string | boolean, opts?: any) => Promise<any>;
         /**
          * Save (create or update depending on item row ID value)
-         * @param {object} item Item (defaults to current item)
+         * @param {object} [item] Item (defaults to current item)
          * @param {object} [opts] Options
          * @param {function} [opts.error] Error handler function
          * @return {promise<object>} Promise to the saved record (also available as the <code>item</code> member)
          * @function
          */
-        save: (item: any, opts?: any) => Promise<any>;
+        save: (item?: any, opts?: any) => Promise<any>;
         /**
          * Create (create or update)
-         * @param {object} item Item (defaults to current item)
+         * @param {object} [item] Item (defaults to current item)
          * @param {object} [opts] Options
          * @param {function} [opts.error] Error handler function
          * @return {promise<object>} Promise to the created record (also available as the <code>item</code> member)
          * @function
          */
-        create: (item: any, opts?: any) => Promise<any>;
+        create: (item?: any, opts?: any) => Promise<any>;
         /**
          * Update
-         * @param {object} item Item (defaults to current item)
+         * @param {object} [item] Item (defaults to current item)
          * @param {object} [opts] Options
          * @param {function} [opts.error] Error handler function
          * @return {promise<object>} Promise to the updated record (also available as the <code>item</code> member)
          * @function
          */
-        update: (item: any, opts?: any) => Promise<any>;
+        update: (item?: any, opts?: any) => Promise<any>;
         /**
          * Delete
-         * @param {object} item Item (defaults to current item)
+         * @param {object} [item] Item (defaults to current item)
          * @param {object} [opts] Options
          * @param {function} [opts.error] Error handler function
          * @return {promise<object>} Promise (the <code>item</code> member is emptied)
          * @function
          */
-        del: (item: any, opts?: any) => Promise<any>;
+        del: (item?: any, opts?: any) => Promise<any>;
         /**
          * Invoke a custom action
          * @param {string} action Action name

@@ -109,7 +109,7 @@ test('Objects', () => {
 		expect(count >= 0).toBe(true);
 		return sys.search({ sys_code: sysCodeFilter });
 	}).then(list => {
-		expect(list.length);
+		expect(list.length).not.toBe(0);
 		for (let i = 0; i < list.length; i++) {
 			let  item = list[i];
 			expect(item.row_id).not.toBe(simplicite.constants.DEFAULT_ROW_ID);
@@ -119,8 +119,8 @@ test('Objects', () => {
 		return sys.getFilters();
 	}).then(filters => {
 		// TODO: see why this is not OK
-		//expect(filters.sys_code).toBe(sysCodeFilter); 
-		expect(!!filters).not.toBe(false); 
+		//expect(filters.sys_code).toBe(sysCodeFilter);
+		expect(!!filters).not.toBe(false);
 		return sys.get(sysId);
 	}).then(item => {
 		expect(item.row_id).toBe(sysId);

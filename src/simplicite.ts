@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.22
+ * @version 2.2.23
  * @license Apache-2.0
  */
 
@@ -17,7 +17,7 @@ const constants = {
 	 * API client module version
 	 * @constant {string}
 	 */
-	MODULE_VERSION: '2.2.22',
+	MODULE_VERSION: '2.2.23',
 
 	/**
 	 * Default row ID field name
@@ -592,7 +592,8 @@ class Session {
 			}
 		});
 
-		const purl = params.url || (inUI && globalThis.Simplicite.URL);
+		const purl = params.url || (inUI && globalThis.Simplicite.URL) || (globalThis.window && globalThis.window.location.origin);
+		this.debug('[simplicite] URL parameter = ' + purl);
 		if (purl) {
 			try {
 				params.scheme = purl.replace(/:.*$/, '');
@@ -2326,7 +2327,7 @@ class BusinessObject {
 
 	/**
 	 * Get count
-	 * @param {object} [filters] Filters, defaults to current filters if not set
+	 * @param {object} [filters] Filters (defaults to current filters)
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
 	 * @return {promise<object>} Promise to the count
@@ -2360,7 +2361,7 @@ class BusinessObject {
 
 	/**
 	 * Search
-	 * @param {object} [filters] Filters, defaults to current filters if not set
+	 * @param {object} [filters] Filters (defaults to current filters)
 	 * @param {object} [opts] Options
 	 * @param {number} [opts.page] Page number, a non paginated list is returned if not set
 	 * @param {boolean} [opts.metadata=false] Refresh meta data?
@@ -2406,7 +2407,7 @@ class BusinessObject {
 
 	/**
 	 * Get
-	 * @param {string} rowId Row ID
+	 * @param {string} [rowId] Row ID (defaults to current item's row ID)
 	 * @param {object} [opts] Options
 	 * @param {boolean} [opts.metadata=false] Refresh meta data?
 	 * @param {string[]} [opts.fields] List of field names to return, all fields are returned by default
@@ -2415,7 +2416,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	public get = (rowId: string, opts?: any): Promise<any> => {
+	public get = (rowId?: string, opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.get';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2432,7 +2433,7 @@ class BusinessObject {
 				p += '&_md=true';
 			if (opts.social)
 				p += '&_social=true';
-			ses.sendRequest(this.path + '&action=get&' + this.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, (res: any, status: number) => {
+			ses.sendRequest(this.path + '&action=get&' + this.metadata.rowidfield + '=' + encodeURIComponent(rowId || this.getRowId()) + p, undefined, (res: any, status: number) => {
 				const r: any = ses.parseResponse(res, status);
 				ses.debug('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
@@ -2472,62 +2473,62 @@ class BusinessObject {
 
 	/**
 	 * Get for update
-	 * @param {string} rowId Row ID
+	 * @param {string} [rowId] Row ID (defaults to current item's row ID)
 	 * @param {object} [opts] Options
 	 * @param {boolean} [opts.metadata=false] Refresh meta data?
 	 * @param {function} [opts.error] Error handler function
 	 * @return {promise<object>} Promise to the record to update (also available as the <code>item</code> member)
 	 * @function
 	 */
-	public getForUpdate = (rowId: string, opts?: any): Promise<any> => {
+	public getForUpdate = (rowId?: string, opts?: any): Promise<any> => {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
 		opts.context = constants.CONTEXT_UPDATE;
-		return this.get(rowId, opts);
+		return this.get(rowId || this.getRowId(), opts);
 	};
 
 	/**
 	 * Get for copy
-	 * @param {string} rowId Row ID to copy
+	 * @param {string} [rowId] Row ID to copy (defaults to current item's row ID)
 	 * @param {object} [opts] Options
 	 * @param {boolean} [opts.metadata=false] Refresh meta data?
 	 * @param {function} [opts.error] Error handler function
 	 * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
 	 * @function
 	 */
-	public getForCopy = (rowId: string, opts?: any): Promise<any> => {
+	public getForCopy = (rowId?: string, opts?: any): Promise<any> => {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
 		opts.context = constants.CONTEXT_COPY;
-		return this.get(rowId, opts);
+		return this.get(rowId || this.getRowId(), opts);
 	};
 
 	/**
 	 * Get for delete
-	 * @param {string} rowId Row ID
+	 * @param {string} [rowId] Row ID (defaults to current item's row ID)
 	 * @param {object} [opts] Options
 	 * @param {boolean} [opts.metadata=false] Refresh meta data?
 	 * @param {function} [opts.error] Error handler function
 	 * @return {promise<object>} Promise to the record to delete (also available as the <code>item</code> member)
 	 * @function
 	 */
-	public getForDelete = (rowId: string, opts?: any): Promise<any> => {
+	public getForDelete = (rowId?: string, opts?: any): Promise<any> => {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
 		opts.context = constants.CONTEXT_DELETE;
-		return this.get(rowId, opts);
+		return this.get(rowId || this.getRowId(), opts);
 	};
 
 	/**
 	 * Get specified or current item's row ID value
-	 * @param {object} [item] Item, defaults to current item
+	 * @param {object} [item] Item (defaults to current item)
 	 * @return {string} Item's row ID value
 	 * @function
 	 */
-	public getRowId = (item: any): string => {
+	public getRowId = (item?: any): string => {
 		item = item || this.item;
 		if (item)
 			return item[this.getRowIdFieldName()];
@@ -2535,19 +2536,21 @@ class BusinessObject {
 
 	/**
 	 * Populate
-	 * @param {string} rowId Row ID
+	 * @param {object} [item] Item (defaults to current item)
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
 	 * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	public populate = (rowId: string, opts?: any): Promise<any> => {
+	public populate = (item?: any, opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.populate';
 		const ses: Session = this.session;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
+			if (item)
+				this.item = item;
 			const p: string = this.getReqOptions(opts);
-			ses.sendRequest(this.path + '&action=populate&' + this.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, (res: any, status: number) => {
+			ses.sendRequest(this.path + '&action=populate?' + p, this.getReqParams(this.item), (res: any, status: number) => {
 				const r: any = ses.parseResponse(res, status);
 				ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
@@ -2575,7 +2578,7 @@ class BusinessObject {
 	 * @function
 	 */
 	public getFieldLinkedList = (field: string|any, linkedField: string|any, code?: string|boolean, opts?: any ): Promise<any> => {
-		const origin = 'BusinessObject.create';
+		const origin = 'BusinessObject.getFieldLinkedList';
 		const ses: Session = this.session;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -2587,8 +2590,9 @@ class BusinessObject {
 			if (code === true) {
 				all = true;
 				code = undefined;
-			} else if (typeof code === 'undefined')
+			} else if (typeof code === 'undefined') {
 				code = this.getFieldValue(field);
+			}
 			ses.sendRequest(`${this.path}&action=getlinkedlist`, this.getReqParams({ origin: field, input: linkedField, code, all }), (res: any, status: number) => {
 				const r: any = ses.parseResponse(res, status);
 				ses.debug('['+origin+'] HTTP status = ' + status + ', response type = ' + r.type);
@@ -2608,13 +2612,13 @@ class BusinessObject {
 
 	/**
 	 * Save (create or update depending on item row ID value)
-	 * @param {object} item Item (defaults to current item)
+	 * @param {object} [item] Item (defaults to current item)
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
 	 * @return {promise<object>} Promise to the saved record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	public save = (item: any, opts?: any): Promise<any> => {
+	public save = (item?: any, opts?: any): Promise<any> => {
 		if (item)
 			this.item = item;
 		const rowId: string = this.item[this.metadata.rowidfield];
@@ -2626,13 +2630,13 @@ class BusinessObject {
 
 	/**
 	 * Create (create or update)
-	 * @param {object} item Item (defaults to current item)
+	 * @param {object} [item] Item (defaults to current item)
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
 	 * @return {promise<object>} Promise to the created record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	public create = (item: any, opts?: any): Promise<any> => {
+	public create = (item?: any, opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.create';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2660,13 +2664,13 @@ class BusinessObject {
 
 	/**
 	 * Update
-	 * @param {object} item Item (defaults to current item)
+	 * @param {object} [item] Item (defaults to current item)
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
 	 * @return {promise<object>} Promise to the updated record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	public update = (item: any, opts?: any): Promise<any> => {
+	public update = (item?: any, opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.update';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2693,13 +2697,13 @@ class BusinessObject {
 
 	/**
 	 * Delete
-	 * @param {object} item Item (defaults to current item)
+	 * @param {object} [item] Item (defaults to current item)
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
 	 * @return {promise<object>} Promise (the <code>item</code> member is emptied)
 	 * @function
 	 */
-	public del = (item: any, opts?: any): Promise<any> => {
+	public del = (item?: any, opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.del';
 		const ses: Session = this.session;
 		opts = opts || {};

@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">49.5% </span>
+                <span class="strong">49.45% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>495/1000</span>
+                <span class='fraction'>496/1003</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">29.53% </span>
+                <span class="strong">29.5% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>223/755</span>
+                <span class='fraction'>226/766</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">52.66% </span>
+                <span class="strong">52.6% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>494/938</span>
+                <span class='fraction'>495/941</span>
             </div>
         
             
@@ -3184,7 +3184,11 @@
 <a name='L3119'></a><a href='#L3119'>3119</a>
 <a name='L3120'></a><a href='#L3120'>3120</a>
 <a name='L3121'></a><a href='#L3121'>3121</a>
-<a name='L3122'></a><a href='#L3122'>3122</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L3122'></a><a href='#L3122'>3122</a>
+<a name='L3123'></a><a href='#L3123'>3123</a>
+<a name='L3124'></a><a href='#L3124'>3124</a>
+<a name='L3125'></a><a href='#L3125'>3125</a>
+<a name='L3126'></a><a href='#L3126'>3126</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -3768,7 +3772,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">87x</span>
+<span class="cline-any cline-yes">88x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -3778,6 +3782,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -5739,6 +5744,8 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -5775,6 +5782,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -6308,7 +6316,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.22
+ * @version 2.2.23
  * @license Apache-2.0
  */
 &nbsp;
@@ -6324,7 +6332,7 @@ const constants = {
 	 * API client module version
 	 * @constant {string}
 	 */
-	MODULE_VERSION: '2.2.22',
+	MODULE_VERSION: '2.2.23',
 &nbsp;
 	/**
 	 * Default row ID field name
@@ -6899,7 +6907,8 @@ class Session {
 			}
 		});
 &nbsp;
-		const purl = params.url || (<span class="branch-1 cbranch-no" title="branch not covered" >inUI </span>&amp;&amp; <span class="branch-2 cbranch-no" title="branch not covered" >globalThis.Simplicite.URL)</span>;
+		const purl = params.url || (<span class="branch-1 cbranch-no" title="branch not covered" >inUI </span>&amp;&amp; <span class="branch-2 cbranch-no" title="branch not covered" >globalThis.Simplicite.URL)</span> || (<span class="branch-3 cbranch-no" title="branch not covered" >globalThis.window </span>&amp;&amp; <span class="branch-4 cbranch-no" title="branch not covered" >globalThis.window.location.origin)</span>;
+		this.debug('[simplicite] URL parameter = ' + purl);
 		if (purl) {
 			try {
 				params.scheme = purl.replace(/:.*$/, '');
@@ -8633,7 +8642,7 @@ class BusinessObject {
 &nbsp;
 	/**
 	 * Get count
-	 * @param {object} [filters] Filters, defaults to current filters if not set
+	 * @param {object} [filters] Filters (defaults to current filters)
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
 	 * @return {promise&lt;object&gt;} Promise to the count
@@ -8667,7 +8676,7 @@ class BusinessObject {
 &nbsp;
 	/**
 	 * Search
-	 * @param {object} [filters] Filters, defaults to current filters if not set
+	 * @param {object} [filters] Filters (defaults to current filters)
 	 * @param {object} [opts] Options
 	 * @param {number} [opts.page] Page number, a non paginated list is returned if not set
 	 * @param {boolean} [opts.metadata=false] Refresh meta data?
@@ -8713,7 +8722,7 @@ class BusinessObject {
 &nbsp;
 	/**
 	 * Get
-	 * @param {string} rowId Row ID
+	 * @param {string} [rowId] Row ID (defaults to current item's row ID)
 	 * @param {object} [opts] Options
 	 * @param {boolean} [opts.metadata=false] Refresh meta data?
 	 * @param {string[]} [opts.fields] List of field names to return, all fields are returned by default
@@ -8722,7 +8731,7 @@ class BusinessObject {
 	 * @return {promise&lt;object&gt;} Promise to the record (also available as the &lt;code&gt;item&lt;/code&gt; member)
 	 * @function
 	 */
-	public get = (rowId: string, opts?: any): Promise&lt;any&gt; =&gt; {
+	public get = (rowId?: string, opts?: any): Promise&lt;any&gt; =&gt; {
 		const origin = 'BusinessObject.get';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -8739,7 +8748,7 @@ class BusinessObject {
 <span class="cstat-no" title="statement not covered" >				p += '&amp;_md=true';</span>
 			<span class="missing-if-branch" title="if path not taken" >I</span>if (opts.social)
 <span class="cstat-no" title="statement not covered" >				p += '&amp;_social=true';</span>
-			ses.sendRequest(this.path + '&amp;action=get&amp;' + this.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, (res: any, status: number) =&gt; {
+			ses.sendRequest(this.path + '&amp;action=get&amp;' + this.metadata.rowidfield + '=' + encodeURIComponent(rowId || <span class="branch-1 cbranch-no" title="branch not covered" >this.getRowId())</span> + p, undefined, (res: any, status: number) =&gt; {
 				const r: any = ses.parseResponse(res, status);
 				ses.debug('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response type = ' + r.type);
 				<span class="missing-if-branch" title="if path not taken" >I</span>if (r.type === 'error') {
@@ -8779,62 +8788,62 @@ class BusinessObject {
 &nbsp;
 	/**
 	 * Get for update
-	 * @param {string} rowId Row ID
+	 * @param {string} [rowId] Row ID (defaults to current item's row ID)
 	 * @param {object} [opts] Options
 	 * @param {boolean} [opts.metadata=false] Refresh meta data?
 	 * @param {function} [opts.error] Error handler function
 	 * @return {promise&lt;object&gt;} Promise to the record to update (also available as the &lt;code&gt;item&lt;/code&gt; member)
 	 * @function
 	 */
-	public getForUpdate = (rowId: string, opts?: any): Promise&lt;any&gt; =&gt; {
+	public getForUpdate = (rowId?: string, opts?: any): Promise&lt;any&gt; =&gt; {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
 		opts.context = constants.CONTEXT_UPDATE;
-		return this.get(rowId, opts);
+		return this.get(rowId || <span class="branch-1 cbranch-no" title="branch not covered" >this.getRowId(),</span> opts);
 	};
 &nbsp;
 	/**
 	 * Get for copy
-	 * @param {string} rowId Row ID to copy
+	 * @param {string} [rowId] Row ID to copy (defaults to current item's row ID)
 	 * @param {object} [opts] Options
 	 * @param {boolean} [opts.metadata=false] Refresh meta data?
 	 * @param {function} [opts.error] Error handler function
 	 * @return {promise&lt;object&gt;} Promise to the record to create (also available as the &lt;code&gt;item&lt;/code&gt; member)
 	 * @function
 	 */
-	public getForCopy = <span class="fstat-no" title="function not covered" >(r</span>owId: string, opts?: any): Promise&lt;any&gt; =&gt; {
+	public getForCopy = <span class="fstat-no" title="function not covered" >(r</span>owId?: string, opts?: any): Promise&lt;any&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >		opts = opts || {};</span>
 <span class="cstat-no" title="statement not covered" >		delete opts.treeview; </span>// Inhibited in this context
 <span class="cstat-no" title="statement not covered" >		delete opts.fields; </span>// Inhibited in this context
 <span class="cstat-no" title="statement not covered" >		opts.context = constants.CONTEXT_COPY;</span>
-<span class="cstat-no" title="statement not covered" >		return this.get(rowId, opts);</span>
+<span class="cstat-no" title="statement not covered" >		return this.get(rowId || this.getRowId(), opts);</span>
 	};
 &nbsp;
 	/**
 	 * Get for delete
-	 * @param {string} rowId Row ID
+	 * @param {string} [rowId] Row ID (defaults to current item's row ID)
 	 * @param {object} [opts] Options
 	 * @param {boolean} [opts.metadata=false] Refresh meta data?
 	 * @param {function} [opts.error] Error handler function
 	 * @return {promise&lt;object&gt;} Promise to the record to delete (also available as the &lt;code&gt;item&lt;/code&gt; member)
 	 * @function
 	 */
-	public getForDelete = (rowId: string, opts?: any): Promise&lt;any&gt; =&gt; {
+	public getForDelete = (rowId?: string, opts?: any): Promise&lt;any&gt; =&gt; {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
 		opts.context = constants.CONTEXT_DELETE;
-		return this.get(rowId, opts);
+		return this.get(rowId || <span class="branch-1 cbranch-no" title="branch not covered" >this.getRowId(),</span> opts);
 	};
 &nbsp;
 	/**
 	 * Get specified or current item's row ID value
-	 * @param {object} [item] Item, defaults to current item
+	 * @param {object} [item] Item (defaults to current item)
 	 * @return {string} Item's row ID value
 	 * @function
 	 */
-	public getRowId = <span class="fstat-no" title="function not covered" >(i</span>tem: any): string =&gt; {
+	public getRowId = <span class="fstat-no" title="function not covered" >(i</span>tem?: any): string =&gt; {
 <span class="cstat-no" title="statement not covered" >		item = item || this.item;</span>
 <span class="cstat-no" title="statement not covered" >		<span class="missing-if-branch" title="if path not taken" >I</span>if (item)</span>
 <span class="cstat-no" title="statement not covered" >			return item[this.getRowIdFieldName()];</span>
@@ -8842,19 +8851,21 @@ class BusinessObject {
 &nbsp;
 	/**
 	 * Populate
-	 * @param {string} rowId Row ID
+	 * @param {object} [item] Item (defaults to current item)
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
 	 * @return {promise&lt;object&gt;} Promise to the populated record (also available as the &lt;code&gt;item&lt;/code&gt; member)
 	 * @function
 	 */
-	public populate = <span class="fstat-no" title="function not covered" >(r</span>owId: string, opts?: any): Promise&lt;any&gt; =&gt; {
+	public populate = <span class="fstat-no" title="function not covered" >(i</span>tem?: any, opts?: any): Promise&lt;any&gt; =&gt; {
 		const origin = <span class="cstat-no" title="statement not covered" >'BusinessObject.populate';</span>
 		const ses: Session = <span class="cstat-no" title="statement not covered" >this.session;</span>
 <span class="cstat-no" title="statement not covered" >		opts = opts || {};</span>
 <span class="cstat-no" title="statement not covered" >		return new Promise(<span class="fstat-no" title="function not covered" >(r</span>esolve, reject) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >			<span class="missing-if-branch" title="if path not taken" >I</span>if (item)</span>
+<span class="cstat-no" title="statement not covered" >				this.item = item;</span>
 			const p: string = <span class="cstat-no" title="statement not covered" >this.getReqOptions(opts);</span>
-<span class="cstat-no" title="statement not covered" >			ses.sendRequest(this.path + '&amp;action=populate&amp;' + this.metadata.rowidfield + '=' + encodeURIComponent(rowId) + p, undefined, <span class="fstat-no" title="function not covered" >(r</span>es: any, status: number) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >			ses.sendRequest(this.path + '&amp;action=populate?' + p, this.getReqParams(this.item), <span class="fstat-no" title="function not covered" >(r</span>es: any, status: number) =&gt; {</span>
 				const r: any = <span class="cstat-no" title="statement not covered" >ses.parseResponse(res, status);</span>
 <span class="cstat-no" title="statement not covered" >				ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);</span>
 <span class="cstat-no" title="statement not covered" >				if (r.type === 'error') {</span>
@@ -8882,7 +8893,7 @@ class BusinessObject {
 	 * @function
 	 */
 	public getFieldLinkedList = <span class="fstat-no" title="function not covered" >(f</span>ield: string|any, linkedField: string|any, code?: string|boolean, opts?: any ): Promise&lt;any&gt; =&gt; {
-		const origin = <span class="cstat-no" title="statement not covered" >'BusinessObject.create';</span>
+		const origin = <span class="cstat-no" title="statement not covered" >'BusinessObject.getFieldLinkedList';</span>
 		const ses: Session = <span class="cstat-no" title="statement not covered" >this.session;</span>
 <span class="cstat-no" title="statement not covered" >		opts = opts || {};</span>
 <span class="cstat-no" title="statement not covered" >		return new Promise(<span class="fstat-no" title="function not covered" >(r</span>esolve, reject) =&gt; {</span>
@@ -8894,8 +8905,9 @@ class BusinessObject {
 <span class="cstat-no" title="statement not covered" >			if (code === true) {</span>
 <span class="cstat-no" title="statement not covered" >				all = true;</span>
 <span class="cstat-no" title="statement not covered" >				code = undefined;</span>
-			} else <span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>if (typeof code === 'undefined')</span>
+			} else <span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>if (typeof code === 'undefined') {</span>
 <span class="cstat-no" title="statement not covered" >				code = this.getFieldValue(field);</span>
+			}
 <span class="cstat-no" title="statement not covered" >			ses.sendRequest(`${this.path}&amp;action=getlinkedlist`, this.getReqParams({ origin: field, input: linkedField, code, all }), <span class="fstat-no" title="function not covered" >(r</span>es: any, status: number) =&gt; {</span>
 				const r: any = <span class="cstat-no" title="statement not covered" >ses.parseResponse(res, status);</span>
 <span class="cstat-no" title="statement not covered" >				ses.debug('['+origin+'] HTTP status = ' + status + ', response type = ' + r.type);</span>
@@ -8915,13 +8927,13 @@ class BusinessObject {
 &nbsp;
 	/**
 	 * Save (create or update depending on item row ID value)
-	 * @param {object} item Item (defaults to current item)
+	 * @param {object} [item] Item (defaults to current item)
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
 	 * @return {promise&lt;object&gt;} Promise to the saved record (also available as the &lt;code&gt;item&lt;/code&gt; member)
 	 * @function
 	 */
-	public save = (item: any, opts?: any): Promise&lt;any&gt; =&gt; {
+	public save = (item?: any, opts?: any): Promise&lt;any&gt; =&gt; {
 		if (item)
 			this.item = item;
 		const rowId: string = this.item[this.metadata.rowidfield];
@@ -8933,13 +8945,13 @@ class BusinessObject {
 &nbsp;
 	/**
 	 * Create (create or update)
-	 * @param {object} item Item (defaults to current item)
+	 * @param {object} [item] Item (defaults to current item)
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
 	 * @return {promise&lt;object&gt;} Promise to the created record (also available as the &lt;code&gt;item&lt;/code&gt; member)
 	 * @function
 	 */
-	public create = (item: any, opts?: any): Promise&lt;any&gt; =&gt; {
+	public create = (item?: any, opts?: any): Promise&lt;any&gt; =&gt; {
 		const origin = 'BusinessObject.create';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -8967,13 +8979,13 @@ class BusinessObject {
 &nbsp;
 	/**
 	 * Update
-	 * @param {object} item Item (defaults to current item)
+	 * @param {object} [item] Item (defaults to current item)
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
 	 * @return {promise&lt;object&gt;} Promise to the updated record (also available as the &lt;code&gt;item&lt;/code&gt; member)
 	 * @function
 	 */
-	public update = (item: any, opts?: any): Promise&lt;any&gt; =&gt; {
+	public update = (item?: any, opts?: any): Promise&lt;any&gt; =&gt; {
 		const origin = 'BusinessObject.update';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -9000,13 +9012,13 @@ class BusinessObject {
 &nbsp;
 	/**
 	 * Delete
-	 * @param {object} item Item (defaults to current item)
+	 * @param {object} [item] Item (defaults to current item)
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
 	 * @return {promise&lt;object&gt;} Promise (the &lt;code&gt;item&lt;/code&gt; member is emptied)
 	 * @function
 	 */
-	public del = (item: any, opts?: any): Promise&lt;any&gt; =&gt; {
+	public del = (item?: any, opts?: any): Promise&lt;any&gt; =&gt; {
 		const origin = 'BusinessObject.del';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -9433,7 +9445,7 @@ export default {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at Fri Feb 18 2022 09:34:13 GMT+0100 (heure normale d’Europe centrale)
+                at Thu May 19 2022 16:32:15 GMT+0200 (heure d’été d’Europe centrale)
             </div>
         <script src="prettify.js"></script>
         <script>
