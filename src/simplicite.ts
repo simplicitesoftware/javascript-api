@@ -974,7 +974,7 @@ class Session {
 	 * @return {promise<object>} Promise to the health data
 	 * @function
 	 */
-	public getHealth = (opts?: any): Promise<any> => {
+	public getHealth = async (opts?: any): Promise<any> => {
 		const origin = 'Session.getHealth';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -995,6 +995,16 @@ class Session {
 	};
 
 	/**
+	 * Alias to getHealth
+	 * @param {object} [opts] Options
+	 * @param {boolean} [opts.full=false] Full health check?
+	 * @param {function} [opts.error] Error handler function
+	 * @return {promise<object>} Promise to the health data
+	 * @function
+	 */
+	public health = this.getHealth;
+
+	/**
 	 * Login
 	 * @param {object} [opts] Options
 	 * @param {string} [opts.username] Username (exclusive with authentication token)
@@ -1004,7 +1014,7 @@ class Session {
 	 * @return {promise<object>} Promise to the login result
 	 * @function
 	 */
-	public login = (opts?: any): Promise<any> => {
+	public login = async (opts?: any): Promise<any> => {
 		const origin = 'Session.login';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -1065,7 +1075,7 @@ class Session {
 	 * @return {promise<object>} Promise to the logout result
 	 * @function
 	 */
-	public logout = (opts?: any): Promise<any> => {
+	public logout = async (opts?: any): Promise<any> => {
 		const origin = 'Session.logout';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -1103,7 +1113,7 @@ class Session {
 	 * @return {promise<Grant>} A promise to the grant (also available as the <code>grant</code> member)
 	 * @function
 	 */
-	public getGrant = (opts?: any): Promise<any> => {
+	public getGrant = async (opts?: any): Promise<any> => {
 		const origin = 'Session.getGrant';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -1143,7 +1153,7 @@ class Session {
 	 * @return {promise<object>} A promise to the change password result
 	 * @function
 	 */
-	public changePassword = (pwd: string, opts?: any): Promise<any> => {
+	public changePassword = async (pwd: string, opts?: any): Promise<any> => {
 		const origin = 'Session.changePassword';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -1176,7 +1186,7 @@ class Session {
 	 * @return {promise<object>} A promise to the application info (also avialable as the <code>appinfo</code> member)
 	 * @function
 	 */
-	public getAppInfo = (opts?: any): Promise<any> => {
+	public getAppInfo = async (opts?: any): Promise<any> => {
 		const origin = 'Session.getAppInfo';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -1210,7 +1220,7 @@ class Session {
 	 * @return {promise<object>} A promise to the system info (also avialable as the <code>sysinfo</code> member)
 	 * @function
 	 */
-	public getSysInfo = (opts?: any): Promise<any> => {
+	public getSysInfo = async (opts?: any): Promise<any> => {
 		const origin = 'Session.getSysInfo';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -1245,7 +1255,7 @@ class Session {
 	 * @return {promise<object>} A promise to the develoment info (also avialable as the <code>devinfo</code> member)
 	 * @function
 	 */
-	public getDevInfo = (module?: string, opts?: any): Promise<any> => {
+	public getDevInfo = async (module?: string, opts?: any): Promise<any> => {
 		const origin = 'Session.getDevInfo';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -1284,7 +1294,7 @@ class Session {
 	 * @return {promise<array>} A promise to the list of news (also avialable as the <code>news</code> member)
 	 * @function
 	 */
-	public getNews = (opts?: any): Promise<any[]> => {
+	public getNews = async (opts?: any): Promise<any[]> => {
 		const origin = 'Session.getHealth';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -1322,7 +1332,7 @@ class Session {
 	 * @return {promise<array>} A promise to a list of index search records
 	 * @function
 	 */
-	public indexSearch = (query: string, object?: string, opts?: any): Promise<any[]> => {
+	public indexSearch = async (query: string, object?: string, opts?: any): Promise<any[]> => {
 		const origin = 'Session.indexSearch';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -1940,7 +1950,7 @@ class BusinessObject {
 	 * @return {promise<BusinessObjectMetadata>} A promise to the object'ts meta data (also available as the <code>metadata</code> member)
 	 * @function
 	 */
-	public getMetaData = (opts?: any): any => {
+	public getMetaData = async (opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.getMetaData';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2237,7 +2247,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the object's filters (also available as the <code>filters</code> member)
 	 * @function
 	 */
-	public getFilters = (opts?: any): Promise<any> => {
+	public getFilters = async (opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.getFilters';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2333,7 +2343,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the count
 	 * @function
 	 */
-	public getCount = (filters?: any, opts?: any): Promise<any> => {
+	public getCount = async (filters?: any, opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.getCount';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2370,7 +2380,7 @@ class BusinessObject {
 	 * @return {promise<array>} Promise to a list of records (also available as the <code>list</code> member)
 	 * @function
 	 */
-	public search = (filters?: any, opts?: any): Promise<any[]> => {
+	public search = async (filters?: any, opts?: any): Promise<any[]> => {
 		const origin = 'BusinessObject.search';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2416,7 +2426,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	public get = (rowId?: string, opts?: any): Promise<any> => {
+	public get = async (rowId?: string, opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.get';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2463,7 +2473,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
 	 * @function
 	 */
-	public getForCreate = (opts?: any): Promise<any> => {
+	public getForCreate = async (opts?: any): Promise<any> => {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
@@ -2480,7 +2490,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the record to update (also available as the <code>item</code> member)
 	 * @function
 	 */
-	public getForUpdate = (rowId?: string, opts?: any): Promise<any> => {
+	public getForUpdate = async (rowId?: string, opts?: any): Promise<any> => {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
@@ -2497,7 +2507,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
 	 * @function
 	 */
-	public getForCopy = (rowId?: string, opts?: any): Promise<any> => {
+	public getForCopy = async (rowId?: string, opts?: any): Promise<any> => {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
@@ -2514,7 +2524,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the record to delete (also available as the <code>item</code> member)
 	 * @function
 	 */
-	public getForDelete = (rowId?: string, opts?: any): Promise<any> => {
+	public getForDelete = async (rowId?: string, opts?: any): Promise<any> => {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
@@ -2542,7 +2552,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	public populate = (item?: any, opts?: any): Promise<any> => {
+	public populate = async (item?: any, opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.populate';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2577,7 +2587,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	public getFieldLinkedList = (field: string|any, linkedField: string|any, code?: string|boolean, opts?: any ): Promise<any> => {
+	public getFieldLinkedList = async (field: string|any, linkedField: string|any, code?: string|boolean, opts?: any ): Promise<any> => {
 		const origin = 'BusinessObject.getFieldLinkedList';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2618,7 +2628,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the saved record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	public save = (item?: any, opts?: any): Promise<any> => {
+	public save = async (item?: any, opts?: any): Promise<any> => {
 		if (item)
 			this.item = item;
 		const rowId: string = this.item[this.metadata.rowidfield];
@@ -2636,7 +2646,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the created record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	public create = (item?: any, opts?: any): Promise<any> => {
+	public create = async (item?: any, opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.create';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2670,7 +2680,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the updated record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	public update = (item?: any, opts?: any): Promise<any> => {
+	public update = async (item?: any, opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.update';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2703,7 +2713,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise (the <code>item</code> member is emptied)
 	 * @function
 	 */
-	public del = (item?: any, opts?: any): Promise<any> => {
+	public del = async (item?: any, opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.del';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2738,7 +2748,7 @@ class BusinessObject {
 	 * @return {promise<string|object>} A promise to the action result
 	 * @function
 	 */
-	public action = (action: string, rowId?: string, opts?: any): Promise<string|any> => {
+	public action = async (action: string, rowId?: string, opts?: any): Promise<string|any> => {
 		const origin = `BusinessObject.action(${action})`;
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2769,7 +2779,7 @@ class BusinessObject {
 	 * @return {promise<object>} A promise to the pivot table data (also avialable as the <code>crosstabdata</code> member)
 	 * @function
 	 */
-	public crosstab = (ctb: string, opts?: any): Promise<any> => {
+	public crosstab = async (ctb: string, opts?: any): Promise<any> => {
 		const origin = `BusinessObject.crosstab(${ctb})`;
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2801,7 +2811,7 @@ class BusinessObject {
 	 * @return {promise<Doc>} A promise to the document of the publication
 	 * @function
 	 */
-	public print = (prt: string, rowId?: string, opts?: any): Promise<any> => {
+	public print = async (prt: string, rowId?: string, opts?: any): Promise<any> => {
 		const origin = `BusinessObject.print(${prt})`;
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2838,7 +2848,7 @@ class BusinessObject {
 	 * @return {promise<any>} A promise to the place map data
 	 * @function
 	 */
-	public placemap = (pcm: string, filters?: any, opts?: any): Promise<any> => {
+	public placemap = async (pcm: string, filters?: any, opts?: any): Promise<any> => {
 		const origin = `BusinessObject.placemap(${pcm})`;
 		const ses: Session = this.session;
 		this.filters = filters || {};
@@ -2871,7 +2881,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise
 	 * @function
 	 */
-	public setParameter = (param: string, value: string, opts?: any): Promise<any> => {
+	public setParameter = async (param: string, value: string, opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.setParameter';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -2903,7 +2913,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the parameter value
 	 * @function
 	 */
-	public getParameter = (param: string, opts?: any): Promise<any> => {
+	public getParameter = async (param: string, opts?: any): Promise<any> => {
 		const origin = 'BusinessObject.getParameter';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -3041,7 +3051,7 @@ class ExternalObject {
 	 * @return {promise<object>} Promise to the external object content
 	 * @function
 	 */
-	public call = (params?: any, data?: any, opts?: any) => {
+	public call = async (params?: any, data?: any, opts?: any): Promise<any> => {
 		const origin = 'ExternalObject.call';
 		const ses: Session = this.session;
 		opts = opts || {};
