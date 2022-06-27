@@ -1,9 +1,18 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.23
+ * @version 2.2.24
  * @license Apache-2.0
  */
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 import fetch from 'node-fetch'; // Node.js polyfill for fetch
 import { Buffer } from 'buffer'; // Browser polyfill for Buffer
 /**
@@ -15,7 +24,7 @@ const constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '2.2.23',
+    MODULE_VERSION: '2.2.24',
     /**
      * Default row ID field name
      * @constant {string}
@@ -593,7 +602,7 @@ class Session {
          * @return {promise<object>} Promise to the health data
          * @function
          */
-        this.getHealth = (opts) => {
+        this.getHealth = (opts) => __awaiter(this, void 0, void 0, function* () {
             const origin = 'Session.getHealth';
             opts = opts || {};
             return new Promise((resolve, reject) => {
@@ -614,7 +623,16 @@ class Session {
                         reject.call(this, err);
                 });
             });
-        };
+        });
+        /**
+         * Alias to getHealth
+         * @param {object} [opts] Options
+         * @param {boolean} [opts.full=false] Full health check?
+         * @param {function} [opts.error] Error handler function
+         * @return {promise<object>} Promise to the health data
+         * @function
+         */
+        this.health = this.getHealth;
         /**
          * Login
          * @param {object} [opts] Options
@@ -625,7 +643,7 @@ class Session {
          * @return {promise<object>} Promise to the login result
          * @function
          */
-        this.login = (opts) => {
+        this.login = (opts) => __awaiter(this, void 0, void 0, function* () {
             const origin = 'Session.login';
             opts = opts || {};
             return new Promise((resolve, reject) => {
@@ -681,7 +699,7 @@ class Session {
                         reject.call(this, err);
                 });
             });
-        };
+        });
         /**
          * Logout
          * @param {function} callback Callback (called upon success)
@@ -690,7 +708,7 @@ class Session {
          * @return {promise<object>} Promise to the logout result
          * @function
          */
-        this.logout = (opts) => {
+        this.logout = (opts) => __awaiter(this, void 0, void 0, function* () {
             const origin = 'Session.logout';
             opts = opts || {};
             return new Promise((resolve, reject) => {
@@ -714,7 +732,7 @@ class Session {
                         reject.call(this, err);
                 });
             });
-        };
+        });
         /**
          * Get grant (current user data)
          * @param {object} [opts] Options
@@ -724,7 +742,7 @@ class Session {
          * @return {promise<Grant>} A promise to the grant (also available as the <code>grant</code> member)
          * @function
          */
-        this.getGrant = (opts) => {
+        this.getGrant = (opts) => __awaiter(this, void 0, void 0, function* () {
             const origin = 'Session.getGrant';
             opts = opts || {};
             return new Promise((resolve, reject) => {
@@ -757,7 +775,7 @@ class Session {
                         reject.call(this, err);
                 });
             });
-        };
+        });
         /**
          * Change password
          * @param {string} pwd Password
@@ -766,7 +784,7 @@ class Session {
          * @return {promise<object>} A promise to the change password result
          * @function
          */
-        this.changePassword = (pwd, opts) => {
+        this.changePassword = (pwd, opts) => __awaiter(this, void 0, void 0, function* () {
             const origin = 'Session.changePassword';
             opts = opts || {};
             return new Promise((resolve, reject) => {
@@ -787,7 +805,7 @@ class Session {
                         reject.call(this, err);
                 });
             });
-        };
+        });
         /**
          * Get application info
          * @param {object} [opts] Options
@@ -795,7 +813,7 @@ class Session {
          * @return {promise<object>} A promise to the application info (also avialable as the <code>appinfo</code> member)
          * @function
          */
-        this.getAppInfo = (opts) => {
+        this.getAppInfo = (opts) => __awaiter(this, void 0, void 0, function* () {
             const origin = 'Session.getAppInfo';
             opts = opts || {};
             return new Promise((resolve, reject) => {
@@ -817,7 +835,7 @@ class Session {
                         reject.call(this, err);
                 });
             });
-        };
+        });
         /**
          * Get system info
          * @param {object} [opts] Options
@@ -825,7 +843,7 @@ class Session {
          * @return {promise<object>} A promise to the system info (also avialable as the <code>sysinfo</code> member)
          * @function
          */
-        this.getSysInfo = (opts) => {
+        this.getSysInfo = (opts) => __awaiter(this, void 0, void 0, function* () {
             const origin = 'Session.getSysInfo';
             opts = opts || {};
             return new Promise((resolve, reject) => {
@@ -847,7 +865,7 @@ class Session {
                         reject.call(this, err);
                 });
             });
-        };
+        });
         /**
          * Get development info
          * @param {string} [module] Module name
@@ -856,7 +874,7 @@ class Session {
          * @return {promise<object>} A promise to the develoment info (also avialable as the <code>devinfo</code> member)
          * @function
          */
-        this.getDevInfo = (module, opts) => {
+        this.getDevInfo = (module, opts) => __awaiter(this, void 0, void 0, function* () {
             const origin = 'Session.getDevInfo';
             opts = opts || {};
             return new Promise((resolve, reject) => {
@@ -882,7 +900,7 @@ class Session {
                         reject.call(this, err);
                 });
             });
-        };
+        });
         /**
          * Get news
          * @param {object} [opts] Options
@@ -891,7 +909,7 @@ class Session {
          * @return {promise<array>} A promise to the list of news (also avialable as the <code>news</code> member)
          * @function
          */
-        this.getNews = (opts) => {
+        this.getNews = (opts) => __awaiter(this, void 0, void 0, function* () {
             const origin = 'Session.getHealth';
             opts = opts || {};
             return new Promise((resolve, reject) => {
@@ -919,7 +937,7 @@ class Session {
                         reject.call(this, err);
                 });
             });
-        };
+        });
         /**
          * Index search
          * @param {string} query Index search query
@@ -931,7 +949,7 @@ class Session {
          * @return {promise<array>} A promise to a list of index search records
          * @function
          */
-        this.indexSearch = (query, object, opts) => {
+        this.indexSearch = (query, object, opts) => __awaiter(this, void 0, void 0, function* () {
             const origin = 'Session.indexSearch';
             opts = opts || {};
             return new Promise((resolve, reject) => {
@@ -957,7 +975,7 @@ class Session {
                         reject.call(this, err);
                 });
             });
-        };
+        });
         /**
          * Get business object
          * @param {string} name Business object name
@@ -1000,7 +1018,7 @@ class Session {
         params = params || {};
         // Within the generic web UI if Simplicite is defined
         const inUI = typeof globalThis.Simplicite !== 'undefined';
-        this.endpoint = params.endpoint || (inUI ? globalThis.Simplicite.ENDPOINT : "api" /* API */);
+        this.endpoint = params.endpoint || (inUI ? globalThis.Simplicite.ENDPOINT : "api" /* SessionParamEndpoint.API */);
         this.log = params.logHandler || ((...args) => {
             // tslint:disable-next-line: no-console
             console.log(args);
@@ -1415,7 +1433,7 @@ class BusinessObject {
          * @return {promise<BusinessObjectMetadata>} A promise to the object'ts meta data (also available as the <code>metadata</code> member)
          * @function
          */
-        this.getMetaData = (opts) => {
+        this.getMetaData = (opts) => __awaiter(this, void 0, void 0, function* () {
             const origin = 'BusinessObject.getMetaData';
             const ses = this.session;
             opts = opts || {};
@@ -1443,7 +1461,7 @@ class BusinessObject {
                         reject.call(this, err);
                 });
             });
-        };
+        });
         /**
          * Get meta data (alias to getMetaData)
          * @function
@@ -1694,7 +1712,7 @@ class BusinessObject {
          * @return {promise<object>} Promise to the object's filters (also available as the <code>filters</code> member)
          * @function
          */
-        this.getFilters = (opts) => {
+        this.getFilters = (opts) => __awaiter(this, void 0, void 0, function* () {
             const origin = 'BusinessObject.getFilters';
             const ses = this.session;
             opts = opts || {};
@@ -1722,7 +1740,7 @@ class BusinessObject {
                         reject.call(this, err);
                 });
             });
-        };
+        });
         /**
          * Build options parameters
          * @param {object} options Options
@@ -1793,7 +1811,7 @@ class BusinessObject {
          * @return {promise<object>} Promise to the count
          * @function
          */
-        this.getCount = (filters, opts) => {
+        this.getCount = (filters, opts) => __awaiter(this, void 0, void 0, function* () {
             const origin = 'BusinessObject.getCount';
             const ses = this.session;
             opts = opts || {};
@@ -1820,7 +1838,7 @@ class BusinessObject {
                         reject.call(this, err);
                 });
             });
-        };
+        });
         /**
          * Search
          * @param {object} [filters] Filters (defaults to current filters)
@@ -1832,7 +1850,7 @@ class BusinessObject {
          * @return {promise<array>} Promise to a list of records (also available as the <code>list</code> member)
          * @function
          */
-        this.search = (filters, opts) => {
+        this.search = (filters, opts) => __awaiter(this, void 0, void 0, function* () {
             const origin = 'BusinessObject.search';
             const ses = this.session;
             opts = opts || {};
@@ -1868,7 +1886,7 @@ class BusinessObject {
                         reject.call(this, err);
                 });
             });
-        };
+        });
         /**
          * Get
          * @param {string} [rowId] Row ID (defaults to current item's row ID)
@@ -1880,7 +1898,7 @@ class BusinessObject {
          * @return {promise<object>} Promise to the record (also available as the <code>item</code> member)
          * @function
          */
-        this.get = (rowId, opts) => {
+        this.get = (rowId, opts) => __awaiter(this, void 0, void 0, function* () {
             const origin = 'BusinessObject.get';
             const ses = this.session;
             opts = opts || {};
@@ -1920,7 +1938,7 @@ class BusinessObject {
                         reject.call(this, err);
                 });
             });
-        };
+        });
         /**
          * Get for create
          * @param {object} [opts] Options
@@ -1929,13 +1947,13 @@ class BusinessObject {
          * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
          * @function
          */
-        this.getForCreate = (opts) => {
+        this.getForCreate = (opts) => __awaiter(this, void 0, void 0, function* () {
             opts = opts || {};
             delete opts.treeview; // Inhibited in this context
             delete opts.fields; // Inhibited in this context
             opts.context = constants.CONTEXT_CREATE;
             return this.get(constants.DEFAULT_ROW_ID, opts);
-        };
+        });
         /**
          * Get for update
          * @param {string} [rowId] Row ID (defaults to current item's row ID)
@@ -1945,13 +1963,13 @@ class BusinessObject {
          * @return {promise<object>} Promise to the record to update (also available as the <code>item</code> member)
          * @function
          */
-        this.getForUpdate = (rowId, opts) => {
+        this.getForUpdate = (rowId, opts) => __awaiter(this, void 0, void 0, function* () {
             opts = opts || {};
             delete opts.treeview; // Inhibited in this context
             delete opts.fields; // Inhibited in this context
             opts.context = constants.CONTEXT_UPDATE;
             return this.get(rowId || this.getRowId(), opts);
-        };
+        });
         /**
          * Get for copy
          * @param {string} [rowId] Row ID to copy (defaults to current item's row ID)
@@ -1961,13 +1979,13 @@ class BusinessObject {
          * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
          * @function
          */
-        this.getForCopy = (rowId, opts) => {
+        this.getForCopy = (rowId, opts) => __awaiter(this, void 0, void 0, function* () {
             opts = opts || {};
             delete opts.treeview; // Inhibited in this context
             delete opts.fields; // Inhibited in this context
             opts.context = constants.CONTEXT_COPY;
             return this.get(rowId || this.getRowId(), opts);
-        };
+        });
         /**
          * Get for delete
          * @param {string} [rowId] Row ID (defaults to current item's row ID)
@@ -1977,13 +1995,13 @@ class BusinessObject {
          * @return {promise<object>} Promise to the record to delete (also available as the <code>item</code> member)
          * @function
          */
-        this.getForDelete = (rowId, opts) => {
+        this.getForDelete = (rowId, opts) => __awaiter(this, void 0, void 0, function* () {
             opts = opts || {};
             delete opts.treeview; // Inhibited in this context
             delete opts.fields; // Inhibited in this context
             opts.context = constants.CONTEXT_DELETE;
             return this.get(rowId || this.getRowId(), opts);
-        };
+        });
         /**
          * Get specified or current item's row ID value
          * @param {object} [item] Item (defaults to current item)
@@ -2003,7 +2021,7 @@ class BusinessObject {
          * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
          * @function
          */
-        this.populate = (item, opts) => {
+        this.populate = (item, opts) => __awaiter(this, void 0, void 0, function* () {
             const origin = 'BusinessObject.populate';
             const ses = this.session;
             opts = opts || {};
@@ -2029,7 +2047,7 @@ class BusinessObject {
                         reject.call(this, err);
                 });
             });
-        };
+        });
         /**
          * Get the linked list for a list of values field and its specified value(s)
          * @param {(string|object)} field Field name or definition
@@ -2040,7 +2058,7 @@ class BusinessObject {
          * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
          * @function
          */
-        this.getFieldLinkedList = (field, linkedField, code, opts) => {
+        this.getFieldLinkedList = (field, linkedField, code, opts) => __awaiter(this, void 0, void 0, function* () {
             const origin = 'BusinessObject.getFieldLinkedList';
             const ses = this.session;
             opts = opts || {};
@@ -2075,7 +2093,7 @@ class BusinessObject {
                         reject.call(this, err);
                 });
             });
-        };
+        });
         /**
          * Save (create or update depending on item row ID value)
          * @param {object} [item] Item (defaults to current item)
@@ -2084,7 +2102,7 @@ class BusinessObject {
          * @return {promise<object>} Promise to the saved record (also available as the <code>item</code> member)
          * @function
          */
-        this.save = (item, opts) => {
+        this.save = (item, opts) => __awaiter(this, void 0, void 0, function* () {
             if (item)
                 this.item = item;
             const rowId = this.item[this.metadata.rowidfield];
@@ -2092,7 +2110,7 @@ class BusinessObject {
                 return this.create(item, opts);
             else
                 return this.update(item, opts);
-        };
+        });
         /**
          * Create (create or update)
          * @param {object} [item] Item (defaults to current item)
@@ -2101,7 +2119,7 @@ class BusinessObject {
          * @return {promise<object>} Promise to the created record (also available as the <code>item</code> member)
          * @function
          */
-        this.create = (item, opts) => {
+        this.create = (item, opts) => __awaiter(this, void 0, void 0, function* () {
             const origin = 'BusinessObject.create';
             const ses = this.session;
             opts = opts || {};
@@ -2128,7 +2146,7 @@ class BusinessObject {
                         reject.call(this, err);
                 });
             });
-        };
+        });
         /**
          * Update
          * @param {object} [item] Item (defaults to current item)
@@ -2137,7 +2155,7 @@ class BusinessObject {
          * @return {promise<object>} Promise to the updated record (also available as the <code>item</code> member)
          * @function
          */
-        this.update = (item, opts) => {
+        this.update = (item, opts) => __awaiter(this, void 0, void 0, function* () {
             const origin = 'BusinessObject.update';
             const ses = this.session;
             opts = opts || {};
@@ -2163,7 +2181,7 @@ class BusinessObject {
                         reject.call(this, err);
                 });
             });
-        };
+        });
         /**
          * Delete
          * @param {object} [item] Item (defaults to current item)
@@ -2172,7 +2190,7 @@ class BusinessObject {
          * @return {promise<object>} Promise (the <code>item</code> member is emptied)
          * @function
          */
-        this.del = (item, opts) => {
+        this.del = (item, opts) => __awaiter(this, void 0, void 0, function* () {
             const origin = 'BusinessObject.del';
             const ses = this.session;
             opts = opts || {};
@@ -2198,7 +2216,7 @@ class BusinessObject {
                         reject.call(this, err);
                 });
             });
-        };
+        });
         /**
          * Invoke a custom action
          * @param {string} action Action name
@@ -2209,7 +2227,7 @@ class BusinessObject {
          * @return {promise<string|object>} A promise to the action result
          * @function
          */
-        this.action = (action, rowId, opts) => {
+        this.action = (action, rowId, opts) => __awaiter(this, void 0, void 0, function* () {
             const origin = `BusinessObject.action(${action})`;
             const ses = this.session;
             opts = opts || {};
@@ -2232,7 +2250,7 @@ class BusinessObject {
                         reject.call(this, err);
                 });
             });
-        };
+        });
         /**
          * Build a pivot table
          * @param {string} ctb Pivot table name
@@ -2242,7 +2260,7 @@ class BusinessObject {
          * @return {promise<object>} A promise to the pivot table data (also avialable as the <code>crosstabdata</code> member)
          * @function
          */
-        this.crosstab = (ctb, opts) => {
+        this.crosstab = (ctb, opts) => __awaiter(this, void 0, void 0, function* () {
             const origin = `BusinessObject.crosstab(${ctb})`;
             const ses = this.session;
             opts = opts || {};
@@ -2266,7 +2284,7 @@ class BusinessObject {
                         reject.call(this, err);
                 });
             });
-        };
+        });
         /**
          * Build a custom publication
          * @param {string} prt Publication name
@@ -2276,7 +2294,7 @@ class BusinessObject {
          * @return {promise<Doc>} A promise to the document of the publication
          * @function
          */
-        this.print = (prt, rowId, opts) => {
+        this.print = (prt, rowId, opts) => __awaiter(this, void 0, void 0, function* () {
             const origin = `BusinessObject.print(${prt})`;
             const ses = this.session;
             opts = opts || {};
@@ -2305,7 +2323,7 @@ class BusinessObject {
                         reject.call(this, err);
                 });
             });
-        };
+        });
         /**
          * Get placem map data
          * @param {string} pcm Place map name
@@ -2315,7 +2333,7 @@ class BusinessObject {
          * @return {promise<any>} A promise to the place map data
          * @function
          */
-        this.placemap = (pcm, filters, opts) => {
+        this.placemap = (pcm, filters, opts) => __awaiter(this, void 0, void 0, function* () {
             const origin = `BusinessObject.placemap(${pcm})`;
             const ses = this.session;
             this.filters = filters || {};
@@ -2340,7 +2358,7 @@ class BusinessObject {
                         reject.call(this, err);
                 });
             });
-        };
+        });
         /**
          * Set an object parameter
          * @param {string} param Parameter name
@@ -2350,7 +2368,7 @@ class BusinessObject {
          * @return {promise<object>} Promise
          * @function
          */
-        this.setParameter = (param, value, opts) => {
+        this.setParameter = (param, value, opts) => __awaiter(this, void 0, void 0, function* () {
             const origin = 'BusinessObject.setParameter';
             const ses = this.session;
             opts = opts || {};
@@ -2376,7 +2394,7 @@ class BusinessObject {
                         reject.call(this, err);
                 });
             });
-        };
+        });
         /**
          * Get an object parameter
          * @param {string} param Parameter name
@@ -2385,7 +2403,7 @@ class BusinessObject {
          * @return {promise<object>} Promise to the parameter value
          * @function
          */
-        this.getParameter = (param, opts) => {
+        this.getParameter = (param, opts) => __awaiter(this, void 0, void 0, function* () {
             const origin = 'BusinessObject.getParameter';
             const ses = this.session;
             opts = opts || {};
@@ -2409,7 +2427,7 @@ class BusinessObject {
                         reject.call(this, err);
                 });
             });
-        };
+        });
         /**
          * Get an object resource URL
          * @param {string} code Resource code
@@ -2500,7 +2518,7 @@ class ExternalObject {
          * @return {promise<object>} Promise to the external object content
          * @function
          */
-        this.call = (params, data, opts) => {
+        this.call = (params, data, opts) => __awaiter(this, void 0, void 0, function* () {
             const origin = 'ExternalObject.call';
             const ses = this.session;
             opts = opts || {};
@@ -2571,7 +2589,7 @@ class ExternalObject {
                         reject.call(this, err);
                 });
             });
-        };
+        });
         /**
          * Alias to <code>call</code>
          * @function

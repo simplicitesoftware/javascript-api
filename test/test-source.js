@@ -1,13 +1,13 @@
 import simplicite from '../dist/esm/simplicite.js';
 import assert from 'assert';
 
-const adminUsername = process.env.TEST_SIMPLICITE_ADMIN_USERNAME || 'designer';
-const adminPassword = process.env.TEST_SIMPLICITE_ADMIN_PASSWORD || 'designer';
+const adminUsername = process && process.env.TEST_SIMPLICITE_ADMIN_USERNAME || 'designer';
+const adminPassword = process && process.env.TEST_SIMPLICITE_ADMIN_PASSWORD || 'designer';
 
 const app = simplicite.session({
-	url: process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080',
+	url: process && process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080',
 	username: adminUsername, password: adminPassword,
-	debug: process.env.TEST_SIMPLICITE_DEBUG === 'true'
+	debug: process && process.env.TEST_SIMPLICITE_DEBUG === 'true'
 });
 
 app.info('Version: ' + simplicite.constants.MODULE_VERSION);

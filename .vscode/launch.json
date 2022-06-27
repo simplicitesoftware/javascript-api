@@ -42,6 +42,11 @@
         }, {
             "type": "node",
             "request": "launch",
+            "name": "Await syntax tests",
+            "program": "${workspaceFolder}\\test\\test.js"
+        }, {
+            "type": "node",
+            "request": "launch",
             "name": "Jest tests",
             "program": "${workspaceRoot}\\node_modules\\jest\\bin\\jest.js",
             "args": [ "-i" ]

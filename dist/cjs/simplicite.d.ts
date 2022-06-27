@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.23
+ * @version 2.2.24
  * @license Apache-2.0
  */
 /**
@@ -676,6 +676,15 @@ declare class Session {
      */
     getHealth: (opts?: any) => Promise<any>;
     /**
+     * Alias to getHealth
+     * @param {object} [opts] Options
+     * @param {boolean} [opts.full=false] Full health check?
+     * @param {function} [opts.error] Error handler function
+     * @return {promise<object>} Promise to the health data
+     * @function
+     */
+    health: (opts?: any) => Promise<any>;
+    /**
      * Login
      * @param {object} [opts] Options
      * @param {string} [opts.username] Username (exclusive with authentication token)
@@ -1220,12 +1229,12 @@ declare class BusinessObject {
      * @return {promise<BusinessObjectMetadata>} A promise to the object'ts meta data (also available as the <code>metadata</code> member)
      * @function
      */
-    getMetaData: (opts?: any) => any;
+    getMetaData: (opts?: any) => Promise<any>;
     /**
      * Get meta data (alias to getMetaData)
      * @function
      */
-    getMetadata: (opts?: any) => any;
+    getMetadata: (opts?: any) => Promise<any>;
     /**
      * Get name
      * @return {string} Name
@@ -1674,12 +1683,12 @@ declare class ExternalObject {
      * @return {promise<object>} Promise to the external object content
      * @function
      */
-    call: (params?: any, data?: any, opts?: any) => Promise<unknown>;
+    call: (params?: any, data?: any, opts?: any) => Promise<any>;
     /**
      * Alias to <code>call</code>
      * @function
      */
-    invoke: (params?: any, data?: any, opts?: any) => Promise<unknown>;
+    invoke: (params?: any, data?: any, opts?: any) => Promise<any>;
 }
 declare const _default: {
     constants: {

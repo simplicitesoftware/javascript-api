@@ -1,11 +1,21 @@
 import simplicite from '../dist/esm/simplicite.js';
 
-const app = simplicite.session({ url: 'http://localhost:8080', debug: false });
+const app = simplicite.session({
+	url: process && process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080',
+	debug: process && process.env.TEST_SIMPLICITE_DEBUG === 'true'
+});
 app.info(`Version: ${simplicite.constants.MODULE_VERSION}`);
 app.debug('Parameters', app.parameters);
 
 try {
-	const user = await app.login({ username: 'designer', password: '<your password>' });
+	const health = await app.health();
+	app.debug(health);
+	app.info(`Status: ${health.platform.status}`);
+
+	const user = await app.login({
+		username: process && process.env.TEST_SIMPLICITE_ADMIN_USERNAME || 'designer',
+		password: process && process.env.TEST_SIMPLICITE_ADMIN_PASSWORD || 'designer'
+	});
 	app.debug(user);
 	app.info(`Logged in as ${user.login} with authentication token ${user.authtoken}`);
 
@@ -63,5 +73,5 @@ try {
 	app.debug(res);
 	app.info(`${res.login} logged out`);
 } catch(err) {
-	app.error('Catched error: ' + JSON.stringify(err));
+	app.error('Catched error: ' + (err.message || JSON.stringify(err)));
 }

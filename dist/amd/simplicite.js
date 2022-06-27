@@ -1,7 +1,43 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.23
+ * @version 2.2.24
  * @license Apache-2.0
  */
 define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (require, exports, node_fetch_1, buffer_1) {
@@ -16,7 +52,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
          * API client module version
          * @constant {string}
          */
-        MODULE_VERSION: '2.2.23',
+        MODULE_VERSION: '2.2.24',
         /**
          * Default row ID field name
          * @constant {string}
@@ -595,28 +631,41 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<object>} Promise to the health data
              * @function
              */
-            this.getHealth = function (opts) {
-                var origin = 'Session.getHealth';
-                opts = opts || {};
-                return new Promise(function (resolve, reject) {
-                    _this.sendRequest("".concat(_this.parameters.healthpath, "&full=").concat(!!opts.full), undefined, function (res, status) {
-                        var r = _this.parseResponse(res, status);
-                        _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(res));
-                        if (r.type === 'error') {
-                            var err = _this.getError(r.response, undefined, origin);
-                            if (!(opts.error || _this.error).call(_this, err))
-                                reject.call(_this, err);
-                        }
-                        else {
-                            resolve.call(_this, r);
-                        }
-                    }, function (err) {
-                        err = _this.getError(err, undefined, origin);
-                        if (!(opts.error || _this.error).call(_this, err))
-                            reject.call(_this, err);
-                    });
+            this.getHealth = function (opts) { return __awaiter(_this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.getHealth';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            _this.sendRequest("".concat(_this.parameters.healthpath, "&full=").concat(!!opts.full), undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(res));
+                                if (r.type === 'error') {
+                                    var err = _this.getError(r.response, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    resolve.call(_this, r);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
                 });
-            };
+            }); };
+            /**
+             * Alias to getHealth
+             * @param {object} [opts] Options
+             * @param {boolean} [opts.full=false] Full health check?
+             * @param {function} [opts.error] Error handler function
+             * @return {promise<object>} Promise to the health data
+             * @function
+             */
+            this.health = this.getHealth;
             /**
              * Login
              * @param {object} [opts] Options
@@ -627,63 +676,67 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<object>} Promise to the login result
              * @function
              */
-            this.login = function (opts) {
-                var origin = 'Session.login';
-                opts = opts || {};
-                return new Promise(function (resolve, reject) {
-                    if ((opts.username || opts.login) && (opts.password || opts.pwd)) {
-                        _this.clear();
-                        _this.username = opts.username || opts.login;
-                        _this.password = opts.password || opts.pwd;
-                    }
-                    else if (opts.authtoken || opts.authToken || opts.token) {
-                        _this.clear();
-                        _this.authtoken = opts.authtoken || opts.authToken || opts.token;
-                    }
-                    _this.sendRequest(_this.parameters.loginpath, undefined, function (res, status) {
-                        var r = _this.parseResponse(res, status);
-                        _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type || (r.error ? 'error' : 'login')));
-                        if (r.type === 'error' || r.error) {
-                            var err = _this.getError(r.response ? r.response : r, undefined, origin);
-                            if (!(opts.error || _this.error).call(_this, err))
-                                reject.call(_this, err);
-                        }
-                        else {
-                            _this.sessionid = r.response ? r.response.id : r.sessionid;
-                            _this.debug("[".concat(origin, "] Session ID = ").concat(_this.sessionid));
-                            _this.username = r.response ? r.response.login : r.login;
-                            if (_this.username)
-                                _this.debug("[".concat(origin, "] Username = ").concat(_this.username));
-                            _this.authtoken = r.response ? r.response.authtoken : r.authtoken;
-                            if (_this.authtoken)
-                                _this.debug("[".concat(origin, "] Auth token = ").concat(_this.authtoken));
-                            try {
-                                var exp = new Date();
-                                exp.setTime(r.response ? r.response.authtokenexpiry : r.authtokenexpiry);
-                                _this.authtokenexpiry = exp;
+            this.login = function (opts) { return __awaiter(_this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.login';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            if ((opts.username || opts.login) && (opts.password || opts.pwd)) {
+                                _this.clear();
+                                _this.username = opts.username || opts.login;
+                                _this.password = opts.password || opts.pwd;
                             }
-                            catch (e) {
-                                _this.authtokenexpiry = undefined;
+                            else if (opts.authtoken || opts.authToken || opts.token) {
+                                _this.clear();
+                                _this.authtoken = opts.authtoken || opts.authToken || opts.token;
                             }
-                            if (_this.authtokenexpiry)
-                                _this.debug("[".concat(origin, "] Auth token expiry date = ").concat(_this.authtokenexpiry));
-                            // Minimal grant from session data
-                            _this.grant = new Grant({
-                                login: _this.username,
-                                userid: r.response ? r.response.userid : r.userid,
-                                firstname: r.response ? r.response.firstname : r.firstname,
-                                lastname: r.response ? r.response.lastname : r.lastname,
-                                email: r.response ? r.response.email : r.email
+                            _this.sendRequest(_this.parameters.loginpath, undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type || (r.error ? 'error' : 'login')));
+                                if (r.type === 'error' || r.error) {
+                                    var err = _this.getError(r.response ? r.response : r, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    _this.sessionid = r.response ? r.response.id : r.sessionid;
+                                    _this.debug("[".concat(origin, "] Session ID = ").concat(_this.sessionid));
+                                    _this.username = r.response ? r.response.login : r.login;
+                                    if (_this.username)
+                                        _this.debug("[".concat(origin, "] Username = ").concat(_this.username));
+                                    _this.authtoken = r.response ? r.response.authtoken : r.authtoken;
+                                    if (_this.authtoken)
+                                        _this.debug("[".concat(origin, "] Auth token = ").concat(_this.authtoken));
+                                    try {
+                                        var exp = new Date();
+                                        exp.setTime(r.response ? r.response.authtokenexpiry : r.authtokenexpiry);
+                                        _this.authtokenexpiry = exp;
+                                    }
+                                    catch (e) {
+                                        _this.authtokenexpiry = undefined;
+                                    }
+                                    if (_this.authtokenexpiry)
+                                        _this.debug("[".concat(origin, "] Auth token expiry date = ").concat(_this.authtokenexpiry));
+                                    // Minimal grant from session data
+                                    _this.grant = new Grant({
+                                        login: _this.username,
+                                        userid: r.response ? r.response.userid : r.userid,
+                                        firstname: r.response ? r.response.firstname : r.firstname,
+                                        lastname: r.response ? r.response.lastname : r.lastname,
+                                        email: r.response ? r.response.email : r.email
+                                    });
+                                    resolve.call(_this, r.response || r);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
                             });
-                            resolve.call(_this, r.response || r);
-                        }
-                    }, function (err) {
-                        err = _this.getError(err, undefined, origin);
-                        if (!(opts.error || _this.error).call(_this, err))
-                            reject.call(_this, err);
-                    });
+                        })];
                 });
-            };
+            }); };
             /**
              * Logout
              * @param {function} callback Callback (called upon success)
@@ -692,31 +745,35 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<object>} Promise to the logout result
              * @function
              */
-            this.logout = function (opts) {
-                var origin = 'Session.logout';
-                opts = opts || {};
-                return new Promise(function (resolve, reject) {
-                    _this.sendRequest(_this.parameters.logoutpath, undefined, function (res, status) {
-                        var r = _this.parseResponse(res, status);
-                        _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type || (r.error ? 'error' : 'logout')));
-                        if (r.type === 'error') {
-                            var err = _this.getError(r.response ? r.response : r, undefined, origin);
-                            if (!(opts.error || _this.error).call(_this, err))
-                                reject.call(_this, err);
-                        }
-                        else {
-                            _this.clear();
-                            resolve.call(_this, r.response || r);
-                        }
-                    }, function (err) {
-                        err = _this.getError(err, undefined, origin);
-                        if (err.status === 401) // Removes (expired or deleted) token if any
-                            _this.authtoken = undefined;
-                        if (!(opts.error || _this.error).call(_this, err))
-                            reject.call(_this, err);
-                    });
+            this.logout = function (opts) { return __awaiter(_this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.logout';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            _this.sendRequest(_this.parameters.logoutpath, undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type || (r.error ? 'error' : 'logout')));
+                                if (r.type === 'error') {
+                                    var err = _this.getError(r.response ? r.response : r, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    _this.clear();
+                                    resolve.call(_this, r.response || r);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (err.status === 401) // Removes (expired or deleted) token if any
+                                    _this.authtoken = undefined;
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
                 });
-            };
+            }); };
             /**
              * Get grant (current user data)
              * @param {object} [opts] Options
@@ -726,40 +783,44 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<Grant>} A promise to the grant (also available as the <code>grant</code> member)
              * @function
              */
-            this.getGrant = function (opts) {
-                var origin = 'Session.getGrant';
-                opts = opts || {};
-                return new Promise(function (resolve, reject) {
-                    var p = '&web=true'; // Required to be able to include texts
-                    var pic = !!opts.inlinePicture || !!opts.picture; // naming flexibility
-                    if (pic)
-                        p += '&inline_picture=true';
-                    var txt = !!opts.includeTexts || !!opts.texts; // naming flexibility
-                    if (txt)
-                        p += '&texts=true';
-                    _this.sendRequest("".concat(_this.parameters.apppath, "?action=getgrant").concat(p), undefined, function (res, status) {
-                        var r = _this.parseResponse(res, status);
-                        _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                        if (r.type === 'error') {
-                            var err = _this.getError(r.response, undefined, origin);
-                            if (!(opts.error || _this.error).call(_this, err))
-                                reject.call(_this, err);
-                        }
-                        else {
-                            _this.grant = new Grant(r.response); // Set as Grant
+            this.getGrant = function (opts) { return __awaiter(_this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.getGrant';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            var p = '&web=true'; // Required to be able to include texts
+                            var pic = !!opts.inlinePicture || !!opts.picture; // naming flexibility
                             if (pic)
-                                _this.grant.picture = new Doc(_this.grant.picture); // Set picture as Document
+                                p += '&inline_picture=true';
+                            var txt = !!opts.includeTexts || !!opts.texts; // naming flexibility
                             if (txt)
-                                _this.grant.texts = Object.assign(new Map(), _this.grant.texts); // Set texts as Map
-                            resolve.call(_this, _this.grant);
-                        }
-                    }, function (err) {
-                        err = _this.getError(err, undefined, origin);
-                        if (!(opts.error || _this.error).call(_this, err))
-                            reject.call(_this, err);
-                    });
+                                p += '&texts=true';
+                            _this.sendRequest("".concat(_this.parameters.apppath, "?action=getgrant").concat(p), undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = _this.getError(r.response, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    _this.grant = new Grant(r.response); // Set as Grant
+                                    if (pic)
+                                        _this.grant.picture = new Doc(_this.grant.picture); // Set picture as Document
+                                    if (txt)
+                                        _this.grant.texts = Object.assign(new Map(), _this.grant.texts); // Set texts as Map
+                                    resolve.call(_this, _this.grant);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
                 });
-            };
+            }); };
             /**
              * Change password
              * @param {string} pwd Password
@@ -768,28 +829,32 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<object>} A promise to the change password result
              * @function
              */
-            this.changePassword = function (pwd, opts) {
-                var origin = 'Session.changePassword';
-                opts = opts || {};
-                return new Promise(function (resolve, reject) {
-                    _this.sendRequest("".concat(_this.parameters.apppath, "?action=setpassword&password=").concat(encodeURIComponent(pwd)), undefined, function (res, status) {
-                        var r = _this.parseResponse(res, status);
-                        _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                        if (r.type === 'error') {
-                            var err = _this.getError(r.response, undefined, origin);
-                            if (!(opts.error || _this.error).call(_this, err))
-                                reject.call(_this, err);
-                        }
-                        else {
-                            resolve.call(_this, r.response);
-                        }
-                    }, function (err) {
-                        err = _this.getError(err, undefined, origin);
-                        if (!(opts.error || _this.error).call(_this, err))
-                            reject.call(_this, err);
-                    });
+            this.changePassword = function (pwd, opts) { return __awaiter(_this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.changePassword';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            _this.sendRequest("".concat(_this.parameters.apppath, "?action=setpassword&password=").concat(encodeURIComponent(pwd)), undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = _this.getError(r.response, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    resolve.call(_this, r.response);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
                 });
-            };
+            }); };
             /**
              * Get application info
              * @param {object} [opts] Options
@@ -797,29 +862,33 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<object>} A promise to the application info (also avialable as the <code>appinfo</code> member)
              * @function
              */
-            this.getAppInfo = function (opts) {
-                var origin = 'Session.getAppInfo';
-                opts = opts || {};
-                return new Promise(function (resolve, reject) {
-                    _this.sendRequest("".concat(_this.parameters.apppath, "?action=getinfo"), undefined, function (res, status) {
-                        var r = _this.parseResponse(res, status);
-                        _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                        if (r.type === 'error') {
-                            var err = _this.getError(r.response, undefined, origin);
-                            if (!(opts.error || _this.error).call(_this, err))
-                                reject.call(_this, err);
-                        }
-                        else {
-                            _this.appinfo = r.response;
-                            resolve.call(_this, _this.appinfo);
-                        }
-                    }, function (err) {
-                        err = _this.getError(err, undefined, origin);
-                        if (!(opts.error || _this.error).call(_this, err))
-                            reject.call(_this, err);
-                    });
+            this.getAppInfo = function (opts) { return __awaiter(_this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.getAppInfo';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            _this.sendRequest("".concat(_this.parameters.apppath, "?action=getinfo"), undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = _this.getError(r.response, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    _this.appinfo = r.response;
+                                    resolve.call(_this, _this.appinfo);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
                 });
-            };
+            }); };
             /**
              * Get system info
              * @param {object} [opts] Options
@@ -827,29 +896,33 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<object>} A promise to the system info (also avialable as the <code>sysinfo</code> member)
              * @function
              */
-            this.getSysInfo = function (opts) {
-                var origin = 'Session.getSysInfo';
-                opts = opts || {};
-                return new Promise(function (resolve, reject) {
-                    _this.sendRequest("".concat(_this.parameters.apppath, "?action=sysinfo"), undefined, function (res, status) {
-                        var r = _this.parseResponse(res, status);
-                        _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                        if (r.type === 'error') {
-                            var err = _this.getError(r.response, undefined, origin);
-                            if (!(opts.error || _this.error).call(_this, err))
-                                reject.call(_this, err);
-                        }
-                        else {
-                            _this.sysinfo = r.response;
-                            resolve.call(_this, _this.sysinfo);
-                        }
-                    }, function (err) {
-                        err = _this.getError(err, undefined, origin);
-                        if (!(opts.error || _this.error).call(_this, err))
-                            reject.call(_this, err);
-                    });
+            this.getSysInfo = function (opts) { return __awaiter(_this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.getSysInfo';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            _this.sendRequest("".concat(_this.parameters.apppath, "?action=sysinfo"), undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = _this.getError(r.response, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    _this.sysinfo = r.response;
+                                    resolve.call(_this, _this.sysinfo);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
                 });
-            };
+            }); };
             /**
              * Get development info
              * @param {string} [module] Module name
@@ -858,33 +931,37 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<object>} A promise to the develoment info (also avialable as the <code>devinfo</code> member)
              * @function
              */
-            this.getDevInfo = function (module, opts) {
-                var origin = 'Session.getDevInfo';
-                opts = opts || {};
-                return new Promise(function (resolve, reject) {
-                    var p = '';
-                    if (module)
-                        p += '&module=' + encodeURIComponent(module);
-                    _this.sendRequest("".concat(_this.parameters.apppath, "?action=devinfo").concat(p), undefined, function (res, status) {
-                        var r = _this.parseResponse(res, status);
-                        _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                        if (r.type === 'error') {
-                            var err = _this.getError(r.response, undefined, origin);
-                            if (!(opts.error || _this.error).call(_this, err))
-                                reject.call(_this, err);
-                        }
-                        else {
-                            if (!module)
-                                _this.devinfo = r.response;
-                            resolve.call(_this, r.response);
-                        }
-                    }, function (err) {
-                        err = _this.getError(err, undefined, origin);
-                        if (!(opts.error || _this.error).call(_this, err))
-                            reject.call(_this, err);
-                    });
+            this.getDevInfo = function (module, opts) { return __awaiter(_this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.getDevInfo';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            var p = '';
+                            if (module)
+                                p += '&module=' + encodeURIComponent(module);
+                            _this.sendRequest("".concat(_this.parameters.apppath, "?action=devinfo").concat(p), undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = _this.getError(r.response, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    if (!module)
+                                        _this.devinfo = r.response;
+                                    resolve.call(_this, r.response);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
                 });
-            };
+            }); };
             /**
              * Get news
              * @param {object} [opts] Options
@@ -893,37 +970,41 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<array>} A promise to the list of news (also avialable as the <code>news</code> member)
              * @function
              */
-            this.getNews = function (opts) {
-                var origin = 'Session.getHealth';
-                opts = opts || {};
-                return new Promise(function (resolve, reject) {
-                    var p = '';
-                    var img = !!opts.inlineImages || !!opts.images; // naming flexibility
-                    if (img)
-                        p += '&inline_images=true';
-                    _this.sendRequest("".concat(_this.parameters.apppath, "?action=news").concat(p), undefined, function (res, status) {
-                        var r = _this.parseResponse(res, status);
-                        _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                        if (r.type === 'error') {
-                            var err = _this.getError(r.response, undefined, origin);
-                            if (!(opts.error || _this.error).call(_this, err))
-                                reject.call(_this, err);
-                        }
-                        else {
-                            _this.news = r.response;
-                            for (var _i = 0, _a = _this.news; _i < _a.length; _i++) {
-                                var n = _a[_i];
-                                n.image = new Doc(n.image);
-                            } // Set image as document
-                            resolve.call(_this, _this.news);
-                        }
-                    }, function (err) {
-                        err = _this.getError(err, undefined, origin);
-                        if (!(opts.error || _this.error).call(_this, err))
-                            reject.call(_this, err);
-                    });
+            this.getNews = function (opts) { return __awaiter(_this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.getHealth';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            var p = '';
+                            var img = !!opts.inlineImages || !!opts.images; // naming flexibility
+                            if (img)
+                                p += '&inline_images=true';
+                            _this.sendRequest("".concat(_this.parameters.apppath, "?action=news").concat(p), undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = _this.getError(r.response, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    _this.news = r.response;
+                                    for (var _i = 0, _a = _this.news; _i < _a.length; _i++) {
+                                        var n = _a[_i];
+                                        n.image = new Doc(n.image);
+                                    } // Set image as document
+                                    resolve.call(_this, _this.news);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
                 });
-            };
+            }); };
             /**
              * Index search
              * @param {string} query Index search query
@@ -935,33 +1016,37 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<array>} A promise to a list of index search records
              * @function
              */
-            this.indexSearch = function (query, object, opts) {
-                var origin = 'Session.indexSearch';
-                opts = opts || {};
-                return new Promise(function (resolve, reject) {
-                    var p = '';
-                    if (opts.metadata === true)
-                        p += '&_md=true';
-                    if (opts.context)
-                        p += '&context=' + encodeURIComponent(opts.context);
-                    _this.sendRequest("".concat(_this.parameters.apppath, "?action=indexsearch&request=").concat(encodeURIComponent(query ? query : '')).concat(object ? '&object=' + encodeURIComponent(object) : '').concat(p), undefined, function (res, status) {
-                        var r = _this.parseResponse(res, status);
-                        _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                        if (r.type === 'error') {
-                            var err = _this.getError(r.response, undefined, origin);
-                            if (!(opts.error || _this.error).call(_this, err))
-                                reject.call(_this, err);
-                        }
-                        else {
-                            resolve.call(_this, r.response);
-                        }
-                    }, function (err) {
-                        err = _this.getError(err, undefined, origin);
-                        if (!(opts.error || _this.error).call(_this, err))
-                            reject.call(_this, err);
-                    });
+            this.indexSearch = function (query, object, opts) { return __awaiter(_this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.indexSearch';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            var p = '';
+                            if (opts.metadata === true)
+                                p += '&_md=true';
+                            if (opts.context)
+                                p += '&context=' + encodeURIComponent(opts.context);
+                            _this.sendRequest("".concat(_this.parameters.apppath, "?action=indexsearch&request=").concat(encodeURIComponent(query ? query : '')).concat(object ? '&object=' + encodeURIComponent(object) : '').concat(p), undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = _this.getError(r.response, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    resolve.call(_this, r.response);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
                 });
-            };
+            }); };
             /**
              * Get business object
              * @param {string} name Business object name
@@ -1004,7 +1089,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
             params = params || {};
             // Within the generic web UI if Simplicite is defined
             var inUI = typeof globalThis.Simplicite !== 'undefined';
-            this.endpoint = params.endpoint || (inUI ? globalThis.Simplicite.ENDPOINT : "api" /* API */);
+            this.endpoint = params.endpoint || (inUI ? globalThis.Simplicite.ENDPOINT : "api" /* SessionParamEndpoint.API */);
             this.log = params.logHandler || (function () {
                 var args = [];
                 for (var _i = 0; _i < arguments.length; _i++) {
@@ -1446,35 +1531,39 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<BusinessObjectMetadata>} A promise to the object'ts meta data (also available as the <code>metadata</code> member)
              * @function
              */
-            this.getMetaData = function (opts) {
-                var origin = 'BusinessObject.getMetaData';
-                var ses = _this.session;
-                opts = opts || {};
-                return new Promise(function (resolve, reject) {
-                    var p = '';
-                    if (opts.context)
-                        p += '&context=' + encodeURIComponent(opts.context);
-                    if (opts.contextParam)
-                        p += '&contextparam=' + encodeURIComponent(opts.contextParam);
-                    ses.sendRequest(_this.path + '&action=metadata' + p, undefined, function (res, status) {
-                        var r = ses.parseResponse(res, status);
-                        ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                        if (r.type === 'error') {
-                            var err = ses.getError(r.response, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        }
-                        else {
-                            _this.metadata = r.response;
-                            resolve.call(_this, _this.metadata);
-                        }
-                    }, function (err) {
-                        err = ses.getError(err, undefined, origin);
-                        if (!(opts.error || ses.error).call(_this, err))
-                            reject.call(_this, err);
-                    });
+            this.getMetaData = function (opts) { return __awaiter(_this, void 0, void 0, function () {
+                var origin, ses;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'BusinessObject.getMetaData';
+                    ses = this.session;
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            var p = '';
+                            if (opts.context)
+                                p += '&context=' + encodeURIComponent(opts.context);
+                            if (opts.contextParam)
+                                p += '&contextparam=' + encodeURIComponent(opts.contextParam);
+                            ses.sendRequest(_this.path + '&action=metadata' + p, undefined, function (res, status) {
+                                var r = ses.parseResponse(res, status);
+                                ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = ses.getError(r.response, undefined, origin);
+                                    if (!(opts.error || ses.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    _this.metadata = r.response;
+                                    resolve.call(_this, _this.metadata);
+                                }
+                            }, function (err) {
+                                err = ses.getError(err, undefined, origin);
+                                if (!(opts.error || ses.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
                 });
-            };
+            }); };
             /**
              * Get meta data (alias to getMetaData)
              * @function
@@ -1726,35 +1815,39 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<object>} Promise to the object's filters (also available as the <code>filters</code> member)
              * @function
              */
-            this.getFilters = function (opts) {
-                var origin = 'BusinessObject.getFilters';
-                var ses = _this.session;
-                opts = opts || {};
-                return new Promise(function (resolve, reject) {
-                    var p = '';
-                    if (opts.context)
-                        p += '&context=' + encodeURIComponent(opts.context);
-                    if (opts.reset)
-                        p += '&reset=' + !!opts.reset;
-                    ses.sendRequest(_this.path + '&action=filters' + p, undefined, function (res, status) {
-                        var r = ses.parseResponse(res, status);
-                        ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                        if (r.type === 'error') {
-                            var err = ses.getError(r.response, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        }
-                        else {
-                            _this.filters = r.response;
-                            resolve.call(_this, _this.filters);
-                        }
-                    }, function (err) {
-                        err = ses.getError(err, undefined, origin);
-                        if (!(opts.error || ses.error).call(_this, err))
-                            reject.call(_this, err);
-                    });
+            this.getFilters = function (opts) { return __awaiter(_this, void 0, void 0, function () {
+                var origin, ses;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'BusinessObject.getFilters';
+                    ses = this.session;
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            var p = '';
+                            if (opts.context)
+                                p += '&context=' + encodeURIComponent(opts.context);
+                            if (opts.reset)
+                                p += '&reset=' + !!opts.reset;
+                            ses.sendRequest(_this.path + '&action=filters' + p, undefined, function (res, status) {
+                                var r = ses.parseResponse(res, status);
+                                ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = ses.getError(r.response, undefined, origin);
+                                    if (!(opts.error || ses.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    _this.filters = r.response;
+                                    resolve.call(_this, _this.filters);
+                                }
+                            }, function (err) {
+                                err = ses.getError(err, undefined, origin);
+                                if (!(opts.error || ses.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
                 });
-            };
+            }); };
             /**
              * Build options parameters
              * @param {object} options Options
@@ -1828,34 +1921,38 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<object>} Promise to the count
              * @function
              */
-            this.getCount = function (filters, opts) {
-                var origin = 'BusinessObject.getCount';
-                var ses = _this.session;
-                opts = opts || {};
-                return new Promise(function (resolve, reject) {
-                    _this.filters = filters || {};
-                    ses.sendRequest("".concat(_this.path, "&action=count"), _this.getReqParams(_this.filters, true), function (res, status) {
-                        var r = ses.parseResponse(res, status);
-                        ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
-                        if (r.type === 'error') {
-                            var err = ses.getError(r.response, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        }
-                        else {
-                            _this.count = r.response.count;
-                            _this.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
-                            _this.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
-                            _this.list = [];
-                            resolve.call(_this, _this.count);
-                        }
-                    }, function (err) {
-                        err = ses.getError(err, undefined, origin);
-                        if (!(opts.error || ses.error).call(_this, err))
-                            reject.call(_this, err);
-                    });
+            this.getCount = function (filters, opts) { return __awaiter(_this, void 0, void 0, function () {
+                var origin, ses;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'BusinessObject.getCount';
+                    ses = this.session;
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            _this.filters = filters || {};
+                            ses.sendRequest("".concat(_this.path, "&action=count"), _this.getReqParams(_this.filters, true), function (res, status) {
+                                var r = ses.parseResponse(res, status);
+                                ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
+                                if (r.type === 'error') {
+                                    var err = ses.getError(r.response, undefined, origin);
+                                    if (!(opts.error || ses.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    _this.count = r.response.count;
+                                    _this.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
+                                    _this.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
+                                    _this.list = [];
+                                    resolve.call(_this, _this.count);
+                                }
+                            }, function (err) {
+                                err = ses.getError(err, undefined, origin);
+                                if (!(opts.error || ses.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
                 });
-            };
+            }); };
             /**
              * Search
              * @param {object} [filters] Filters (defaults to current filters)
@@ -1867,43 +1964,47 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<array>} Promise to a list of records (also available as the <code>list</code> member)
              * @function
              */
-            this.search = function (filters, opts) {
-                var origin = 'BusinessObject.search';
-                var ses = _this.session;
-                opts = opts || {};
-                return new Promise(function (resolve, reject) {
-                    var p = _this.getReqOptions(opts);
-                    if (opts.page > 0)
-                        p += '&page=' + (opts.page - 1);
-                    if (opts.metadata === true)
-                        p += '&_md=true';
-                    if (opts.visible === true)
-                        p += '&_visible=true';
-                    _this.filters = filters || {};
-                    ses.sendRequest(_this.path + '&action=search' + p, _this.getReqParams(_this.filters, true), function (res, status) {
-                        var r = ses.parseResponse(res, status);
-                        ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                        if (r.type === 'error') {
-                            var err = ses.getError(r.response, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        }
-                        else {
-                            if (res.meta)
-                                _this.metadata = r.response.meta;
-                            _this.count = r.response.count;
-                            _this.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
-                            _this.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
-                            _this.list = r.response.list;
-                            resolve.call(_this, _this.list);
-                        }
-                    }, function (err) {
-                        err = ses.getError(err, undefined, origin);
-                        if (!(opts.error || ses.error).call(_this, err))
-                            reject.call(_this, err);
-                    });
+            this.search = function (filters, opts) { return __awaiter(_this, void 0, void 0, function () {
+                var origin, ses;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'BusinessObject.search';
+                    ses = this.session;
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            var p = _this.getReqOptions(opts);
+                            if (opts.page > 0)
+                                p += '&page=' + (opts.page - 1);
+                            if (opts.metadata === true)
+                                p += '&_md=true';
+                            if (opts.visible === true)
+                                p += '&_visible=true';
+                            _this.filters = filters || {};
+                            ses.sendRequest(_this.path + '&action=search' + p, _this.getReqParams(_this.filters, true), function (res, status) {
+                                var r = ses.parseResponse(res, status);
+                                ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = ses.getError(r.response, undefined, origin);
+                                    if (!(opts.error || ses.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    if (res.meta)
+                                        _this.metadata = r.response.meta;
+                                    _this.count = r.response.count;
+                                    _this.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
+                                    _this.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
+                                    _this.list = r.response.list;
+                                    resolve.call(_this, _this.list);
+                                }
+                            }, function (err) {
+                                err = ses.getError(err, undefined, origin);
+                                if (!(opts.error || ses.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
                 });
-            };
+            }); };
             /**
              * Get
              * @param {string} [rowId] Row ID (defaults to current item's row ID)
@@ -1915,49 +2016,53 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<object>} Promise to the record (also available as the <code>item</code> member)
              * @function
              */
-            this.get = function (rowId, opts) {
-                var origin = 'BusinessObject.get';
-                var ses = _this.session;
-                opts = opts || {};
-                return new Promise(function (resolve, reject) {
-                    var p = _this.getReqOptions(opts);
-                    var tv = opts.treeView;
-                    if (tv)
-                        p += '&treeview=' + encodeURIComponent(tv);
-                    if (opts.fields) {
-                        for (var _i = 0, _a = opts.fields.length; _i < _a.length; _i++) {
-                            var f = _a[_i];
-                            p += '&fields=' + encodeURIComponent(f.replace('.', '__'));
-                        }
-                    }
-                    if (opts.metadata)
-                        p += '&_md=true';
-                    if (opts.social)
-                        p += '&_social=true';
-                    ses.sendRequest(_this.path + '&action=get&' + _this.metadata.rowidfield + '=' + encodeURIComponent(rowId || _this.getRowId()) + p, undefined, function (res, status) {
-                        var r = ses.parseResponse(res, status);
-                        ses.debug('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response type = ' + r.type);
-                        if (r.type === 'error') {
-                            var err = ses.getError(r.response, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        }
-                        else {
-                            if (r.response.meta)
-                                _this.metadata = r.response.meta;
-                            if (r.response.data)
-                                _this.item = tv ? r.response.data.item : r.response.data;
-                            else
-                                _this.item = tv ? r.response.item : r.response;
-                            resolve.call(_this, tv ? r.response : _this.item);
-                        }
-                    }, function (err) {
-                        err = ses.getError(err, undefined, origin);
-                        if (!(opts.error || ses.error).call(_this, err))
-                            reject.call(_this, err);
-                    });
+            this.get = function (rowId, opts) { return __awaiter(_this, void 0, void 0, function () {
+                var origin, ses;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'BusinessObject.get';
+                    ses = this.session;
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            var p = _this.getReqOptions(opts);
+                            var tv = opts.treeView;
+                            if (tv)
+                                p += '&treeview=' + encodeURIComponent(tv);
+                            if (opts.fields) {
+                                for (var _i = 0, _a = opts.fields.length; _i < _a.length; _i++) {
+                                    var f = _a[_i];
+                                    p += '&fields=' + encodeURIComponent(f.replace('.', '__'));
+                                }
+                            }
+                            if (opts.metadata)
+                                p += '&_md=true';
+                            if (opts.social)
+                                p += '&_social=true';
+                            ses.sendRequest(_this.path + '&action=get&' + _this.metadata.rowidfield + '=' + encodeURIComponent(rowId || _this.getRowId()) + p, undefined, function (res, status) {
+                                var r = ses.parseResponse(res, status);
+                                ses.debug('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response type = ' + r.type);
+                                if (r.type === 'error') {
+                                    var err = ses.getError(r.response, undefined, origin);
+                                    if (!(opts.error || ses.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    if (r.response.meta)
+                                        _this.metadata = r.response.meta;
+                                    if (r.response.data)
+                                        _this.item = tv ? r.response.data.item : r.response.data;
+                                    else
+                                        _this.item = tv ? r.response.item : r.response;
+                                    resolve.call(_this, tv ? r.response : _this.item);
+                                }
+                            }, function (err) {
+                                err = ses.getError(err, undefined, origin);
+                                if (!(opts.error || ses.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
                 });
-            };
+            }); };
             /**
              * Get for create
              * @param {object} [opts] Options
@@ -1966,13 +2071,15 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
              * @function
              */
-            this.getForCreate = function (opts) {
-                opts = opts || {};
-                delete opts.treeview; // Inhibited in this context
-                delete opts.fields; // Inhibited in this context
-                opts.context = constants.CONTEXT_CREATE;
-                return _this.get(constants.DEFAULT_ROW_ID, opts);
-            };
+            this.getForCreate = function (opts) { return __awaiter(_this, void 0, void 0, function () {
+                return __generator(this, function (_a) {
+                    opts = opts || {};
+                    delete opts.treeview; // Inhibited in this context
+                    delete opts.fields; // Inhibited in this context
+                    opts.context = constants.CONTEXT_CREATE;
+                    return [2 /*return*/, this.get(constants.DEFAULT_ROW_ID, opts)];
+                });
+            }); };
             /**
              * Get for update
              * @param {string} [rowId] Row ID (defaults to current item's row ID)
@@ -1982,13 +2089,15 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<object>} Promise to the record to update (also available as the <code>item</code> member)
              * @function
              */
-            this.getForUpdate = function (rowId, opts) {
-                opts = opts || {};
-                delete opts.treeview; // Inhibited in this context
-                delete opts.fields; // Inhibited in this context
-                opts.context = constants.CONTEXT_UPDATE;
-                return _this.get(rowId || _this.getRowId(), opts);
-            };
+            this.getForUpdate = function (rowId, opts) { return __awaiter(_this, void 0, void 0, function () {
+                return __generator(this, function (_a) {
+                    opts = opts || {};
+                    delete opts.treeview; // Inhibited in this context
+                    delete opts.fields; // Inhibited in this context
+                    opts.context = constants.CONTEXT_UPDATE;
+                    return [2 /*return*/, this.get(rowId || this.getRowId(), opts)];
+                });
+            }); };
             /**
              * Get for copy
              * @param {string} [rowId] Row ID to copy (defaults to current item's row ID)
@@ -1998,13 +2107,15 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
              * @function
              */
-            this.getForCopy = function (rowId, opts) {
-                opts = opts || {};
-                delete opts.treeview; // Inhibited in this context
-                delete opts.fields; // Inhibited in this context
-                opts.context = constants.CONTEXT_COPY;
-                return _this.get(rowId || _this.getRowId(), opts);
-            };
+            this.getForCopy = function (rowId, opts) { return __awaiter(_this, void 0, void 0, function () {
+                return __generator(this, function (_a) {
+                    opts = opts || {};
+                    delete opts.treeview; // Inhibited in this context
+                    delete opts.fields; // Inhibited in this context
+                    opts.context = constants.CONTEXT_COPY;
+                    return [2 /*return*/, this.get(rowId || this.getRowId(), opts)];
+                });
+            }); };
             /**
              * Get for delete
              * @param {string} [rowId] Row ID (defaults to current item's row ID)
@@ -2014,13 +2125,15 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<object>} Promise to the record to delete (also available as the <code>item</code> member)
              * @function
              */
-            this.getForDelete = function (rowId, opts) {
-                opts = opts || {};
-                delete opts.treeview; // Inhibited in this context
-                delete opts.fields; // Inhibited in this context
-                opts.context = constants.CONTEXT_DELETE;
-                return _this.get(rowId || _this.getRowId(), opts);
-            };
+            this.getForDelete = function (rowId, opts) { return __awaiter(_this, void 0, void 0, function () {
+                return __generator(this, function (_a) {
+                    opts = opts || {};
+                    delete opts.treeview; // Inhibited in this context
+                    delete opts.fields; // Inhibited in this context
+                    opts.context = constants.CONTEXT_DELETE;
+                    return [2 /*return*/, this.get(rowId || this.getRowId(), opts)];
+                });
+            }); };
             /**
              * Get specified or current item's row ID value
              * @param {object} [item] Item (defaults to current item)
@@ -2040,33 +2153,37 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
              * @function
              */
-            this.populate = function (item, opts) {
-                var origin = 'BusinessObject.populate';
-                var ses = _this.session;
-                opts = opts || {};
-                return new Promise(function (resolve, reject) {
-                    if (item)
-                        _this.item = item;
-                    var p = _this.getReqOptions(opts);
-                    ses.sendRequest(_this.path + '&action=populate?' + p, _this.getReqParams(_this.item), function (res, status) {
-                        var r = ses.parseResponse(res, status);
-                        ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                        if (r.type === 'error') {
-                            var err = ses.getError(r.response, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        }
-                        else {
-                            _this.item = r.response.data ? r.response.data : r.response;
-                            resolve.call(_this, _this.item);
-                        }
-                    }, function (err) {
-                        err = ses.getError(err, undefined, origin);
-                        if (!(opts.error || ses.error).call(_this, err))
-                            reject.call(_this, err);
-                    });
+            this.populate = function (item, opts) { return __awaiter(_this, void 0, void 0, function () {
+                var origin, ses;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'BusinessObject.populate';
+                    ses = this.session;
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            if (item)
+                                _this.item = item;
+                            var p = _this.getReqOptions(opts);
+                            ses.sendRequest(_this.path + '&action=populate?' + p, _this.getReqParams(_this.item), function (res, status) {
+                                var r = ses.parseResponse(res, status);
+                                ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = ses.getError(r.response, undefined, origin);
+                                    if (!(opts.error || ses.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    _this.item = r.response.data ? r.response.data : r.response;
+                                    resolve.call(_this, _this.item);
+                                }
+                            }, function (err) {
+                                err = ses.getError(err, undefined, origin);
+                                if (!(opts.error || ses.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
                 });
-            };
+            }); };
             /**
              * Get the linked list for a list of values field and its specified value(s)
              * @param {(string|object)} field Field name or definition
@@ -2077,42 +2194,46 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
              * @function
              */
-            this.getFieldLinkedList = function (field, linkedField, code, opts) {
-                var origin = 'BusinessObject.getFieldLinkedList';
-                var ses = _this.session;
-                opts = opts || {};
-                return new Promise(function (resolve, reject) {
-                    if (typeof field !== 'string')
-                        field = field.fullinput || field.name;
-                    if (typeof linkedField !== 'string')
-                        linkedField = linkedField.fullinput || linkedField.name;
-                    var all = false;
-                    if (code === true) {
-                        all = true;
-                        code = undefined;
-                    }
-                    else if (typeof code === 'undefined') {
-                        code = _this.getFieldValue(field);
-                    }
-                    ses.sendRequest("".concat(_this.path, "&action=getlinkedlist"), _this.getReqParams({ origin: field, input: linkedField, code: code, all: all }), function (res, status) {
-                        var r = ses.parseResponse(res, status);
-                        ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
-                        if (r.type === 'error') {
-                            var err = ses.getError(r.response, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        }
-                        else {
-                            _this.item = r.response.result ? r.response.result : r.response;
-                            resolve.call(_this, _this.item);
-                        }
-                    }, function (err) {
-                        err = ses.getError(err, undefined, origin);
-                        if (!(opts.error || ses.error).call(_this, err))
-                            reject.call(_this, err);
-                    });
+            this.getFieldLinkedList = function (field, linkedField, code, opts) { return __awaiter(_this, void 0, void 0, function () {
+                var origin, ses;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'BusinessObject.getFieldLinkedList';
+                    ses = this.session;
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            if (typeof field !== 'string')
+                                field = field.fullinput || field.name;
+                            if (typeof linkedField !== 'string')
+                                linkedField = linkedField.fullinput || linkedField.name;
+                            var all = false;
+                            if (code === true) {
+                                all = true;
+                                code = undefined;
+                            }
+                            else if (typeof code === 'undefined') {
+                                code = _this.getFieldValue(field);
+                            }
+                            ses.sendRequest("".concat(_this.path, "&action=getlinkedlist"), _this.getReqParams({ origin: field, input: linkedField, code: code, all: all }), function (res, status) {
+                                var r = ses.parseResponse(res, status);
+                                ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
+                                if (r.type === 'error') {
+                                    var err = ses.getError(r.response, undefined, origin);
+                                    if (!(opts.error || ses.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    _this.item = r.response.result ? r.response.result : r.response;
+                                    resolve.call(_this, _this.item);
+                                }
+                            }, function (err) {
+                                err = ses.getError(err, undefined, origin);
+                                if (!(opts.error || ses.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
                 });
-            };
+            }); };
             /**
              * Save (create or update depending on item row ID value)
              * @param {object} [item] Item (defaults to current item)
@@ -2121,15 +2242,19 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<object>} Promise to the saved record (also available as the <code>item</code> member)
              * @function
              */
-            this.save = function (item, opts) {
-                if (item)
-                    _this.item = item;
-                var rowId = _this.item[_this.metadata.rowidfield];
-                if (!rowId || rowId === constants.DEFAULT_ROW_ID)
-                    return _this.create(item, opts);
-                else
-                    return _this.update(item, opts);
-            };
+            this.save = function (item, opts) { return __awaiter(_this, void 0, void 0, function () {
+                var rowId;
+                return __generator(this, function (_a) {
+                    if (item)
+                        this.item = item;
+                    rowId = this.item[this.metadata.rowidfield];
+                    if (!rowId || rowId === constants.DEFAULT_ROW_ID)
+                        return [2 /*return*/, this.create(item, opts)];
+                    else
+                        return [2 /*return*/, this.update(item, opts)];
+                    return [2 /*return*/];
+                });
+            }); };
             /**
              * Create (create or update)
              * @param {object} [item] Item (defaults to current item)
@@ -2138,34 +2263,38 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<object>} Promise to the created record (also available as the <code>item</code> member)
              * @function
              */
-            this.create = function (item, opts) {
-                var origin = 'BusinessObject.create';
-                var ses = _this.session;
-                opts = opts || {};
-                return new Promise(function (resolve, reject) {
-                    if (item)
-                        _this.item = item;
-                    _this.item.row_id = constants.DEFAULT_ROW_ID;
-                    var p = _this.getReqOptions(opts);
-                    ses.sendRequest("".concat(_this.path, "&action=create").concat(p), _this.getReqParams(_this.item), function (res, status) {
-                        var r = ses.parseResponse(res, status);
-                        ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
-                        if (r.type === 'error') {
-                            var err = ses.getError(r.response, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        }
-                        else {
-                            _this.item = r.response.data ? r.response.data : r.response;
-                            resolve.call(_this, _this.item);
-                        }
-                    }, function (err) {
-                        err = ses.getError(err, undefined, origin);
-                        if (!(opts.error || ses.error).call(_this, err))
-                            reject.call(_this, err);
-                    });
+            this.create = function (item, opts) { return __awaiter(_this, void 0, void 0, function () {
+                var origin, ses;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'BusinessObject.create';
+                    ses = this.session;
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            if (item)
+                                _this.item = item;
+                            _this.item.row_id = constants.DEFAULT_ROW_ID;
+                            var p = _this.getReqOptions(opts);
+                            ses.sendRequest("".concat(_this.path, "&action=create").concat(p), _this.getReqParams(_this.item), function (res, status) {
+                                var r = ses.parseResponse(res, status);
+                                ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
+                                if (r.type === 'error') {
+                                    var err = ses.getError(r.response, undefined, origin);
+                                    if (!(opts.error || ses.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    _this.item = r.response.data ? r.response.data : r.response;
+                                    resolve.call(_this, _this.item);
+                                }
+                            }, function (err) {
+                                err = ses.getError(err, undefined, origin);
+                                if (!(opts.error || ses.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
                 });
-            };
+            }); };
             /**
              * Update
              * @param {object} [item] Item (defaults to current item)
@@ -2174,33 +2303,37 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<object>} Promise to the updated record (also available as the <code>item</code> member)
              * @function
              */
-            this.update = function (item, opts) {
-                var origin = 'BusinessObject.update';
-                var ses = _this.session;
-                opts = opts || {};
-                return new Promise(function (resolve, reject) {
-                    if (item)
-                        _this.item = item;
-                    var p = _this.getReqOptions(opts);
-                    ses.sendRequest(_this.path + '&action=update' + p, _this.getReqParams(_this.item), function (res, status) {
-                        var r = ses.parseResponse(res, status);
-                        ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                        if (r.type === 'error') {
-                            var err = ses.getError(r.response, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        }
-                        else {
-                            _this.item = r.response.data ? r.response.data : r.response;
-                            resolve.call(_this, _this.item);
-                        }
-                    }, function (err) {
-                        err = ses.getError(err, undefined, origin);
-                        if (!(opts.error || ses.error).call(_this, err))
-                            reject.call(_this, err);
-                    });
+            this.update = function (item, opts) { return __awaiter(_this, void 0, void 0, function () {
+                var origin, ses;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'BusinessObject.update';
+                    ses = this.session;
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            if (item)
+                                _this.item = item;
+                            var p = _this.getReqOptions(opts);
+                            ses.sendRequest(_this.path + '&action=update' + p, _this.getReqParams(_this.item), function (res, status) {
+                                var r = ses.parseResponse(res, status);
+                                ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = ses.getError(r.response, undefined, origin);
+                                    if (!(opts.error || ses.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    _this.item = r.response.data ? r.response.data : r.response;
+                                    resolve.call(_this, _this.item);
+                                }
+                            }, function (err) {
+                                err = ses.getError(err, undefined, origin);
+                                if (!(opts.error || ses.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
                 });
-            };
+            }); };
             /**
              * Delete
              * @param {object} [item] Item (defaults to current item)
@@ -2209,33 +2342,37 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<object>} Promise (the <code>item</code> member is emptied)
              * @function
              */
-            this.del = function (item, opts) {
-                var origin = 'BusinessObject.del';
-                var ses = _this.session;
-                opts = opts || {};
-                return new Promise(function (resolve, reject) {
-                    if (item)
-                        _this.item = item;
-                    ses.sendRequest(_this.path + '&action=delete&' + _this.metadata.rowidfield + '=' + encodeURIComponent(_this.item[_this.metadata.rowidfield]), undefined, function (res, status) {
-                        var r = ses.parseResponse(res, status);
-                        ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                        if (r.type === 'error') {
-                            var err = ses.getError(r.response, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        }
-                        else {
-                            _this.item = undefined;
-                            delete r.response.undoredo;
-                            resolve.call(_this, r.response);
-                        }
-                    }, function (err) {
-                        err = ses.getError(err, undefined, origin);
-                        if (!(opts.error || ses.error).call(_this, err))
-                            reject.call(_this, err);
-                    });
+            this.del = function (item, opts) { return __awaiter(_this, void 0, void 0, function () {
+                var origin, ses;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'BusinessObject.del';
+                    ses = this.session;
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            if (item)
+                                _this.item = item;
+                            ses.sendRequest(_this.path + '&action=delete&' + _this.metadata.rowidfield + '=' + encodeURIComponent(_this.item[_this.metadata.rowidfield]), undefined, function (res, status) {
+                                var r = ses.parseResponse(res, status);
+                                ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = ses.getError(r.response, undefined, origin);
+                                    if (!(opts.error || ses.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    _this.item = undefined;
+                                    delete r.response.undoredo;
+                                    resolve.call(_this, r.response);
+                                }
+                            }, function (err) {
+                                err = ses.getError(err, undefined, origin);
+                                if (!(opts.error || ses.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
                 });
-            };
+            }); };
             /**
              * Invoke a custom action
              * @param {string} action Action name
@@ -2246,30 +2383,34 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<string|object>} A promise to the action result
              * @function
              */
-            this.action = function (action, rowId, opts) {
-                var origin = "BusinessObject.action(".concat(action, ")");
-                var ses = _this.session;
-                opts = opts || {};
-                return new Promise(function (resolve, reject) {
-                    ses.sendRequest(_this.path + '&action=' + encodeURIComponent(action) + (rowId ? '&' + _this.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : ''), _this.getReqParams(opts.parameters), function (res, status) {
-                        var r = ses.parseResponse(res, status);
-                        ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
-                        if (r.type === 'error') {
-                            var err = ses.getError(r.response, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        }
-                        else {
-                            var result = r.response.result;
-                            resolve.call(_this, result);
-                        }
-                    }, function (err) {
-                        err = ses.getError(err, undefined, origin);
-                        if (!(opts.error || ses.error).call(_this, err))
-                            reject.call(_this, err);
-                    });
+            this.action = function (action, rowId, opts) { return __awaiter(_this, void 0, void 0, function () {
+                var origin, ses;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = "BusinessObject.action(".concat(action, ")");
+                    ses = this.session;
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            ses.sendRequest(_this.path + '&action=' + encodeURIComponent(action) + (rowId ? '&' + _this.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : ''), _this.getReqParams(opts.parameters), function (res, status) {
+                                var r = ses.parseResponse(res, status);
+                                ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
+                                if (r.type === 'error') {
+                                    var err = ses.getError(r.response, undefined, origin);
+                                    if (!(opts.error || ses.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    var result = r.response.result;
+                                    resolve.call(_this, result);
+                                }
+                            }, function (err) {
+                                err = ses.getError(err, undefined, origin);
+                                if (!(opts.error || ses.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
                 });
-            };
+            }); };
             /**
              * Build a pivot table
              * @param {string} ctb Pivot table name
@@ -2279,31 +2420,35 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<object>} A promise to the pivot table data (also avialable as the <code>crosstabdata</code> member)
              * @function
              */
-            this.crosstab = function (ctb, opts) {
-                var origin = "BusinessObject.crosstab(".concat(ctb, ")");
-                var ses = _this.session;
-                opts = opts || {};
-                return new Promise(function (resolve, reject) {
-                    if (opts.filters)
-                        _this.filters = opts.filters;
-                    ses.sendRequest(_this.path + '&action=crosstab&crosstab=' + encodeURIComponent(ctb), _this.getReqParams(_this.filters, true), function (res, status) {
-                        var r = ses.parseResponse(res, status);
-                        ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                        if (r.type === 'error') {
-                            var err = ses.getError(r.response, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        }
-                        else {
-                            resolve.call(_this, r.response);
-                        }
-                    }, function (err) {
-                        err = ses.getError(err, undefined, origin);
-                        if (!(opts.error || ses.error).call(_this, err))
-                            reject.call(_this, err);
-                    });
+            this.crosstab = function (ctb, opts) { return __awaiter(_this, void 0, void 0, function () {
+                var origin, ses;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = "BusinessObject.crosstab(".concat(ctb, ")");
+                    ses = this.session;
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            if (opts.filters)
+                                _this.filters = opts.filters;
+                            ses.sendRequest(_this.path + '&action=crosstab&crosstab=' + encodeURIComponent(ctb), _this.getReqParams(_this.filters, true), function (res, status) {
+                                var r = ses.parseResponse(res, status);
+                                ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = ses.getError(r.response, undefined, origin);
+                                    if (!(opts.error || ses.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    resolve.call(_this, r.response);
+                                }
+                            }, function (err) {
+                                err = ses.getError(err, undefined, origin);
+                                if (!(opts.error || ses.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
                 });
-            };
+            }); };
             /**
              * Build a custom publication
              * @param {string} prt Publication name
@@ -2313,36 +2458,40 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<Doc>} A promise to the document of the publication
              * @function
              */
-            this.print = function (prt, rowId, opts) {
-                var origin = "BusinessObject.print(".concat(prt, ")");
-                var ses = _this.session;
-                opts = opts || {};
-                return new Promise(function (resolve, reject) {
-                    if (opts.filters)
-                        _this.filters = opts.filters;
-                    var p = '';
-                    if (opts.all)
-                        p += '&all=' + !!opts.all;
-                    if (opts.mailing)
-                        p += '&mailing=' + !!opts.mailing;
-                    ses.sendRequest(_this.path + '&action=print&printtemplate=' + encodeURIComponent(prt) + (rowId ? '&' + _this.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : '') + p, undefined, function (res, status) {
-                        var r = ses.parseResponse(res, status);
-                        ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
-                        if (r.type === 'error') {
-                            var err = ses.getError(r.response, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        }
-                        else {
-                            resolve.call(_this, new Doc(r.response));
-                        }
-                    }, function (err) {
-                        err = ses.getError(err, undefined, origin);
-                        if (!(opts.error || ses.error).call(_this, err))
-                            reject.call(_this, err);
-                    });
+            this.print = function (prt, rowId, opts) { return __awaiter(_this, void 0, void 0, function () {
+                var origin, ses;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = "BusinessObject.print(".concat(prt, ")");
+                    ses = this.session;
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            if (opts.filters)
+                                _this.filters = opts.filters;
+                            var p = '';
+                            if (opts.all)
+                                p += '&all=' + !!opts.all;
+                            if (opts.mailing)
+                                p += '&mailing=' + !!opts.mailing;
+                            ses.sendRequest(_this.path + '&action=print&printtemplate=' + encodeURIComponent(prt) + (rowId ? '&' + _this.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : '') + p, undefined, function (res, status) {
+                                var r = ses.parseResponse(res, status);
+                                ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
+                                if (r.type === 'error') {
+                                    var err = ses.getError(r.response, undefined, origin);
+                                    if (!(opts.error || ses.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    resolve.call(_this, new Doc(r.response));
+                                }
+                            }, function (err) {
+                                err = ses.getError(err, undefined, origin);
+                                if (!(opts.error || ses.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
                 });
-            };
+            }); };
             /**
              * Get placem map data
              * @param {string} pcm Place map name
@@ -2352,32 +2501,36 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<any>} A promise to the place map data
              * @function
              */
-            this.placemap = function (pcm, filters, opts) {
-                var origin = "BusinessObject.placemap(".concat(pcm, ")");
-                var ses = _this.session;
-                _this.filters = filters || {};
-                opts = opts || {};
-                return new Promise(function (resolve, reject) {
-                    if (opts.filters)
-                        _this.filters = opts.filters;
-                    ses.sendRequest(_this.path + '&action=placemap&placemap=' + encodeURIComponent(pcm), _this.getReqParams(_this.filters, true), function (res, status) {
-                        var r = ses.parseResponse(res, status);
-                        ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
-                        if (r.type === 'error') {
-                            var err = ses.getError(r.response, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        }
-                        else {
-                            resolve.call(_this, r.response);
-                        }
-                    }, function (err) {
-                        err = ses.getError(err, undefined, origin);
-                        if (!(opts.error || ses.error).call(_this, err))
-                            reject.call(_this, err);
-                    });
+            this.placemap = function (pcm, filters, opts) { return __awaiter(_this, void 0, void 0, function () {
+                var origin, ses;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = "BusinessObject.placemap(".concat(pcm, ")");
+                    ses = this.session;
+                    this.filters = filters || {};
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            if (opts.filters)
+                                _this.filters = opts.filters;
+                            ses.sendRequest(_this.path + '&action=placemap&placemap=' + encodeURIComponent(pcm), _this.getReqParams(_this.filters, true), function (res, status) {
+                                var r = ses.parseResponse(res, status);
+                                ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
+                                if (r.type === 'error') {
+                                    var err = ses.getError(r.response, undefined, origin);
+                                    if (!(opts.error || ses.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    resolve.call(_this, r.response);
+                                }
+                            }, function (err) {
+                                err = ses.getError(err, undefined, origin);
+                                if (!(opts.error || ses.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
                 });
-            };
+            }); };
             /**
              * Set an object parameter
              * @param {string} param Parameter name
@@ -2387,33 +2540,37 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<object>} Promise
              * @function
              */
-            this.setParameter = function (param, value, opts) {
-                var origin = 'BusinessObject.setParameter';
-                var ses = _this.session;
-                opts = opts || {};
-                return new Promise(function (resolve, reject) {
-                    var p = { name: param };
-                    if (value)
-                        p.value = value;
-                    ses.sendRequest(_this.path + '&action=setparameter', _this.getReqParams(p), function (res, status) {
-                        var r = ses.parseResponse(res, status);
-                        ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                        if (r.type === 'error') {
-                            var err = ses.getError(r.response, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        }
-                        else {
-                            var result = r.response.result;
-                            resolve.call(_this, result);
-                        }
-                    }, function (err) {
-                        err = ses.getError(err, undefined, origin);
-                        if (!(opts.error || ses.error).call(_this, err))
-                            reject.call(_this, err);
-                    });
+            this.setParameter = function (param, value, opts) { return __awaiter(_this, void 0, void 0, function () {
+                var origin, ses;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'BusinessObject.setParameter';
+                    ses = this.session;
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            var p = { name: param };
+                            if (value)
+                                p.value = value;
+                            ses.sendRequest(_this.path + '&action=setparameter', _this.getReqParams(p), function (res, status) {
+                                var r = ses.parseResponse(res, status);
+                                ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = ses.getError(r.response, undefined, origin);
+                                    if (!(opts.error || ses.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    var result = r.response.result;
+                                    resolve.call(_this, result);
+                                }
+                            }, function (err) {
+                                err = ses.getError(err, undefined, origin);
+                                if (!(opts.error || ses.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
                 });
-            };
+            }); };
             /**
              * Get an object parameter
              * @param {string} param Parameter name
@@ -2422,31 +2579,35 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<object>} Promise to the parameter value
              * @function
              */
-            this.getParameter = function (param, opts) {
-                var origin = 'BusinessObject.getParameter';
-                var ses = _this.session;
-                opts = opts || {};
-                return new Promise(function (resolve, reject) {
-                    var p = { name: param };
-                    ses.sendRequest(_this.path + '&action=getparameter', _this.getReqParams(p), function (res, status) {
-                        var r = ses.parseResponse(res, status);
-                        ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                        if (r.type === 'error') {
-                            var err = ses.getError(r.response, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        }
-                        else {
-                            var result = r.response.result;
-                            resolve.call(_this, result);
-                        }
-                    }, function (err) {
-                        err = ses.getError(err, undefined, origin);
-                        if (!(opts.error || ses.error).call(_this, err))
-                            reject.call(_this, err);
-                    });
+            this.getParameter = function (param, opts) { return __awaiter(_this, void 0, void 0, function () {
+                var origin, ses;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'BusinessObject.getParameter';
+                    ses = this.session;
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            var p = { name: param };
+                            ses.sendRequest(_this.path + '&action=getparameter', _this.getReqParams(p), function (res, status) {
+                                var r = ses.parseResponse(res, status);
+                                ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = ses.getError(r.response, undefined, origin);
+                                    if (!(opts.error || ses.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    var result = r.response.result;
+                                    resolve.call(_this, result);
+                                }
+                            }, function (err) {
+                                err = ses.getError(err, undefined, origin);
+                                if (!(opts.error || ses.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
                 });
-            };
+            }); };
             /**
              * Get an object resource URL
              * @param {string} code Resource code
@@ -2543,78 +2704,82 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @return {promise<object>} Promise to the external object content
              * @function
              */
-            this.call = function (params, data, opts) {
-                var origin = 'ExternalObject.call';
-                var ses = _this.session;
-                opts = opts || {};
-                return new Promise(function (resolve, reject) {
-                    var p = '';
-                    if (params)
-                        p = '?' + _this.callParams(params);
-                    var m = opts.method ? opts.method.toUpperCase() : (data ? 'POST' : 'GET');
-                    var h = {};
-                    if (opts.contentType) {
-                        h['Content-Type'] = opts.contentType;
-                    }
-                    else if (data) { // Try to guess type...
-                        h['Content-Type'] = typeof data === 'string' ? 'application/x-www-form-urlencoded' : 'application/json';
-                    }
-                    var b = ses.getBearerTokenHeader();
-                    if (b) {
-                        h['X-Simplicite-Authorization'] = b;
-                    }
-                    else {
-                        b = ses.getBasicAuthHeader();
-                        if (b)
-                            h.Authorization = b;
-                    }
-                    var u = ses.parameters.url + _this.path + p;
-                    var d = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined;
-                    ses.debug('[simplicite.ExternalObject.call] ' + m + ' ' + u + ' with ' + (d ? ' with ' + d : ''));
-                    (0, node_fetch_1.default)(u, {
-                        method: m,
-                        headers: h,
-                        cache: 'no-cache',
-                        mode: 'cors',
-                        credentials: 'include',
-                        body: d
-                    }).then(function (res) {
-                        var type = res.headers.get('content-type');
-                        ses.debug("[".concat(origin, "] HTTP status = ").concat(res.status, ", response content type = ").concat(type));
-                        if (type && type.startsWith('application/json')) { // JSON
-                            res.json().then(function (jsonData) {
-                                resolve.call(_this, jsonData, res.status, res.headers);
+            this.call = function (params, data, opts) { return __awaiter(_this, void 0, void 0, function () {
+                var origin, ses;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'ExternalObject.call';
+                    ses = this.session;
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            var p = '';
+                            if (params)
+                                p = '?' + _this.callParams(params);
+                            var m = opts.method ? opts.method.toUpperCase() : (data ? 'POST' : 'GET');
+                            var h = {};
+                            if (opts.contentType) {
+                                h['Content-Type'] = opts.contentType;
+                            }
+                            else if (data) { // Try to guess type...
+                                h['Content-Type'] = typeof data === 'string' ? 'application/x-www-form-urlencoded' : 'application/json';
+                            }
+                            var b = ses.getBearerTokenHeader();
+                            if (b) {
+                                h['X-Simplicite-Authorization'] = b;
+                            }
+                            else {
+                                b = ses.getBasicAuthHeader();
+                                if (b)
+                                    h.Authorization = b;
+                            }
+                            var u = ses.parameters.url + _this.path + p;
+                            var d = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined;
+                            ses.debug('[simplicite.ExternalObject.call] ' + m + ' ' + u + ' with ' + (d ? ' with ' + d : ''));
+                            (0, node_fetch_1.default)(u, {
+                                method: m,
+                                headers: h,
+                                cache: 'no-cache',
+                                mode: 'cors',
+                                credentials: 'include',
+                                body: d
+                            }).then(function (res) {
+                                var type = res.headers.get('content-type');
+                                ses.debug("[".concat(origin, "] HTTP status = ").concat(res.status, ", response content type = ").concat(type));
+                                if (type && type.startsWith('application/json')) { // JSON
+                                    res.json().then(function (jsonData) {
+                                        resolve.call(_this, jsonData, res.status, res.headers);
+                                    }).catch(function (err) {
+                                        err = ses.getError(err, undefined, origin);
+                                        if (!(opts.error || ses.error).call(_this, err))
+                                            reject.call(_this, err);
+                                    });
+                                }
+                                else if (type && type.startsWith('text/')) { // Text
+                                    res.text().then(function (textData) {
+                                        resolve.call(_this, textData, res.status, res.headers);
+                                    }).catch(function (err) {
+                                        err = ses.getError(err, undefined, origin);
+                                        if (!(opts.error || ses.error).call(_this, err))
+                                            reject.call(_this, err);
+                                    });
+                                }
+                                else { // Binary
+                                    res.arrayBuffer().then(function (binData) {
+                                        resolve.call(_this, binData, res.status, res.headers);
+                                    }).catch(function (err) {
+                                        err = ses.getError(err, undefined, origin);
+                                        if (!(opts.error || ses.error).call(_this, err))
+                                            reject.call(_this, err);
+                                    });
+                                }
                             }).catch(function (err) {
                                 err = ses.getError(err, undefined, origin);
                                 if (!(opts.error || ses.error).call(_this, err))
                                     reject.call(_this, err);
                             });
-                        }
-                        else if (type && type.startsWith('text/')) { // Text
-                            res.text().then(function (textData) {
-                                resolve.call(_this, textData, res.status, res.headers);
-                            }).catch(function (err) {
-                                err = ses.getError(err, undefined, origin);
-                                if (!(opts.error || ses.error).call(_this, err))
-                                    reject.call(_this, err);
-                            });
-                        }
-                        else { // Binary
-                            res.arrayBuffer().then(function (binData) {
-                                resolve.call(_this, binData, res.status, res.headers);
-                            }).catch(function (err) {
-                                err = ses.getError(err, undefined, origin);
-                                if (!(opts.error || ses.error).call(_this, err))
-                                    reject.call(_this, err);
-                            });
-                        }
-                    }).catch(function (err) {
-                        err = ses.getError(err, undefined, origin);
-                        if (!(opts.error || ses.error).call(_this, err))
-                            reject.call(_this, err);
-                    });
+                        })];
                 });
-            };
+            }); };
             /**
              * Alias to <code>call</code>
              * @function

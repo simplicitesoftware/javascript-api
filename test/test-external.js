@@ -2,9 +2,9 @@ import simplicite from '../dist/esm/simplicite.js';
 import assert from 'assert';
 
 let app = simplicite.session({
-	url: process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080',
+	url: process && process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080',
 	endpoint: 'public',
-	debug: process.env.TEST_SIMPLICITE_DEBUG === 'true'
+	debug: process && process.env.TEST_SIMPLICITE_DEBUG === 'true'
 });
 
 app.info('Version: ' + simplicite.constants.MODULE_VERSION);
@@ -28,8 +28,8 @@ ext.call(params).then(res1 => { // GET call
 	assert.ok(res1.method === 'post');
 	app.info('OK (public)');
 
-	const adminUsername = process.env.TEST_SIMPLICITE_ADMIN_USERNAME || 'designer';
-	const adminPassword = process.env.TEST_SIMPLICITE_ADMIN_PASSWORD || 'designer';
+	const adminUsername = process && process.env.TEST_SIMPLICITE_ADMIN_USERNAME || 'designer';
+	const adminPassword = process && process.env.TEST_SIMPLICITE_ADMIN_PASSWORD || 'designer';
 
 	app = simplicite.session({
 		url: process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080',
