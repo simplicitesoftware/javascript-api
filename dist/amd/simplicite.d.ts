@@ -265,10 +265,25 @@ declare module "simplicite" {
              */
             CONTEXT_ASSOCIATE: number;
             /**
-             * Panle list context
+             * Panel list context
              * @constant {number}
              */
             CONTEXT_PANELLIST: number;
+            /**
+             * Action context
+             * @constant {number}
+             */
+            CONTEXT_ACTION: number;
+            /**
+             * Agenda context
+             * @constant {number}
+             */
+            CONTEXT_AGENDA: number;
+            /**
+             * Place map context
+             * @constant {number}
+             */
+            CONTEXT_PLACEMAP: number;
             /**
              * Foreign key (reference) type
              * @constant {number}
@@ -1798,10 +1813,25 @@ declare module "simplicite" {
              */
             CONTEXT_ASSOCIATE: number;
             /**
-             * Panle list context
+             * Panel list context
              * @constant {number}
              */
             CONTEXT_PANELLIST: number;
+            /**
+             * Action context
+             * @constant {number}
+             */
+            CONTEXT_ACTION: number;
+            /**
+             * Agenda context
+             * @constant {number}
+             */
+            CONTEXT_AGENDA: number;
+            /**
+             * Place map context
+             * @constant {number}
+             */
+            CONTEXT_PLACEMAP: number;
             /**
              * Foreign key (reference) type
              * @constant {number}

@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.25
+ * @version 2.2.26
  * @license Apache-2.0
  */
 /**
@@ -270,10 +270,25 @@ declare class Session {
          */
         CONTEXT_ASSOCIATE: number;
         /**
-         * Panle list context
+         * Panel list context
          * @constant {number}
          */
         CONTEXT_PANELLIST: number;
+        /**
+         * Action context
+         * @constant {number}
+         */
+        CONTEXT_ACTION: number;
+        /**
+         * Agenda context
+         * @constant {number}
+         */
+        CONTEXT_AGENDA: number;
+        /**
+         * Place map context
+         * @constant {number}
+         */
+        CONTEXT_PLACEMAP: number;
         /**
          * Foreign key (reference) type
          * @constant {number}
@@ -1803,10 +1818,25 @@ declare const _default: {
          */
         CONTEXT_ASSOCIATE: number;
         /**
-         * Panle list context
+         * Panel list context
          * @constant {number}
          */
         CONTEXT_PANELLIST: number;
+        /**
+         * Action context
+         * @constant {number}
+         */
+        CONTEXT_ACTION: number;
+        /**
+         * Agenda context
+         * @constant {number}
+         */
+        CONTEXT_AGENDA: number;
+        /**
+         * Place map context
+         * @constant {number}
+         */
+        CONTEXT_PLACEMAP: number;
         /**
          * Foreign key (reference) type
          * @constant {number}

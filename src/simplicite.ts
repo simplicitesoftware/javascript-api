@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.25
+ * @version 2.2.26
  * @license Apache-2.0
  */
 
@@ -17,7 +17,7 @@ const constants = {
 	 * API client module version
 	 * @constant {string}
 	 */
-	MODULE_VERSION: '2.2.25',
+	MODULE_VERSION: '2.2.26',
 
 	/**
 	 * Default row ID field name
@@ -127,10 +127,25 @@ const constants = {
 	 */
 	CONTEXT_ASSOCIATE: 18,
 	/**
-	 * Panle list context
+	 * Panel list context
 	 * @constant {number}
 	 */
 	CONTEXT_PANELLIST: 19,
+	/**
+	 * Action context
+	 * @constant {number}
+	 */
+	CONTEXT_ACTION: 20,
+	/**
+	 * Agenda context
+	 * @constant {number}
+	 */
+	CONTEXT_AGENDA: 21,
+	/**
+	 * Place map context
+	 * @constant {number}
+	 */
+	CONTEXT_PLACEMAP: 22,
 
 	/**
 	 * Foreign key (reference) type
@@ -1295,7 +1310,7 @@ class Session {
 	 * @function
 	 */
 	public getNews = async (opts?: any): Promise<any[]> => {
-		const origin = 'Session.getHealth';
+		const origin = 'Session.getNews';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
 			let p = '';

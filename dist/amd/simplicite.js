@@ -37,7 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.25
+ * @version 2.2.26
  * @license Apache-2.0
  */
 define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (require, exports, node_fetch_1, buffer_1) {
@@ -52,7 +52,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
          * API client module version
          * @constant {string}
          */
-        MODULE_VERSION: '2.2.25',
+        MODULE_VERSION: '2.2.26',
         /**
          * Default row ID field name
          * @constant {string}
@@ -159,10 +159,25 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
          */
         CONTEXT_ASSOCIATE: 18,
         /**
-         * Panle list context
+         * Panel list context
          * @constant {number}
          */
         CONTEXT_PANELLIST: 19,
+        /**
+         * Action context
+         * @constant {number}
+         */
+        CONTEXT_ACTION: 20,
+        /**
+         * Agenda context
+         * @constant {number}
+         */
+        CONTEXT_AGENDA: 21,
+        /**
+         * Place map context
+         * @constant {number}
+         */
+        CONTEXT_PLACEMAP: 22,
         /**
          * Foreign key (reference) type
          * @constant {number}
@@ -974,7 +989,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
                 var origin;
                 var _this = this;
                 return __generator(this, function (_a) {
-                    origin = 'Session.getHealth';
+                    origin = 'Session.getNews';
                     opts = opts || {};
                     return [2 /*return*/, new Promise(function (resolve, reject) {
                             var p = '';

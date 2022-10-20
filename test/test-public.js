@@ -3,7 +3,7 @@ import assert from 'assert';
 
 const app = simplicite.session({
 	url: process && process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080',
-	endpoint: 'public',
+	endpoint: 'uipublic',
 	debug: process && process.env.TEST_SIMPLICITE_DEBUG === 'true'
 });
 
