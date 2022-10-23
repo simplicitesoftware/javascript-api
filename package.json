@@ -1,7 +1,7 @@
 {
   "name": "simplicite",
   "description": "Simplicite(R) platform Javascript API (for node.js and browser)",
-  "version": "2.2.26",
+  "version": "2.2.27",
   "author": "Simplicite Software <contact@simplicitesoftware.com> (https://www.simplicitesoftware.com/)",
   "license": "Apache-2.0",
   "keywords": [
@@ -38,7 +38,7 @@
     "jsdoc-plugin-typescript": "^2.2.0",
     "file-cli": "^1.2.0",
     "npm-check": "^6.0.1",
-    "npm-check-updates": "^16.3.14",
+    "npm-check-updates": "^16.3.15",
     "typescript": "^4.8.4",
     "replace": "^1.2.1",
     "serve": "^14.0.1",

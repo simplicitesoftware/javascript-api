@@ -37,7 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.26
+ * @version 2.2.27
  * @license Apache-2.0
  */
 define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (require, exports, node_fetch_1, buffer_1) {
@@ -52,7 +52,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
          * API client module version
          * @constant {string}
          */
-        MODULE_VERSION: '2.2.26',
+        MODULE_VERSION: '2.2.27',
         /**
          * Default row ID field name
          * @constant {string}
@@ -733,7 +733,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
                                         _this.authtokenexpiry = undefined;
                                     }
                                     if (_this.authtokenexpiry)
-                                        _this.debug("[".concat(origin, "] Auth token expiry date = ").concat(_this.authtokenexpiry));
+                                        _this.debug("[".concat(origin, "] Auth token expiry date = ").concat(_this.authtokenexpiry.toLocaleDateString(), " ").concat(_this.authtokenexpiry.toLocaleTimeString()));
                                     // Minimal grant from session data
                                     _this.grant = new Grant({
                                         login: _this.username,
@@ -2714,7 +2714,8 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @param {object} [data] Optional data (for 'POST' and 'PUT' methods only)
              * @param {object} [opts] Options
              * @param {function} [opts.error] Error handler function
-             * @param {object} [opts.method] Optional method 'GET', 'POST', 'PUT' or 'DELETE' (defaults to 'GET' if data is not set or 'POST' if data is set
+             * @param {string} [opts.path] Absolute or relative path (e.g. absolute '/my/mapped/upath' or relative 'my/additional/path')
+             * @param {object} [opts.method] Optional method 'GET', 'POST', 'PUT' or 'DELETE' (defaults to 'GET' if data is not set or 'POST' if data is set)
              * @param {function} [opts.contentType] Optional data content type (for 'POST' and 'PUT' methods only)
              * @return {promise<object>} Promise to the external object content
              * @function
@@ -2747,7 +2748,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
                                 if (b)
                                     h.Authorization = b;
                             }
-                            var u = ses.parameters.url + _this.path + p;
+                            var u = ses.parameters.url + (opts.path && opts.path.startsWith('/') ? opts.path : _this.path + (opts.path ? '/' + opts.path : '')) + p;
                             var d = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined;
                             ses.debug('[simplicite.ExternalObject.call] ' + m + ' ' + u + ' with ' + (d ? ' with ' + d : ''));
                             (0, node_fetch_1.default)(u, {

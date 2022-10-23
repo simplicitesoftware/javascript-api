@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.26
+ * @version 2.2.27
  * @license Apache-2.0
  */
 
@@ -17,7 +17,7 @@ const constants = {
 	 * API client module version
 	 * @constant {string}
 	 */
-	MODULE_VERSION: '2.2.26',
+	MODULE_VERSION: '2.2.27',
 
 	/**
 	 * Default row ID field name
@@ -1064,7 +1064,7 @@ class Session {
 						this.authtokenexpiry = undefined;
 					}
 					if (this.authtokenexpiry)
-						this.debug(`[${origin}] Auth token expiry date = ${this.authtokenexpiry}`);
+						this.debug(`[${origin}] Auth token expiry date = ${this.authtokenexpiry.toLocaleDateString()} ${this.authtokenexpiry.toLocaleTimeString()}`);
 					// Minimal grant from session data
 					this.grant =new Grant({
 						login: this.username,
@@ -3061,7 +3061,8 @@ class ExternalObject {
 	 * @param {object} [data] Optional data (for 'POST' and 'PUT' methods only)
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
-	 * @param {object} [opts.method] Optional method 'GET', 'POST', 'PUT' or 'DELETE' (defaults to 'GET' if data is not set or 'POST' if data is set
+	 * @param {string} [opts.path] Absolute or relative path (e.g. absolute '/my/mapped/upath' or relative 'my/additional/path')
+	 * @param {object} [opts.method] Optional method 'GET', 'POST', 'PUT' or 'DELETE' (defaults to 'GET' if data is not set or 'POST' if data is set)
 	 * @param {function} [opts.contentType] Optional data content type (for 'POST' and 'PUT' methods only)
 	 * @return {promise<object>} Promise to the external object content
 	 * @function
@@ -3089,7 +3090,7 @@ class ExternalObject {
 				if (b)
 					h.Authorization = b;
 			}
-			const u: string = ses.parameters.url + this.path + p;
+			const u: string = ses.parameters.url + (opts.path && opts.path.startsWith('/') ? opts.path : this.path + (opts.path ? '/' + opts.path : '')) + p;
 			const d: string = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined;
 			ses.debug('[simplicite.ExternalObject.call] ' + m + ' ' + u + ' with ' + (d ? ' with ' + d : ''));
 			fetch(u, {

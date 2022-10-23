@@ -1688,7 +1688,8 @@ declare module "simplicite" {
          * @param {object} [data] Optional data (for 'POST' and 'PUT' methods only)
          * @param {object} [opts] Options
          * @param {function} [opts.error] Error handler function
-         * @param {object} [opts.method] Optional method 'GET', 'POST', 'PUT' or 'DELETE' (defaults to 'GET' if data is not set or 'POST' if data is set
+         * @param {string} [opts.path] Absolute or relative path (e.g. absolute '/my/mapped/upath' or relative 'my/additional/path')
+         * @param {object} [opts.method] Optional method 'GET', 'POST', 'PUT' or 'DELETE' (defaults to 'GET' if data is not set or 'POST' if data is set)
          * @param {function} [opts.contentType] Optional data content type (for 'POST' and 'PUT' methods only)
          * @return {promise<object>} Promise to the external object content
          * @function
