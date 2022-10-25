@@ -72,6 +72,8 @@ try {
 	const res = await app.logout();
 	app.debug(res);
 	app.info(`${res.login} logged out`);
+
+	app.info('OK');
 } catch(err) {
 	app.error('Catched error: ' + (err.message || JSON.stringify(err)));
 }

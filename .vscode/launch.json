@@ -43,7 +43,7 @@
             "type": "node",
             "request": "launch",
             "name": "Await syntax tests",
-            "program": "${workspaceFolder}\\test\\test.js"
+            "program": "${workspaceFolder}\\test\\test-await.js"
         }, {
             "type": "node",
             "request": "launch",
