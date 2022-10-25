@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.27
+ * @version 8
  * @license Apache-2.0
  */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -24,7 +24,7 @@ const constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '2.2.27',
+    MODULE_VERSION: '2.2.28',
     /**
      * Default row ID field name
      * @constant {string}
@@ -371,7 +371,17 @@ const constants = {
      * Javascript resource type
      * @constant {number}
      */
-    RESOURCE_TYPE_JAVASCRIPT: 'JS'
+    RESOURCE_TYPE_JAVASCRIPT: 'JS',
+    /**
+     * Default authentication header
+     * @constant {string}
+     */
+    DEFAULT_AUTH_HEADER: 'Authorization',
+    /**
+     * Simplicite authentication header
+     * @constant {string}
+     */
+    SIMPLICITE_AUTH_HEADER: 'X-Simplicite-Authorization'
 };
 /**
  * Simplicite application session. Same as <code>new Session(parameter)</code>.
@@ -390,9 +400,10 @@ const session = (params) => {
  * @param {number} params.port Port (e.g. <code>443</code>) of the Simplicite application (not needed if <code>url</code> is set)
  * @param {string} params.root Root context URL (e.g. <code>'/myapp'</code>) the Simplicite application (not needed if <code>url</code> is set)
  * @param {boolean} [params.endpoint='api'] Endpoint (<code>'api'|'ui'|'uipublic'</code>)
- * @param {string} [params.username] Username (not needed for public endpoint)
- * @param {string} [params.password] Password (not needed for public endpoint)
- * @param {string} [params.authtoken] Auth token (if set, username and password are not needed; not needed for public endpoint)
+ * @param {string} [params.username] Username (not needed for the public UI endpoint)
+ * @param {string} [params.password] Password (not needed for the public UI endpoint)
+ * @param {string} [params.authtoken] Authentication token (if set, username and password are not needed; not needed for the public UI endpoint)
+ * @param {string} [params.authheader] Authorization HTTP header name (defaults to the standard <code>Authorization</code>, the alternative is the value of the <code>SIMPLICITE_AUTH_HEADER</code> constant, not needed for public endpoint)
  * @param {string} [params.ajaxkey] Ajax key (only usefull for usage from the generic UI)
  * @param {boolean} [params.debug=false] Debug mode?
  * @param {function} [params.debugHandler] Debug handler function
@@ -558,12 +569,12 @@ class Session {
                 h['Content-Type'] = 'application/x-www-form-urlencoded; charset=utf-8';
             let b = this.getBearerTokenHeader();
             if (b) {
-                h['X-Simplicite-Authorization'] = b;
+                h[this.authheader] = b;
             }
             else {
                 b = this.getBasicAuthHeader();
                 if (b)
-                    h.Authorization = b;
+                    h[this.authheader] = b;
             }
             let u = this.parameters.url + (path || '/');
             if (this.ajaxkey)
@@ -576,6 +587,8 @@ class Session {
                 cache: 'no-cache',
                 mode: 'cors',
                 credentials: 'include',
+                referrer: '',
+                referrerPolicy: 'no-referrer',
                 body: d
             }).then((res) => {
                 if (callback) {
@@ -1034,6 +1047,7 @@ class Session {
         // Within the generic web UI if Simplicite is defined
         const inUI = typeof globalThis.Simplicite !== 'undefined';
         this.endpoint = params.endpoint || (inUI ? globalThis.Simplicite.ENDPOINT : "api" /* SessionParamEndpoint.API */);
+        this.authheader = params.authheader || this.constants.DEFAULT_AUTH_HEADER;
         this.log = params.logHandler || ((...args) => {
             // tslint:disable-next-line: no-console
             console.log(args);
@@ -1049,7 +1063,7 @@ class Session {
         this.warn = params.warningHandler || ((...args) => {
             if (args && args.length === 1 && typeof args[0] === 'string')
                 // tslint:disable-next-line: no-console
-                console.info(`WARN - ${args[0]}`);
+                console.warn(`WARN - ${args[0]}`);
             else
                 // tslint:disable-next-line: no-console
                 console.warn(`WARN${args && args.length > 0 && args[0].message ? ` - ${args[0].message}` : ''}`, args);
@@ -1057,7 +1071,7 @@ class Session {
         this.error = params.errorHandler || ((...args) => {
             if (args && args.length === 1 && typeof args[0] === 'string')
                 // tslint:disable-next-line: no-console
-                console.info(`ERROR - ${args[0]}`);
+                console.error(`ERROR - ${args[0]}`);
             else
                 // tslint:disable-next-line: no-console
                 console.error(`ERROR${args && args.length > 0 && args[0].message ? ` - ${args[0].message}` : ''}`, args);
@@ -2552,12 +2566,12 @@ class ExternalObject {
                 }
                 let b = ses.getBearerTokenHeader();
                 if (b) {
-                    h['X-Simplicite-Authorization'] = b;
+                    h[ses.authheader] = b;
                 }
                 else {
                     b = ses.getBasicAuthHeader();
                     if (b)
-                        h.Authorization = b;
+                        h[ses.authheader] = b;
                 }
                 const u = ses.parameters.url + (opts.path && opts.path.startsWith('/') ? opts.path : this.path + (opts.path ? '/' + opts.path : '')) + p;
                 const d = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined;
@@ -2568,6 +2582,8 @@ class ExternalObject {
                     cache: 'no-cache',
                     mode: 'cors',
                     credentials: 'include',
+                    referrer: '',
+                    referrerPolicy: 'no-referrer',
                     body: d
                 }).then((res) => {
                     const type = res.headers.get('content-type');

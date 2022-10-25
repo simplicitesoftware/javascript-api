@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.27
+ * @version 8
  * @license Apache-2.0
  */
 /**
@@ -92,6 +92,11 @@ declare type SessionParams = {
      */
     ajaxkey?: string;
     /**
+     * Authorization HTTP header name
+     * @constant {string}
+     */
+    authheader?: string;
+    /**
      * Timeout (s)
      * @constant {number}
      */
@@ -136,9 +141,10 @@ declare type SessionParams = {
  * @param {number} params.port Port (e.g. <code>443</code>) of the Simplicite application (not needed if <code>url</code> is set)
  * @param {string} params.root Root context URL (e.g. <code>'/myapp'</code>) the Simplicite application (not needed if <code>url</code> is set)
  * @param {boolean} [params.endpoint='api'] Endpoint (<code>'api'|'ui'|'uipublic'</code>)
- * @param {string} [params.username] Username (not needed for public endpoint)
- * @param {string} [params.password] Password (not needed for public endpoint)
- * @param {string} [params.authtoken] Auth token (if set, username and password are not needed; not needed for public endpoint)
+ * @param {string} [params.username] Username (not needed for the public UI endpoint)
+ * @param {string} [params.password] Password (not needed for the public UI endpoint)
+ * @param {string} [params.authtoken] Authentication token (if set, username and password are not needed; not needed for the public UI endpoint)
+ * @param {string} [params.authheader] Authorization HTTP header name (defaults to the standard <code>Authorization</code>, the alternative is the value of the <code>SIMPLICITE_AUTH_HEADER</code> constant, not needed for public endpoint)
  * @param {string} [params.ajaxkey] Ajax key (only usefull for usage from the generic UI)
  * @param {boolean} [params.debug=false] Debug mode?
  * @param {function} [params.debugHandler] Debug handler function
@@ -511,12 +517,27 @@ declare class Session {
          * @constant {number}
          */
         RESOURCE_TYPE_JAVASCRIPT: string;
+        /**
+         * Default authentication header
+         * @constant {string}
+         */
+        DEFAULT_AUTH_HEADER: string;
+        /**
+         * Simplicite authentication header
+         * @constant {string}
+         */
+        SIMPLICITE_AUTH_HEADER: string;
     };
     /**
      * Endpoint
      * @member {string}
      */
     endpoint: SessionParamEndpoint;
+    /**
+     * Authorization HTTP header name
+     * @member {string}
+     */
+    authheader: string;
     /**
      * Log handler
      * @param {...any} args Arguments
@@ -2060,6 +2081,16 @@ declare const _default: {
          * @constant {number}
          */
         RESOURCE_TYPE_JAVASCRIPT: string;
+        /**
+         * Default authentication header
+         * @constant {string}
+         */
+        DEFAULT_AUTH_HEADER: string;
+        /**
+         * Simplicite authentication header
+         * @constant {string}
+         */
+        SIMPLICITE_AUTH_HEADER: string;
     };
     session: (params: SessionParams) => Session;
     Session: typeof Session;
