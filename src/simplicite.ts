@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 8
+ * @version 2.2.29
  * @license Apache-2.0
  */
 
@@ -17,7 +17,7 @@ const constants = {
 	 * API client module version
 	 * @constant {string}
 	 */
-	MODULE_VERSION: '2.2.28',
+	MODULE_VERSION: '2.2.29',
 
 	/**
 	 * Default row ID field name
@@ -2164,11 +2164,25 @@ class BusinessObject {
 	 * @return {string} List value
 	 * @function
 	 */
-	public getFieldListValue = (field: string|any, item?: any) => {
+	public getFieldListValue = (field: string|any, item?: any): string => {
 		if (typeof field === 'string')
 			field = this.getField(field);
 		const val: string = this.getFieldValue(field, item);
 		return field && field.listOfValues ? this.getListValue(field.listOfValues, val) : val;
+	};
+
+	/**
+	 * Get the list colors of a list of values field for item (or current item)
+	 * @param {(string|object)} field Field name or definition
+	 * @param {object} [item] Item (defaults to current item)
+	 * @return {string} List color and bgcolor
+	 * @function
+	 */
+	public getFieldListColors = (field: string|any, item?: any): any => {
+		if (typeof field === 'string')
+			field = this.getField(field);
+		const val: string = this.getFieldValue(field, item);
+		return field && field.listOfValues ? this.getListColors(field.listOfValues, val) : val;
 	};
 
 	/**
@@ -2229,7 +2243,7 @@ class BusinessObject {
 	};
 
 	/**
-	 * Get list value for code
+	 * Get list item value for code
 	 * @param {array} list List of values
 	 * @param {string} code Code
 	 * @return {string} Value
@@ -2243,6 +2257,23 @@ class BusinessObject {
 			}
 		}
 		return code;
+	};
+
+	/**
+	 * Get list item colors (color and background color) for code
+	 * @param {array} list List of values
+	 * @param {string} code Code
+	 * @return {any} Colors
+	 * @function
+	 */
+	public getListColors = (list: any[], code: string): any => {
+		if (list) {
+			for (const l of list) {
+				if (l.code === code)
+					return { color: l.color, bgcolor: l.bgcolor };
+			}
+		}
+		return { color: 'inherit', bgcolor: 'inherit' };
 	};
 
 	/**

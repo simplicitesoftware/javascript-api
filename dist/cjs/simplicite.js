@@ -2,7 +2,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 8
+ * @version 2.2.29
  * @license Apache-2.0
  */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -56,7 +56,7 @@ var constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '2.2.28',
+    MODULE_VERSION: '2.2.29',
     /**
      * Default row ID field name
      * @constant {string}
@@ -1736,6 +1736,19 @@ var BusinessObject = /** @class */ (function () {
             return field && field.listOfValues ? _this.getListValue(field.listOfValues, val) : val;
         };
         /**
+         * Get the list colors of a list of values field for item (or current item)
+         * @param {(string|object)} field Field name or definition
+         * @param {object} [item] Item (defaults to current item)
+         * @return {string} List color and bgcolor
+         * @function
+         */
+        this.getFieldListColors = function (field, item) {
+            if (typeof field === 'string')
+                field = _this.getField(field);
+            var val = _this.getFieldValue(field, item);
+            return field && field.listOfValues ? _this.getListColors(field.listOfValues, val) : val;
+        };
+        /**
          * Get the data URL of an inlined document/image field for item (or current item)
          * @param {(string|object)} field Field name or definition
          * @param {object} [item] Item (defaults to current item)
@@ -1790,7 +1803,7 @@ var BusinessObject = /** @class */ (function () {
                     + (_this.session.authtoken ? '&_x_simplicite_authorization_=' + encodeURIComponent(_this.session.authtoken) : '');
         };
         /**
-         * Get list value for code
+         * Get list item value for code
          * @param {array} list List of values
          * @param {string} code Code
          * @return {string} Value
@@ -1805,6 +1818,23 @@ var BusinessObject = /** @class */ (function () {
                 }
             }
             return code;
+        };
+        /**
+         * Get list item colors (color and background color) for code
+         * @param {array} list List of values
+         * @param {string} code Code
+         * @return {any} Colors
+         * @function
+         */
+        this.getListColors = function (list, code) {
+            if (list) {
+                for (var _i = 0, list_2 = list; _i < list_2.length; _i++) {
+                    var l = list_2[_i];
+                    if (l.code === code)
+                        return { color: l.color, bgcolor: l.bgcolor };
+                }
+            }
+            return { color: 'inherit', bgcolor: 'inherit' };
         };
         /**
          * Set value of field for item (or current item)

@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 8
+ * @version 2.2.29
  * @license Apache-2.0
  */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -24,7 +24,7 @@ const constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '2.2.28',
+    MODULE_VERSION: '2.2.29',
     /**
      * Default row ID field name
      * @constant {string}
@@ -1630,6 +1630,19 @@ class BusinessObject {
             return field && field.listOfValues ? this.getListValue(field.listOfValues, val) : val;
         };
         /**
+         * Get the list colors of a list of values field for item (or current item)
+         * @param {(string|object)} field Field name or definition
+         * @param {object} [item] Item (defaults to current item)
+         * @return {string} List color and bgcolor
+         * @function
+         */
+        this.getFieldListColors = (field, item) => {
+            if (typeof field === 'string')
+                field = this.getField(field);
+            const val = this.getFieldValue(field, item);
+            return field && field.listOfValues ? this.getListColors(field.listOfValues, val) : val;
+        };
+        /**
          * Get the data URL of an inlined document/image field for item (or current item)
          * @param {(string|object)} field Field name or definition
          * @param {object} [item] Item (defaults to current item)
@@ -1684,7 +1697,7 @@ class BusinessObject {
                     + (this.session.authtoken ? '&_x_simplicite_authorization_=' + encodeURIComponent(this.session.authtoken) : '');
         };
         /**
-         * Get list value for code
+         * Get list item value for code
          * @param {array} list List of values
          * @param {string} code Code
          * @return {string} Value
@@ -1698,6 +1711,22 @@ class BusinessObject {
                 }
             }
             return code;
+        };
+        /**
+         * Get list item colors (color and background color) for code
+         * @param {array} list List of values
+         * @param {string} code Code
+         * @return {any} Colors
+         * @function
+         */
+        this.getListColors = (list, code) => {
+            if (list) {
+                for (const l of list) {
+                    if (l.code === code)
+                        return { color: l.color, bgcolor: l.bgcolor };
+                }
+            }
+            return { color: 'inherit', bgcolor: 'inherit' };
         };
         /**
          * Set value of field for item (or current item)

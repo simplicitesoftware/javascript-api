@@ -1352,6 +1352,14 @@ declare module "simplicite" {
          */
         getFieldListValue: (field: string | any, item?: any) => string;
         /**
+         * Get the list colors of a list of values field for item (or current item)
+         * @param {(string|object)} field Field name or definition
+         * @param {object} [item] Item (defaults to current item)
+         * @return {string} List color and bgcolor
+         * @function
+         */
+        getFieldListColors: (field: string | any, item?: any) => any;
+        /**
          * Get the data URL of an inlined document/image field for item (or current item)
          * @param {(string|object)} field Field name or definition
          * @param {object} [item] Item (defaults to current item)
@@ -1377,13 +1385,21 @@ declare module "simplicite" {
          */
         getFieldDocumentURL: (field: string | any, item?: any, thumbnail?: boolean) => string;
         /**
-         * Get list value for code
+         * Get list item value for code
          * @param {array} list List of values
          * @param {string} code Code
          * @return {string} Value
          * @function
          */
         getListValue: (list: any[], code: string) => string;
+        /**
+         * Get list item colors (color and background color) for code
+         * @param {array} list List of values
+         * @param {string} code Code
+         * @return {any} Colors
+         * @function
+         */
+        getListColors: (list: any[], code: string) => any;
         /**
          * Set value of field for item (or current item)
          * @param {(string|object)} field Field name or definition
