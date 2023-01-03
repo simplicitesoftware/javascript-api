@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.29
+ * @version 2.2.30
  * @license Apache-2.0
  */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -24,7 +24,7 @@ const constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '2.2.29',
+    MODULE_VERSION: '2.2.30',
     /**
      * Default row ID field name
      * @constant {string}
@@ -766,6 +766,7 @@ class Session {
          * @param {object} [opts] Options
          * @param {boolean} [opts.inlinePicture=false] Inline user picture?
          * @param {boolean} [opts.includeTexts=false] Include texts?
+         * @param {boolean} [opts.includeSysparams=false] Include system parameters?
          * @param {function} [opts.error] Error handler function
          * @return {promise<Grant>} A promise to the grant (also available as the <code>grant</code> member)
          * @function
@@ -775,12 +776,14 @@ class Session {
             opts = opts || {};
             return new Promise((resolve, reject) => {
                 let p = '&web=true'; // Required to be able to include texts
+                const txt = !!opts.includeTexts || !!opts.texts; // naming flexibility
+                p += '&texts=' + txt;
                 const pic = !!opts.inlinePicture || !!opts.picture; // naming flexibility
                 if (pic)
                     p += '&inline_picture=true';
-                const txt = !!opts.includeTexts || !!opts.texts; // naming flexibility
-                if (txt)
-                    p += '&texts=true';
+                const sys = !!opts.includeSysparams || !!opts.sysparams; // naming flexibility
+                if (sys)
+                    p += '&sysparams=true';
                 this.sendRequest(`${this.parameters.apppath}?action=getgrant${p}`, undefined, (res, status) => {
                     const r = this.parseResponse(res, status);
                     this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
@@ -1406,6 +1409,14 @@ class Grant {
          */
         this.hasResponsibility = (group) => {
             return this.responsibilities && this.responsibilities.indexOf(group) !== -1;
+        };
+        /**
+         * Get system parameter value
+         * @param {string} code System parameter name
+         * @return {string} System parameter value
+         */
+        this.getSystemParameter = (name) => {
+            return this.sysparams ? this.sysparams[name] || '' : '';
         };
         /**
          * Get text value

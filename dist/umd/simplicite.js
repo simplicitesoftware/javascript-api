@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.29
+ * @version 2.2.30
  * @license Apache-2.0
  */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -19,7 +19,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
             if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
             if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
@@ -62,7 +62,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
          * API client module version
          * @constant {string}
          */
-        MODULE_VERSION: '2.2.29',
+        MODULE_VERSION: '2.2.30',
         /**
          * Default row ID field name
          * @constant {string}
@@ -817,6 +817,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
              * @param {object} [opts] Options
              * @param {boolean} [opts.inlinePicture=false] Inline user picture?
              * @param {boolean} [opts.includeTexts=false] Include texts?
+             * @param {boolean} [opts.includeSysparams=false] Include system parameters?
              * @param {function} [opts.error] Error handler function
              * @return {promise<Grant>} A promise to the grant (also available as the <code>grant</code> member)
              * @function
@@ -829,12 +830,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                     opts = opts || {};
                     return [2 /*return*/, new Promise(function (resolve, reject) {
                             var p = '&web=true'; // Required to be able to include texts
+                            var txt = !!opts.includeTexts || !!opts.texts; // naming flexibility
+                            p += '&texts=' + txt;
                             var pic = !!opts.inlinePicture || !!opts.picture; // naming flexibility
                             if (pic)
                                 p += '&inline_picture=true';
-                            var txt = !!opts.includeTexts || !!opts.texts; // naming flexibility
-                            if (txt)
-                                p += '&texts=true';
+                            var sys = !!opts.includeSysparams || !!opts.sysparams; // naming flexibility
+                            if (sys)
+                                p += '&sysparams=true';
                             _this.sendRequest("".concat(_this.parameters.apppath, "?action=getgrant").concat(p), undefined, function (res, status) {
                                 var r = _this.parseResponse(res, status);
                                 _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
@@ -1511,6 +1514,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
              */
             this.hasResponsibility = function (group) {
                 return _this.responsibilities && _this.responsibilities.indexOf(group) !== -1;
+            };
+            /**
+             * Get system parameter value
+             * @param {string} code System parameter name
+             * @return {string} System parameter value
+             */
+            this.getSystemParameter = function (name) {
+                return _this.sysparams ? _this.sysparams[name] || '' : '';
             };
             /**
              * Get text value

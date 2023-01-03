@@ -745,6 +745,7 @@ declare module "simplicite" {
          * @param {object} [opts] Options
          * @param {boolean} [opts.inlinePicture=false] Inline user picture?
          * @param {boolean} [opts.includeTexts=false] Include texts?
+         * @param {boolean} [opts.includeSysparams=false] Include system parameters?
          * @param {function} [opts.error] Error handler function
          * @return {promise<Grant>} A promise to the grant (also available as the <code>grant</code> member)
          * @function
@@ -1057,6 +1058,11 @@ declare module "simplicite" {
          */
         texts: Map<string, string>;
         /**
+         * System parameters
+         * @member {object}
+         */
+        sysparams: Map<string, string>;
+        /**
          * Get user ID
          * @return {string} User ID
          * @function
@@ -1123,6 +1129,12 @@ declare module "simplicite" {
          * @function
          */
         hasResponsibility: (group: string) => boolean;
+        /**
+         * Get system parameter value
+         * @param {string} code System parameter name
+         * @return {string} System parameter value
+         */
+        getSystemParameter: (name: string) => string;
         /**
          * Get text value
          * @param {string} code Text code

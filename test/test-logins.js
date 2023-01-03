@@ -22,7 +22,7 @@ app.login().then(user => {
 	app.info(`Logged in as ${user.login} with authentication token ${user.authtoken}`);
 	assert.ok(user.login === adminUsername);
 	assert.ok(app.isAuthTokenExpired() === false);
-	return app.getGrant({ inlinePicture: true, includeTexts: true });
+	return app.getGrant({ inlinePicture: true, includeTexts: true, includeSysparams: true });
 }).then(grant => {
 	app.debug(grant);
 	assert.ok(grant.getLogin() === adminUsername);

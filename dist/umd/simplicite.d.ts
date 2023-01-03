@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.29
+ * @version 2.2.30
  * @license Apache-2.0
  */
 /**
@@ -25,7 +25,7 @@ declare const enum SessionParamEndpoint {
  * Session parameters
  * @type
  */
-declare type SessionParams = {
+type SessionParams = {
     /**
      * URL
      * @constant {string}
@@ -750,6 +750,7 @@ declare class Session {
      * @param {object} [opts] Options
      * @param {boolean} [opts.inlinePicture=false] Inline user picture?
      * @param {boolean} [opts.includeTexts=false] Include texts?
+     * @param {boolean} [opts.includeSysparams=false] Include system parameters?
      * @param {function} [opts.error] Error handler function
      * @return {promise<Grant>} A promise to the grant (also available as the <code>grant</code> member)
      * @function
@@ -1062,6 +1063,11 @@ declare class Grant {
      */
     texts: Map<string, string>;
     /**
+     * System parameters
+     * @member {object}
+     */
+    sysparams: Map<string, string>;
+    /**
      * Get user ID
      * @return {string} User ID
      * @function
@@ -1128,6 +1134,12 @@ declare class Grant {
      * @function
      */
     hasResponsibility: (group: string) => boolean;
+    /**
+     * Get system parameter value
+     * @param {string} code System parameter name
+     * @return {string} System parameter value
+     */
+    getSystemParameter: (name: string) => string;
     /**
      * Get text value
      * @param {string} code Text code
