@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.30
+ * @version 2.2.31
  * @license Apache-2.0
  */
 
@@ -17,7 +17,7 @@ const constants = {
 	 * API client module version
 	 * @constant {string}
 	 */
-	MODULE_VERSION: '2.2.30',
+	MODULE_VERSION: '2.2.31',
 
 	/**
 	 * Default row ID field name
@@ -693,7 +693,12 @@ class Session {
 		this.password = params.password || params.pwd; // naming flexibility
 		this.authtoken = params.authtoken || params.token; // naming flexibility
 
-		this.ajaxkey = params.ajaxkey || (inUI && globalThis.Simplicite.AJAX_KEY);
+		this.ajaxkey = params.ajaxkey ; // explicit Ajax key
+		if (!this.ajaxkey && inUI) {
+			// If in standard UI, get Ajax key from local storage or from the constant
+			const ls = window ? window.localStorage : null;
+			this.ajaxkey = ls ? ls.getItem('_ajaxKey') : globalThis.Simplicite.AJAX_KEY;
+		}
 
 		this.businessObjectCache = new Map<string, BusinessObject>();
 	}

@@ -37,7 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.30
+ * @version 2.2.31
  * @license Apache-2.0
  */
 define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (require, exports, node_fetch_1, buffer_1) {
@@ -52,7 +52,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
          * API client module version
          * @constant {string}
          */
-        MODULE_VERSION: '2.2.30',
+        MODULE_VERSION: '2.2.31',
         /**
          * Default row ID field name
          * @constant {string}
@@ -1243,7 +1243,12 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
             this.username = params.username || params.login; // naming flexibility
             this.password = params.password || params.pwd; // naming flexibility
             this.authtoken = params.authtoken || params.token; // naming flexibility
-            this.ajaxkey = params.ajaxkey || (inUI && globalThis.Simplicite.AJAX_KEY);
+            this.ajaxkey = params.ajaxkey; // explicit Ajax key
+            if (!this.ajaxkey && inUI) {
+                // If in standard UI, get Ajax key from local storage or from the constant
+                var ls = window ? window.localStorage : null;
+                this.ajaxkey = ls ? ls.getItem('_ajaxKey') : globalThis.Simplicite.AJAX_KEY;
+            }
             this.businessObjectCache = new Map();
         }
         return Session;
