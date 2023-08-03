@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.31
+ * @version 2.2.32
  * @license Apache-2.0
  */
 /**
@@ -97,10 +97,15 @@ type SessionParams = {
      */
     authheader?: string;
     /**
-     * Timeout (s)
+     * Timeout (seconds)
      * @constant {number}
      */
     timeout?: number;
+    /**
+     * Compression?
+     * @constant {boolean}
+     */
+    compress?: boolean;
     /**
      * Debug?
      * @constant {boolean}
@@ -1745,6 +1750,7 @@ declare class ExternalObject {
      * @param {string} [opts.path] Absolute or relative path (e.g. absolute '/my/mapped/upath' or relative 'my/additional/path')
      * @param {object} [opts.method] Optional method 'GET', 'POST', 'PUT' or 'DELETE' (defaults to 'GET' if data is not set or 'POST' if data is set)
      * @param {function} [opts.contentType] Optional data content type (for 'POST' and 'PUT' methods only)
+     * @param {function} [opts.accept] Optional accepted response type (e.g. 'application/json")
      * @return {promise<object>} Promise to the external object content
      * @function
      */

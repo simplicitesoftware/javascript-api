@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.31
+ * @version 2.2.32
  * @license Apache-2.0
  */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -62,7 +62,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
          * API client module version
          * @constant {string}
          */
-        MODULE_VERSION: '2.2.31',
+        MODULE_VERSION: '2.2.32',
         /**
          * Default row ID field name
          * @constant {string}
@@ -414,12 +414,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
          * Default authentication header
          * @constant {string}
          */
-        DEFAULT_AUTH_HEADER: 'Authorization',
+        DEFAULT_AUTH_HEADER: 'authorization',
         /**
          * Simplicite authentication header
          * @constant {string}
          */
-        SIMPLICITE_AUTH_HEADER: 'X-Simplicite-Authorization'
+        SIMPLICITE_AUTH_HEADER: 'x-simplicite-authorization'
     };
     /**
      * Simplicite application session. Same as <code>new Session(parameter)</code>.
@@ -605,7 +605,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                 var m = data ? 'POST' : 'GET';
                 var h = {};
                 if (data)
-                    h['Content-Type'] = 'application/x-www-form-urlencoded; charset=utf-8';
+                    h['content-type'] = 'application/x-www-form-urlencoded; charset=utf-8';
+                h.accept = 'application/json';
                 var b = _this.getBearerTokenHeader();
                 if (b) {
                     h[_this.authheader] = b;
@@ -623,11 +624,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                 (0, node_fetch_1.default)(u, {
                     method: m,
                     headers: h,
-                    cache: 'no-cache',
-                    mode: 'cors',
-                    credentials: 'include',
-                    referrer: '',
-                    referrerPolicy: 'no-referrer',
+                    compress: _this.parameters.compress,
+                    timeout: _this.parameters.timeout,
                     body: d
                 }).then(function (res) {
                     if (callback) {
@@ -1240,7 +1238,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                 port: port,
                 root: root,
                 url: url,
-                timeout: params.timeout || 30,
+                timeout: (params.timeout || 30) * 1000,
+                compress: params.compress || true,
                 healthpath: (ep === '/ui' ? ep : '') + '/health?format=json',
                 loginpath: ep === '/api' ? '/api/login?format=json' : ep + '/json/app?action=session',
                 logoutpath: ep === '/api' ? '/api/logout?format=json' : ep + '/json/app?action=logout',
@@ -1252,11 +1251,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
             };
             this.username = params.username || params.login; // naming flexibility
             this.password = params.password || params.pwd; // naming flexibility
-            this.authtoken = params.authtoken || params.token; // naming flexibility
+            this.authtoken = params.authtoken || params.token; // explicit token with naming flexibility
+            if (!this.authtoken && inUI) {
+                // If in standard UI, get auth token from local storage or from the constant
+                var ls = globalThis.window ? globalThis.window.localStorage : null;
+                this.authtoken = ls ? ls.getItem('_authToken') : globalThis.Simplicite.AUTH_TOKEN;
+            }
             this.ajaxkey = params.ajaxkey; // explicit Ajax key
             if (!this.ajaxkey && inUI) {
                 // If in standard UI, get Ajax key from local storage or from the constant
-                var ls = window ? window.localStorage : null;
+                var ls = globalThis.window ? globalThis.window.localStorage : null;
                 this.ajaxkey = ls ? ls.getItem('_ajaxKey') : globalThis.Simplicite.AJAX_KEY;
             }
             this.businessObjectCache = new Map();
@@ -2787,6 +2791,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
              * @param {string} [opts.path] Absolute or relative path (e.g. absolute '/my/mapped/upath' or relative 'my/additional/path')
              * @param {object} [opts.method] Optional method 'GET', 'POST', 'PUT' or 'DELETE' (defaults to 'GET' if data is not set or 'POST' if data is set)
              * @param {function} [opts.contentType] Optional data content type (for 'POST' and 'PUT' methods only)
+             * @param {function} [opts.accept] Optional accepted response type (e.g. 'application/json")
              * @return {promise<object>} Promise to the external object content
              * @function
              */
@@ -2804,10 +2809,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                             var m = opts.method ? opts.method.toUpperCase() : (data ? 'POST' : 'GET');
                             var h = {};
                             if (opts.contentType) {
-                                h['Content-Type'] = opts.contentType;
+                                h['content-type'] = opts.contentType;
                             }
                             else if (data) { // Try to guess type...
-                                h['Content-Type'] = typeof data === 'string' ? 'application/x-www-form-urlencoded' : 'application/json';
+                                h['content-type'] = typeof data === 'string' ? 'application/x-www-form-urlencoded' : 'application/json';
+                            }
+                            if (opts.accept) {
+                                h.accept = opts.accept === 'json' ? 'application/json' : opts.accept;
                             }
                             var b = ses.getBearerTokenHeader();
                             if (b) {
@@ -2824,11 +2832,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                             (0, node_fetch_1.default)(u, {
                                 method: m,
                                 headers: h,
-                                cache: 'no-cache',
-                                mode: 'cors',
-                                credentials: 'include',
-                                referrer: '',
-                                referrerPolicy: 'no-referrer',
+                                compress: ses.parameters.compress,
+                                timeout: ses.parameters.timeout,
                                 body: d
                             }).then(function (res) {
                                 var type = res.headers.get('content-type');

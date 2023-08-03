@@ -92,10 +92,15 @@ declare module "simplicite" {
          */
         authheader?: string;
         /**
-         * Timeout (s)
+         * Timeout (seconds)
          * @constant {number}
          */
         timeout?: number;
+        /**
+         * Compression?
+         * @constant {boolean}
+         */
+        compress?: boolean;
         /**
          * Debug?
          * @constant {boolean}
@@ -1740,6 +1745,7 @@ declare module "simplicite" {
          * @param {string} [opts.path] Absolute or relative path (e.g. absolute '/my/mapped/upath' or relative 'my/additional/path')
          * @param {object} [opts.method] Optional method 'GET', 'POST', 'PUT' or 'DELETE' (defaults to 'GET' if data is not set or 'POST' if data is set)
          * @param {function} [opts.contentType] Optional data content type (for 'POST' and 'PUT' methods only)
+         * @param {function} [opts.accept] Optional accepted response type (e.g. 'application/json")
          * @return {promise<object>} Promise to the external object content
          * @function
          */
