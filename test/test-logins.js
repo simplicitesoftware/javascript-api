@@ -26,6 +26,7 @@ app.login().then(user => {
 }).then(grant => {
 	app.debug(grant);
 	assert.ok(grant.getLogin() === adminUsername);
+	assert.ok(grant.hasResponsibility('ADMIN'));
 	app.info('Hello ' + grant.getFirstName() + ' ' + grant.getLastName() + ' (' + grant.getLogin() + ')');
 	app.info(grant.T('SAVE'));
 	return app.logout();
