@@ -33,12 +33,12 @@ try {
 });
 ```
 
-Check the [GitHub repository](https://github.com/simplicitesoftware/nodejs-api) `test/test*.js`
+Check the [GitHub repository](https://github.com/simplicitesoftware/javascript-api) `test/test*.js`
 files for other examples of basic usage.
 
 ### Documentation
 
-Read the [JSDoc documentation](https://simplicitesoftware.github.io/nodejs-api/).
+Read the [JSDoc documentation](https://simplicitesoftware.github.io/javascript-api/).
 
 ### Demos
 
@@ -56,7 +56,7 @@ For more advanced usage demos, check these repositories:
 - From within the **Simplicit&eacute;&reg; generic web UI**:
 	- [Demo module](https://github.com/simplicitesoftware/module-demo-jslib)
 
-See the [documentation](https://simplicitesoftware.github.io/nodejs-api/) for details.
+See the [documentation](https://simplicitesoftware.github.io/javascript-api/) for details.
 
 License
 -------

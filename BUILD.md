@@ -1,7 +1,7 @@
 ![Simplicit&eacute; Software](https://www.simplicite.io/resources/logos/logo250-grey.png)
 * * *
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=simplicitesoftware_nodejs-api&metric=alert_status)](https://sonarcloud.io/dashboard?id=simplicitesoftware_nodejs-api)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=simplicitesoftware_javascript-api&metric=alert_status)](https://sonarcloud.io/dashboard?id=simplicitesoftware_javascript-api)
 
 Prepare
 =======
