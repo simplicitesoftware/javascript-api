@@ -36,7 +36,6 @@
     "jsdoc": "^4.0.2",
     "jsdoc-plugin-typescript": "^2.2.1",
     "file-cli": "^1.2.0",
-    "npm-check": "^6.0.1",
     "npm-check-updates": "^16.14.2",
     "prettier": "^3.0.3",
     "typescript": "^5.2.2",
@@ -69,7 +68,6 @@
     "test:await": "node ./test/test-await.js",
     "test:browser": "webpack build --config=./test/webpack.config.cjs ./test/test-browser.js && serve -l 3000 test",
     "test:bundle": "serve -l 3000 dist",
-    "check": "npm-check --skip-unused",
     "ncu": "ncu"
   },
   "engines": {
