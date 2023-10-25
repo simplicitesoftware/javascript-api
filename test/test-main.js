@@ -26,8 +26,7 @@ const sysValueName = 'sys_value';
 const sysValue = 'Test';
 const sysCodeFilter = '%TIMEOUT%';
 const sysFilters = { sys_code: sysCodeFilter };
-let sys;
-let sysId = '2';
+let sys, sysId, mdlId;
 
 const usrName = 'User';
 let usr;
@@ -119,8 +118,8 @@ app.getHealth().then(health => {
 	assert.ok(list.length);
 	app.info('Found ' + list.length + ' items');
 	for (let i = 0; i < list.length; i++) {
-		const item = list[i];
-		app.info('- item[' + i + ']: ' + item.row_id + ' ' + item.sys_code + ' ' + item.sys_value);
+		sys.item = list[i];
+		app.info('- item[' + i + ']: ' + sys.item.row_id + ' ' + sys.item.sys_code + ' ' + sys.item.sys_value);
 	}
 	app.info('Current filter: ' + sys.filters);
 	return sys.getFilters();
@@ -129,6 +128,9 @@ app.getHealth().then(health => {
 	// TODO: see why this i not OK...
 	//assert.ok(filters[sysCodeName] === sysCodeFilter);
 	app.info('Filter: ' + filters[sysCodeName]);
+	sysId = sys.item.row_id;
+	mdlId = sys.item.row_module_id;
+	sys.item = {};
 	return sys.get(sysId);
 }).then(item => {
 	app.debug(item);
@@ -145,6 +147,7 @@ app.getHealth().then(health => {
 	app.info('Got new item for creation');
 	item.sys_code = sysCode;
 	item.sys_value = sysValue;
+	item.row_module_id = mdlId;
 	return sys.create(item);
 }).then(item => {
 	app.debug(item);
