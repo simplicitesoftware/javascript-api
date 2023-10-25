@@ -1136,10 +1136,18 @@ declare module "simplicite" {
         hasResponsibility: (group: string) => boolean;
         /**
          * Get system parameter value
-         * @param {string} code System parameter name
+         * @param {string} name System parameter name
          * @return {string} System parameter value
+         * @function
          */
         getSystemParameter: (name: string) => string;
+        /**
+         * Alias to <code>getSystemParameter</code>
+         * @param {string} name System parameter name
+         * @return {string} System parameter value
+         * @funtion
+         */
+        getSysParam: (name: string) => string;
         /**
          * Get text value
          * @param {string} code Text code

@@ -76,7 +76,7 @@ test('Objects', () => {
 	app.info('Objects test');
 	let sys;
 	let usr;
-	let sysId = '2';
+	let sysId, mdlId;
 	const sysCodeFilter = '%TIMEOUT%';
 	const sysCode = 'TEST_' + Date.now();
 	const sysValue = 'Test';
@@ -111,16 +111,19 @@ test('Objects', () => {
 	}).then(list => {
 		expect(list.length).not.toBe(0);
 		for (let i = 0; i < list.length; i++) {
-			let  item = list[i];
-			expect(item.row_id).not.toBe(simplicite.constants.DEFAULT_ROW_ID);
-			expect(!!item.sys_code).not.toBe(false);
-			expect(!!item.sys_value).not.toBe(false);
+			sys.item = list[i]; // set list item as current item
+			expect(sys.item.row_id).not.toBe(simplicite.constants.DEFAULT_ROW_ID);
+			expect(!!sys.item.sys_code).not.toBe(false);
+			expect(!!sys.item.sys_value).not.toBe(false);
 		}
 		return sys.getFilters();
 	}).then(filters => {
 		// TODO: see why this is not OK
 		//expect(filters.sys_code).toBe(sysCodeFilter);
 		expect(!!filters).not.toBe(false);
+		sysId = sys.item.row_id;
+		mdlId = sys.item.row_module_id;
+		sys.item = {};
 		return sys.get(sysId);
 	}).then(item => {
 		expect(item.row_id).toBe(sysId);
@@ -129,6 +132,7 @@ test('Objects', () => {
 		expect(item.row_id).toBe(simplicite.constants.DEFAULT_ROW_ID);
 		item.sys_code = sysCode;
 		item.sys_value = sysValue;
+		item.row_module_id = mdlId;
 		return sys.create(item);
 	}).then(item => {
 		sysId = item.row_id;

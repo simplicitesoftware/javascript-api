@@ -37,7 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.34
+ * @version 2.2.35
  * @license Apache-2.0
  */
 define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (require, exports, node_fetch_1, buffer_1) {
@@ -52,7 +52,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
          * API client module version
          * @constant {string}
          */
-        MODULE_VERSION: '2.2.34',
+        MODULE_VERSION: '2.2.35',
         /**
          * Default row ID field name
          * @constant {string}
@@ -1516,12 +1516,20 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
             };
             /**
              * Get system parameter value
-             * @param {string} code System parameter name
+             * @param {string} name System parameter name
              * @return {string} System parameter value
+             * @function
              */
             this.getSystemParameter = function (name) {
                 return _this.sysparams ? _this.sysparams[name] || '' : '';
             };
+            /**
+             * Alias to <code>getSystemParameter</code>
+             * @param {string} name System parameter name
+             * @return {string} System parameter value
+             * @funtion
+             */
+            this.getSysParam = this.getSystemParameter;
             /**
              * Get text value
              * @param {string} code Text code

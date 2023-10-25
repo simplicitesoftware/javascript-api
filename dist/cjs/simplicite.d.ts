@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.34
+ * @version 2.2.35
  * @license Apache-2.0
  */
 /**
@@ -1141,10 +1141,18 @@ declare class Grant {
     hasResponsibility: (group: string) => boolean;
     /**
      * Get system parameter value
-     * @param {string} code System parameter name
+     * @param {string} name System parameter name
      * @return {string} System parameter value
+     * @function
      */
     getSystemParameter: (name: string) => string;
+    /**
+     * Alias to <code>getSystemParameter</code>
+     * @param {string} name System parameter name
+     * @return {string} System parameter value
+     * @funtion
+     */
+    getSysParam: (name: string) => string;
     /**
      * Get text value
      * @param {string} code Text code
