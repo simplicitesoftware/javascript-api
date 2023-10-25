@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.34
+ * @version 2.2.35
  * @license Apache-2.0
  */
 
@@ -17,7 +17,7 @@ const constants = {
 	 * API client module version
 	 * @constant {string}
 	 */
-	MODULE_VERSION: '2.2.34',
+	MODULE_VERSION: '2.2.35',
 
 	/**
 	 * Default row ID field name
@@ -1842,12 +1842,21 @@ class Grant {
 
 	/**
 	 * Get system parameter value
-	 * @param {string} code System parameter name
+	 * @param {string} name System parameter name
 	 * @return {string} System parameter value
+	 * @function
 	 */
 	getSystemParameter = (name: string): string => {
 		return this.sysparams ? this.sysparams[name] || '' : '';
 	};
+
+	/**
+	 * Alias to <code>getSystemParameter</code>
+	 * @param {string} name System parameter name
+	 * @return {string} System parameter value
+	 * @funtion
+	 */
+	getSysParam = this.getSystemParameter;
 
 	/**
 	 * Get text value
