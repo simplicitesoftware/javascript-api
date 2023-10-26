@@ -862,9 +862,9 @@ declare module "simplicite" {
     class Doc {
         /**
          * Constructor
-         * @param value {object} Document value
+         * @param value {string|object} Document name or value
          */
-        constructor(value: any);
+        constructor(value?: any);
         /**
          * Document ID
          * @member {string}
@@ -876,10 +876,10 @@ declare module "simplicite" {
          */
         mime?: string;
         /**
-         * Document file name
+         * Document name
          * @member {string}
          */
-        filename?: string;
+        name?: string;
         /**
          * Document content as base 64
          * @member {string}
@@ -911,39 +911,53 @@ declare module "simplicite" {
         /**
          * Set the document MIME type
          * @param {string} mime MIME type
+         * @return {Doc} This document for chaining
          * @function
          */
-        setMIMEType: (mime: string) => void;
+        setMIMEType: (mime: string) => Doc;
         /**
          * Alias to <code>setMIMEType</code>
          * @param {string} mime MIME type
          * @function
          */
-        setMimeType: (mime: string) => void;
+        setMimeType: (mime: string) => Doc;
         /**
-         * Get the document file name
-         * @return {string} File name
+         * Get the document name
+         * @return {string} Name
          * @function
          */
-        getFilename: () => string;
+        getName: () => string;
         /**
-         * Alias to <code>getFilename</code>
-         * @return {string} File name
+         * Alias to <code>getName</code>
+         * @return {string} Name
          * @function
          */
         getFileName: () => string;
         /**
-         * Set the document file name
-         * @param {string} filename File name
+         * Alias to <code>getName</code>
+         * @return {string} Name
          * @function
          */
-        setFilename: (filename: string) => void;
+        getFilename: () => string;
         /**
-         * Alias to <code>setFilename</code>
-         * @param {string} filename File name
+         * Set the document name
+         * @param {string} name Name
+         * @return {Doc} This document for chaining
          * @function
          */
-        setFileName: (filename: string) => void;
+        setName: (name: string) => Doc;
+        /**
+         * Alias to <code>setName</code>
+         * @param {string} name Name
+         * @function
+         */
+        setFileName: (name: string) => Doc;
+        /**
+         * Alias to <code>setName</code>
+         * @param {string} name Name
+         * @function
+         */
+        setFilename: (name: string) => Doc;
         /**
          * Get the document content (encoded in base 64)
          * @return {string} Content
@@ -984,15 +998,17 @@ declare module "simplicite" {
         /**
          * Set the document content
          * @param {string} content Content (encoded in base 64)
+         * @return {Doc} This document for chaining
          * @function
          */
-        setContent: (content: string) => void;
+        setContent: (content: string) => Doc;
         /**
          * Set the document content from plain text string
          * @param {string} content Content as plain text string
+         * @return {Doc} This document for chaining
          * @function
          */
-        setContentFromText: (content: string) => void;
+        setContentFromText: (content: string) => Doc;
         /**
          * Get the document data URL
          * @param {boolean} [thumbnail=false] Thumbnail? If thumbnail does not exists the content is used.

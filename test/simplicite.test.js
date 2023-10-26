@@ -180,6 +180,7 @@ test('Objects', () => {
 
 test('Image', () => {
 	app.info('Image test');
+	const login = `test_${new Date().getTime()}`;
 	const img = `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAuHQAALh0BBxBC1gAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTFH80I3AAAF20lEQVR4XmPA
 		BmbPnMVaXlomWl5SKjMccHVFpcy0KVOFrly+wgT1IiaYMX0GY1x0DE9oULCzs4PjNDMj44NAfGa4YAcb213+3j6VURERqgV5+SyrVq6E+hwIFi1YwJiVnqFvb2O7WkNF9buyvML/4YhVFBT/GerqPXV1cs4J9PNnh3qfgaG2ukbSzsp6q5qS8m9sGocVVlD
 		8r6mq9iY4MDCxpLCImeHBgwcMyQmJpUDBP1g1DFOsr61zNjI8QpWhvrZW1NTIeD82RcMZa6iqfXV3dc1g8PPyNtHR0LyPTdFwxsDy4L+zvcNSBic7ewstNfXH2BQNd2xubLJtRAeAqaHRaACMBsBoAIzgADAZTQGjATAaAKMBMNgCQFVR6Q+wY/bJxMDwkZ
@@ -200,8 +201,8 @@ test('Image', () => {
 		return usr.getForCreate();
 	}).then(item => {
 		expect(item.row_id).toBe(simplicite.constants.DEFAULT_ROW_ID);
-		item.usr_login = `test_${new Date().getTime()}`;
-		item.usr_image_id = { name: `${item.usr_login}.png`, content: img };
+		item.usr_login = login;
+		item.usr_image_id = new simplicite.Doc(`${login}.png`).setContent(img).getValue();
 		return usr.create(item);
 	}).then(item => {
 		rowId = item.row_id;
@@ -210,6 +211,9 @@ test('Image', () => {
 		return usr.get(rowId, { inlineDocuments: true, inlineThumbnails: true });
 	}).then(item => {
 		expect(item.row_id).toBe(rowId);
+		const doc = usr.getFieldValue('usr_image_id'); // simplicite.Doc
+		expect(doc.getMIMEType()).toBe('image/png');
+		expect(doc.getName()).toBe(`${login}.png`);
 		return usr.del(item);
 	}).then(res => {
 		expect(res.row_id).toBe(rowId);

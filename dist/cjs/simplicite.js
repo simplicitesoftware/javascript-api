@@ -2,7 +2,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.35
+ * @version 2.2.36
  * @license Apache-2.0
  */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -56,7 +56,7 @@ var constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '2.2.35',
+    MODULE_VERSION: '2.2.36',
     /**
      * Default row ID field name
      * @constant {string}
@@ -1268,7 +1268,7 @@ var Session = /** @class */ (function () {
 var Doc = /** @class */ (function () {
     /**
      * Constructor
-     * @param value {object} Document value
+     * @param value {string|object} Document name or value
      */
     function Doc(value) {
         var _this = this;
@@ -1297,10 +1297,12 @@ var Doc = /** @class */ (function () {
         /**
          * Set the document MIME type
          * @param {string} mime MIME type
+         * @return {Doc} This document for chaining
          * @function
          */
         this.setMIMEType = function (mime) {
             _this.mime = mime;
+            return _this; // Chain
         };
         /**
          * Alias to <code>setMIMEType</code>
@@ -1309,33 +1311,47 @@ var Doc = /** @class */ (function () {
          */
         this.setMimeType = this.setMIMEType;
         /**
-         * Get the document file name
-         * @return {string} File name
+         * Get the document name
+         * @return {string} Name
          * @function
          */
-        this.getFilename = function () {
-            return _this.filename;
+        this.getName = function () {
+            return _this.name;
         };
         /**
-         * Alias to <code>getFilename</code>
-         * @return {string} File name
+         * Alias to <code>getName</code>
+         * @return {string} Name
          * @function
          */
-        this.getFileName = this.getFilename;
+        this.getFileName = this.getName;
         /**
-         * Set the document file name
-         * @param {string} filename File name
+         * Alias to <code>getName</code>
+         * @return {string} Name
          * @function
          */
-        this.setFilename = function (filename) {
-            _this.filename = filename;
+        this.getFilename = this.getName;
+        /**
+         * Set the document name
+         * @param {string} name Name
+         * @return {Doc} This document for chaining
+         * @function
+         */
+        this.setName = function (name) {
+            _this.name = name;
+            return _this; // Chain
         };
         /**
-         * Alias to <code>setFilename</code>
-         * @param {string} filename File name
+         * Alias to <code>setName</code>
+         * @param {string} name Name
          * @function
          */
-        this.setFileName = this.setFilename;
+        this.setFileName = this.setName;
+        /**
+         * Alias to <code>setName</code>
+         * @param {string} name Name
+         * @function
+         */
+        this.setFilename = this.setName;
         /**
          * Get the document content (encoded in base 64)
          * @return {string} Content
@@ -1379,18 +1395,22 @@ var Doc = /** @class */ (function () {
         /**
          * Set the document content
          * @param {string} content Content (encoded in base 64)
+         * @return {Doc} This document for chaining
          * @function
          */
         this.setContent = function (content) {
             _this.content = content;
+            return _this; // Chain
         };
         /**
          * Set the document content from plain text string
          * @param {string} content Content as plain text string
+         * @return {Doc} This document for chaining
          * @function
          */
         this.setContentFromText = function (content) {
             _this.content = buffer_1.Buffer.from(content, 'utf-8').toString('base64');
+            return _this; // Chain
         };
         /**
          * Get the document data URL
@@ -1406,9 +1426,20 @@ var Doc = /** @class */ (function () {
          * @return {object} Value
          */
         this.getValue = function () {
-            return JSON.parse(JSON.stringify(_this)); // Strips all functions
+            var val = JSON.parse(JSON.stringify(_this)); // Strips all functions
+            // Backward compatibility
+            if (val.filename && !val.name) {
+                val.name = val.filename;
+                val.filename = undefined;
+            }
+            return val;
         };
-        Object.assign(this, value);
+        Object.assign(this, typeof value == 'string' ? { name: value } : value || {});
+        // Backward compatibility
+        if (this['filename'] && !this.name) {
+            this.name = this['filename'];
+            this['filename'] = undefined;
+        }
     }
     /**
      * Get the document content as a buffer
@@ -1985,7 +2016,7 @@ var BusinessObject = /** @class */ (function () {
                 var k = i[0];
                 var d = i[1] || '';
                 if (d.name && d.content) { // Document ?
-                    if (d.content.startsWith('data:')) // Flexibility = extract content fron data URL
+                    if (d.content.startsWith('data:')) // Flexibility = extract content from a data URL
                         d.content = d.content.replace(/data:.*;base64,/, '');
                     p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent('id|' + (d.id ? d.id : '0') + '|name|' + d.name + '|content|' + d.content);
                 }

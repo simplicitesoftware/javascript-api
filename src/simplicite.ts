@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.35
+ * @version 2.2.36
  * @license Apache-2.0
  */
 
@@ -17,7 +17,7 @@ const constants = {
 	 * API client module version
 	 * @constant {string}
 	 */
-	MODULE_VERSION: '2.2.35',
+	MODULE_VERSION: '2.2.36',
 
 	/**
 	 * Default row ID field name
@@ -1469,41 +1469,47 @@ class Session {
 class Doc {
 	/**
 	 * Constructor
-	 * @param value {object} Document value
+	 * @param value {string|object} Document name or value
 	 */
-	constructor(value: any) {
-		Object.assign(this, value);
+	constructor(value?: any) {
+		Object.assign(this, typeof value == 'string' ? { name: value } : value || {});
+
+		// Backward compatibility
+		if (this['filename'] && !this.name) {
+			this. name = this['filename'];
+			this['filename'] = undefined;
+		}
 	}
 
 	/**
 	 * Document ID
 	 * @member {string}
 	 */
-	public id?: string;
+	id?: string;
 
 	/**
 	 * Document MIME type
 	 * @member {string}
 	 */
-	public mime?: string;
+	mime?: string;
 
 	/**
-	 * Document file name
+	 * Document name
 	 * @member {string}
 	 */
-	public filename?: string;
+	name?: string;
 
 	/**
 	 * Document content as base 64
 	 * @member {string}
 	 */
-	public content?: string;
+	content?: string;
 
 	/**
 	 * Document thumbnail as base 64
 	 * @member {string}
 	 */
-	public thumbnail?: string;
+	thumbnail?: string;
 
 	/**
 	 * Get the document ID
@@ -1533,10 +1539,12 @@ class Doc {
 	/**
 	 * Set the document MIME type
 	 * @param {string} mime MIME type
+	 * @return {Doc} This document for chaining
 	 * @function
 	 */
-	public setMIMEType = (mime: string): void => {
+	public setMIMEType = (mime: string): Doc => {
 		this.mime = mime;
+		return this; // Chain
 	};
 
 	/**
@@ -1547,36 +1555,52 @@ class Doc {
 	public setMimeType = this.setMIMEType;
 
 	/**
-	 * Get the document file name
-	 * @return {string} File name
+	 * Get the document name
+	 * @return {string} Name
 	 * @function
 	 */
-	public getFilename = (): string => {
-		return this.filename;
+	public getName = (): string => {
+		return this.name;
 	};
 
 	/**
-	 * Alias to <code>getFilename</code>
-	 * @return {string} File name
+	 * Alias to <code>getName</code>
+	 * @return {string} Name
 	 * @function
 	 */
-	public getFileName = this.getFilename;
+	public getFileName = this.getName;
 
 	/**
-	 * Set the document file name
-	 * @param {string} filename File name
+	 * Alias to <code>getName</code>
+	 * @return {string} Name
 	 * @function
 	 */
-	public setFilename = (filename: string): void => {
-		this.filename = filename;
+	public getFilename = this.getName;
+
+	/**
+	 * Set the document name
+	 * @param {string} name Name
+	 * @return {Doc} This document for chaining
+	 * @function
+	 */
+	public setName = (name: string): Doc => {
+		this.name = name;
+		return this; // Chain
 	};
 
 	/**
-	 * Alias to <code>setFilename</code>
-	 * @param {string} filename File name
+	 * Alias to <code>setName</code>
+	 * @param {string} name Name
 	 * @function
 	 */
-	public setFileName = this.setFilename;
+	public setFileName = this.setName;
+
+	/**
+	 * Alias to <code>setName</code>
+	 * @param {string} name Name
+	 * @function
+	 */
+	public setFilename = this.setName;
 
 	/**
 	 * Get the document content (encoded in base 64)
@@ -1636,19 +1660,23 @@ class Doc {
 	/**
 	 * Set the document content
 	 * @param {string} content Content (encoded in base 64)
+	 * @return {Doc} This document for chaining
 	 * @function
 	 */
-	public setContent = (content: string): void => {
+	public setContent = (content: string): Doc => {
 		this.content = content;
+		return this; // Chain
 	};
 
 	/**
 	 * Set the document content from plain text string
 	 * @param {string} content Content as plain text string
+	 * @return {Doc} This document for chaining
 	 * @function
 	 */
-	public setContentFromText = (content: string): void => {
+	public setContentFromText = (content: string): Doc => {
 		this.content = Buffer.from(content, 'utf-8').toString('base64');
+		return this; // Chain
 	};
 
 	/**
@@ -1666,7 +1694,15 @@ class Doc {
 	 * @return {object} Value
 	 */
 	public getValue = (): any => {
-		return JSON.parse(JSON.stringify(this)); // Strips all functions
+		const val = JSON.parse(JSON.stringify(this)); // Strips all functions
+
+		// Backward compatibility
+		if (val.filename && !val.name) {
+			val.name = val.filename;
+			val.filename = undefined;
+		}
+
+		return val;
 	};
 }
 
