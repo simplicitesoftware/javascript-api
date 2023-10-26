@@ -2437,7 +2437,7 @@ class BusinessObject {
 			const k: string = i[0];
 			const d: any = i[1] || '';
 			if (d.name && d.content) { // Document ?
-				if (d.content.startsWith('data:')) // Flexibility = extract content fron data URL
+				if (d.content.startsWith('data:')) // Flexibility = extract content from a data URL
 					d.content = d.content.replace(/data:.*;base64,/, '');
 				p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent('id|' + (d.id ? d.id : '0') + '|name|' + d.name + '|content|' + d.content);
 			} else if (d.object && d.row_id) { // Object ?
