@@ -55,7 +55,7 @@ app.login().then(user => {
 	app.debug('Get for create', item);
 	assert.ok(item.row_id === simplicite.constants.DEFAULT_ROW_ID);
 	item.usr_login = login;
-	item.usr_image_id = new simplicite.Doc(`${login}.png`).setContent(png).getValue();
+	item.usr_image_id = new simplicite.Doc(`${login}.png`).setContent(png);
 	return usr.create(item);
 }).then(item => {
 	app.debug('Create', item);
@@ -71,10 +71,10 @@ app.login().then(user => {
 }).then(item => {
 	app.debug('Get', item);
 	assert.ok(item.row_id === rowId);
-	const doc = usr.getFieldValue('usr_image_id'); // simplicite.Doc
+	const doc = usr.getFieldValue('usr_image_id'); // get a simplicite.Doc
 	assert.ok(doc.getMIMEType() === 'image/png');
 	assert.ok(doc.getName() === `${login}.png`);
-	item.usr_image_id = new simplicite.Doc(`${login}.jpg`).setContent(jpg).getValue();
+	item.usr_image_id = new simplicite.Doc(`${login}.jpg`).setContent(jpg);
 	return usr.update(item);
 }).then(item => {
 	app.debug('Update', item);

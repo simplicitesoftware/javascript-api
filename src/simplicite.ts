@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.36
+ * @version 2.2.37
  * @license Apache-2.0
  */
 
@@ -17,7 +17,7 @@ const constants = {
 	 * API client module version
 	 * @constant {string}
 	 */
-	MODULE_VERSION: '2.2.36',
+	MODULE_VERSION: '2.2.37',
 
 	/**
 	 * Default row ID field name
@@ -1469,7 +1469,10 @@ class Session {
 class Doc {
 	/**
 	 * Constructor
-	 * @param value {string|object} Document name or value
+	 * @param [value] {string|object} Document name or value
+	 * @param [value.name] Document name
+	 * @param [value.mime] Document MIME type
+	 * @param [value.content] Document content
 	 */
 	constructor(value?: any) {
 		Object.assign(this, typeof value == 'string' ? { name: value } : value || {});
@@ -1602,6 +1605,10 @@ class Doc {
 	 */
 	public setFilename = this.setName;
 
+	private cleanContent(content: string): string {
+		return content.startsWith('data:') ? content.replace(/data:.*;base64,/, '') : content;
+	}
+
 	/**
 	 * Get the document content (encoded in base 64)
 	 * @return {string} Content
@@ -1664,7 +1671,7 @@ class Doc {
 	 * @function
 	 */
 	public setContent = (content: string): Doc => {
-		this.content = content;
+		this.content = this.cleanContent(content);
 		return this; // Chain
 	};
 
@@ -1683,6 +1690,7 @@ class Doc {
 	 * Get the document data URL
 	 * @param {boolean} [thumbnail=false] Thumbnail? If thumbnail does not exists the content is used.
 	 * @return {string} Data URL or nothing if content is empty
+	 * @function
 	 */
 	public getDataURL = (thumbnail?: boolean): string => {
 		if (this.content)
@@ -1690,19 +1698,46 @@ class Doc {
 	};
 
 	/**
-	 * Get the document as a simple value
-	 * @return {object} Value
+	 * Load file
+	 * @param file File to load
+	 * @return {promise<Doc>} A promise to the document
+	 * @function
+	 */
+	public load = async (file?: File): Promise<Doc> => {
+		return new Promise((resolve, reject) => {
+			try {
+				if (file) {
+					this.name = file.name;
+					this.mime = file.type;
+					const reader = new FileReader();
+					reader.onload = () => {
+						this.content = reader.result ? this.cleanContent(reader.result as string) : '';
+						resolve(this);
+					};
+					reader.readAsDataURL(file); // this sets the result as a string
+				} else {
+					this.content = '';
+					resolve(this);
+				}
+			} catch (e: any) {
+				reject(e);
+			}
+		});
+	};
+
+	/**
+	 * Get the document as a plain value object
+	 * @return {object} Value object
+	 * @function
 	 */
 	public getValue = (): any => {
-		const val = JSON.parse(JSON.stringify(this)); // Strips all functions
-
-		// Backward compatibility
-		if (val.filename && !val.name) {
-			val.name = val.filename;
-			val.filename = undefined;
-		}
-
-		return val;
+		return {
+			id: this.id,
+			name: this['filename'] && !this.name ? this['filename'] : this.name, // Backward compatibility
+			mime: this.mime,
+			content: this.content,
+			thumbnail: this.thumbnail
+		};
 	};
 }
 
@@ -2069,7 +2104,7 @@ class BusinessObject {
 	 * @param {number} [opts.context] Context
 	 * @param {string} [opts.contextParam] Context parameter
 	 * @param {function} [opts.error] Error handler function
-	 * @return {promise<BusinessObjectMetadata>} A promise to the object'ts meta data (also available as the <code>metadata</code> member)
+	 * @return {promise<BusinessObjectMetadata>} A promise to the object's meta data (also available as the <code>metadata</code> member)
 	 * @function
 	 */
 	public getMetaData = async (opts?: any): Promise<any> => {
@@ -2471,14 +2506,16 @@ class BusinessObject {
 		if (!data) return p;
 		for (const i of Object.entries(data)) {
 			const k: string = i[0];
-			const d: any = i[1] || '';
-			if (d.name && d.content) { // Document ?
-				if (d.content.startsWith('data:')) // Flexibility = extract content from a data URL
+			let d: any = i[1] || '';
+			if (d instanceof Doc)
+				d = (d as Doc).getValue();
+			if (d.name && d.content) { // Document?
+				if (d.content.startsWith('data:')) // Flexibility = extract content from a data URL (just in case...)
 					d.content = d.content.replace(/data:.*;base64,/, '');
 				p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent('id|' + (d.id ? d.id : '0') + '|name|' + d.name + '|content|' + d.content);
-			} else if (d.object && d.row_id) { // Object ?
+			} else if (d.object && d.row_id) { // Object?
 				p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent('object|' + d.object + '|row_id|' + d.row_id);
-			} else if (d.sort) { // Array ?
+			} else if (d.sort) { // Array?
 				for (const dd of d)
 					p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(filters ? this.convertFilterWildCards(dd) : dd);
 			} else {

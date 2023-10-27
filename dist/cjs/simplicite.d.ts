@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.36
+ * @version 2.2.37
  * @license Apache-2.0
  */
 /**
@@ -867,7 +867,10 @@ declare class Session {
 declare class Doc {
     /**
      * Constructor
-     * @param value {string|object} Document name or value
+     * @param [value] {string|object} Document name or value
+     * @param [value.name] Document name
+     * @param [value.mime] Document MIME type
+     * @param [value.content] Document content
      */
     constructor(value?: any);
     /**
@@ -963,6 +966,7 @@ declare class Doc {
      * @function
      */
     setFilename: (name: string) => Doc;
+    private cleanContent;
     /**
      * Get the document content (encoded in base 64)
      * @return {string} Content
@@ -1018,11 +1022,20 @@ declare class Doc {
      * Get the document data URL
      * @param {boolean} [thumbnail=false] Thumbnail? If thumbnail does not exists the content is used.
      * @return {string} Data URL or nothing if content is empty
+     * @function
      */
     getDataURL: (thumbnail?: boolean) => string;
     /**
-     * Get the document as a simple value
-     * @return {object} Value
+     * Load file
+     * @param file File to load
+     * @return {promise<Doc>} A promise to the document
+     * @function
+     */
+    load: (file?: File) => Promise<Doc>;
+    /**
+     * Get the document as a plain value object
+     * @return {object} Value object
+     * @function
      */
     getValue: () => any;
 }
@@ -1303,7 +1316,7 @@ declare class BusinessObject {
      * @param {number} [opts.context] Context
      * @param {string} [opts.contextParam] Context parameter
      * @param {function} [opts.error] Error handler function
-     * @return {promise<BusinessObjectMetadata>} A promise to the object'ts meta data (also available as the <code>metadata</code> member)
+     * @return {promise<BusinessObjectMetadata>} A promise to the object's meta data (also available as the <code>metadata</code> member)
      * @function
      */
     getMetaData: (opts?: any) => Promise<any>;

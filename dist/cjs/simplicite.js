@@ -2,7 +2,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.36
+ * @version 2.2.37
  * @license Apache-2.0
  */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -56,7 +56,7 @@ var constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '2.2.36',
+    MODULE_VERSION: '2.2.37',
     /**
      * Default row ID field name
      * @constant {string}
@@ -1268,7 +1268,10 @@ var Session = /** @class */ (function () {
 var Doc = /** @class */ (function () {
     /**
      * Constructor
-     * @param value {string|object} Document name or value
+     * @param [value] {string|object} Document name or value
+     * @param [value.name] Document name
+     * @param [value.mime] Document MIME type
+     * @param [value.content] Document content
      */
     function Doc(value) {
         var _this = this;
@@ -1399,7 +1402,7 @@ var Doc = /** @class */ (function () {
          * @function
          */
         this.setContent = function (content) {
-            _this.content = content;
+            _this.content = _this.cleanContent(content);
             return _this; // Chain
         };
         /**
@@ -1416,23 +1419,57 @@ var Doc = /** @class */ (function () {
          * Get the document data URL
          * @param {boolean} [thumbnail=false] Thumbnail? If thumbnail does not exists the content is used.
          * @return {string} Data URL or nothing if content is empty
+         * @function
          */
         this.getDataURL = function (thumbnail) {
             if (_this.content)
                 return 'data:' + _this.mime + ';base64,' + (thumbnail && _this.thumbnail ? _this.thumbnail : _this.content);
         };
         /**
-         * Get the document as a simple value
-         * @return {object} Value
+         * Load file
+         * @param file File to load
+         * @return {promise<Doc>} A promise to the document
+         * @function
+         */
+        this.load = function (file) { return __awaiter(_this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        try {
+                            if (file) {
+                                _this.name = file.name;
+                                _this.mime = file.type;
+                                var reader_1 = new FileReader();
+                                reader_1.onload = function () {
+                                    _this.content = reader_1.result ? _this.cleanContent(reader_1.result) : '';
+                                    resolve(_this);
+                                };
+                                reader_1.readAsDataURL(file); // this sets the result as a string
+                            }
+                            else {
+                                _this.content = '';
+                                resolve(_this);
+                            }
+                        }
+                        catch (e) {
+                            reject(e);
+                        }
+                    })];
+            });
+        }); };
+        /**
+         * Get the document as a plain value object
+         * @return {object} Value object
+         * @function
          */
         this.getValue = function () {
-            var val = JSON.parse(JSON.stringify(_this)); // Strips all functions
-            // Backward compatibility
-            if (val.filename && !val.name) {
-                val.name = val.filename;
-                val.filename = undefined;
-            }
-            return val;
+            return {
+                id: _this.id,
+                name: _this['filename'] && !_this.name ? _this['filename'] : _this.name,
+                mime: _this.mime,
+                content: _this.content,
+                thumbnail: _this.thumbnail
+            };
         };
         Object.assign(this, typeof value == 'string' ? { name: value } : value || {});
         // Backward compatibility
@@ -1441,6 +1478,9 @@ var Doc = /** @class */ (function () {
             this['filename'] = undefined;
         }
     }
+    Doc.prototype.cleanContent = function (content) {
+        return content.startsWith('data:') ? content.replace(/data:.*;base64,/, '') : content;
+    };
     /**
      * Get the document content as a buffer
      * @param {any} data Content data
@@ -1620,7 +1660,7 @@ var BusinessObject = /** @class */ (function () {
          * @param {number} [opts.context] Context
          * @param {string} [opts.contextParam] Context parameter
          * @param {function} [opts.error] Error handler function
-         * @return {promise<BusinessObjectMetadata>} A promise to the object'ts meta data (also available as the <code>metadata</code> member)
+         * @return {promise<BusinessObjectMetadata>} A promise to the object's meta data (also available as the <code>metadata</code> member)
          * @function
          */
         this.getMetaData = function (opts) { return __awaiter(_this, void 0, void 0, function () {
@@ -2015,15 +2055,17 @@ var BusinessObject = /** @class */ (function () {
                 var i = _a[_i];
                 var k = i[0];
                 var d = i[1] || '';
-                if (d.name && d.content) { // Document ?
-                    if (d.content.startsWith('data:')) // Flexibility = extract content from a data URL
+                if (d instanceof Doc)
+                    d = d.getValue();
+                if (d.name && d.content) { // Document?
+                    if (d.content.startsWith('data:')) // Flexibility = extract content from a data URL (just in case...)
                         d.content = d.content.replace(/data:.*;base64,/, '');
                     p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent('id|' + (d.id ? d.id : '0') + '|name|' + d.name + '|content|' + d.content);
                 }
-                else if (d.object && d.row_id) { // Object ?
+                else if (d.object && d.row_id) { // Object?
                     p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent('object|' + d.object + '|row_id|' + d.row_id);
                 }
-                else if (d.sort) { // Array ?
+                else if (d.sort) { // Array?
                     for (var _b = 0, d_1 = d; _b < d_1.length; _b++) {
                         var dd = d_1[_b];
                         p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(filters ? _this.convertFilterWildCards(dd) : dd);

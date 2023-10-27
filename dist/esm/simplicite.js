@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.36
+ * @version 2.2.37
  * @license Apache-2.0
  */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -24,7 +24,7 @@ const constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '2.2.36',
+    MODULE_VERSION: '2.2.37',
     /**
      * Default row ID field name
      * @constant {string}
@@ -1172,7 +1172,10 @@ class Session {
 class Doc {
     /**
      * Constructor
-     * @param value {string|object} Document name or value
+     * @param [value] {string|object} Document name or value
+     * @param [value.name] Document name
+     * @param [value.mime] Document MIME type
+     * @param [value.content] Document content
      */
     constructor(value) {
         /**
@@ -1302,7 +1305,7 @@ class Doc {
          * @function
          */
         this.setContent = (content) => {
-            this.content = content;
+            this.content = this.cleanContent(content);
             return this; // Chain
         };
         /**
@@ -1319,23 +1322,54 @@ class Doc {
          * Get the document data URL
          * @param {boolean} [thumbnail=false] Thumbnail? If thumbnail does not exists the content is used.
          * @return {string} Data URL or nothing if content is empty
+         * @function
          */
         this.getDataURL = (thumbnail) => {
             if (this.content)
                 return 'data:' + this.mime + ';base64,' + (thumbnail && this.thumbnail ? this.thumbnail : this.content);
         };
         /**
-         * Get the document as a simple value
-         * @return {object} Value
+         * Load file
+         * @param file File to load
+         * @return {promise<Doc>} A promise to the document
+         * @function
+         */
+        this.load = (file) => __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve, reject) => {
+                try {
+                    if (file) {
+                        this.name = file.name;
+                        this.mime = file.type;
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                            this.content = reader.result ? this.cleanContent(reader.result) : '';
+                            resolve(this);
+                        };
+                        reader.readAsDataURL(file); // this sets the result as a string
+                    }
+                    else {
+                        this.content = '';
+                        resolve(this);
+                    }
+                }
+                catch (e) {
+                    reject(e);
+                }
+            });
+        });
+        /**
+         * Get the document as a plain value object
+         * @return {object} Value object
+         * @function
          */
         this.getValue = () => {
-            const val = JSON.parse(JSON.stringify(this)); // Strips all functions
-            // Backward compatibility
-            if (val.filename && !val.name) {
-                val.name = val.filename;
-                val.filename = undefined;
-            }
-            return val;
+            return {
+                id: this.id,
+                name: this['filename'] && !this.name ? this['filename'] : this.name,
+                mime: this.mime,
+                content: this.content,
+                thumbnail: this.thumbnail
+            };
         };
         Object.assign(this, typeof value == 'string' ? { name: value } : value || {});
         // Backward compatibility
@@ -1343,6 +1377,9 @@ class Doc {
             this.name = this['filename'];
             this['filename'] = undefined;
         }
+    }
+    cleanContent(content) {
+        return content.startsWith('data:') ? content.replace(/data:.*;base64,/, '') : content;
     }
     /**
      * Get the document content as a buffer
@@ -1518,7 +1555,7 @@ class BusinessObject {
          * @param {number} [opts.context] Context
          * @param {string} [opts.contextParam] Context parameter
          * @param {function} [opts.error] Error handler function
-         * @return {promise<BusinessObjectMetadata>} A promise to the object'ts meta data (also available as the <code>metadata</code> member)
+         * @return {promise<BusinessObjectMetadata>} A promise to the object's meta data (also available as the <code>metadata</code> member)
          * @function
          */
         this.getMetaData = (opts) => __awaiter(this, void 0, void 0, function* () {
@@ -1901,16 +1938,18 @@ class BusinessObject {
                 return p;
             for (const i of Object.entries(data)) {
                 const k = i[0];
-                const d = i[1] || '';
-                if (d.name && d.content) { // Document ?
-                    if (d.content.startsWith('data:')) // Flexibility = extract content from a data URL
+                let d = i[1] || '';
+                if (d instanceof Doc)
+                    d = d.getValue();
+                if (d.name && d.content) { // Document?
+                    if (d.content.startsWith('data:')) // Flexibility = extract content from a data URL (just in case...)
                         d.content = d.content.replace(/data:.*;base64,/, '');
                     p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent('id|' + (d.id ? d.id : '0') + '|name|' + d.name + '|content|' + d.content);
                 }
-                else if (d.object && d.row_id) { // Object ?
+                else if (d.object && d.row_id) { // Object?
                     p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent('object|' + d.object + '|row_id|' + d.row_id);
                 }
-                else if (d.sort) { // Array ?
+                else if (d.sort) { // Array?
                     for (const dd of d)
                         p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(filters ? this.convertFilterWildCards(dd) : dd);
                 }

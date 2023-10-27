@@ -202,7 +202,7 @@ test('Image', () => {
 	}).then(item => {
 		expect(item.row_id).toBe(simplicite.constants.DEFAULT_ROW_ID);
 		item.usr_login = login;
-		item.usr_image_id = new simplicite.Doc(`${login}.png`).setContent(img).getValue();
+		item.usr_image_id = new simplicite.Doc(`${login}.png`).setContent(img);
 		return usr.create(item);
 	}).then(item => {
 		rowId = item.row_id;
@@ -211,7 +211,7 @@ test('Image', () => {
 		return usr.get(rowId, { inlineDocuments: true, inlineThumbnails: true });
 	}).then(item => {
 		expect(item.row_id).toBe(rowId);
-		const doc = usr.getFieldValue('usr_image_id'); // simplicite.Doc
+		const doc = usr.getFieldValue('usr_image_id'); // get a simplicite.Doc
 		expect(doc.getMIMEType()).toBe('image/png');
 		expect(doc.getName()).toBe(`${login}.png`);
 		return usr.del(item);
