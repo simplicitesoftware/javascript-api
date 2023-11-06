@@ -47,7 +47,7 @@
   },
   "scripts": {
     "lint": "eslint src/*.ts test/*.js test/*.js",
-    "prettier": "prettier --write --single-quote --tab-width 4 test/*",
+    "prettier": "prettier --write --single-quote --use-tabs test/*",
     "build:clean": "fcli remove ./dist",
     "build:amd": "fcli remove ./dist/amd && tsc --module amd --target es5 --outFile ./dist/amd/simplicite.js",
     "build:umd": "fcli remove ./dist/umd && tsc --module umd --target es5 --outDir ./dist/umd",
