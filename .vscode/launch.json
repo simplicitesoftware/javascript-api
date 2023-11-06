@@ -8,47 +8,47 @@
             "type": "node",
             "request": "launch",
             "name": "test.js",
-            "program": "${workspaceFolder}\\test\\test.js"
+            "program": "${workspaceFolder}/test/test.js"
         }, {
             "type": "node",
             "request": "launch",
             "name": "Public tests",
-            "program": "${workspaceFolder}\\test\\test-public.js"
+            "program": "${workspaceFolder}/test/test-public.js"
         }, {
             "type": "node",
             "request": "launch",
             "name": "Logins tests",
-            "program": "${workspaceFolder}\\test\\test-logins.js"
+            "program": "${workspaceFolder}/test/test-logins.js"
         }, {
             "type": "node",
             "request": "launch",
             "name": "Main tests",
-            "program": "${workspaceFolder}\\test\\test-main.js"
+            "program": "${workspaceFolder}/test/test-main.js"
         }, {
             "type": "node",
             "request": "launch",
             "name": "Images tests",
-            "program": "${workspaceFolder}\\test\\test-images.js"
+            "program": "${workspaceFolder}/test/test-images.js"
         }, {
             "type": "node",
             "request": "launch",
             "name": "Source code tests",
-            "program": "${workspaceFolder}\\test\\test-source.js"
+            "program": "${workspaceFolder}/test/test-source.js"
         }, {
             "type": "node",
             "request": "launch",
             "name": "External object tests",
-            "program": "${workspaceFolder}\\test\\test-external.js"
+            "program": "${workspaceFolder}/test/test-external.js"
         }, {
             "type": "node",
             "request": "launch",
             "name": "Await syntax tests",
-            "program": "${workspaceFolder}\\test\\test-await.js"
+            "program": "${workspaceFolder}/test/test-await.js"
         }, {
             "type": "node",
             "request": "launch",
             "name": "Jest tests",
-            "program": "${workspaceRoot}\\node_modules\\jest\\bin\\jest.js",
+            "program": "${workspaceRoot}/node_modules/jest/bin/jest.js",
             "args": [ "-i" ]
         }
     ]
