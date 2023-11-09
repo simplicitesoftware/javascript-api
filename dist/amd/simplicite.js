@@ -664,7 +664,10 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
                     origin = 'Session.getHealth';
                     opts = opts || {};
                     return [2 /*return*/, new Promise(function (resolve, reject) {
-                            _this.sendRequest("".concat(_this.parameters.healthpath, "&full=").concat(!!opts.full), undefined, function (res, status) {
+                            var p = "&full=".concat(!!opts.full);
+                            if (opts.businessCase)
+                                p += "&_bc=".concat(encodeURIComponent(opts.businessCase));
+                            _this.sendRequest("".concat(_this.parameters.healthpath).concat(p), undefined, function (res, status) {
                                 var r = _this.parseResponse(res, status);
                                 _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(res));
                                 if (r.type === 'error') {
@@ -807,6 +810,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @param {boolean} [opts.includeTexts=false] Include texts?
              * @param {boolean} [opts.includeSysparams=false] Include system parameters?
              * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
              * @return {promise<Grant>} A promise to the grant (also available as the <code>grant</code> member)
              * @function
              */
@@ -855,6 +859,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @param {string} pwd Password
              * @param {object} [opts] Options
              * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
              * @return {promise<object>} A promise to the change password result
              * @function
              */
@@ -888,6 +893,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * Get application info
              * @param {object} [opts] Options
              * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
              * @return {promise<object>} A promise to the application info (also avialable as the <code>appinfo</code> member)
              * @function
              */
@@ -922,6 +928,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * Get system info
              * @param {object} [opts] Options
              * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
              * @return {promise<object>} A promise to the system info (also avialable as the <code>sysinfo</code> member)
              * @function
              */
@@ -957,6 +964,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @param {string} [module] Module name
              * @param {object} [opts] Options
              * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
              * @return {promise<object>} A promise to the develoment info (also avialable as the <code>devinfo</code> member)
              * @function
              */
@@ -996,6 +1004,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @param {object} [opts] Options
              * @param {boolean} [opts.inlineImages=false] Inline news images?
              * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
              * @return {promise<array>} A promise to the list of news (also avialable as the <code>news</code> member)
              * @function
              */
@@ -1042,6 +1051,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @param {boolean} [opts.metadata=false] Add meta data for each result
              * @param {number} [opts.context] Context
              * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
              * @return {promise<array>} A promise to a list of index search records
              * @function
              */
@@ -1261,10 +1271,10 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
          * Get path
          * @param {string} action Action
          * @param {object} [opts] Options
-         * @param {function} [opts.businessCase] Business case label
+         * @param {string} [opts.businessCase] Business case label
          */
         Session.prototype.getPath = function (action, opts) {
-            var bc = opts && opts.businessCase ? "&_bc=".concat(opts.businessCase) : '';
+            var bc = opts && opts.businessCase ? "&_bc=".concat(encodeURIComponent(opts.businessCase)) : '';
             return "".concat(this.parameters.apppath, "?action=").concat(encodeURIComponent(action)).concat(bc);
         };
         return Session;
@@ -1668,6 +1678,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @param {number} [opts.context] Context
              * @param {string} [opts.contextParam] Context parameter
              * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
              * @return {promise<BusinessObjectMetadata>} A promise to the object's meta data (also available as the <code>metadata</code> member)
              * @function
              */
@@ -1982,6 +1993,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @param {number} [opts.context] Context
              * @param {boolean} [opts.reset] Reset filters?
              * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
              * @return {promise<object>} Promise to the object's filters (also available as the <code>filters</code> member)
              * @function
              */
@@ -2090,6 +2102,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @param {object} [filters] Filters (defaults to current filters)
              * @param {object} [opts] Options
              * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
              * @return {promise<object>} Promise to the count
              * @function
              */
@@ -2133,6 +2146,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @param {boolean} [opts.metadata=false] Refresh meta data?
              * @param {boolean} [opts.visible] Return only visible fields?
              * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
              * @return {promise<array>} Promise to a list of records (also available as the <code>list</code> member)
              * @function
              */
@@ -2185,6 +2199,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @param {string[]} [opts.fields] List of field names to return, all fields are returned by default
              * @param {string} [opts.treeview] Return the named tree view structure
              * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
              * @return {promise<object>} Promise to the record (also available as the <code>item</code> member)
              * @function
              */
@@ -2240,6 +2255,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @param {object} [opts] Options
              * @param {boolean} [opts.metadata=false] Refresh meta data?
              * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
              * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
              * @function
              */
@@ -2258,6 +2274,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @param {object} [opts] Options
              * @param {boolean} [opts.metadata=false] Refresh meta data?
              * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
              * @return {promise<object>} Promise to the record to update (also available as the <code>item</code> member)
              * @function
              */
@@ -2276,6 +2293,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @param {object} [opts] Options
              * @param {boolean} [opts.metadata=false] Refresh meta data?
              * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
              * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
              * @function
              */
@@ -2294,6 +2312,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @param {object} [opts] Options
              * @param {boolean} [opts.metadata=false] Refresh meta data?
              * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
              * @return {promise<object>} Promise to the record to delete (also available as the <code>item</code> member)
              * @function
              */
@@ -2322,6 +2341,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @param {object} [item] Item (defaults to current item)
              * @param {object} [opts] Options
              * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
              * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
              * @function
              */
@@ -2362,6 +2382,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @param {string|boolean} [code] List of values code(s) (if multiple codes use ; as separator), defaults to current field value if empty, means "all" if true
              * @param {object} [opts] Options
              * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
              * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
              * @function
              */
@@ -2410,6 +2431,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @param {object} [item] Item (defaults to current item)
              * @param {object} [opts] Options
              * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
              * @return {promise<object>} Promise to the saved record (also available as the <code>item</code> member)
              * @function
              */
@@ -2431,6 +2453,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @param {object} [item] Item (defaults to current item)
              * @param {object} [opts] Options
              * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
              * @return {promise<object>} Promise to the created record (also available as the <code>item</code> member)
              * @function
              */
@@ -2470,6 +2493,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @param {object} [item] Item (defaults to current item)
              * @param {object} [opts] Options
              * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
              * @return {promise<object>} Promise to the updated record (also available as the <code>item</code> member)
              * @function
              */
@@ -2508,6 +2532,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @param {object} [item] Item (defaults to current item)
              * @param {object} [opts] Options
              * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
              * @return {promise<object>} Promise (the <code>item</code> member is emptied)
              * @function
              */
@@ -2549,6 +2574,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @param {object} [opts] Options
              * @param {function} [opts.parameters] Optional action parameters as key/value pairs
              * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
              * @return {promise<string|object>} A promise to the action result
              * @function
              */
@@ -2587,6 +2613,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @param {object} [opts] Options
              * @param {object} [opts.filters] Filters, by default current filters are used
              * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
              * @return {promise<object>} A promise to the pivot table data (also avialable as the <code>crosstabdata</code> member)
              * @function
              */
@@ -2625,6 +2652,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @param {string} [rowId] Row ID
              * @param {object} [opts] Options
              * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
              * @return {promise<Doc>} A promise to the document of the publication
              * @function
              */
@@ -2665,11 +2693,12 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
                 });
             }); };
             /**
-             * Get placem map data
+             * Get place map data
              * @param {string} pcm Place map name
              * @param {string} [filters] Filters
              * @param {object} [opts] Options
              * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
              * @return {promise<any>} A promise to the place map data
              * @function
              */
@@ -2709,6 +2738,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @param {string} value Parameter value
              * @param {object} [opts] Options
              * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
              * @return {promise<object>} Promise
              * @function
              */
@@ -2748,6 +2778,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @param {string} param Parameter name
              * @param {object} [opts] Options
              * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
              * @return {promise<object>} Promise to the parameter value
              * @function
              */
@@ -2803,10 +2834,10 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
          * Get path
          * @param {string} action Action
          * @param {object} [opts] Options
-         * @param {function} [opts.businessCase] Business case label
+         * @param {string} [opts.businessCase] Business case label
          */
         BusinessObject.prototype.getPath = function (action, opts) {
-            var bc = opts && opts.businessCase ? "&_bc=".concat(opts.businessCase) : '';
+            var bc = opts && opts.businessCase ? "&_bc=".concat(encodeURIComponent(opts.businessCase)) : '';
             return "".concat(this.path, "&action=").concat(encodeURIComponent(action)).concat(bc);
         };
         return BusinessObject;
@@ -2880,11 +2911,12 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * @param {object} [params] Optional URL parameters
              * @param {object} [data] Optional data (for 'POST' and 'PUT' methods only)
              * @param {object} [opts] Options
-             * @param {function} [opts.error] Error handler function
              * @param {string} [opts.path] Absolute or relative path (e.g. absolute '/my/mapped/upath' or relative 'my/additional/path')
              * @param {object} [opts.method] Optional method 'GET', 'POST', 'PUT' or 'DELETE' (defaults to 'GET' if data is not set or 'POST' if data is set)
              * @param {function} [opts.contentType] Optional data content type (for 'POST' and 'PUT' methods only)
              * @param {function} [opts.accept] Optional accepted response type (e.g. 'application/json")
+             * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
              * @return {promise<object>} Promise to the external object content
              * @function
              */
@@ -2898,7 +2930,9 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
                     return [2 /*return*/, new Promise(function (resolve, reject) {
                             var p = '';
                             if (params)
-                                p = '?' + _this.callParams(params);
+                                p = _this.callParams(params);
+                            if (opts.businessCase)
+                                p += "_bc=".concat(encodeURIComponent(opts.businessCase));
                             var m = opts.method ? opts.method.toUpperCase() : (data ? 'POST' : 'GET');
                             var h = {};
                             if (opts.contentType) {
@@ -2919,7 +2953,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
                                 if (b)
                                     h[ses.authheader] = b;
                             }
-                            var u = ses.parameters.url + (opts.path && opts.path.startsWith('/') ? opts.path : _this.path + (opts.path ? '/' + opts.path : '')) + p;
+                            var u = ses.parameters.url + (opts.path && opts.path.startsWith('/') ? opts.path : _this.path + (opts.path ? '/' + opts.path : '')) + (p !== '' ? '?' + p : '');
                             var d = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined;
                             ses.debug('[simplicite.ExternalObject.call] ' + m + ' ' + u + ' with ' + (d ? ' with ' + d : ''));
                             (0, node_fetch_1.default)(u, {
