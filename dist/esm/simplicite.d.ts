@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.37
+ * @version 2.3.0
  * @license Apache-2.0
  */
 /**
@@ -750,6 +750,13 @@ declare class Session {
      * @member {Grant}
      */
     grant: Grant;
+    /**
+     * Get path
+     * @param {string} action Action
+     * @param {object} [opts] Options
+     * @param {function} [opts.businessCase] Business case label
+     */
+    private getPath;
     /**
      * Get grant (current user data)
      * @param {object} [opts] Options
@@ -1513,6 +1520,13 @@ declare class BusinessObject {
      * @private
      */
     private getReqParams;
+    /**
+     * Get path
+     * @param {string} action Action
+     * @param {object} [opts] Options
+     * @param {function} [opts.businessCase] Business case label
+     */
+    private getPath;
     /**
      * Get count
      * @param {object} [filters] Filters (defaults to current filters)

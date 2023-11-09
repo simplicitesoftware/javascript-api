@@ -2,7 +2,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.2.37
+ * @version 2.3.0
  * @license Apache-2.0
  */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -56,7 +56,7 @@ var constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '2.2.37',
+    MODULE_VERSION: '2.3.0',
     /**
      * Default row ID field name
      * @constant {string}
@@ -823,14 +823,14 @@ var Session = /** @class */ (function () {
                 return [2 /*return*/, new Promise(function (resolve, reject) {
                         var p = '&web=true'; // Required to be able to include texts
                         var txt = !!opts.includeTexts || !!opts.texts; // naming flexibility
-                        p += '&texts=' + txt;
+                        p += "&texts=".concat(encodeURIComponent(txt));
                         var pic = !!opts.inlinePicture || !!opts.picture; // naming flexibility
                         if (pic)
                             p += '&inline_picture=true';
                         var sys = !!opts.includeSysparams || !!opts.sysparams; // naming flexibility
                         if (sys)
                             p += '&sysparams=true';
-                        _this.sendRequest("".concat(_this.parameters.apppath, "?action=getgrant").concat(p), undefined, function (res, status) {
+                        _this.sendRequest("".concat(_this.getPath('getgrant', opts)).concat(p), undefined, function (res, status) {
                             var r = _this.parseResponse(res, status);
                             _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                             if (r.type === 'error') {
@@ -869,7 +869,7 @@ var Session = /** @class */ (function () {
                 origin = 'Session.changePassword';
                 opts = opts || {};
                 return [2 /*return*/, new Promise(function (resolve, reject) {
-                        _this.sendRequest("".concat(_this.parameters.apppath, "?action=setpassword&password=").concat(encodeURIComponent(pwd)), undefined, function (res, status) {
+                        _this.sendRequest("".concat(_this.getPath('setpassword', opts), "&password=").concat(encodeURIComponent(pwd)), undefined, function (res, status) {
                             var r = _this.parseResponse(res, status);
                             _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                             if (r.type === 'error') {
@@ -902,7 +902,7 @@ var Session = /** @class */ (function () {
                 origin = 'Session.getAppInfo';
                 opts = opts || {};
                 return [2 /*return*/, new Promise(function (resolve, reject) {
-                        _this.sendRequest("".concat(_this.parameters.apppath, "?action=getinfo"), undefined, function (res, status) {
+                        _this.sendRequest(_this.getPath('getinfo', opts), undefined, function (res, status) {
                             var r = _this.parseResponse(res, status);
                             _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                             if (r.type === 'error') {
@@ -936,7 +936,7 @@ var Session = /** @class */ (function () {
                 origin = 'Session.getSysInfo';
                 opts = opts || {};
                 return [2 /*return*/, new Promise(function (resolve, reject) {
-                        _this.sendRequest("".concat(_this.parameters.apppath, "?action=sysinfo"), undefined, function (res, status) {
+                        _this.sendRequest(_this.getPath('sysinfo', opts), undefined, function (res, status) {
                             var r = _this.parseResponse(res, status);
                             _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                             if (r.type === 'error') {
@@ -973,8 +973,8 @@ var Session = /** @class */ (function () {
                 return [2 /*return*/, new Promise(function (resolve, reject) {
                         var p = '';
                         if (module)
-                            p += '&module=' + encodeURIComponent(module);
-                        _this.sendRequest("".concat(_this.parameters.apppath, "?action=devinfo").concat(p), undefined, function (res, status) {
+                            p += "&module=".concat(encodeURIComponent(module));
+                        _this.sendRequest("".concat(_this.getPath('devinfo', opts)).concat(p), undefined, function (res, status) {
                             var r = _this.parseResponse(res, status);
                             _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                             if (r.type === 'error') {
@@ -1014,7 +1014,7 @@ var Session = /** @class */ (function () {
                         var img = !!opts.inlineImages || !!opts.images; // naming flexibility
                         if (img)
                             p += '&inline_images=true';
-                        _this.sendRequest("".concat(_this.parameters.apppath, "?action=news").concat(p), undefined, function (res, status) {
+                        _this.sendRequest("".concat(_this.getPath('news', opts)).concat(p), undefined, function (res, status) {
                             var r = _this.parseResponse(res, status);
                             _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                             if (r.type === 'error') {
@@ -1056,12 +1056,14 @@ var Session = /** @class */ (function () {
                 origin = 'Session.indexSearch';
                 opts = opts || {};
                 return [2 /*return*/, new Promise(function (resolve, reject) {
-                        var p = '';
+                        var p = "&request=".concat(encodeURIComponent(query ? query : ''));
+                        if (object)
+                            p += "&object=".concat(encodeURIComponent(object));
                         if (opts.metadata === true)
                             p += '&_md=true';
                         if (opts.context)
-                            p += '&context=' + encodeURIComponent(opts.context);
-                        _this.sendRequest("".concat(_this.parameters.apppath, "?action=indexsearch&request=").concat(encodeURIComponent(query ? query : '')).concat(object ? '&object=' + encodeURIComponent(object) : '').concat(p), undefined, function (res, status) {
+                            p += "&context=".concat(encodeURIComponent(opts.context));
+                        _this.sendRequest("".concat(_this.getPath('indexsearch', opts)).concat(p), undefined, function (res, status) {
                             var r = _this.parseResponse(res, status);
                             _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                             if (r.type === 'error') {
@@ -1259,6 +1261,16 @@ var Session = /** @class */ (function () {
         }
         this.businessObjectCache = new Map();
     }
+    /**
+     * Get path
+     * @param {string} action Action
+     * @param {object} [opts] Options
+     * @param {function} [opts.businessCase] Business case label
+     */
+    Session.prototype.getPath = function (action, opts) {
+        var bc = opts && opts.businessCase ? "&_bc=".concat(opts.businessCase) : '';
+        return "".concat(this.parameters.apppath, "?action=").concat(encodeURIComponent(action)).concat(bc);
+    };
     return Session;
 }());
 /**
@@ -2019,16 +2031,16 @@ var BusinessObject = /** @class */ (function () {
         this.getReqOptions = function (options) {
             var opts = '';
             if (options.context)
-                opts += '&context=' + encodeURIComponent(options.context);
+                opts += "&context=".concat(encodeURIComponent(options.context));
             var id = options.inlineDocs || options.inlineDocuments || options.inlineImages; // Naming flexibility
             if (id)
-                opts += '&inline_documents=' + encodeURIComponent(id.join ? id.join(',') : id);
+                opts += "&inline_documents=".concat(encodeURIComponent(id.join ? id.join(',') : id));
             var it = options.inlineThumbs || options.inlineThumbnails; // Naming flexibility
             if (it)
-                opts += '&inline_thumbnails=' + encodeURIComponent(it.join ? it.join(',') : it);
+                opts += "&inline_thumbnails=".concat(encodeURIComponent(it.join ? it.join(',') : it));
             var io = options.inlineObjs || options.inlineObjects; // Naming flexibility
             if (io)
-                opts += '&inline_objects=' + encodeURIComponent(io.join ? io.join(',') : io);
+                opts += "&inline_objects=".concat(encodeURIComponent(io.join ? io.join(',') : io));
             return opts;
         };
         /**
@@ -2094,7 +2106,7 @@ var BusinessObject = /** @class */ (function () {
                 opts = opts || {};
                 return [2 /*return*/, new Promise(function (resolve, reject) {
                         _this.filters = filters || {};
-                        ses.sendRequest("".concat(_this.path, "&action=count"), _this.getReqParams(_this.filters, true), function (res, status) {
+                        ses.sendRequest(_this.getPath('count', opts), _this.getReqParams(_this.filters, true), function (res, status) {
                             var r = ses.parseResponse(res, status);
                             ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                             if (r.type === 'error') {
@@ -2138,13 +2150,13 @@ var BusinessObject = /** @class */ (function () {
                 return [2 /*return*/, new Promise(function (resolve, reject) {
                         var p = _this.getReqOptions(opts);
                         if (opts.page > 0)
-                            p += '&page=' + (opts.page - 1);
+                            p += "&page=".concat(opts.page - 1);
                         if (opts.metadata === true)
                             p += '&_md=true';
                         if (opts.visible === true)
                             p += '&_visible=true';
                         _this.filters = filters || {};
-                        ses.sendRequest(_this.path + '&action=search' + p, _this.getReqParams(_this.filters, true), function (res, status) {
+                        ses.sendRequest("".concat(_this.getPath('search', opts)).concat(p), _this.getReqParams(_this.filters, true), function (res, status) {
                             var r = ses.parseResponse(res, status);
                             ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                             if (r.type === 'error') {
@@ -2191,18 +2203,18 @@ var BusinessObject = /** @class */ (function () {
                         var p = _this.getReqOptions(opts);
                         var tv = opts.treeView;
                         if (tv)
-                            p += '&treeview=' + encodeURIComponent(tv);
+                            p += "&treeview=".concat(encodeURIComponent(tv));
                         if (opts.fields) {
                             for (var _i = 0, _a = opts.fields.length; _i < _a.length; _i++) {
                                 var f = _a[_i];
-                                p += '&fields=' + encodeURIComponent(f.replace('.', '__'));
+                                p += "&fields=".concat(encodeURIComponent(f.replace('.', '__')));
                             }
                         }
                         if (opts.metadata)
                             p += '&_md=true';
                         if (opts.social)
                             p += '&_social=true';
-                        ses.sendRequest(_this.path + '&action=get&' + _this.metadata.rowidfield + '=' + encodeURIComponent(rowId || _this.getRowId()) + p, undefined, function (res, status) {
+                        ses.sendRequest("".concat(_this.getPath('get', opts), "&").concat(_this.metadata.rowidfield, "=").concat(encodeURIComponent(rowId || _this.getRowId())).concat(p), undefined, function (res, status) {
                             var r = ses.parseResponse(res, status);
                             ses.debug('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response type = ' + r.type);
                             if (r.type === 'error') {
@@ -2327,8 +2339,7 @@ var BusinessObject = /** @class */ (function () {
                 return [2 /*return*/, new Promise(function (resolve, reject) {
                         if (item)
                             _this.item = item;
-                        var p = _this.getReqOptions(opts);
-                        ses.sendRequest(_this.path + '&action=populate?' + p, _this.getReqParams(_this.item), function (res, status) {
+                        ses.sendRequest("".concat(_this.getPath('populate', opts)).concat(_this.getReqOptions(opts)), _this.getReqParams(_this.item), function (res, status) {
                             var r = ses.parseResponse(res, status);
                             ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                             if (r.type === 'error') {
@@ -2378,7 +2389,7 @@ var BusinessObject = /** @class */ (function () {
                         else if (typeof code === 'undefined') {
                             code = _this.getFieldValue(field);
                         }
-                        ses.sendRequest("".concat(_this.path, "&action=getlinkedlist"), _this.getReqParams({ origin: field, input: linkedField, code: code, all: all }), function (res, status) {
+                        ses.sendRequest(_this.getPath('getlinkedlist', opts), _this.getReqParams({ origin: field, input: linkedField, code: code, all: all }), function (res, status) {
                             var r = ses.parseResponse(res, status);
                             ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                             if (r.type === 'error') {
@@ -2438,8 +2449,7 @@ var BusinessObject = /** @class */ (function () {
                         if (item)
                             _this.item = item;
                         _this.item.row_id = constants.DEFAULT_ROW_ID;
-                        var p = _this.getReqOptions(opts);
-                        ses.sendRequest("".concat(_this.path, "&action=create").concat(p), _this.getReqParams(_this.item), function (res, status) {
+                        ses.sendRequest("".concat(_this.getPath('create', opts)).concat(_this.getReqOptions(opts)), _this.getReqParams(_this.item), function (res, status) {
                             var r = ses.parseResponse(res, status);
                             ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                             if (r.type === 'error') {
@@ -2477,8 +2487,7 @@ var BusinessObject = /** @class */ (function () {
                 return [2 /*return*/, new Promise(function (resolve, reject) {
                         if (item)
                             _this.item = item;
-                        var p = _this.getReqOptions(opts);
-                        ses.sendRequest(_this.path + '&action=update' + p, _this.getReqParams(_this.item), function (res, status) {
+                        ses.sendRequest("".concat(_this.getPath('update', opts)).concat(_this.getReqOptions(opts)), _this.getReqParams(_this.item), function (res, status) {
                             var r = ses.parseResponse(res, status);
                             ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                             if (r.type === 'error') {
@@ -2516,7 +2525,7 @@ var BusinessObject = /** @class */ (function () {
                 return [2 /*return*/, new Promise(function (resolve, reject) {
                         if (item)
                             _this.item = item;
-                        ses.sendRequest(_this.path + '&action=delete&' + _this.metadata.rowidfield + '=' + encodeURIComponent(_this.item[_this.metadata.rowidfield]), undefined, function (res, status) {
+                        ses.sendRequest("".concat(_this.getPath('delete', opts), "&").concat(_this.metadata.rowidfield, "=").concat(encodeURIComponent(_this.item[_this.metadata.rowidfield])), undefined, function (res, status) {
                             var r = ses.parseResponse(res, status);
                             ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                             if (r.type === 'error') {
@@ -2555,7 +2564,8 @@ var BusinessObject = /** @class */ (function () {
                 ses = this.session;
                 opts = opts || {};
                 return [2 /*return*/, new Promise(function (resolve, reject) {
-                        ses.sendRequest(_this.path + '&action=' + encodeURIComponent(action) + (rowId ? '&' + _this.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : ''), _this.getReqParams(opts.parameters), function (res, status) {
+                        var p = rowId ? "&".concat(_this.getRowIdFieldName(), "=").concat(encodeURIComponent(rowId)) : '';
+                        ses.sendRequest("".concat(_this.getPath(action, opts)).concat(p), _this.getReqParams(opts.parameters), function (res, status) {
                             var r = ses.parseResponse(res, status);
                             ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                             if (r.type === 'error') {
@@ -2594,7 +2604,7 @@ var BusinessObject = /** @class */ (function () {
                 return [2 /*return*/, new Promise(function (resolve, reject) {
                         if (opts.filters)
                             _this.filters = opts.filters;
-                        ses.sendRequest(_this.path + '&action=crosstab&crosstab=' + encodeURIComponent(ctb), _this.getReqParams(_this.filters, true), function (res, status) {
+                        ses.sendRequest("".concat(_this.getPath('crosstab', opts), "&crosstab=").concat(encodeURIComponent(ctb)), _this.getReqParams(_this.filters, true), function (res, status) {
                             var r = ses.parseResponse(res, status);
                             ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                             if (r.type === 'error') {
@@ -2637,7 +2647,9 @@ var BusinessObject = /** @class */ (function () {
                             p += '&all=' + !!opts.all;
                         if (opts.mailing)
                             p += '&mailing=' + !!opts.mailing;
-                        ses.sendRequest(_this.path + '&action=print&printtemplate=' + encodeURIComponent(prt) + (rowId ? '&' + _this.getRowIdFieldName() + '=' + encodeURIComponent(rowId) : '') + p, undefined, function (res, status) {
+                        if (rowId)
+                            p += "&".concat(_this.getRowIdFieldName(), "=").concat(encodeURIComponent(rowId));
+                        ses.sendRequest("".concat(_this.getPath('print', opts), "&printtemplate=").concat(encodeURIComponent(prt)).concat(p), undefined, function (res, status) {
                             var r = ses.parseResponse(res, status);
                             ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                             if (r.type === 'error') {
@@ -2676,7 +2688,7 @@ var BusinessObject = /** @class */ (function () {
                 return [2 /*return*/, new Promise(function (resolve, reject) {
                         if (opts.filters)
                             _this.filters = opts.filters;
-                        ses.sendRequest(_this.path + '&action=placemap&placemap=' + encodeURIComponent(pcm), _this.getReqParams(_this.filters, true), function (res, status) {
+                        ses.sendRequest("".concat(_this.getPath('placemap', opts), "&placemap=").concat(encodeURIComponent(pcm)), _this.getReqParams(_this.filters, true), function (res, status) {
                             var r = ses.parseResponse(res, status);
                             ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                             if (r.type === 'error') {
@@ -2715,7 +2727,7 @@ var BusinessObject = /** @class */ (function () {
                         var p = { name: param };
                         if (value)
                             p.value = value;
-                        ses.sendRequest(_this.path + '&action=setparameter', _this.getReqParams(p), function (res, status) {
+                        ses.sendRequest(_this.getPath('setparameter', opts), _this.getReqParams(p), function (res, status) {
                             var r = ses.parseResponse(res, status);
                             ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                             if (r.type === 'error') {
@@ -2752,7 +2764,7 @@ var BusinessObject = /** @class */ (function () {
                 opts = opts || {};
                 return [2 /*return*/, new Promise(function (resolve, reject) {
                         var p = { name: param };
-                        ses.sendRequest(_this.path + '&action=getparameter', _this.getReqParams(p), function (res, status) {
+                        ses.sendRequest(_this.getPath('getparameter', opts), _this.getReqParams(p), function (res, status) {
                             var r = ses.parseResponse(res, status);
                             ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                             if (r.type === 'error') {
@@ -2791,6 +2803,16 @@ var BusinessObject = /** @class */ (function () {
         this.filters = {};
         this.list = [];
     }
+    /**
+     * Get path
+     * @param {string} action Action
+     * @param {object} [opts] Options
+     * @param {function} [opts.businessCase] Business case label
+     */
+    BusinessObject.prototype.getPath = function (action, opts) {
+        var bc = opts && opts.businessCase ? "&_bc=".concat(opts.businessCase) : '';
+        return "".concat(this.path, "&action=").concat(encodeURIComponent(action)).concat(bc);
+    };
     return BusinessObject;
 }());
 /**
@@ -2955,7 +2977,7 @@ var ExternalObject = /** @class */ (function () {
         this.invoke = this.call;
         this.session = ses;
         this.metadata = new ExternalObjectMetadata(name);
-        this.path = this.session.parameters.extpath + '/' + encodeURIComponent(name);
+        this.path = "".concat(this.session.parameters.extpath, "/").concat(encodeURIComponent(name));
     }
     return ExternalObject;
 }());

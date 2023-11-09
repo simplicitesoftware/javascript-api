@@ -746,6 +746,13 @@ declare module "simplicite" {
          */
         grant: Grant;
         /**
+         * Get path
+         * @param {string} action Action
+         * @param {object} [opts] Options
+         * @param {function} [opts.businessCase] Business case label
+         */
+        private getPath;
+        /**
          * Get grant (current user data)
          * @param {object} [opts] Options
          * @param {boolean} [opts.inlinePicture=false] Inline user picture?
@@ -1508,6 +1515,13 @@ declare module "simplicite" {
          * @private
          */
         private getReqParams;
+        /**
+         * Get path
+         * @param {string} action Action
+         * @param {object} [opts] Options
+         * @param {function} [opts.businessCase] Business case label
+         */
+        private getPath;
         /**
          * Get count
          * @param {object} [filters] Filters (defaults to current filters)

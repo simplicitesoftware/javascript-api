@@ -57,8 +57,15 @@ Run the unit tests, this generates the `coverage` folder:
 npm run test
 ```
 
-Browser
--------
+Other unit tests
+----------------
+
+```bash
+npm run test:all
+```
+
+Browser tests
+-------------
 
 ```bash
 npm run test:browser

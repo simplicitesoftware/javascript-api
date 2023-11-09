@@ -200,7 +200,8 @@ app.getHealth().then(health => {
 	app.debug(list);
 	assert.ok(list.length === 1);
 	assert.ok(list[0].usr_login === app.grant.getLogin());
-	assert.ok(list[0].usr_image_id.getMIMEType() && list[0].usr_image_id.getContent());
+	const img = usr.getFieldValue('usr_image_id', list[0]);
+	assert.ok(img.getMIMEType() && img.getContent());
 	app.info('Got users list for current user (with picture): ' + usr.getFieldValue('usr_login', list[0]));
 	const m = usr.getField('row_module_id__mdl_name');
 	app.info(usr.getFieldLabel(m) + ': ' + usr.getFieldValue(m, list[0]));

@@ -23,11 +23,11 @@
     "node-fetch": "^2.7.0"
   },
   "devDependencies": {
-    "@babel/plugin-transform-runtime": "^7.23.2",
-    "@babel/preset-env": "^7.23.2",
+    "@babel/plugin-transform-runtime": "^7.23.3",
+    "@babel/preset-env": "^7.23.3",
     "@jest/globals": "^29.7.0",
-    "@typescript-eslint/parser": "^6.9.1",
-    "@typescript-eslint/eslint-plugin": "^6.9.1",
+    "@typescript-eslint/parser": "^6.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.10.0",
     "docdash": "^2.0.2",
     "eslint": "^8.53.0",
     "jest": "^29.7.0",
@@ -66,6 +66,7 @@
     "test:source": "node ./test/test-source.js",
     "test:external": "node ./test/test-external.js",
     "test:await": "node ./test/test-await.js",
+    "test:all": "npm run test:public && npm run test:logins && npm run test:main && npm run test:images && npm run test:source && npm run test:external && npm run test:await",
     "test:browser": "webpack build --config=./test/webpack.config.cjs ./test/test-browser.js && serve -l 3000 test",
     "test:bundle": "serve -l 3000 dist",
     "ncu": "ncu"

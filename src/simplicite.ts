@@ -1171,7 +1171,7 @@ class Session {
 	 */
 	private getPath(action: string, opts?: any): string {
 		const bc = opts && opts.businessCase ? `&_bc=${opts.businessCase}` : '';
-		return `${this.parameters.apppath}&action=${encodeURIComponent(action)}${bc}`;
+		return `${this.parameters.apppath}?action=${encodeURIComponent(action)}${bc}`;
 	}
 
 	/**
