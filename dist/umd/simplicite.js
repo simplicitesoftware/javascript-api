@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.3.0
+ * @version 2.3.1
  * @license Apache-2.0
  */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -62,7 +62,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
          * API client module version
          * @constant {string}
          */
-        MODULE_VERSION: '2.3.0',
+        MODULE_VERSION: '2.3.1',
         /**
          * Default row ID field name
          * @constant {string}
@@ -601,7 +601,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
              * @function
              */
             this.sendRequest = function (path, data, callback, errorHandler) {
-                var origin = 'Session.req';
+                var origin = 'Session.sendRequest';
                 var m = data ? 'POST' : 'GET';
                 var h = {};
                 if (data)
@@ -1250,7 +1250,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                 port: port,
                 root: root,
                 url: url,
-                timeout: (params.timeout || 30) * 1000,
+                timeout: (params.timeout || 30) * 1000, // milliseconds
                 compress: params.compress || true,
                 healthpath: (ep === '/ui' ? ep : '') + '/health?format=json',
                 loginpath: ep === '/api' ? '/api/login?format=json' : ep + '/json/app?action=session',
@@ -1493,7 +1493,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
             this.getValue = function () {
                 return {
                     id: _this.id,
-                    name: _this['filename'] && !_this.name ? _this['filename'] : _this.name,
+                    name: _this['filename'] && !_this.name ? _this['filename'] : _this.name, // Backward compatibility
                     mime: _this.mime,
                     content: _this.content,
                     thumbnail: _this.thumbnail
@@ -2919,7 +2919,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
             /**
              * Call an external object
              * @param {object} [params] Optional URL parameters
-             * @param {object} [data] Optional data (for 'POST' and 'PUT' methods only)
+             * @param {object|string|FormData} [data] Optional body data (for 'POST' and 'PUT' methods only)
              * @param {object} [opts] Options
              * @param {string} [opts.path] Absolute or relative path (e.g. absolute '/my/mapped/upath' or relative 'my/additional/path')
              * @param {object} [opts.method] Optional method 'GET', 'POST', 'PUT' or 'DELETE' (defaults to 'GET' if data is not set or 'POST' if data is set)
@@ -2948,7 +2948,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                             if (opts.contentType) {
                                 h['content-type'] = opts.contentType;
                             }
-                            else if (data) { // Try to guess type...
+                            else if (data && !(data instanceof FormData)) { // Try to guess type...
                                 h['content-type'] = typeof data === 'string' ? 'application/x-www-form-urlencoded' : 'application/json';
                             }
                             if (opts.accept) {
@@ -2964,8 +2964,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                                     h[ses.authheader] = b;
                             }
                             var u = ses.parameters.url + (opts.path && opts.path.startsWith('/') ? opts.path : _this.path + (opts.path ? '/' + opts.path : '')) + (p !== '' ? '?' + p : '');
-                            var d = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined;
-                            ses.debug('[simplicite.ExternalObject.call] ' + m + ' ' + u + ' with ' + (d ? ' with ' + d : ''));
+                            var d = data ? (typeof data === 'string' || data instanceof FormData ? data : JSON.stringify(data)) : undefined;
+                            ses.debug('[simplicite.ExternalObject.call] ' + m + ' ' + u + (d ? ' with ' + d : ''));
                             (0, node_fetch_1.default)(u, {
                                 method: m,
                                 headers: h,
@@ -2984,7 +2984,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                                             reject.call(_this, err);
                                     });
                                 }
-                                else if (type && type.startsWith('text/')) { // Text
+                                else if (type && (type.startsWith('text/') || type.startsWith('application/yaml'))) { // Text
                                     res.text().then(function (textData) {
                                         resolve.call(_this, textData, res.status, res.headers);
                                     }).catch(function (err) {

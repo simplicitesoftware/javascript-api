@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.3.0
+ * @version 2.3.1
  * @license Apache-2.0
  */
 
@@ -17,7 +17,7 @@ const constants = {
 	 * API client module version
 	 * @constant {string}
 	 */
-	MODULE_VERSION: '2.3.0',
+	MODULE_VERSION: '2.3.1',
 
 	/**
 	 * Default row ID field name
@@ -3289,7 +3289,7 @@ class ExternalObject {
 	/**
 	 * Call an external object
 	 * @param {object} [params] Optional URL parameters
-	 * @param {object} [data] Optional data (for 'POST' and 'PUT' methods only)
+	 * @param {object|string|FormData} [data] Optional body data (for 'POST' and 'PUT' methods only)
 	 * @param {object} [opts] Options
 	 * @param {string} [opts.path] Absolute or relative path (e.g. absolute '/my/mapped/upath' or relative 'my/additional/path')
 	 * @param {object} [opts.method] Optional method 'GET', 'POST', 'PUT' or 'DELETE' (defaults to 'GET' if data is not set or 'POST' if data is set)
@@ -3300,7 +3300,7 @@ class ExternalObject {
 	 * @return {promise<object>} Promise to the external object content
 	 * @function
 	 */
-	public call = async (params?: any, data?: any, opts?: any): Promise<any> => {
+	public call = async (params?: any, data?: string|FormData|any, opts?: any): Promise<any> => {
 		const origin = 'ExternalObject.call';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -3314,7 +3314,7 @@ class ExternalObject {
 			const h: any = {};
 			if (opts.contentType) {
 				h['content-type'] = opts.contentType;
-			} else if (data) { // Try to guess type...
+			} else if (data && !(data instanceof FormData)) { // Try to guess type...
 				h['content-type'] = typeof data === 'string' ? 'application/x-www-form-urlencoded' : 'application/json';
 			}
 			if (opts.accept) {
@@ -3329,8 +3329,8 @@ class ExternalObject {
 					h[ses.authheader] = b;
 			}
 			const u: string = ses.parameters.url + (opts.path && opts.path.startsWith('/') ? opts.path : this.path + (opts.path ? '/' + opts.path : '')) + (p !== '' ? '?' + p : '');
-			const d: string = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined;
-			ses.debug('[simplicite.ExternalObject.call] ' + m + ' ' + u + ' with ' + (d ? ' with ' + d : ''));
+			const d: any = data ? (typeof data === 'string' || data instanceof FormData ? data : JSON.stringify(data)) : undefined;
+			ses.debug('[simplicite.ExternalObject.call] ' + m + ' ' + u + (d ? ' with ' + d : ''));
 			fetch(u, {
 				method: m,
 				headers: h,
@@ -3347,7 +3347,7 @@ class ExternalObject {
 						err = ses.getError(err, undefined, origin);
 						if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 					});
-				} else if (type && type.startsWith('text/')) { // Text
+				} else if (type && (type.startsWith('text/') || type.startsWith('application/yaml'))) { // Text
 					res.text().then(textData => {
 						resolve.call(this, textData, res.status, res.headers);
 					}).catch((err: any) => {

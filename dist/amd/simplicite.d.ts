@@ -1818,7 +1818,7 @@ declare module "simplicite" {
         /**
          * Call an external object
          * @param {object} [params] Optional URL parameters
-         * @param {object} [data] Optional data (for 'POST' and 'PUT' methods only)
+         * @param {object|string|FormData} [data] Optional body data (for 'POST' and 'PUT' methods only)
          * @param {object} [opts] Options
          * @param {string} [opts.path] Absolute or relative path (e.g. absolute '/my/mapped/upath' or relative 'my/additional/path')
          * @param {object} [opts.method] Optional method 'GET', 'POST', 'PUT' or 'DELETE' (defaults to 'GET' if data is not set or 'POST' if data is set)
@@ -1829,12 +1829,12 @@ declare module "simplicite" {
          * @return {promise<object>} Promise to the external object content
          * @function
          */
-        call: (params?: any, data?: any, opts?: any) => Promise<any>;
+        call: (params?: any, data?: string | FormData | any, opts?: any) => Promise<any>;
         /**
          * Alias to <code>call</code>
          * @function
          */
-        invoke: (params?: any, data?: any, opts?: any) => Promise<any>;
+        invoke: (params?: any, data?: string | FormData | any, opts?: any) => Promise<any>;
     }
     const _default: {
         constants: {

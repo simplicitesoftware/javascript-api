@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.3.0
+ * @version 2.3.1
  * @license Apache-2.0
  */
 /**
@@ -1823,7 +1823,7 @@ declare class ExternalObject {
     /**
      * Call an external object
      * @param {object} [params] Optional URL parameters
-     * @param {object} [data] Optional data (for 'POST' and 'PUT' methods only)
+     * @param {object|string|FormData} [data] Optional body data (for 'POST' and 'PUT' methods only)
      * @param {object} [opts] Options
      * @param {string} [opts.path] Absolute or relative path (e.g. absolute '/my/mapped/upath' or relative 'my/additional/path')
      * @param {object} [opts.method] Optional method 'GET', 'POST', 'PUT' or 'DELETE' (defaults to 'GET' if data is not set or 'POST' if data is set)
@@ -1834,12 +1834,12 @@ declare class ExternalObject {
      * @return {promise<object>} Promise to the external object content
      * @function
      */
-    call: (params?: any, data?: any, opts?: any) => Promise<any>;
+    call: (params?: any, data?: string | FormData | any, opts?: any) => Promise<any>;
     /**
      * Alias to <code>call</code>
      * @function
      */
-    invoke: (params?: any, data?: any, opts?: any) => Promise<any>;
+    invoke: (params?: any, data?: string | FormData | any, opts?: any) => Promise<any>;
 }
 declare const _default: {
     constants: {
