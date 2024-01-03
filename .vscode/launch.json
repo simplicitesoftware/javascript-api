@@ -50,11 +50,6 @@
             "name": "Jest tests",
             "program": "${workspaceRoot}/node_modules/jest/bin/jest.js",
             "args": [ "-i" ]
-        }, {
-            "type": "node",
-            "request": "launch",
-            "name": "News tests",
-            "program": "${workspaceFolder}/test/news/news.js"
         }
     ]
 }
