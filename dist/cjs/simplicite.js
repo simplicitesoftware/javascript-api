@@ -812,6 +812,10 @@ var Session = /** @class */ (function () {
                             }
                             else {
                                 _this.clear();
+                                // Restore session parameter-level credentials if present
+                                _this.username = _this.parameters.username;
+                                _this.password = _this.parameters.password;
+                                _this.authtoken = _this.parameters.authtoken;
                                 resolve.call(_this, r.response || r);
                             }
                         }, function (err) {
@@ -1261,6 +1265,9 @@ var Session = /** @class */ (function () {
             port: port,
             root: root,
             url: url,
+            username: params.username,
+            password: params.password,
+            authtoken: params.authtoken,
             timeout: (params.timeout || 30) * 1000, // milliseconds
             compress: params.compress || true,
             healthpath: (ep === '/ui' ? ep : '') + '/health?format=json',

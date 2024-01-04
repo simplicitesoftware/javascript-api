@@ -683,6 +683,9 @@ class Session {
 			port,
 			root,
 			url,
+			username: params.username,
+			password: params.password,
+			authtoken: params.authtoken,
 			timeout: (params.timeout || 30) * 1000, // milliseconds
 			compress: params.compress || true,
 			healthpath: (ep === '/ui' ? ep : '') + '/health?format=json',
@@ -1171,6 +1174,10 @@ class Session {
 					if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 				} else {
 					this.clear();
+					// Restore session parameter-level credentials if present
+					this.username = this.parameters.username;
+					this.password = this.parameters.password;
+					this.authtoken = this.parameters.authtoken;
 					resolve.call(this, r.response || r);
 				}
 			}, (err: any) => {

@@ -812,6 +812,9 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
                                 }
                                 else {
                                     _this.clear();
+                                    _this.username = _this.parameters.username;
+                                    _this.password = _this.parameters.password;
+                                    _this.authtoken = _this.parameters.authtoken;
                                     resolve.call(_this, r.response || r);
                                 }
                             }, function (err) {
@@ -1261,6 +1264,9 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
                 port: port,
                 root: root,
                 url: url,
+                username: params.username,
+                password: params.password,
+                authtoken: params.authtoken,
                 timeout: (params.timeout || 30) * 1000, // milliseconds
                 compress: params.compress || true,
                 healthpath: (ep === '/ui' ? ep : '') + '/health?format=json',
