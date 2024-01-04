@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.3.1
+ * @version 3.0.0
  * @license Apache-2.0
  */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -13,7 +13,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import fetch from 'node-fetch'; // Node.js polyfill for fetch
 import { Buffer } from 'buffer'; // Browser polyfill for Buffer
 /**
  * Constants
@@ -24,7 +23,7 @@ const constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '2.3.1',
+    MODULE_VERSION: '3.0.0',
     /**
      * Default row ID field name
      * @constant {string}
@@ -554,6 +553,27 @@ class Session {
             }
         };
         /**
+         * Compress data as blob
+         * @param data {string|any} Data to compress
+         * @return {Promise<Blob>} Promise to the compressed data blob
+         */
+        this.compressData = (data) => {
+            const s = typeof data === 'string'
+                ? new Blob([data], { type: 'text/plian' }).stream()
+                : new Blob([JSON.stringify(data)], { type: 'application/json' }).stream();
+            const cs = s.pipeThrough(new CompressionStream('gzip'));
+            return new Response(cs).blob();
+        };
+        /**
+         * Uncompress blob
+         * @param blob {Blob} Compressed data blob
+         * @return {Promise<string>} Promise to the uncompressed string
+         */
+        this.uncompressData = (blob) => {
+            const us = blob.stream().pipeThrough(new DecompressionStream('gzip'));
+            return new Response(us).text();
+        };
+        /**
          * Send request
          * @param {string} path Path
          * @param {object} [data] Data
@@ -585,8 +605,8 @@ class Session {
             fetch(u, {
                 method: m,
                 headers: h,
-                compress: this.parameters.compress,
-                timeout: this.parameters.timeout,
+                //compress: this.parameters.compress,
+                signal: AbortSignal.timeout(this.parameters.timeout),
                 body: d
             }).then((res) => {
                 if (callback) {
@@ -2747,10 +2767,11 @@ class ExternalObject {
                 }
                 else if (data && !(data instanceof FormData)) { // Try to guess type...
                     h['content-type'] = typeof data === 'string' ? 'application/x-www-form-urlencoded' : 'application/json';
-                }
-                if (opts.accept) {
+                } // FormData = multipart/form-data with boundary string => handled by fetch
+                //if (ses.parameters.compress)
+                //	h['content-encoding'] = 'gzip';
+                if (opts.accept)
                     h.accept = opts.accept === 'json' ? 'application/json' : opts.accept;
-                }
                 let b = ses.getBearerTokenHeader();
                 if (b) {
                     h[ses.authheader] = b;
@@ -2766,8 +2787,8 @@ class ExternalObject {
                 fetch(u, {
                     method: m,
                     headers: h,
-                    compress: ses.parameters.compress,
-                    timeout: ses.parameters.timeout,
+                    //compress: ses.parameters.compress,
+                    signal: AbortSignal.timeout(ses.parameters.timeout),
                     body: d
                 }).then((res) => {
                     const type = res.headers.get('content-type');

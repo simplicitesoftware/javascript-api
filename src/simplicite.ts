@@ -16,7 +16,7 @@ const constants = {
 	 * API client module version
 	 * @constant {string}
 	 */
-	MODULE_VERSION: '2.3.1',
+	MODULE_VERSION: '3.0.0',
 
 	/**
 	 * Default row ID field name
@@ -960,7 +960,7 @@ class Session {
 	/**
 	 * Compress data as blob
 	 * @param data {string|any} Data to compress
-	 * @returns {Promise<Blob>} Promise of a compressed data blob
+	 * @return {Promise<Blob>} Promise to the compressed data blob
 	 */
 	public compressData = (data: string|any): Promise<Blob> => {
 		const s = typeof data === 'string'
@@ -973,7 +973,7 @@ class Session {
 	/**
 	 * Uncompress blob
 	 * @param blob {Blob} Compressed data blob
-	 * @returns
+	 * @return {Promise<string>} Promise to the uncompressed string
 	 */
 	public uncompressData = (blob: Blob): Promise<string> => {
 		const us = blob.stream().pipeThrough(new DecompressionStream('gzip'));

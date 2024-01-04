@@ -37,10 +37,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.3.1
+ * @version 3.0.0
  * @license Apache-2.0
  */
-define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (require, exports, node_fetch_1, buffer_1) {
+define("simplicite", ["require", "exports", "buffer"], function (require, exports, buffer_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     /**
@@ -52,7 +52,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
          * API client module version
          * @constant {string}
          */
-        MODULE_VERSION: '2.3.1',
+        MODULE_VERSION: '3.0.0',
         /**
          * Default row ID field name
          * @constant {string}
@@ -583,6 +583,27 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
                 }
             };
             /**
+             * Compress data as blob
+             * @param data {string|any} Data to compress
+             * @return {Promise<Blob>} Promise to the compressed data blob
+             */
+            this.compressData = function (data) {
+                var s = typeof data === 'string'
+                    ? new Blob([data], { type: 'text/plian' }).stream()
+                    : new Blob([JSON.stringify(data)], { type: 'application/json' }).stream();
+                var cs = s.pipeThrough(new CompressionStream('gzip'));
+                return new Response(cs).blob();
+            };
+            /**
+             * Uncompress blob
+             * @param blob {Blob} Compressed data blob
+             * @return {Promise<string>} Promise to the uncompressed string
+             */
+            this.uncompressData = function (blob) {
+                var us = blob.stream().pipeThrough(new DecompressionStream('gzip'));
+                return new Response(us).text();
+            };
+            /**
              * Send request
              * @param {string} path Path
              * @param {object} [data] Data
@@ -611,11 +632,11 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
                     u += (u.indexOf('?') >= 0 ? '&' : '?') + '_ajaxkey=' + encodeURIComponent(_this.ajaxkey);
                 var d = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined;
                 _this.debug("[".concat(origin, "] ").concat(m, " ").concat(u).concat(d ? ' with ' + d : ''));
-                (0, node_fetch_1.default)(u, {
+                fetch(u, {
                     method: m,
                     headers: h,
-                    compress: _this.parameters.compress,
-                    timeout: _this.parameters.timeout,
+                    //compress: this.parameters.compress,
+                    signal: AbortSignal.timeout(_this.parameters.timeout),
                     body: d
                 }).then(function (res) {
                     if (callback) {
@@ -2940,10 +2961,11 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
                             }
                             else if (data && !(data instanceof FormData)) { // Try to guess type...
                                 h['content-type'] = typeof data === 'string' ? 'application/x-www-form-urlencoded' : 'application/json';
-                            }
-                            if (opts.accept) {
+                            } // FormData = multipart/form-data with boundary string => handled by fetch
+                            //if (ses.parameters.compress)
+                            //	h['content-encoding'] = 'gzip';
+                            if (opts.accept)
                                 h.accept = opts.accept === 'json' ? 'application/json' : opts.accept;
-                            }
                             var b = ses.getBearerTokenHeader();
                             if (b) {
                                 h[ses.authheader] = b;
@@ -2956,11 +2978,11 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
                             var u = ses.parameters.url + (opts.path && opts.path.startsWith('/') ? opts.path : _this.path + (opts.path ? '/' + opts.path : '')) + (p !== '' ? '?' + p : '');
                             var d = data ? (typeof data === 'string' || data instanceof FormData ? data : JSON.stringify(data)) : undefined;
                             ses.debug('[simplicite.ExternalObject.call] ' + m + ' ' + u + (d ? ' with ' + d : ''));
-                            (0, node_fetch_1.default)(u, {
+                            fetch(u, {
                                 method: m,
                                 headers: h,
-                                compress: ses.parameters.compress,
-                                timeout: ses.parameters.timeout,
+                                //compress: ses.parameters.compress,
+                                signal: AbortSignal.timeout(ses.parameters.timeout),
                                 body: d
                             }).then(function (res) {
                                 var type = res.headers.get('content-type');

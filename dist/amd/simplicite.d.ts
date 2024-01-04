@@ -686,6 +686,18 @@ declare module "simplicite" {
          */
         getError: (err: string | any, status?: number, origin?: string) => any;
         /**
+         * Compress data as blob
+         * @param data {string|any} Data to compress
+         * @return {Promise<Blob>} Promise to the compressed data blob
+         */
+        compressData: (data: string | any) => Promise<Blob>;
+        /**
+         * Uncompress blob
+         * @param blob {Blob} Compressed data blob
+         * @return {Promise<string>} Promise to the uncompressed string
+         */
+        uncompressData: (blob: Blob) => Promise<string>;
+        /**
          * Send request
          * @param {string} path Path
          * @param {object} [data] Data
