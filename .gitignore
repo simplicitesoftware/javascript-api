@@ -2,6 +2,7 @@
 .scannerwork
 node_modules
 test/index.js
+dist/index.*
 **.bak
 **.new
 **.tmp

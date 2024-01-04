@@ -61,7 +61,7 @@ See the [documentation](https://simplicitesoftware.github.io/javascript-api/) fo
 License
 -------
 
-Copyright 2014-2022 Simplicit&eacute; Software
+Copyright 2014-2024 Simplicit&eacute; Software
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

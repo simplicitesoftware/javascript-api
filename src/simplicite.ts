@@ -1,11 +1,10 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.3.1
+ * @version 3.0.0
  * @license Apache-2.0
  */
 
-import fetch from 'node-fetch'; // Node.js polyfill for fetch
 import { Buffer } from 'buffer'; // Browser polyfill for Buffer
 
 /**
@@ -959,6 +958,29 @@ class Session {
 	};
 
 	/**
+	 * Compress data as blob
+	 * @param data {string|any} Data to compress
+	 * @returns {Promise<Blob>} Promise of a compressed data blob
+	 */
+	public compressData = (data: string|any): Promise<Blob> => {
+		const s = typeof data === 'string'
+			? new Blob([ data ], { type: 'text/plian' }).stream()
+			: new Blob([ JSON.stringify(data) ], { type: 'application/json' }).stream();
+		const cs = s.pipeThrough(new CompressionStream('gzip'));
+		return new Response(cs).blob();
+	};
+
+	/**
+	 * Uncompress blob
+	 * @param blob {Blob} Compressed data blob
+	 * @returns
+	 */
+	public uncompressData = (blob: Blob): Promise<string> => {
+		const us = blob.stream().pipeThrough(new DecompressionStream('gzip'));
+		return new Response(us).text();
+	};
+
+	/**
 	 * Send request
 	 * @param {string} path Path
 	 * @param {object} [data] Data
@@ -989,8 +1011,8 @@ class Session {
 		fetch(u, {
 			method: m,
 			headers: h,
-			compress: this.parameters.compress,
-			timeout: this.parameters.timeout,
+			//compress: this.parameters.compress,
+			signal: AbortSignal.timeout(this.parameters.timeout),
 			body: d
 		}).then((res: any) => {
 			if (callback) {
@@ -3316,10 +3338,11 @@ class ExternalObject {
 				h['content-type'] = opts.contentType;
 			} else if (data && !(data instanceof FormData)) { // Try to guess type...
 				h['content-type'] = typeof data === 'string' ? 'application/x-www-form-urlencoded' : 'application/json';
-			}
-			if (opts.accept) {
+			} // FormData = multipart/form-data with boundary string => handled by fetch
+			//if (ses.parameters.compress)
+			//	h['content-encoding'] = 'gzip';
+			if (opts.accept)
 				h.accept = opts.accept === 'json' ? 'application/json' : opts.accept;
-			}
 			let b: string = ses.getBearerTokenHeader();
 			if (b) {
 				h[ses.authheader] = b;
@@ -3334,8 +3357,8 @@ class ExternalObject {
 			fetch(u, {
 				method: m,
 				headers: h,
-				compress: ses.parameters.compress,
-				timeout: ses.parameters.timeout,
+				//compress: ses.parameters.compress,
+				signal: AbortSignal.timeout(ses.parameters.timeout),
 				body: d
 			}).then((res: any) => {
 				const type: string = res.headers.get('content-type');
