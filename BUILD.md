@@ -53,8 +53,22 @@ npm run doc
 Publish
 -------
 
+Check package to be published:
+
+```bash
+npm pack
+tar tvfz simplicite-1.x.y.tgz
+rm simplicite-1.x.y.tgz
+
+```
 Publish to npm repository:
 
 ```bash
-npm publish
+npm publish --tag 1.x.y
+```
+
+Deprecate previous version:
+
+```bash
+npm deprecate simplicite@1.x.y-1 'Deprecated'
 ```
