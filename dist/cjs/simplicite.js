@@ -2639,6 +2639,7 @@ var BusinessObject = /** @class */ (function () {
          * Build a pivot table
          * @param {string} ctb Pivot table name
          * @param {object} [opts] Options
+         * @param {boolean} [opts.cubes] Data as cubes?
          * @param {object} [opts.filters] Filters, by default current filters are used
          * @param {function} [opts.error] Error handler function
          * @param {string} [opts.businessCase] Business case label
@@ -2655,7 +2656,7 @@ var BusinessObject = /** @class */ (function () {
                 return [2 /*return*/, new Promise(function (resolve, reject) {
                         if (opts.filters)
                             _this.filters = opts.filters;
-                        ses.sendRequest("".concat(_this.getPath('crosstab', opts), "&crosstab=").concat(encodeURIComponent(ctb)), _this.getReqParams(_this.filters, true), function (res, status) {
+                        ses.sendRequest("".concat(_this.getPath(opts.cubes ? 'crosstabcubes' : 'crosstab', opts), "&crosstab=").concat(encodeURIComponent(ctb)), _this.getReqParams(opts.filters || _this.filters, true), function (res, status) {
                             var r = ses.parseResponse(res, status);
                             ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                             if (r.type === 'error') {

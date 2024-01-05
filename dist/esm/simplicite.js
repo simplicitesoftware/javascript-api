@@ -2474,6 +2474,7 @@ class BusinessObject {
          * Build a pivot table
          * @param {string} ctb Pivot table name
          * @param {object} [opts] Options
+         * @param {boolean} [opts.cubes] Data as cubes?
          * @param {object} [opts.filters] Filters, by default current filters are used
          * @param {function} [opts.error] Error handler function
          * @param {string} [opts.businessCase] Business case label
@@ -2487,7 +2488,7 @@ class BusinessObject {
             return new Promise((resolve, reject) => {
                 if (opts.filters)
                     this.filters = opts.filters;
-                ses.sendRequest(`${this.getPath('crosstab', opts)}&crosstab=${encodeURIComponent(ctb)}`, this.getReqParams(this.filters, true), (res, status) => {
+                ses.sendRequest(`${this.getPath(opts.cubes ? 'crosstabcubes' : 'crosstab', opts)}&crosstab=${encodeURIComponent(ctb)}`, this.getReqParams(opts.filters || this.filters, true), (res, status) => {
                     const r = ses.parseResponse(res, status);
                     ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
                     if (r.type === 'error') {
