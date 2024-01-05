@@ -87,8 +87,8 @@ Check package to be published:
 
 ```bash
 npm pack
-tar tvfz simplicite-x.y.z.tgz
-rm simplicite-x.y.z.tgz
+tar tvfz simplicite-3.x.y.tgz
+rm simplicite-3.x.y.tgz
 ```
 
 Publish to npm repository:
@@ -100,5 +100,5 @@ npm publish
 Deprecate previous version:
 
 ```bash
-npm deprecate simplicite@x.y.z-1 'Deprecated'
+npm deprecate simplicite@3.x.y-1 'Deprecated'
 ```
