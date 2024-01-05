@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.3.1
+ * @version 2.3.2
  * @license Apache-2.0
  */
 
@@ -17,7 +17,7 @@ const constants = {
 	 * API client module version
 	 * @constant {string}
 	 */
-	MODULE_VERSION: '2.3.1',
+	MODULE_VERSION: '2.3.2',
 
 	/**
 	 * Default row ID field name
@@ -684,6 +684,9 @@ class Session {
 			port,
 			root,
 			url,
+			username: params.username,
+			password: params.password,
+			authtoken: params.authtoken,
 			timeout: (params.timeout || 30) * 1000, // milliseconds
 			compress: params.compress || true,
 			healthpath: (ep === '/ui' ? ep : '') + '/health?format=json',
@@ -1149,6 +1152,10 @@ class Session {
 					if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 				} else {
 					this.clear();
+					// Restore session parameter-level credentials if present
+					this.username = this.parameters.username;
+					this.password = this.parameters.password;
+					this.authtoken = this.parameters.authtoken;
 					resolve.call(this, r.response || r);
 				}
 			}, (err: any) => {
@@ -2578,7 +2585,7 @@ class BusinessObject {
 			this.filters = filters || {};
 			ses.sendRequest(this.getPath('count', opts), this.getReqParams(this.filters, true), (res: any, status: number) => {
 				const r: any = ses.parseResponse(res, status);
-				ses.debug('['+origin+'] HTTP status = ' + status + ', response type = ' + r.type);
+				ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
 					const err = ses.getError(r.response, undefined, origin);
 					if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
@@ -2839,7 +2846,7 @@ class BusinessObject {
 			}
 			ses.sendRequest(this.getPath('getlinkedlist', opts), this.getReqParams({ origin: field, input: linkedField, code, all }), (res: any, status: number) => {
 				const r: any = ses.parseResponse(res, status);
-				ses.debug('['+origin+'] HTTP status = ' + status + ', response type = ' + r.type);
+				ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
 					const err = ses.getError(r.response, undefined, origin);
 					if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
@@ -2892,7 +2899,7 @@ class BusinessObject {
 			this.item.row_id = constants.DEFAULT_ROW_ID;
 			ses.sendRequest(`${this.getPath('create', opts)}${this.getReqOptions(opts)}`, this.getReqParams(this.item), (res: any, status: number) => {
 				const r: any = ses.parseResponse(res, status);
-				ses.debug('['+origin+'] HTTP status = ' + status + ', response type = ' + r.type);
+				ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
 					const err = ses.getError(r.response, undefined, origin);
 					if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
@@ -2993,7 +3000,7 @@ class BusinessObject {
 			const p: string = rowId ? `&${this.getRowIdFieldName()}=${encodeURIComponent(rowId)}` : '';
 			ses.sendRequest(`${this.getPath(action, opts)}${p}`, this.getReqParams(opts.parameters), (res: any, status: number) => {
 				const r: any = ses.parseResponse(res, status);
-				ses.debug('['+origin+'] HTTP status = ' + status + ', response type = ' + r.type);
+				ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
 					const err = ses.getError(r.response, undefined, origin);
 					if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
@@ -3012,6 +3019,7 @@ class BusinessObject {
 	 * Build a pivot table
 	 * @param {string} ctb Pivot table name
 	 * @param {object} [opts] Options
+	 * @param {boolean} [opts.cubes] Data as cubes?
 	 * @param {object} [opts.filters] Filters, by default current filters are used
 	 * @param {function} [opts.error] Error handler function
 	 * @param {string} [opts.businessCase] Business case label
@@ -3025,7 +3033,7 @@ class BusinessObject {
 		return new Promise((resolve, reject) => {
 			if (opts.filters)
 				this.filters = opts.filters;
-			ses.sendRequest(`${this.getPath('crosstab', opts)}&crosstab=${encodeURIComponent(ctb)}`, this.getReqParams(this.filters, true), (res: any, status: number) => {
+			ses.sendRequest(`${this.getPath(opts.cubes ? 'crosstabcubes' : 'crosstab', opts)}&crosstab=${encodeURIComponent(ctb)}`, this.getReqParams(opts.filters || this.filters, true), (res: any, status: number) => {
 				const r: any = ses.parseResponse(res, status);
 				ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
 				if (r.type === 'error') {
@@ -3067,7 +3075,7 @@ class BusinessObject {
 				p += `&${this.getRowIdFieldName()}=${encodeURIComponent(rowId)}`;
 			ses.sendRequest(`${this.getPath('print', opts)}&printtemplate=${encodeURIComponent(prt)}${p}`, undefined, (res: any, status: number) => {
 				const r: any = ses.parseResponse(res, status);
-				ses.debug('['+origin+'] HTTP status = ' + status + ', response type = ' + r.type);
+				ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
 					const err = ses.getError(r.response, undefined, origin);
 					if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
@@ -3101,7 +3109,7 @@ class BusinessObject {
 				this.filters = opts.filters;
 			ses.sendRequest(`${this.getPath('placemap', opts)}&placemap=${encodeURIComponent(pcm)}`, this.getReqParams(this.filters, true), (res: any, status: number) => {
 				const r: any = ses.parseResponse(res, status);
-				ses.debug('['+origin+'] HTTP status = ' + status + ', response type = ' + r.type);
+				ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
 					const err = ses.getError(r.response, undefined, origin);
 					if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);

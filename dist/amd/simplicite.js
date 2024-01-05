@@ -37,7 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.3.1
+ * @version 2.3.2
  * @license Apache-2.0
  */
 define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (require, exports, node_fetch_1, buffer_1) {
@@ -52,7 +52,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
          * API client module version
          * @constant {string}
          */
-        MODULE_VERSION: '2.3.1',
+        MODULE_VERSION: '2.3.2',
         /**
          * Default row ID field name
          * @constant {string}
@@ -791,6 +791,10 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
                                 }
                                 else {
                                     _this.clear();
+                                    // Restore session parameter-level credentials if present
+                                    _this.username = _this.parameters.username;
+                                    _this.password = _this.parameters.password;
+                                    _this.authtoken = _this.parameters.authtoken;
                                     resolve.call(_this, r.response || r);
                                 }
                             }, function (err) {
@@ -1240,6 +1244,9 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
                 port: port,
                 root: root,
                 url: url,
+                username: params.username,
+                password: params.password,
+                authtoken: params.authtoken,
                 timeout: (params.timeout || 30) * 1000, // milliseconds
                 compress: params.compress || true,
                 healthpath: (ep === '/ui' ? ep : '') + '/health?format=json',
@@ -2611,6 +2618,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
              * Build a pivot table
              * @param {string} ctb Pivot table name
              * @param {object} [opts] Options
+             * @param {boolean} [opts.cubes] Data as cubes?
              * @param {object} [opts.filters] Filters, by default current filters are used
              * @param {function} [opts.error] Error handler function
              * @param {string} [opts.businessCase] Business case label
@@ -2627,7 +2635,7 @@ define("simplicite", ["require", "exports", "node-fetch", "buffer"], function (r
                     return [2 /*return*/, new Promise(function (resolve, reject) {
                             if (opts.filters)
                                 _this.filters = opts.filters;
-                            ses.sendRequest("".concat(_this.getPath('crosstab', opts), "&crosstab=").concat(encodeURIComponent(ctb)), _this.getReqParams(_this.filters, true), function (res, status) {
+                            ses.sendRequest("".concat(_this.getPath(opts.cubes ? 'crosstabcubes' : 'crosstab', opts), "&crosstab=").concat(encodeURIComponent(ctb)), _this.getReqParams(opts.filters || _this.filters, true), function (res, status) {
                                 var r = ses.parseResponse(res, status);
                                 ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
                                 if (r.type === 'error') {

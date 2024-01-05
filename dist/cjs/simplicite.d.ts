@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 2.3.1
+ * @version 2.3.2
  * @license Apache-2.0
  */
 /**
@@ -1700,6 +1700,7 @@ declare class BusinessObject {
      * Build a pivot table
      * @param {string} ctb Pivot table name
      * @param {object} [opts] Options
+     * @param {boolean} [opts.cubes] Data as cubes?
      * @param {object} [opts.filters] Filters, by default current filters are used
      * @param {function} [opts.error] Error handler function
      * @param {string} [opts.businessCase] Business case label
