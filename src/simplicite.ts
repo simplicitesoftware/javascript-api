@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 3.0.0
+ * @version 3.0.1
  * @license Apache-2.0
  */
 
@@ -16,7 +16,7 @@ const constants = {
 	 * API client module version
 	 * @constant {string}
 	 */
-	MODULE_VERSION: '3.0.0',
+	MODULE_VERSION: '3.0.1',
 
 	/**
 	 * Default row ID field name
@@ -35,111 +35,133 @@ const constants = {
 	 * @constant {number}
 	 */
 	CONTEXT_NONE: 0,
+
 	/**
 	 * Search context
 	 * @constant {number}
 	 */
 	CONTEXT_SEARCH: 1,
+
 	/**
 	 * List context
 	 * @constant {number}
 	 */
 	CONTEXT_LIST: 2,
+
 	/**
 	 * Creation context
 	 * @constant {number}
 	 */
 	CONTEXT_CREATE: 3,
+
 	/**
 	 * Copy context
 	 * @constant {number}
 	 */
 	CONTEXT_COPY: 4,
+
 	/**
 	 * Update context
 	 * @constant {number}
 	 */
 	CONTEXT_UPDATE: 5,
+
 	/**
 	 * Delete context
 	 * @constant {number}
 	 */
 	CONTEXT_DELETE: 6,
+
 	/**
 	 * Chart context
 	 * @constant {number}
 	 */
 	CONTEXT_GRAPH: 7,
+
 	/**
 	 * Pivot table context
 	 * @constant {number}
 	 */
 	CONTEXT_CROSSTAB: 8,
+
 	/**
 	 * Publication context
 	 * @constant {number}
 	 */
 	CONTEXT_PRINTTMPL: 9,
+
 	/**
 	 * Bulk update context
 	 * @constant {number}
 	 */
 	CONTEXT_UPDATEALL: 10,
+
 	/**
 	 * Reference selection context
 	 * @constant {number}
 	 */
 	CONTEXT_REFSELECT: 11,
+
 	/**
 	 * Datamap selection context
 	 * @constant {number}
 	 */
 	CONTEXT_DATAMAPSELECT: 12,
+
 	/**
 	 * Pre validation context
 	 * @constant {number}
 	 */
 	CONTEXT_PREVALIDATE: 13,
+
 	/**
 	 * Post validation context
 	 * @constant {number}
 	 */
 	CONTEXT_POSTVALIDATE: 14,
+
 	/**
 	 * State transition context
 	 * @constant {number}
 	 */
 	CONTEXT_STATETRANSITION: 15,
+
 	/**
 	 * Export context
 	 * @constant {number}
 	 */
 	CONTEXT_EXPORT: 16,
+
 	/**
 	 * Import context
 	 * @constant {number}
 	 */
 	CONTEXT_IMPORT: 17,
+
 	/**
 	 * Association context
 	 * @constant {number}
 	 */
 	CONTEXT_ASSOCIATE: 18,
+
 	/**
 	 * Panel list context
 	 * @constant {number}
 	 */
 	CONTEXT_PANELLIST: 19,
+
 	/**
 	 * Action context
 	 * @constant {number}
 	 */
 	CONTEXT_ACTION: 20,
+
 	/**
 	 * Agenda context
 	 * @constant {number}
 	 */
 	CONTEXT_AGENDA: 21,
+
 	/**
 	 * Place map context
 	 * @constant {number}
@@ -151,6 +173,7 @@ const constants = {
 	 * @constant {number}
 	 */
 	TYPE_ID: 0,
+
 	/**
 	 * Integer type
 	 * @constant {number}
@@ -161,113 +184,135 @@ const constants = {
 	 * @constant {number}
 	 */
 	TYPE_FLOAT: 2,
+
 	/**
 	 * Short string type
 	 * @constant {number}
 	 */
 	TYPE_STRING: 3,
+
 	/**
 	 * Date type
 	 * @constant {number}
 	 */
 	TYPE_DATE: 4,
+
 	/**
 	 * Date and time type
 	 * @constant {number}
 	 */
 	TYPE_DATETIME: 5,
+
 	/**
 	 * Time type
 	 * @constant {number}
 	 */
 	TYPE_TIME: 6,
+
 	/**
 	 * Simple enumeration type
 	 * @constant {number}
 	 */
 	TYPE_ENUM: 7,
+
 	/**
 	 * Boolean type
 	 * @constant {number}
 	 */
 	TYPE_BOOLEAN: 8,
+
 	/**
 	 * Password type
 	 * @constant {number}
 	 */
 	TYPE_PASSWORD: 9,
+
 	/**
 	 * URL type
 	 * @constant {number}
 	 */
 	TYPE_URL: 10,
+
 	/**
 	 * HTML content type
 	 * @constant {number}
 	 */
 	TYPE_HTML: 11,
+
 	/**
 	 * Email type
 	 * @constant {number}
 	 */
 	TYPE_EMAIL: 12,
+
 	/**
 	 * Long string type
 	 * @constant {number}
 	 */
 	TYPE_LONG_STRING: 13,
+
 	/**
 	 * Multiple enumeration type
 	 * @constant {number}
 	 */
 	TYPE_ENUM_MULTI: 14,
+
 	/**
 	 * Validated string type
 	 * @constant {number}
 	 */
 	TYPE_REGEXP: 15,
+
 	/**
 	 * Document type
 	 * @constant {number}
 	 */
 	TYPE_DOC: 17,
+
 	/**
 	 * Decimal type
 	 * @constant {number}
 	 * @deprecated
 	 */
 	TYPE_FLOAT_EMPTY: 18,
+
 	/**
 	 * External file type
 	 * @constant {number}
 	 * @deprecated
 	 */
 	TYPE_EXTFILE: 19,
+
 	/**
 	 * Image type
 	 * @constant {number}
 	 */
 	TYPE_IMAGE: 20,
+
 	/**
 	 * Notepad type
 	 * @constant {number}
 	 */
 	TYPE_NOTEPAD: 21,
+
 	/**
 	 * Phone number type
 	 * @constant {number}
 	 */
 	TYPE_PHONENUM: 22,
+
 	/**
 	 * RGB color type
 	 * @constant {number}
 	 */
 	TYPE_COLOR: 23,
+
 	/**
 	 * Object type
 	 * @constant {number}
 	 */
 	TYPE_OBJECT: 24,
+
 	/**
 	 * Geocoordinates type
 	 * @constant {number}
@@ -279,21 +324,25 @@ const constants = {
 	 * @constant {number}
 	 */
 	VIS_NOT: 0,
+
 	/**
 	 * Hiiden (same as not visible)
 	 * @constant {number}
 	 */
 	VIS_HIDDEN: 0,
+
 	/**
 	 * Visible on lists only
 	 * @constant {number}
 	 */
 	VIS_LIST: 1,
+
 	/**
 	 * Visible on forms only
 	 * @constant {number}
 	 */
 	VIS_FORM: 2,
+
 	/**
 	 * Visible on both lists and forms only
 	 * @constant {number}
@@ -305,6 +354,7 @@ const constants = {
 	 * @constant {number}
 	 */
 	SEARCH_NONE: 0,
+
 	/**
 	 * Simple search
 	 * @constant {number}
@@ -315,11 +365,13 @@ const constants = {
 	 * @constant {number}
 	 */
 	SEARCH_MULTI_CHECK: 2,
+
 	/**
 	 * Multiple search (listbox)
 	 * @constant {number}
 	 */
 	SEARCH_MULTI_LIST: 3,
+
 	/**
 	 * Search by period (date/time)
 	 * @constant {number}
@@ -331,6 +383,7 @@ const constants = {
 	 * @constant {string}
 	 */
 	TRUE: '1',
+
 	/**
 	 * False
 	 * @constant {string}
@@ -358,16 +411,19 @@ const constants = {
 	 * @constant {number}
 	 */
 	RESOURCE_TYPE_IMAGE: 'IMG',
+
 	/**
 	 * Icon resource type
 	 * @constant {number}
 	 */
 	RESOURCE_TYPE_ICON: 'ICO',
+
 	/**
 	 * Stylesheet resource type
 	 * @constant {number}
 	 */
 	RESOURCE_TYPE_STYLESHEET: 'CSS',
+
 	/**
 	 * Javascript resource type
 	 * @constant {number}
@@ -379,6 +435,7 @@ const constants = {
 	 * @constant {string}
 	 */
 	DEFAULT_AUTH_HEADER: 'authorization',
+
 	/**
 	 * Simplicite authentication header
 	 * @constant {string}
@@ -394,10 +451,12 @@ const enum SessionParamEndpoint {
 	 * API endpoint
 	 */
 	API = 'api',
+
 	/**
 	 * UI endpoint
 	 */
 	UI = 'ui',
+
 	/**
 	 * Public UI endpoint
 	 */

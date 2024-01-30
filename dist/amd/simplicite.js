@@ -37,7 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 3.0.0
+ * @version 3.0.1
  * @license Apache-2.0
  */
 define("simplicite", ["require", "exports", "buffer"], function (require, exports, buffer_1) {
@@ -52,7 +52,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
          * API client module version
          * @constant {string}
          */
-        MODULE_VERSION: '3.0.0',
+        MODULE_VERSION: '3.0.1',
         /**
          * Default row ID field name
          * @constant {string}

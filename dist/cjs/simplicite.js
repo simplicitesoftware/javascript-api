@@ -2,7 +2,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 3.0.0
+ * @version 3.0.1
  * @license Apache-2.0
  */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -52,7 +52,7 @@ var constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '3.0.0',
+    MODULE_VERSION: '3.0.1',
     /**
      * Default row ID field name
      * @constant {string}
