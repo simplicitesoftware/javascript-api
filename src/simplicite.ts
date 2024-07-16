@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 3.0.1
+ * @version 3.0.2
  * @license Apache-2.0
  */
 
@@ -16,7 +16,7 @@ const constants = {
 	 * API client module version
 	 * @constant {string}
 	 */
-	MODULE_VERSION: '3.0.1',
+	MODULE_VERSION: '3.0.2',
 
 	/**
 	 * Default row ID field name
@@ -179,6 +179,7 @@ const constants = {
 	 * @constant {number}
 	 */
 	TYPE_INT: 1,
+
 	/**
 	 * Decimal type
 	 * @constant {number}
@@ -318,6 +319,46 @@ const constants = {
 	 * @constant {number}
 	 */
 	TYPE_GEOCOORDS: 25,
+
+	/**
+	 * Big decimal
+	 * @constant {number}
+	 */
+	TYPE_BIGDECIMAL: 26,
+
+	/**
+	 * Types strings
+	 * @constant {Array}
+	 */
+	TYPES: [
+		'ID',            //.0
+		'integer',       // 1
+		'decimal',       // 2
+		'string',        // 3
+		'date',          // 4
+		'datetime',      // 5
+		'time',          // 6
+		'enum',          // 7
+		'boolean',       // 8
+		'password',      // 9
+		'url',           // 10
+		'html',          // 11
+		'email',         // 12
+		'text',          // 13
+		'multienum',     // 14
+		'regexp',        // 15
+		'undefined',     // 16
+		'document',      // 17
+		'simpledecimal', // 18
+		'extfile',       // 19
+		'picture',       // 20
+		'notepad',       // 21
+		'phonenum',      // 22
+		'color',         // 23
+		'object',        // 24
+		'geocoords',     // 25
+		'bigdecimal'     // 26
+	],
 
 	/**
 	 * Not visible
