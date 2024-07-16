@@ -27,7 +27,7 @@ try {
 
 	const appinfo = await app.getAppInfo({ businessCase: 'Application information' });
 	app.debug(appinfo);
-	app.info(`Using platform version ${appinfo.platformversion}`);
+	app.info(`Using application ${appinfo.title}, version ${appinfo.version}`);
 
 	const devinfo = await app.getDevInfo({ businessCase: 'Development information' });
 	app.debug(devinfo);
