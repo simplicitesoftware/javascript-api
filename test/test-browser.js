@@ -12,7 +12,7 @@ const error = (id, err, append) => {
 };
 
 try {
-	const url = 'https://demo.dev.simplicite.io';
+	const url = 'https://demo.dev2.simplicite.io';
 	const debug = false;
 	const username = 'website';
 	const password = 'simplicite';
