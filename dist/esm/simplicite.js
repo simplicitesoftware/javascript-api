@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 3.0.2
+ * @version 3.0.3
  * @license Apache-2.0
  */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -23,7 +23,7 @@ const constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '3.0.2',
+    MODULE_VERSION: '3.0.3',
     /**
      * Default row ID field name
      * @constant {string}
@@ -1953,7 +1953,6 @@ class BusinessObject {
             else {
                 dt = data;
             }
-            this.resetValues(item);
             return new Promise(resolve => {
                 const promises = [];
                 for (const k of Object.keys(dt)) {

@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 3.0.2
+ * @version 3.0.3
  * @license Apache-2.0
  */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -61,7 +61,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
          * API client module version
          * @constant {string}
          */
-        MODULE_VERSION: '3.0.2',
+        MODULE_VERSION: '3.0.3',
         /**
          * Default row ID field name
          * @constant {string}
@@ -2071,7 +2071,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                     else {
                         dt = data;
                     }
-                    this.resetValues(item);
                     return [2 /*return*/, new Promise(function (resolve) {
                             var promises = [];
                             var _loop_1 = function (k) {
