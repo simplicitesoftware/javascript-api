@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 3.0.1
+ * @version 3.0.2
  * @license Apache-2.0
  */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -23,7 +23,7 @@ const constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '3.0.1',
+    MODULE_VERSION: '3.0.2',
     /**
      * Default row ID field name
      * @constant {string}
@@ -276,6 +276,44 @@ const constants = {
      * @constant {number}
      */
     TYPE_GEOCOORDS: 25,
+    /**
+     * Big decimal
+     * @constant {number}
+     */
+    TYPE_BIGDECIMAL: 26,
+    /**
+     * Types strings
+     * @constant {Array}
+     */
+    TYPES: [
+        'ID', //.0
+        'integer', // 1
+        'decimal', // 2
+        'string', // 3
+        'date', // 4
+        'datetime', // 5
+        'time', // 6
+        'enum', // 7
+        'boolean', // 8
+        'password', // 9
+        'url', // 10
+        'html', // 11
+        'email', // 12
+        'text', // 13
+        'multienum', // 14
+        'regexp', // 15
+        'undefined', // 16
+        'document', // 17
+        'simpledecimal', // 18
+        'extfile', // 19
+        'picture', // 20
+        'notepad', // 21
+        'phonenum', // 22
+        'color', // 23
+        'object', // 24
+        'geocoords', // 25
+        'bigdecimal' // 26
+    ],
     /**
      * Not visible
      * @constant {number}
@@ -1889,6 +1927,51 @@ class BusinessObject {
             }
         };
         /**
+         * Reset values of item (or crrent item)
+         * @param {object} [item] Item (defaults to current item)
+         */
+        this.resetValues = (item) => {
+            if (!item)
+                item = this.item;
+            for (const v in item)
+                delete item[v];
+        };
+        /**
+        * Set values of item (or current item)
+        * @param {object|FormData} data Data (plain object or form data)
+        * @param {object} [item] Item (defaults to current item)
+        */
+        this.setFieldValues = (data, item) => __awaiter(this, void 0, void 0, function* () {
+            if (!item)
+                item = this.item;
+            // Convert form data to plain object
+            let dt;
+            if (data instanceof FormData) {
+                dt = {};
+                data.forEach((v, k) => dt[k] = v);
+            }
+            else {
+                dt = data;
+            }
+            this.resetValues(item);
+            return new Promise(resolve => {
+                const promises = [];
+                for (const k of Object.keys(dt)) {
+                    const v = dt[k];
+                    if (v instanceof File)
+                        promises.push(new Promise(r => {
+                            new Doc().load(v).then(doc => {
+                                this.setFieldValue(k, doc);
+                                r.call(this);
+                            });
+                        }));
+                    else
+                        this.setFieldValue(k, v);
+                }
+                Promise.allSettled(promises).then(() => resolve.call(this, item));
+            });
+        });
+        /**
          * Is the field the row ID field?
          * @param {object} field Field definition
          * @return {boolean} True if the field is the row ID field
@@ -1947,15 +2030,22 @@ class BusinessObject {
             });
         });
         /**
+         * Build context option parameters
+         * @param {object} options Options
+         * @return {string} Option parameters
+         * @private
+         */
+        this.getReqContextOption = (options) => {
+            return options.context ? `&context=${encodeURIComponent(options.context)}` : '';
+        };
+        /**
          * Build options parameters
          * @param {object} options Options
          * @return {string} Option parameters
          * @private
          */
         this.getReqOptions = (options) => {
-            let opts = '';
-            if (options.context)
-                opts += `&context=${encodeURIComponent(options.context)}`;
+            let opts = this.getReqContextOption(options);
             const id = options.inlineDocs || options.inlineDocuments || options.inlineImages; // Naming flexibility
             if (id)
                 opts += `&inline_documents=${encodeURIComponent(id.join ? id.join(',') : id)}`;
@@ -2015,6 +2105,7 @@ class BusinessObject {
          * @param {object} [filters] Filters (defaults to current filters)
          * @param {object} [opts] Options
          * @param {function} [opts.error] Error handler function
+         * @param {boolean} [opts.operations] Include operation fields results (sum, ...)
          * @param {string} [opts.businessCase] Business case label
          * @return {promise<object>} Promise to the count
          * @function
@@ -2024,8 +2115,11 @@ class BusinessObject {
             const ses = this.session;
             opts = opts || {};
             return new Promise((resolve, reject) => {
+                let p = this.getReqContextOption(opts);
+                if (opts.operations === true)
+                    p += '&_operations=true';
                 this.filters = filters || {};
-                ses.sendRequest(this.getPath('count', opts), this.getReqParams(this.filters, true), (res, status) => {
+                ses.sendRequest(`${this.getPath('count', opts)}${p}`, this.getReqParams(this.filters, true), (res, status) => {
                     const r = ses.parseResponse(res, status);
                     ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                     if (r.type === 'error') {

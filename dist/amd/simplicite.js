@@ -37,7 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 3.0.1
+ * @version 3.0.2
  * @license Apache-2.0
  */
 define("simplicite", ["require", "exports", "buffer"], function (require, exports, buffer_1) {
@@ -52,7 +52,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
          * API client module version
          * @constant {string}
          */
-        MODULE_VERSION: '3.0.1',
+        MODULE_VERSION: '3.0.2',
         /**
          * Default row ID field name
          * @constant {string}
@@ -305,6 +305,44 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
          * @constant {number}
          */
         TYPE_GEOCOORDS: 25,
+        /**
+         * Big decimal
+         * @constant {number}
+         */
+        TYPE_BIGDECIMAL: 26,
+        /**
+         * Types strings
+         * @constant {Array}
+         */
+        TYPES: [
+            'ID', //.0
+            'integer', // 1
+            'decimal', // 2
+            'string', // 3
+            'date', // 4
+            'datetime', // 5
+            'time', // 6
+            'enum', // 7
+            'boolean', // 8
+            'password', // 9
+            'url', // 10
+            'html', // 11
+            'email', // 12
+            'text', // 13
+            'multienum', // 14
+            'regexp', // 15
+            'undefined', // 16
+            'document', // 17
+            'simpledecimal', // 18
+            'extfile', // 19
+            'picture', // 20
+            'notepad', // 21
+            'phonenum', // 22
+            'color', // 23
+            'object', // 24
+            'geocoords', // 25
+            'bigdecimal' // 26
+        ],
         /**
          * Not visible
          * @constant {number}
@@ -1997,6 +2035,57 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
                 }
             };
             /**
+             * Reset values of item (or crrent item)
+             * @param {object} [item] Item (defaults to current item)
+             */
+            this.resetValues = function (item) {
+                if (!item)
+                    item = _this.item;
+                for (var v in item)
+                    delete item[v];
+            };
+            /**
+            * Set values of item (or current item)
+            * @param {object|FormData} data Data (plain object or form data)
+            * @param {object} [item] Item (defaults to current item)
+            */
+            this.setFieldValues = function (data, item) { return __awaiter(_this, void 0, void 0, function () {
+                var dt;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    if (!item)
+                        item = this.item;
+                    if (data instanceof FormData) {
+                        dt = {};
+                        data.forEach(function (v, k) { return dt[k] = v; });
+                    }
+                    else {
+                        dt = data;
+                    }
+                    this.resetValues(item);
+                    return [2 /*return*/, new Promise(function (resolve) {
+                            var promises = [];
+                            var _loop_1 = function (k) {
+                                var v = dt[k];
+                                if (v instanceof File)
+                                    promises.push(new Promise(function (r) {
+                                        new Doc().load(v).then(function (doc) {
+                                            _this.setFieldValue(k, doc);
+                                            r.call(_this);
+                                        });
+                                    }));
+                                else
+                                    _this.setFieldValue(k, v);
+                            };
+                            for (var _i = 0, _a = Object.keys(dt); _i < _a.length; _i++) {
+                                var k = _a[_i];
+                                _loop_1(k);
+                            }
+                            Promise.allSettled(promises).then(function () { return resolve.call(_this, item); });
+                        })];
+                });
+            }); };
+            /**
              * Is the field the row ID field?
              * @param {object} field Field definition
              * @return {boolean} True if the field is the row ID field
@@ -2059,15 +2148,22 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
                 });
             }); };
             /**
+             * Build context option parameters
+             * @param {object} options Options
+             * @return {string} Option parameters
+             * @private
+             */
+            this.getReqContextOption = function (options) {
+                return options.context ? "&context=".concat(encodeURIComponent(options.context)) : '';
+            };
+            /**
              * Build options parameters
              * @param {object} options Options
              * @return {string} Option parameters
              * @private
              */
             this.getReqOptions = function (options) {
-                var opts = '';
-                if (options.context)
-                    opts += "&context=".concat(encodeURIComponent(options.context));
+                var opts = _this.getReqContextOption(options);
                 var id = options.inlineDocs || options.inlineDocuments || options.inlineImages; // Naming flexibility
                 if (id)
                     opts += "&inline_documents=".concat(encodeURIComponent(id.join ? id.join(',') : id));
@@ -2130,6 +2226,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
              * @param {object} [filters] Filters (defaults to current filters)
              * @param {object} [opts] Options
              * @param {function} [opts.error] Error handler function
+             * @param {boolean} [opts.operations] Include operation fields results (sum, ...)
              * @param {string} [opts.businessCase] Business case label
              * @return {promise<object>} Promise to the count
              * @function
@@ -2142,8 +2239,11 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
                     ses = this.session;
                     opts = opts || {};
                     return [2 /*return*/, new Promise(function (resolve, reject) {
+                            var p = _this.getReqContextOption(opts);
+                            if (opts.operations === true)
+                                p += '&_operations=true';
                             _this.filters = filters || {};
-                            ses.sendRequest(_this.getPath('count', opts), _this.getReqParams(_this.filters, true), function (res, status) {
+                            ses.sendRequest("".concat(_this.getPath('count', opts)).concat(p), _this.getReqParams(_this.filters, true), function (res, status) {
                                 var r = ses.parseResponse(res, status);
                                 ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
                                 if (r.type === 'error') {

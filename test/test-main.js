@@ -107,7 +107,7 @@ app.getHealth().then(health => {
 	assert.ok(sys.isTimestampField(f) === false);
 	app.info('Resource URL: ' + sys.getResourceURL('TEST'));
 	app.info('Resource URL: ' + sys.getResourceURL('TEST', simplicite.constants.RESOURCE_TYPE_ICON));
-	return sys.getCount(sysFilters);
+	return sys.getCount(sysFilters, { operations: true });
 }).then(count => {
 	app.debug(count);
 	assert.ok(count >= 0);

@@ -1050,12 +1050,12 @@ class Session {
 				return { message: err.response, status: status || 200, origin };
 			} else {
 				if (origin)
-					try { err.response.origin = origin; } catch(e) { /* ignore */ }
+					try { err.response.origin = origin; } catch(e: any) { /* ignore */ }
 				return err.response;
 			}
 		} else { // other cases
 			if (origin)
-				try { err.origin = origin; } catch(e) { /* ignore */ }
+				try { err.origin = origin; } catch(e: any) { /* ignore */ }
 			return err;
 		}
 	};
@@ -2553,9 +2553,59 @@ class BusinessObject {
 	public setFieldValue = (field: string|any, value: string|any, item?: any): void => {
 		if (!item)
 			item = this.item;
+
 		if (field && item) {
 			item[typeof field === 'string' ? field : field.name] = value instanceof Doc ? (value as Doc).getValue() : value;
 		}
+	};
+
+	/**
+	 * Reset values of item (or crrent item)
+	 * @param {object} [item] Item (defaults to current item)
+	 */
+	public resetValues = (item?: any): void => {
+		if (!item)
+			item = this.item;
+
+		for (const v in item)
+			delete item[v];
+	};
+
+	/**
+	* Set values of item (or current item)
+	* @param {object|FormData} data Data (plain object or form data)
+	* @param {object} [item] Item (defaults to current item)
+	*/
+	public setFieldValues = async (data: object|FormData, item?: any): Promise<any> => {
+		if (!item)
+			item = this.item;
+
+		// Convert form data to plain object
+		let dt;
+		if (data instanceof FormData) {
+			dt = {};
+			(data as FormData).forEach((v: any, k: string) => dt[k] = v );
+		} else {
+			dt = data;
+		}
+
+		this.resetValues(item);
+		return new Promise(resolve => {
+			const promises = [];
+			for (const k of Object.keys(dt)) {
+				const v: any = dt[k];
+				if (v instanceof File)
+					promises.push(new Promise(r => {
+						new Doc().load(v as File).then(doc => {
+							this.setFieldValue(k, doc);
+							r.call(this);
+						});
+					}));
+				else
+					this.setFieldValue(k, v);
+			}
+			Promise.allSettled(promises).then(() => resolve.call(this, item));
+		});
 	};
 
 	/**
@@ -2617,15 +2667,23 @@ class BusinessObject {
 	};
 
 	/**
+	 * Build context option parameters
+	 * @param {object} options Options
+	 * @return {string} Option parameters
+	 * @private
+	 */
+	private getReqContextOption = (options: any): string => {
+		return options.context ? `&context=${encodeURIComponent(options.context)}` : '';
+	};
+
+	/**
 	 * Build options parameters
 	 * @param {object} options Options
 	 * @return {string} Option parameters
 	 * @private
 	 */
 	private getReqOptions = (options: any): string => {
-		let opts = '';
-		if (options.context)
-			opts += `&context=${encodeURIComponent(options.context)}`;
+		let opts =  this.getReqContextOption(options);
 		const id = options.inlineDocs || options.inlineDocuments || options.inlineImages; // Naming flexibility
 		if (id)
 			opts += `&inline_documents=${encodeURIComponent(id.join ? id.join(',') : id)}`;
@@ -2695,6 +2753,7 @@ class BusinessObject {
 	 * @param {object} [filters] Filters (defaults to current filters)
 	 * @param {object} [opts] Options
 	 * @param {function} [opts.error] Error handler function
+	 * @param {boolean} [opts.operations] Include operation fields results (sum, ...)
 	 * @param {string} [opts.businessCase] Business case label
 	 * @return {promise<object>} Promise to the count
 	 * @function
@@ -2704,8 +2763,11 @@ class BusinessObject {
 		const ses: Session = this.session;
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
+			let p: string = this.getReqContextOption(opts);
+			if (opts.operations === true)
+				p += '&_operations=true';
 			this.filters = filters || {};
-			ses.sendRequest(this.getPath('count', opts), this.getReqParams(this.filters, true), (res: any, status: number) => {
+			ses.sendRequest(`${this.getPath('count', opts)}${p}`, this.getReqParams(this.filters, true), (res: any, status: number) => {
 				const r: any = ses.parseResponse(res, status);
 				ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {

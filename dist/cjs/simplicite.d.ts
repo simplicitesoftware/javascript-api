@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 3.0.1
+ * @version 3.0.2
  * @license Apache-2.0
  */
 /**
@@ -427,6 +427,16 @@ declare class Session {
          * @constant {number}
          */
         TYPE_GEOCOORDS: number;
+        /**
+         * Big decimal
+         * @constant {number}
+         */
+        TYPE_BIGDECIMAL: number;
+        /**
+         * Types strings
+         * @constant {Array}
+         */
+        TYPES: string[];
         /**
          * Not visible
          * @constant {number}
@@ -1495,6 +1505,17 @@ declare class BusinessObject {
      */
     setFieldValue: (field: string | any, value: string | any, item?: any) => void;
     /**
+     * Reset values of item (or crrent item)
+     * @param {object} [item] Item (defaults to current item)
+     */
+    resetValues: (item?: any) => void;
+    /**
+    * Set values of item (or current item)
+    * @param {object|FormData} data Data (plain object or form data)
+    * @param {object} [item] Item (defaults to current item)
+    */
+    setFieldValues: (data: object | FormData, item?: any) => Promise<any>;
+    /**
      * Is the field the row ID field?
      * @param {object} field Field definition
      * @return {boolean} True if the field is the row ID field
@@ -1519,6 +1540,13 @@ declare class BusinessObject {
      * @function
      */
     getFilters: (opts?: any) => Promise<any>;
+    /**
+     * Build context option parameters
+     * @param {object} options Options
+     * @return {string} Option parameters
+     * @private
+     */
+    private getReqContextOption;
     /**
      * Build options parameters
      * @param {object} options Options
@@ -1553,6 +1581,7 @@ declare class BusinessObject {
      * @param {object} [filters] Filters (defaults to current filters)
      * @param {object} [opts] Options
      * @param {function} [opts.error] Error handler function
+     * @param {boolean} [opts.operations] Include operation fields results (sum, ...)
      * @param {string} [opts.businessCase] Business case label
      * @return {promise<object>} Promise to the count
      * @function
@@ -2113,6 +2142,16 @@ declare const _default: {
          * @constant {number}
          */
         TYPE_GEOCOORDS: number;
+        /**
+         * Big decimal
+         * @constant {number}
+         */
+        TYPE_BIGDECIMAL: number;
+        /**
+         * Types strings
+         * @constant {Array}
+         */
+        TYPES: string[];
         /**
          * Not visible
          * @constant {number}
