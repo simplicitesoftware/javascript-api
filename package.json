@@ -68,6 +68,8 @@
     "test:all": "npm run test:public && npm run test:logins && npm run test:main && npm run test:images && npm run test:source && npm run test:external && npm run test:await",
     "test:browser": "webpack build --config=./test/webpack.config.cjs ./test/test-browser.js && serve -l 3000 test",
     "test:bundle": "serve -l 3000 dist",
+    "test:newsobj": "cp -f dist/simplicite.min.* test/newsobj && serve -l 3000 test/newsobj",
+    "test:newsapi": "cp -f dist/simplicite.min.* test/newsapi && serve -l 3000 test/newsapi",
     "ncu": "ncu"
   },
   "engines": {
