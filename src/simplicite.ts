@@ -1049,13 +1049,27 @@ class Session {
 			if (typeof err.response === 'string') {
 				return { message: err.response, status: status || 200, origin };
 			} else {
-				if (origin)
-					try { err.response.origin = origin; } catch(e: any) { /* ignore */ }
+				if (origin) {
+					try {
+						err.response.origin = origin;
+					}
+					// eslint-disable-next-line @typescript-eslint/no-unused-vars
+					catch(e: any) {
+						/* ignore */
+					}
+				}
 				return err.response;
 			}
 		} else { // other cases
-			if (origin)
-				try { err.origin = origin; } catch(e: any) { /* ignore */ }
+			if (origin) {
+				try {
+					err.origin = origin;
+				}
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
+				catch(e: any) {
+					/* ignore */
+				}
+			}
 			return err;
 		}
 	};
@@ -1232,6 +1246,7 @@ class Session {
 						const exp = new Date();
 						exp.setTime(r.response ? r.response.authtokenexpiry : r.authtokenexpiry);
 						this.authtokenexpiry = exp;
+					// eslint-disable-next-line @typescript-eslint/no-unused-vars
 					} catch(e: any) {
 						this.authtokenexpiry = undefined;
 					}
