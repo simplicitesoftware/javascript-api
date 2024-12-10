@@ -36,7 +36,7 @@ export default [{
         },
 
         parser: tsParser,
-        ecmaVersion: 12,
+        ecmaVersion: "latest",
         sourceType: "module",
     },
 
@@ -46,6 +46,9 @@ export default [{
         "quotes": ["error", "single"],
         "semi": ["error", "always"],
         "@typescript-eslint/no-explicit-any": "off",
+        "no-multiple-empty-lines": ["error", { max: 1 }],
+        "no-multi-spaces": [ "error", { ignoreEOLComments: true } ],
+        "no-trailing-spaces": [ "error", { skipBlankLines: false } ],
         "max-len": "off",
     },
 }];

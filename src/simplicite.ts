@@ -2697,14 +2697,14 @@ class BusinessObject {
 	 * @private
 	 */
 	private getReqOptions = (options: any): string => {
-		let opts =  this.getReqContextOption(options);
+		let opts = this.getReqContextOption(options);
 		const id = options.inlineDocs || options.inlineDocuments || options.inlineImages; // Naming flexibility
 		if (id)
 			opts += `&inline_documents=${encodeURIComponent(id.join ? id.join(',') : id)}`;
-		const it = options.inlineThumbs || options.inlineThumbnails;  // Naming flexibility
+		const it = options.inlineThumbs || options.inlineThumbnails; // Naming flexibility
 		if (it)
 			opts += `&inline_thumbnails=${encodeURIComponent(it.join ? it.join(',') : it)}`;
-		const io = options.inlineObjs || options.inlineObjects;  // Naming flexibility
+		const io = options.inlineObjs || options.inlineObjects; // Naming flexibility
 		if (io)
 			opts += `&inline_objects=${encodeURIComponent(io.join ? io.join(',') : io)}`;
 		return opts;
