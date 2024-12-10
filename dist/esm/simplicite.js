@@ -573,20 +573,28 @@ class Session {
                     return { message: err.response, status: status || 200, origin };
                 }
                 else {
-                    if (origin)
+                    if (origin) {
                         try {
                             err.response.origin = origin;
                         }
-                        catch (e) { /* ignore */ }
+                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                        catch (e) {
+                            /* ignore */
+                        }
+                    }
                     return err.response;
                 }
             }
             else { // other cases
-                if (origin)
+                if (origin) {
                     try {
                         err.origin = origin;
                     }
-                    catch (e) { /* ignore */ }
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    catch (e) {
+                        /* ignore */
+                    }
+                }
                 return err;
             }
         };
@@ -764,6 +772,7 @@ class Session {
                             const exp = new Date();
                             exp.setTime(r.response ? r.response.authtokenexpiry : r.authtokenexpiry);
                             this.authtokenexpiry = exp;
+                            // eslint-disable-next-line @typescript-eslint/no-unused-vars
                         }
                         catch (e) {
                             this.authtokenexpiry = undefined;

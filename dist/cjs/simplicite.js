@@ -15,8 +15,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
@@ -603,20 +603,28 @@ var Session = /** @class */ (function () {
                     return { message: err.response, status: status || 200, origin: origin };
                 }
                 else {
-                    if (origin)
+                    if (origin) {
                         try {
                             err.response.origin = origin;
                         }
-                        catch (e) { /* ignore */ }
+                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                        catch (e) {
+                            /* ignore */
+                        }
+                    }
                     return err.response;
                 }
             }
             else { // other cases
-                if (origin)
+                if (origin) {
                     try {
                         err.origin = origin;
                     }
-                    catch (e) { /* ignore */ }
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    catch (e) {
+                        /* ignore */
+                    }
+                }
                 return err;
             }
         };
@@ -801,6 +809,7 @@ var Session = /** @class */ (function () {
                                     var exp = new Date();
                                     exp.setTime(r.response ? r.response.authtokenexpiry : r.authtokenexpiry);
                                     _this.authtokenexpiry = exp;
+                                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                                 }
                                 catch (e) {
                                     _this.authtokenexpiry = undefined;
