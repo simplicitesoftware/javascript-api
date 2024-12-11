@@ -14,19 +14,10 @@ const compat = new FlatCompat({
     allConfig: js.configs.all
 });
 
-export default [{
-    ignores: [
-        "**/dist",
-        "**/jest.config.cjs",
-        "**/webpack.config.cjs",
-        "test/index.js",
-        "test/webpack.config.cjs",
-    ],
-}, ...compat.extends("eslint:recommended", "plugin:@typescript-eslint/recommended"), {
+export default [ ...compat.extends("eslint:recommended", "plugin:@typescript-eslint/recommended"), {
     plugins: {
         "@typescript-eslint": typescriptEslint,
     },
-
     languageOptions: {
         globals: {
             ...globals.browser,
@@ -34,12 +25,10 @@ export default [{
             ...globals.node,
             ...globals.jest,
         },
-
         parser: tsParser,
         ecmaVersion: "latest",
         sourceType: "module",
     },
-
     rules: {
         "indent": ["error", "tab"],
         "linebreak-style": ["error", "unix"],

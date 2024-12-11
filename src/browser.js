@@ -1,7 +1,6 @@
 import simplicite from '../dist/esm/simplicite.js';
 
 if (typeof globalThis !== 'undefined')
-	// eslint-disable-next-line no-undef
 	globalThis.simplicite = simplicite;
 else if (typeof self !== 'undefined')
 	self.simplicite = simplicite;

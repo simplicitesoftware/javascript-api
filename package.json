@@ -46,7 +46,7 @@
     "terser-webpack-plugin": "5.3.10"
   },
   "scripts": {
-    "lint": "eslint src/*.ts test/*.js test/*.js",
+    "lint": "eslint src/*.ts src/*.js test/*.js",
     "prettier": "prettier --write --single-quote --use-tabs test/*",
     "build:clean": "fcli remove ./dist",
     "build:amd": "fcli remove ./dist/amd && tsc --module amd --target es5 --outFile ./dist/amd/simplicite.js",
