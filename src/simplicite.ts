@@ -689,34 +689,34 @@ class Session {
 		this.authheader = params.authheader || this.constants.DEFAULT_AUTH_HEADER;
 
 		this.log = params.logHandler || ((...args: any): void => {
-			// tslint:disable-next-line: no-console
+			// eslint-disable-next-line no-console
 			console.log(args);
 		});
 
 		this.info = params.infoHandler || ((...args: any): void => {
 			if (args && args.length === 1 && typeof args[0] === 'string')
-				// tslint:disable-next-line: no-console
+				// eslint-disable-next-line no-console
 				console.info(`INFO - ${args[0] as string}`);
 			else
-				// tslint:disable-next-line: no-console
+				// eslint-disable-next-line no-console
 				console.info('INFO', args);
 		});
 
 		this.warn = params.warningHandler || ((...args: any): void => {
 			if (args && args.length === 1 && typeof args[0] === 'string')
-				// tslint:disable-next-line: no-console
+				// eslint-disable-next-line no-console
 				console.warn(`WARN - ${args[0] as string}`);
 			else
-				// tslint:disable-next-line: no-console
+				// eslint-disable-next-line no-console
 				console.warn(`WARN${args && args.length > 0 && args[0].message ? ` - ${args[0].message}` : ''}`, args);
 		});
 
 		this.error = params.errorHandler || ((...args: any): void => {
 			if (args && args.length === 1 && typeof args[0] === 'string')
-				// tslint:disable-next-line: no-console
+				// eslint-disable-next-line no-console
 				console.error(`ERROR - ${args[0] as string}`);
 			else
-				// tslint:disable-next-line: no-console
+				// eslint-disable-next-line no-console
 				console.error(`ERROR${args && args.length > 0 && args[0].message ? ` - ${args[0].message}` : ''}`, args);
 		});
 
@@ -724,10 +724,10 @@ class Session {
 		this.debug = params.debugHandler || ((...args: any): void => {
 			if (this.debugMode) {
 				if (args && args.length === 1 && typeof args[0] === 'string')
-					// tslint:disable-next-line: no-console
+					// eslint-disable-next-line no-console
 					console.info(`DEBUG - ${args[0] as string}`);
 				else
-					// tslint:disable-next-line: no-console
+					// eslint-disable-next-line no-console
 					console.log('DEBUG', args);
 			}
 		});
