@@ -3,8 +3,8 @@
 
 <a href="https://www.simplicite.io"><img src="https://img.shields.io/badge/author-Simplicite_Software-blue.svg?style=flat-square" alt="Author"></a>&nbsp;<img src="https://img.shields.io/badge/license-Apache--2.0-orange.svg?style=flat-square" alt="License">
 
-Simplicit&eacute;&reg; node.js&reg; &amp; browser JavaScript API
-================================================================
+Simplicit&eacute; JavaScript API for node.js and web browsers
+======================================================
 
 Introduction
 ------------

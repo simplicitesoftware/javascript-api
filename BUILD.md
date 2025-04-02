@@ -45,7 +45,9 @@ Set the environment variables for your Simplicité instance:
 - `TEST_SIMPLICITE_HOST` defaults to `'localhost'`
 - `TEST_SIMPLICITE_PORT` defaults to `8080`
 - `TEST_SIMPLICITE_ROOT` defaults to `''` (root webapp)
+or
 - `TEST_SIMPLICITE_URL` defaults to `http://localhost:8080`
+and
 - `TEST_SIMPLICITE_ADMIN_USERNAME` defaults to `'designer'`
 - `TEST_SIMPLICITE_ADMIN_PASSWORD` defaults to `'designer'`
 - `TEST_SIMPLICITE_USERNAME` defaults to `'website'`
