@@ -1,7 +1,7 @@
 {
   "name": "simplicite",
   "description": "Simplicite(R) platform Javascript API (for node.js and browser)",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "author": "Simplicite Software <contact@simplicitesoftware.com> (https://www.simplicitesoftware.com/)",
   "license": "Apache-2.0",
   "keywords": [
@@ -51,13 +51,11 @@
     "clean": "rm -fr remove ./dist ./docs ./src/*.d.ts ./test/index.js",
     "lint": "fcli remove test/index.js && eslint src/*.ts src/browser.js test/*.js",
     "prettier": "prettier --write --single-quote --use-tabs test/*",
-    "build:amd": "fcli remove ./dist/amd && tsc --module amd --target es5 --outFile ./dist/amd/simplicite.js",
-    "build:umd": "fcli remove ./dist/umd && tsc --module umd --target es5 --outDir ./dist/umd",
     "build:esm": "fcli remove ./dist/esm && tsc --module es6 --target es6 --outDir ./dist/esm",
     "build:cjs": "fcli remove ./dist/cjs && fcli copy ./package-cjs.json ./dist/cjs/package.json && tsc --module commonjs --target es5 --esModuleInterop true --outDir ./dist/cjs",
     "build:bundle": "fcli remove ./dist/simplicite.min.js && fcli remove ./dist/simplicite.min.js.map && esbuild src/browser.js --bundle --minify --sourcemap --outfile=./dist/simplicite.min.js",
-    "build:esmbundle": "fcli remove ./dist/simplicite.esm.min.js && fcli remove ./dist/simplicite.esm.min.js.map && esbuild src/simplicite.ts --platform=neutral --bundle --minify --sourcemap --outfile=./dist/simplicite.esm.min.js",
-    "build": "fcli remove ./dist && npm run lint && npm run build:amd && npm run build:umd && npm run build:esm && npm run build:cjs && npm run build:bundle && npm run build:esmbundle",
+    "build:esmbundle": "fcli remove ./dist/simplicite.min.mjs && fcli remove ./dist/simplicite.min.mjs.map && esbuild src/simplicite.ts --platform=neutral --bundle --minify --sourcemap --outfile=./dist/simplicite.min.mjs",
+    "build": "fcli remove ./dist && npm run lint && npm run build:esm && npm run build:cjs && npm run build:bundle && npm run build:esmbundle",
     "doc": "fcli remove ./docs && jsdoc -t node_modules/docdash -d docs ./dist/esm/ README.md && replace '#fc83ff' '#98cbff' docs/styles/jsdoc.css && replace '#6d426d' '#2e76bd' docs/styles/jsdoc.css && replace '#CA79CA' '#edb8b8' docs/styles/jsdoc.css && replace '#606' '#094e93' docs/styles/jsdoc.css",
     "test": "jest -- ./test/simplicite.test.js",
     "test-coverage": "jest --coverage -- ./test/simplicite.test.js",
@@ -74,8 +72,6 @@
     "test:all": "npm run test:public && npm run test:logins && npm run test:main && npm run test:images && npm run test:source && npm run test:external && npm run test:await",
     "test:browser": "webpack build --config=./test/webpack.config.cjs ./test/test-browser.js && serve -l 3000 test",
     "test:bundle": "serve -l 3000 dist",
-    "test:newsobj": "cp -f dist/simplicite.min.* test/newsobj && serve -l 3000 test/newsobj",
-    "test:newsapi": "cp -f dist/simplicite.min.* test/newsapi && serve -l 3000 test/newsapi",
     "ncu": "ncu"
   },
   "engines": {
@@ -91,13 +87,11 @@
   "main": "./dist/cjs/simplicite.js",
   "exports": {
     ".": {
-      "require":  "./dist/cjs/simplicite.js",
-      "default": "./dist/esm/simplicite.js"
+      "require":  "./dist/simplicite.min.js",
+      "default": "./dist/simplicite.min.mjs"
     },
     "./cjs": "./dist/cjs/simplicite.js",
-    "./amd": "./dist/amd/simplicite.js",
-    "./umd": "./dist/umd/simplicite.js",
     "./esm": "./dist/esm/simplicite.js"
   },
-  "module": "./dist/simplicite.esm.min.js"
+  "module": "./dist/simplicite.min.mjs"
 }

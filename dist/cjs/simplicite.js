@@ -2,7 +2,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 3.1.1
+ * @version 3.1.2
  * @license Apache-2.0
  */
 Object.defineProperty(exports, "__esModule", { value: true });

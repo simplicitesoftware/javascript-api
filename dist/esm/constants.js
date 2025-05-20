@@ -7,7 +7,7 @@ const constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '3.1.1',
+    MODULE_VERSION: '3.1.2',
     /**
      * Default row ID field name
      * @constant {string}
