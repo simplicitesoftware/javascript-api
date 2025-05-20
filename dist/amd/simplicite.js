@@ -34,15 +34,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-/**
- * Simplicite(R) platform Javascript API client module (for node.js and browser).
- * @module simplicite
- * @version 3.0.3
- * @license Apache-2.0
- */
-define("simplicite", ["require", "exports", "buffer"], function (require, exports, buffer_1) {
+define("constants", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.constants = void 0;
     /**
      * Constants
      * @constant
@@ -52,7 +47,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
          * API client module version
          * @constant {string}
          */
-        MODULE_VERSION: '3.0.3',
+        MODULE_VERSION: '3.1.0',
         /**
          * Default row ID field name
          * @constant {string}
@@ -124,7 +119,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
          */
         CONTEXT_REFSELECT: 11,
         /**
-         * Datamap selection context
+         * Data mapping selection context
          * @constant {number}
          */
         CONTEXT_DATAMAPSELECT: 12,
@@ -301,7 +296,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
          */
         TYPE_OBJECT: 24,
         /**
-         * Geocoordinates type
+         * Geographical coordinates type
          * @constant {number}
          */
         TYPE_GEOCOORDS: 25,
@@ -349,7 +344,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
          */
         VIS_NOT: 0,
         /**
-         * Hiiden (same as not visible)
+         * Hidden (same as not visible)
          * @constant {number}
          */
         VIS_HIDDEN: 0,
@@ -449,20 +444,600 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
          */
         SIMPLICITE_AUTH_HEADER: 'x-simplicite-authorization'
     };
+    exports.constants = constants;
+});
+define("doc", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Doc = void 0;
     /**
-     * Simplicite application session. Same as <code>new Session(parameter)</code>.
-     * @param {object} params Parameters (see session class for details)
-     * @return {Session} session
+     * Document
+     * @class
      */
-    var session = function (params) {
-        return new Session(params);
-    };
+    var Doc = /** @class */ (function () {
+        /**
+         * Constructor
+         * @param [value] {string|object} Document name or value
+         * @param [value.name] Document name
+         * @param [value.mime] Document MIME type
+         * @param [value.content] Document content
+         */
+        function Doc(value) {
+            var _this = this;
+            /**
+             * Get the document ID
+             * @return {string} ID
+             * @function
+             */
+            this.getId = function () {
+                return _this.id;
+            };
+            /**
+             * Get the document MIME type
+             * @return {string} MIME type
+             * @function
+             */
+            this.getMIMEType = function () {
+                return _this.mime;
+            };
+            /**
+             * Alias to <code>getMIMEType</code>
+             * @return {string} MIME type
+             * @function
+             */
+            this.getMimeType = this.getMIMEType;
+            /**
+             * Set the document MIME type
+             * @param {string} mime MIME type
+             * @return {Doc} This document for chaining
+             * @function
+             */
+            this.setMIMEType = function (mime) {
+                _this.mime = mime;
+                return _this; // Chain
+            };
+            /**
+             * Alias to <code>setMIMEType</code>
+             * @param {string} mime MIME type
+             * @function
+             */
+            this.setMimeType = this.setMIMEType;
+            /**
+             * Get the document name
+             * @return {string} Name
+             * @function
+             */
+            this.getName = function () {
+                return _this.name;
+            };
+            /**
+             * Alias to <code>getName</code>
+             * @return {string} Name
+             * @function
+             */
+            this.getFileName = this.getName;
+            /**
+             * Alias to <code>getName</code>
+             * @return {string} Name
+             * @function
+             */
+            this.getFilename = this.getName;
+            /**
+             * Set the document name
+             * @param {string} name Name
+             * @return {Doc} This document for chaining
+             * @function
+             */
+            this.setName = function (name) {
+                _this.name = name;
+                return _this; // Chain
+            };
+            /**
+             * Alias to <code>setName</code>
+             * @param {string} name Name
+             * @function
+             */
+            this.setFileName = this.setName;
+            /**
+             * Alias to <code>setName</code>
+             * @param {string} name Name
+             * @function
+             */
+            this.setFilename = this.setName;
+            /**
+             * Get the document content (encoded in base 64)
+             * @return {string} Content
+             * @function
+             */
+            this.getContent = function () {
+                return _this.content;
+            };
+            /**
+             * Get the document thumbnail (encoded in base 64)
+             * @return {string} Thumbnail
+             * @function
+             */
+            this.getThumbnail = function () {
+                return _this.thumbnail;
+            };
+            /**
+             * Get the document content as an array buffer
+             * @return {ArrayBuffer} Content as an array buffer
+             * @function
+             */
+            this.getContentAsArrayBuffer = function () {
+                return _this.getBuffer(_this.content).buffer;
+            };
+            /**
+             * Get the document thumbnail as an array buffer
+             * @return {ArrayBuffer} Thumbnail as an array buffer
+             * @function
+             */
+            this.getThumbnailAsArrayBuffer = function () {
+                return _this.getBuffer(_this.thumbnail || '').buffer;
+            };
+            /**
+             * Get the document content as a text
+             * @return {string} Content as plain text
+             * @function
+             */
+            this.getContentAsText = function () {
+                return _this.getBuffer(_this.content).toString('utf-8');
+            };
+            /**
+             * Set the document content
+             * @param {string} content Content (encoded in base 64)
+             * @return {Doc} This document for chaining
+             * @function
+             */
+            this.setContent = function (content) {
+                _this.content = _this.cleanContent(content);
+                return _this; // Chain
+            };
+            /**
+             * Set the document content from plain text string
+             * @param {string} content Content as plain text string
+             * @return {Doc} This document for chaining
+             * @function
+             */
+            this.setContentFromText = function (content) {
+                _this.content = Buffer.from(content, 'utf-8').toString('base64');
+                return _this; // Chain
+            };
+            /**
+             * Get the document data URL
+             * @param {boolean} [thumbnail=false] Thumbnail? If thumbnail does not exists the content is used.
+             * @return {string} Data URL or nothing if content is empty
+             * @function
+             */
+            this.getDataURL = function (thumbnail) {
+                if (_this.content)
+                    return 'data:' + _this.mime + ';base64,' + (thumbnail && _this.thumbnail ? _this.thumbnail : _this.content);
+            };
+            /**
+             * Load file
+             * @param file File to load
+             * @return {promise<Doc>} A promise to the document
+             * @function
+             */
+            this.load = function (file) { return __awaiter(_this, void 0, void 0, function () {
+                var _this = this;
+                return __generator(this, function (_a) {
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            try {
+                                if (file) {
+                                    _this.name = file.name;
+                                    _this.mime = file.type;
+                                    var reader_1 = new FileReader();
+                                    reader_1.onload = function () {
+                                        _this.content = reader_1.result ? _this.cleanContent(reader_1.result) : '';
+                                        resolve(_this);
+                                    };
+                                    reader_1.readAsDataURL(file); // this sets the result as a string
+                                }
+                                else {
+                                    _this.content = '';
+                                    resolve(_this);
+                                }
+                            }
+                            catch (e) {
+                                reject(e);
+                            }
+                        })];
+                });
+            }); };
+            /**
+             * Get the document as a plain value object
+             * @return {object} Value object
+             * @function
+             */
+            this.getValue = function () {
+                return {
+                    id: _this.id,
+                    name: _this['filename'] && !_this.name ? _this['filename'] : _this.name, // Backward compatibility
+                    mime: _this.mime,
+                    content: _this.content,
+                    thumbnail: _this.thumbnail
+                };
+            };
+            Object.assign(this, typeof value == 'string' ? { name: value } : value || {});
+            // Backward compatibility
+            if (this['filename'] && !this.name) {
+                this.name = this['filename'];
+                this['filename'] = undefined;
+            }
+        }
+        Doc.prototype.cleanContent = function (content) {
+            return content.startsWith('data:') ? content.replace(/data:.*;base64,/, '') : content;
+        };
+        /**
+         * Get the document content as a buffer
+         * @param {any} data Content data
+         * @return {buffer} Content data as buffer
+         * @private
+         */
+        Doc.prototype.getBuffer = function (data) {
+            return Buffer.from(data, 'base64');
+        };
+        return Doc;
+    }());
+    exports.Doc = Doc;
+});
+define("businessobjectmetadata", ["require", "exports", "constants"], function (require, exports, constants_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.BusinessObjectMetadata = void 0;
+    /**
+     * Business object meta data.
+     * <br/><span style="color: red;">You <strong>should never</strong> instantiate this class directly
+     * but rather use it from the <code>metadata</code> variable of your <code>BusinessObject</code> instances</span>.
+     * @class
+     */
+    var BusinessObjectMetadata = /** @class */ (function () {
+        /**
+         * Constructor
+         * @param {string} name Business object name
+         * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
+         */
+        function BusinessObjectMetadata(name, instance) {
+            this.name = name;
+            this.instance = instance;
+            this.rowidfield = constants_1.constants.DEFAULT_ROW_ID_NAME;
+            this.label = name;
+            this.help = '';
+            this.fields = new Array();
+        }
+        return BusinessObjectMetadata;
+    }());
+    exports.BusinessObjectMetadata = BusinessObjectMetadata;
+});
+define("sessionparams", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+});
+define("grant", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Grant = void 0;
+    /**
+     * Grant (user).
+     * <br/><span style="color: red;">You <strong>should never</strong> instantiate this class directly
+     * but rather use it from the <code>data</code> variable got using <code>getGrant</code></span>.
+     * @class
+     */
+    var Grant = /** @class */ (function () {
+        /**
+         * Constructor
+         * @param grant {object} Grant object
+         */
+        function Grant(grant) {
+            var _this = this;
+            /**
+             * Get user ID
+             * @return {string} User ID
+             * @function
+             */
+            this.getUserId = function () {
+                return _this.userid;
+            };
+            /**
+             * Get username
+             * @return {string} Username
+             * @function
+             */
+            this.getUsername = function () {
+                return _this.login;
+            };
+            /**
+             * Alias to <code>getUsername</code>
+             * @return {string} Login
+             * @function
+             */
+            this.getLogin = this.getUsername; // Naming flexibility
+            /**
+             * Get user language
+             * @return {string} User language
+             * @function
+             */
+            this.getLang = function () {
+                return _this.lang;
+            };
+            /**
+             * Get email address
+             * @return {string} Email address
+             * @function
+             */
+            this.getEmail = function () {
+                return _this.email;
+            };
+            /**
+             * Get first name
+             * @return {string} First name
+             * @function
+             */
+            this.getFirstname = function () {
+                return _this.firstname;
+            };
+            /**
+             * Alias to <code>getFirstname</code>
+             * @return {string} First name
+             * @function
+             */
+            this.getFirstName = this.getFirstname; // Naming flexibility
+            /**
+             * Get last name
+             * @return {string} Last name
+             * @function
+             */
+            this.getLastname = function () {
+                return _this.lastname;
+            };
+            /**
+             * Alias to <code>getLastname</code>
+             * @return {string} Last name
+             * @function
+             */
+            this.getLastName = this.getLastname; // Naming flexibility
+            /**
+             * Get picture data URL
+             * @return {Doc} Picture data URL
+             * @function
+             */
+            this.getPictureURL = function () {
+                if (_this.picture)
+                    return 'data:' + _this.picture.mime + ';base64,' + _this.picture.content;
+            };
+            /**
+             * Has responsibility
+             * @param {string} group Group name
+             * @return {boolean} True if user has a responsibility on the specified group
+             * @function
+             */
+            this.hasResponsibility = function (group) {
+                return _this.responsibilities && _this.responsibilities.indexOf(group) !== -1;
+            };
+            /**
+             * Get system parameter value
+             * @param {string} name System parameter name
+             * @return {string} System parameter value
+             * @function
+             */
+            this.getSystemParameter = function (name) {
+                return _this.sysparams ? _this.sysparams[name] || '' : '';
+            };
+            /**
+             * Alias to <code>getSystemParameter</code>
+             * @param {string} name System parameter name
+             * @return {string} System parameter value
+             * @function
+             */
+            this.getSysParam = this.getSystemParameter;
+            /**
+             * Get text value
+             * @param {string} code Text code
+             * @return {string} Text value
+             */
+            this.T = function (code) {
+                return _this.texts ? _this.texts[code] || '' : '';
+            };
+            Object.assign(this, grant);
+        }
+        return Grant;
+    }());
+    exports.Grant = Grant;
+});
+define("externalobjectmetadata", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.ExternalObjectMetadata = void 0;
+    /**
+     * External object meta data.
+     * <br/><span style="color: red;">You <strong>should never</strong> instantiate this class directly
+     * but rather use it from the <code>metadata</code> variable of your <code>ExternalObject</code> instances</span>.
+     * @class
+     */
+    var ExternalObjectMetadata = /** @class */ (function () {
+        /**
+         * Constructor
+         * @param {string} name External object name
+         */
+        function ExternalObjectMetadata(name) {
+            this.name = name;
+        }
+        return ExternalObjectMetadata;
+    }());
+    exports.ExternalObjectMetadata = ExternalObjectMetadata;
+});
+define("externalobject", ["require", "exports", "externalobjectmetadata"], function (require, exports, externalobjectmetadata_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.ExternalObject = void 0;
+    /**
+     * External object.
+     * <br/><span style="color: red;">ou <strong>should never</strong> instantiate this class directly
+     * but rather call <code>getExternalObject</code></span>.
+     * @class
+     */
+    var ExternalObject = /** @class */ (function () {
+        /**
+         * Constructor
+         * @param {Session} ses Session
+         * @param {string} name Business object name
+         */
+        function ExternalObject(ses, name) {
+            var _this = this;
+            /**
+             * Get name
+             * @return {string} Name
+             * @function
+             */
+            this.getName = function () {
+                return _this.metadata.name;
+            };
+            /**
+             * Build URL-encoded parameters
+             * @param {object} params URL parameters as key/value pairs
+             * @return {string} URL-encoded parameters
+             * @function
+             */
+            this.callParams = function (params) {
+                var p = '';
+                if (!params)
+                    return p;
+                for (var _i = 0, _a = Object.entries(params); _i < _a.length; _i++) {
+                    var i = _a[_i];
+                    var k = i[0];
+                    var v = i[1] || '';
+                    if (v.sort) { // Array ?
+                        for (var _b = 0, v_1 = v; _b < v_1.length; _b++) {
+                            var vv = v_1[_b];
+                            p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(vv);
+                        }
+                    }
+                    else {
+                        p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(v);
+                    }
+                }
+                return p;
+            };
+            /**
+             * Call an external object
+             * @param {object} [params] Optional URL parameters
+             * @param {object|string|FormData} [data] Optional body data (for 'POST' and 'PUT' methods only)
+             * @param {object} [opts] Options
+             * @param {string} [opts.path] Absolute or relative path (e.g. absolute '/my/mapped/path' or relative 'my/additional/path')
+             * @param {object} [opts.method] Optional method 'GET', 'POST', 'PUT' or 'DELETE' (defaults to 'GET' if data is not set or 'POST' if data is set)
+             * @param {function} [opts.contentType] Optional data content type (for 'POST' and 'PUT' methods only)
+             * @param {function} [opts.accept] Optional accepted response type (e.g. 'application/json")
+             * @param {function} [opts.error] Error handler function
+             * @param {string} [opts.businessCase] Business case label
+             * @return {promise<object>} Promise to the external object content
+             * @function
+             */
+            this.call = function (params, data, opts) { return __awaiter(_this, void 0, void 0, function () {
+                var origin, ses;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'ExternalObject.call';
+                    ses = this.session;
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            var p = '';
+                            if (params)
+                                p = _this.callParams(params);
+                            if (opts.businessCase)
+                                p += "_bc=".concat(encodeURIComponent(opts.businessCase));
+                            var m = opts.method ? opts.method.toUpperCase() : (data ? 'POST' : 'GET');
+                            var h = {};
+                            if (opts.contentType) {
+                                h['content-type'] = opts.contentType;
+                            }
+                            else if (data && !(data instanceof FormData)) { // Try to guess type...
+                                h['content-type'] = typeof data === 'string' ? 'application/x-www-form-urlencoded' : 'application/json';
+                            } // FormData = multipart/form-data with boundary string => handled by fetch
+                            //if (ses.parameters.compress)
+                            //	h['content-encoding'] = 'gzip';
+                            if (opts.accept)
+                                h.accept = opts.accept === 'json' ? 'application/json' : opts.accept;
+                            var b = ses.getBearerTokenHeader();
+                            if (b) {
+                                h[ses.authheader] = b;
+                            }
+                            else {
+                                b = ses.getBasicAuthHeader();
+                                if (b)
+                                    h[ses.authheader] = b;
+                            }
+                            var u = ses.parameters.url + (opts.path && opts.path.startsWith('/') ? opts.path : _this.path + (opts.path ? '/' + opts.path : '')) + (p !== '' ? '?' + p : '');
+                            var d = data ? (typeof data === 'string' || data instanceof FormData ? data : JSON.stringify(data)) : undefined;
+                            ses.debug('[simplicite.ExternalObject.call] ' + m + ' ' + u + (d ? ' with ' + d : ''));
+                            fetch(u, {
+                                method: m,
+                                headers: h,
+                                //compress: ses.parameters.compress,
+                                signal: AbortSignal.timeout(ses.parameters.timeout),
+                                body: d
+                            }).then(function (res) {
+                                var type = res.headers.get('content-type');
+                                ses.debug("[".concat(origin, "] HTTP status = ").concat(res.status, ", response content type = ").concat(type));
+                                if (type && type.startsWith('application/json')) { // JSON
+                                    res.json().then(function (jsonData) {
+                                        resolve.call(_this, jsonData, res.status, res.headers);
+                                    }).catch(function (err) {
+                                        err = ses.getError(err, undefined, origin);
+                                        if (!(opts.error || ses.error).call(_this, err))
+                                            reject.call(_this, err);
+                                    });
+                                }
+                                else if (type && (type.startsWith('text/') || type.startsWith('application/yaml'))) { // Text
+                                    res.text().then(function (textData) {
+                                        resolve.call(_this, textData, res.status, res.headers);
+                                    }).catch(function (err) {
+                                        err = ses.getError(err, undefined, origin);
+                                        if (!(opts.error || ses.error).call(_this, err))
+                                            reject.call(_this, err);
+                                    });
+                                }
+                                else { // Binary
+                                    res.arrayBuffer().then(function (binData) {
+                                        resolve.call(_this, binData, res.status, res.headers);
+                                    }).catch(function (err) {
+                                        err = ses.getError(err, undefined, origin);
+                                        if (!(opts.error || ses.error).call(_this, err))
+                                            reject.call(_this, err);
+                                    });
+                                }
+                            }).catch(function (err) {
+                                err = ses.getError(err, undefined, origin);
+                                if (!(opts.error || ses.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
+                });
+            }); };
+            /**
+             * Alias to <code>call</code>
+             * @function
+             */
+            this.invoke = this.call;
+            this.session = ses;
+            this.metadata = new externalobjectmetadata_1.ExternalObjectMetadata(name);
+            this.path = "".concat(this.session.parameters.extpath, "/").concat(encodeURIComponent(name));
+        }
+        return ExternalObject;
+    }());
+    exports.ExternalObject = ExternalObject;
+});
+define("session", ["require", "exports", "buffer", "constants", "grant", "doc", "businessobject", "externalobject"], function (require, exports, buffer_1, constants_2, grant_1, doc_1, businessobject_1, externalobject_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Session = void 0;
     /**
      * Simplicite application session.
      * @param {object} params Parameters
      * @param {string} params.url Base URL of the Simplicite application
      * @param {string} params.scheme URL scheme (e.g. <code>'https'</code>) of the Simplicite application (not needed if <code>url</code> is set)
-     * @param {string} params.host Hostname or IP address (e.g. <code>'myhost.mydomain.com'</code>) of the Simplicite application (not needed if <code>url</code> is set)
+     * @param {string} params.host Hostname or IP address (e.g. <code>'host.mydomain.com'</code>) of the Simplicite application (not needed if <code>url</code> is set)
      * @param {number} params.port Port (e.g. <code>443</code>) of the Simplicite application (not needed if <code>url</code> is set)
      * @param {string} params.root Root context URL (e.g. <code>'/myapp'</code>) the Simplicite application (not needed if <code>url</code> is set)
      * @param {boolean} [params.endpoint='api'] Endpoint (<code>'api'|'ui'|'uipublic'</code>)
@@ -470,7 +1045,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
      * @param {string} [params.password] Password (not needed for the public UI endpoint)
      * @param {string} [params.authtoken] Authentication token (if set, username and password are not needed; not needed for the public UI endpoint)
      * @param {string} [params.authheader] Authorization HTTP header name (defaults to the standard <code>Authorization</code>, the alternative is the value of the <code>SIMPLICITE_AUTH_HEADER</code> constant, not needed for public endpoint)
-     * @param {string} [params.ajaxkey] Ajax key (only usefull for usage from the generic UI)
+     * @param {string} [params.ajaxkey] Ajax key (only useful for usage from the generic UI)
      * @param {boolean} [params.debug=false] Debug mode?
      * @param {function} [params.debugHandler] Debug handler function
      * @param {function} [params.infoHandler] Info handler function
@@ -490,7 +1065,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
              * Constants
              * @member
              */
-            this.constants = constants;
+            this.constants = constants_2.constants;
             /**
              * Set username
              * @param {string} usr Username
@@ -635,7 +1210,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
              */
             this.compressData = function (data) {
                 var s = typeof data === 'string'
-                    ? new Blob([data], { type: 'text/plian' }).stream()
+                    ? new Blob([data], { type: 'text/plain' }).stream()
                     : new Blob([JSON.stringify(data)], { type: 'application/json' }).stream();
                 var cs = s.pipeThrough(new CompressionStream('gzip'));
                 return new Response(cs).blob();
@@ -817,7 +1392,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
                                     if (_this.authtokenexpiry)
                                         _this.debug("[".concat(origin, "] Auth token expiry date = ").concat(_this.authtokenexpiry.toLocaleDateString(), " ").concat(_this.authtokenexpiry.toLocaleTimeString()));
                                     // Minimal grant from session data
-                                    _this.grant = new Grant({
+                                    _this.grant = new grant_1.Grant({
                                         login: _this.username,
                                         userid: r.response ? r.response.userid : r.userid,
                                         firstname: r.response ? r.response.firstname : r.firstname,
@@ -911,9 +1486,9 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
                                         reject.call(_this, err);
                                 }
                                 else {
-                                    _this.grant = new Grant(r.response); // Set as Grant
+                                    _this.grant = new grant_1.Grant(r.response); // Set as Grant
                                     if (pic)
-                                        _this.grant.picture = new Doc(_this.grant.picture); // Set picture as Document
+                                        _this.grant.picture = new doc_1.Doc(_this.grant.picture); // Set picture as Document
                                     if (txt)
                                         _this.grant.texts = Object.assign(new Map(), _this.grant.texts); // Set texts as Map
                                     resolve.call(_this, _this.grant);
@@ -966,7 +1541,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
              * @param {object} [opts] Options
              * @param {function} [opts.error] Error handler function
              * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} A promise to the application info (also avialable as the <code>appinfo</code> member)
+             * @return {promise<object>} A promise to the application info (also available as the <code>appinfo</code> member)
              * @function
              */
             this.getAppInfo = function (opts) { return __awaiter(_this, void 0, void 0, function () {
@@ -1001,7 +1576,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
              * @param {object} [opts] Options
              * @param {function} [opts.error] Error handler function
              * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} A promise to the system info (also avialable as the <code>sysinfo</code> member)
+             * @return {promise<object>} A promise to the system info (also available as the <code>sysinfo</code> member)
              * @function
              */
             this.getSysInfo = function (opts) { return __awaiter(_this, void 0, void 0, function () {
@@ -1037,7 +1612,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
              * @param {object} [opts] Options
              * @param {function} [opts.error] Error handler function
              * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} A promise to the develoment info (also avialable as the <code>devinfo</code> member)
+             * @return {promise<object>} A promise to the development info (also available as the <code>devinfo</code> member)
              * @function
              */
             this.getDevInfo = function (module, opts) { return __awaiter(_this, void 0, void 0, function () {
@@ -1077,7 +1652,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
              * @param {boolean} [opts.inlineImages=false] Inline news images?
              * @param {function} [opts.error] Error handler function
              * @param {string} [opts.businessCase] Business case label
-             * @return {promise<array>} A promise to the list of news (also avialable as the <code>news</code> member)
+             * @return {promise<array>} A promise to the list of news (also available as the <code>news</code> member)
              * @function
              */
             this.getNews = function (opts) { return __awaiter(_this, void 0, void 0, function () {
@@ -1103,7 +1678,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
                                     _this.news = r.response;
                                     for (var _i = 0, _a = _this.news; _i < _a.length; _i++) {
                                         var n = _a[_i];
-                                        n.image = new Doc(n.image);
+                                        n.image = new doc_1.Doc(n.image);
                                     } // Set image as document
                                     resolve.call(_this, _this.news);
                                 }
@@ -1171,7 +1746,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
                 var cacheKey = _this.getBusinessObjectCacheKey(name, instance);
                 var obj = _this.businessObjectCache[cacheKey];
                 if (!obj) {
-                    obj = new BusinessObject(_this, name, instance);
+                    obj = new businessobject_1.BusinessObject(_this, name, instance);
                     _this.businessObjectCache[cacheKey] = obj;
                 }
                 return obj;
@@ -1182,7 +1757,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
              * @function
              */
             this.getExternalObject = function (name) {
-                return new ExternalObject(_this, name);
+                return new externalobject_1.ExternalObject(_this, name);
             };
             /**
              * Get a resource URL
@@ -1209,7 +1784,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
                 for (var _i = 0; _i < arguments.length; _i++) {
                     args[_i] = arguments[_i];
                 }
-                // tslint:disable-next-line: no-console
+                // eslint-disable-next-line no-console
                 console.log(args);
             });
             this.info = params.infoHandler || (function () {
@@ -1218,10 +1793,10 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
                     args[_i] = arguments[_i];
                 }
                 if (args && args.length === 1 && typeof args[0] === 'string')
-                    // tslint:disable-next-line: no-console
+                    // eslint-disable-next-line no-console
                     console.info("INFO - ".concat(args[0]));
                 else
-                    // tslint:disable-next-line: no-console
+                    // eslint-disable-next-line no-console
                     console.info('INFO', args);
             });
             this.warn = params.warningHandler || (function () {
@@ -1230,10 +1805,10 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
                     args[_i] = arguments[_i];
                 }
                 if (args && args.length === 1 && typeof args[0] === 'string')
-                    // tslint:disable-next-line: no-console
+                    // eslint-disable-next-line no-console
                     console.warn("WARN - ".concat(args[0]));
                 else
-                    // tslint:disable-next-line: no-console
+                    // eslint-disable-next-line no-console
                     console.warn("WARN".concat(args && args.length > 0 && args[0].message ? " - ".concat(args[0].message) : ''), args);
             });
             this.error = params.errorHandler || (function () {
@@ -1242,10 +1817,10 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
                     args[_i] = arguments[_i];
                 }
                 if (args && args.length === 1 && typeof args[0] === 'string')
-                    // tslint:disable-next-line: no-console
+                    // eslint-disable-next-line no-console
                     console.error("ERROR - ".concat(args[0]));
                 else
-                    // tslint:disable-next-line: no-console
+                    // eslint-disable-next-line no-console
                     console.error("ERROR".concat(args && args.length > 0 && args[0].message ? " - ".concat(args[0].message) : ''), args);
             });
             this.debugMode = !!params.debug;
@@ -1256,10 +1831,10 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
                 }
                 if (_this.debugMode) {
                     if (args && args.length === 1 && typeof args[0] === 'string')
-                        // tslint:disable-next-line: no-console
+                        // eslint-disable-next-line no-console
                         console.info("DEBUG - ".concat(args[0]));
                     else
-                        // tslint:disable-next-line: no-console
+                        // eslint-disable-next-line no-console
                         console.log('DEBUG', args);
                 }
             });
@@ -1354,387 +1929,15 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
         };
         return Session;
     }());
-    /**
-     * Document
-     * @class
-     */
-    var Doc = /** @class */ (function () {
-        /**
-         * Constructor
-         * @param [value] {string|object} Document name or value
-         * @param [value.name] Document name
-         * @param [value.mime] Document MIME type
-         * @param [value.content] Document content
-         */
-        function Doc(value) {
-            var _this = this;
-            /**
-             * Get the document ID
-             * @return {string} ID
-             * @function
-             */
-            this.getId = function () {
-                return _this.id;
-            };
-            /**
-             * Get the document MIME type
-             * @return {string} MIME type
-             * @function
-             */
-            this.getMIMEType = function () {
-                return _this.mime;
-            };
-            /**
-             * Alias to <code>getMIMEType</code>
-             * @return {string} MIME type
-             * @function
-             */
-            this.getMimeType = this.getMIMEType;
-            /**
-             * Set the document MIME type
-             * @param {string} mime MIME type
-             * @return {Doc} This document for chaining
-             * @function
-             */
-            this.setMIMEType = function (mime) {
-                _this.mime = mime;
-                return _this; // Chain
-            };
-            /**
-             * Alias to <code>setMIMEType</code>
-             * @param {string} mime MIME type
-             * @function
-             */
-            this.setMimeType = this.setMIMEType;
-            /**
-             * Get the document name
-             * @return {string} Name
-             * @function
-             */
-            this.getName = function () {
-                return _this.name;
-            };
-            /**
-             * Alias to <code>getName</code>
-             * @return {string} Name
-             * @function
-             */
-            this.getFileName = this.getName;
-            /**
-             * Alias to <code>getName</code>
-             * @return {string} Name
-             * @function
-             */
-            this.getFilename = this.getName;
-            /**
-             * Set the document name
-             * @param {string} name Name
-             * @return {Doc} This document for chaining
-             * @function
-             */
-            this.setName = function (name) {
-                _this.name = name;
-                return _this; // Chain
-            };
-            /**
-             * Alias to <code>setName</code>
-             * @param {string} name Name
-             * @function
-             */
-            this.setFileName = this.setName;
-            /**
-             * Alias to <code>setName</code>
-             * @param {string} name Name
-             * @function
-             */
-            this.setFilename = this.setName;
-            /**
-             * Get the document content (encoded in base 64)
-             * @return {string} Content
-             * @function
-             */
-            this.getContent = function () {
-                return _this.content;
-            };
-            /**
-             * Get the document thumbnail (encoded in base 64)
-             * @return {string} Thumbnail
-             * @function
-             */
-            this.getThumbnail = function () {
-                return _this.thumbnail;
-            };
-            /**
-             * Get the document content as an array buffer
-             * @return {ArrayBuffer} Content as an array buffer
-             * @function
-             */
-            this.getContentAsArrayBuffer = function () {
-                return _this.getBuffer(_this.content).buffer;
-            };
-            /**
-             * Get the document thumbnail as an array buffer
-             * @return {ArrayBuffer} Thumbnail as an array buffer
-             * @function
-             */
-            this.getThumbnailAsArrayBuffer = function () {
-                return _this.getBuffer(_this.thumbnail || '').buffer;
-            };
-            /**
-             * Get the document content as a text
-             * @return {string} Content as plain text
-             * @function
-             */
-            this.getContentAsText = function () {
-                return _this.getBuffer(_this.content).toString('utf-8');
-            };
-            /**
-             * Set the document content
-             * @param {string} content Content (encoded in base 64)
-             * @return {Doc} This document for chaining
-             * @function
-             */
-            this.setContent = function (content) {
-                _this.content = _this.cleanContent(content);
-                return _this; // Chain
-            };
-            /**
-             * Set the document content from plain text string
-             * @param {string} content Content as plain text string
-             * @return {Doc} This document for chaining
-             * @function
-             */
-            this.setContentFromText = function (content) {
-                _this.content = buffer_1.Buffer.from(content, 'utf-8').toString('base64');
-                return _this; // Chain
-            };
-            /**
-             * Get the document data URL
-             * @param {boolean} [thumbnail=false] Thumbnail? If thumbnail does not exists the content is used.
-             * @return {string} Data URL or nothing if content is empty
-             * @function
-             */
-            this.getDataURL = function (thumbnail) {
-                if (_this.content)
-                    return 'data:' + _this.mime + ';base64,' + (thumbnail && _this.thumbnail ? _this.thumbnail : _this.content);
-            };
-            /**
-             * Load file
-             * @param file File to load
-             * @return {promise<Doc>} A promise to the document
-             * @function
-             */
-            this.load = function (file) { return __awaiter(_this, void 0, void 0, function () {
-                var _this = this;
-                return __generator(this, function (_a) {
-                    return [2 /*return*/, new Promise(function (resolve, reject) {
-                            try {
-                                if (file) {
-                                    _this.name = file.name;
-                                    _this.mime = file.type;
-                                    var reader_1 = new FileReader();
-                                    reader_1.onload = function () {
-                                        _this.content = reader_1.result ? _this.cleanContent(reader_1.result) : '';
-                                        resolve(_this);
-                                    };
-                                    reader_1.readAsDataURL(file); // this sets the result as a string
-                                }
-                                else {
-                                    _this.content = '';
-                                    resolve(_this);
-                                }
-                            }
-                            catch (e) {
-                                reject(e);
-                            }
-                        })];
-                });
-            }); };
-            /**
-             * Get the document as a plain value object
-             * @return {object} Value object
-             * @function
-             */
-            this.getValue = function () {
-                return {
-                    id: _this.id,
-                    name: _this['filename'] && !_this.name ? _this['filename'] : _this.name, // Backward compatibility
-                    mime: _this.mime,
-                    content: _this.content,
-                    thumbnail: _this.thumbnail
-                };
-            };
-            Object.assign(this, typeof value == 'string' ? { name: value } : value || {});
-            // Backward compatibility
-            if (this['filename'] && !this.name) {
-                this.name = this['filename'];
-                this['filename'] = undefined;
-            }
-        }
-        Doc.prototype.cleanContent = function (content) {
-            return content.startsWith('data:') ? content.replace(/data:.*;base64,/, '') : content;
-        };
-        /**
-         * Get the document content as a buffer
-         * @param {any} data Content data
-         * @return {buffer} Content data as buffer
-         * @private
-         */
-        Doc.prototype.getBuffer = function (data) {
-            return buffer_1.Buffer.from(data, 'base64');
-        };
-        return Doc;
-    }());
-    /**
-     * Grant (user).
-     * <br/><span style="color: red;">You <strong>should never</strong> instanciate this class directly
-     * but rather use it from the <code>data</code> variable got using <code>getGrant</code></span>.
-     * @class
-     */
-    var Grant = /** @class */ (function () {
-        /**
-         * Constructor
-         * @param grant {object} Grant object
-         */
-        function Grant(grant) {
-            var _this = this;
-            /**
-             * Get user ID
-             * @return {string} User ID
-             * @function
-             */
-            this.getUserId = function () {
-                return _this.userid;
-            };
-            /**
-             * Get username
-             * @return {string} Username
-             * @function
-             */
-            this.getUsername = function () {
-                return _this.login;
-            };
-            /**
-             * Alias to <code>getUsername</code>
-             * @return {string} Login
-             * @function
-             */
-            this.getLogin = this.getUsername; // Naming flexibility
-            /**
-             * Get user language
-             * @return {string} User language
-             * @function
-             */
-            this.getLang = function () {
-                return _this.lang;
-            };
-            /**
-             * Get email address
-             * @return {string} Email address
-             * @function
-             */
-            this.getEmail = function () {
-                return _this.email;
-            };
-            /**
-             * Get first name
-             * @return {string} First name
-             * @function
-             */
-            this.getFirstname = function () {
-                return _this.firstname;
-            };
-            /**
-             * Alias to <code>getFirstname</code>
-             * @return {string} First name
-             * @function
-             */
-            this.getFirstName = this.getFirstname; // Naming flexibility
-            /**
-             * Get last name
-             * @return {string} Last name
-             * @function
-             */
-            this.getLastname = function () {
-                return _this.lastname;
-            };
-            /**
-             * Alias to <code>getLastname</code>
-             * @return {string} Last name
-             * @function
-             */
-            this.getLastName = this.getLastname; // Naming flexibility
-            /**
-             * Get picture data URL
-             * @return {Doc} Picture data URL
-             * @function
-             */
-            this.getPictureURL = function () {
-                if (_this.picture)
-                    return 'data:' + _this.picture.mime + ';base64,' + _this.picture.content;
-            };
-            /**
-             * Has responsibility
-             * @param {string} group Group name
-             * @return {boolean} True if user has a responsibility on the specified group
-             * @function
-             */
-            this.hasResponsibility = function (group) {
-                return _this.responsibilities && _this.responsibilities.indexOf(group) !== -1;
-            };
-            /**
-             * Get system parameter value
-             * @param {string} name System parameter name
-             * @return {string} System parameter value
-             * @function
-             */
-            this.getSystemParameter = function (name) {
-                return _this.sysparams ? _this.sysparams[name] || '' : '';
-            };
-            /**
-             * Alias to <code>getSystemParameter</code>
-             * @param {string} name System parameter name
-             * @return {string} System parameter value
-             * @funtion
-             */
-            this.getSysParam = this.getSystemParameter;
-            /**
-             * Get text value
-             * @param {string} code Text code
-             * @return {string} Text value
-             */
-            this.T = function (code) {
-                return _this.texts ? _this.texts[code] || '' : '';
-            };
-            Object.assign(this, grant);
-        }
-        return Grant;
-    }());
-    /**
-     * Business object meta data.
-     * <br/><span style="color: red;">You <strong>should never</strong> instanciate this class directly
-     * but rather use it from the <code>metadata</code> variable of your <code>BusinessObject</code> instances</span>.
-     * @class
-     */
-    var BusinessObjectMetadata = /** @class */ (function () {
-        /**
-         * Constructor
-         * @param {string} name Business object name
-         * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
-         */
-        function BusinessObjectMetadata(name, instance) {
-            this.name = name;
-            this.instance = instance;
-            this.rowidfield = constants.DEFAULT_ROW_ID_NAME;
-            this.label = name;
-            this.help = '';
-            this.fields = new Array();
-        }
-        return BusinessObjectMetadata;
-    }());
+    exports.Session = Session;
+});
+define("businessobject", ["require", "exports", "constants", "doc", "businessobjectmetadata"], function (require, exports, constants_3, doc_2, businessobjectmetadata_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.BusinessObject = void 0;
     /**
      * Business object.
-     * <br/><span style="color: red;">ou <strong>should never</strong> instanciate this class directly
+     * <br/><span style="color: red;">ou <strong>should never</strong> instantiate this class directly
      * but rather call <code>getBusinessObject</code> to get a cached instance</span>.
      * @class
      */
@@ -1910,7 +2113,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
                 if (field && item) {
                     var val = item[typeof field === 'string' ? field : field.name];
                     if (val && val.mime) // Document?
-                        return new Doc(val);
+                        return new doc_2.Doc(val);
                     else
                         return val;
                 }
@@ -1967,7 +2170,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
                     field = field.fullinput || field.input || field.name;
                 var val = _this.getFieldValue(field, item);
                 if (val && val.mime)
-                    return new Doc(val);
+                    return new doc_2.Doc(val);
                 else
                     return val;
             };
@@ -2040,11 +2243,11 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
                 if (!item)
                     item = _this.item;
                 if (field && item) {
-                    item[typeof field === 'string' ? field : field.name] = value instanceof Doc ? value.getValue() : value;
+                    item[typeof field === 'string' ? field : field.name] = value instanceof doc_2.Doc ? value.getValue() : value;
                 }
             };
             /**
-             * Reset values of item (or crrent item)
+             * Reset values of item (or current item)
              * @param {object} [item] Item (defaults to current item)
              */
             this.resetValues = function (item) {
@@ -2077,7 +2280,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
                                 var v = dt[k];
                                 if (v instanceof File)
                                     promises.push(new Promise(function (r) {
-                                        new Doc().load(v).then(function (doc) {
+                                        new doc_2.Doc().load(v).then(function (doc) {
                                             _this.setFieldValue(k, doc);
                                             r.call(_this);
                                         });
@@ -2207,7 +2410,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
                     var i = _a[_i];
                     var k = i[0];
                     var d = i[1] || '';
-                    if (d instanceof Doc)
+                    if (d instanceof doc_2.Doc)
                         d = d.getValue();
                     if (d.name && d.content) { // Document?
                         if (d.content.startsWith('data:')) // Flexibility = extract content from a data URL (just in case...)
@@ -2400,8 +2603,8 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
                     opts = opts || {};
                     delete opts.treeview; // Inhibited in this context
                     delete opts.fields; // Inhibited in this context
-                    opts.context = constants.CONTEXT_CREATE;
-                    return [2 /*return*/, this.get(constants.DEFAULT_ROW_ID, opts)];
+                    opts.context = constants_3.constants.CONTEXT_CREATE;
+                    return [2 /*return*/, this.get(constants_3.constants.DEFAULT_ROW_ID, opts)];
                 });
             }); };
             /**
@@ -2419,7 +2622,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
                     opts = opts || {};
                     delete opts.treeview; // Inhibited in this context
                     delete opts.fields; // Inhibited in this context
-                    opts.context = constants.CONTEXT_UPDATE;
+                    opts.context = constants_3.constants.CONTEXT_UPDATE;
                     return [2 /*return*/, this.get(rowId || this.getRowId(), opts)];
                 });
             }); };
@@ -2438,7 +2641,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
                     opts = opts || {};
                     delete opts.treeview; // Inhibited in this context
                     delete opts.fields; // Inhibited in this context
-                    opts.context = constants.CONTEXT_COPY;
+                    opts.context = constants_3.constants.CONTEXT_COPY;
                     return [2 /*return*/, this.get(rowId || this.getRowId(), opts)];
                 });
             }); };
@@ -2457,7 +2660,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
                     opts = opts || {};
                     delete opts.treeview; // Inhibited in this context
                     delete opts.fields; // Inhibited in this context
-                    opts.context = constants.CONTEXT_DELETE;
+                    opts.context = constants_3.constants.CONTEXT_DELETE;
                     return [2 /*return*/, this.get(rowId || this.getRowId(), opts)];
                 });
             }); };
@@ -2577,7 +2780,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
                     if (item)
                         this.item = item;
                     rowId = this.item[this.metadata.rowidfield];
-                    if (!rowId || rowId === constants.DEFAULT_ROW_ID)
+                    if (!rowId || rowId === constants_3.constants.DEFAULT_ROW_ID)
                         return [2 /*return*/, this.create(item, opts)];
                     else
                         return [2 /*return*/, this.update(item, opts)];
@@ -2603,7 +2806,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
                     return [2 /*return*/, new Promise(function (resolve, reject) {
                             if (item)
                                 _this.item = item;
-                            _this.item.row_id = constants.DEFAULT_ROW_ID;
+                            _this.item.row_id = constants_3.constants.DEFAULT_ROW_ID;
                             ses.sendRequest("".concat(_this.getPath('create', opts)).concat(_this.getReqOptions(opts)), _this.getReqParams(_this.item), function (res, status) {
                                 var r = ses.parseResponse(res, status);
                                 ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
@@ -2751,7 +2954,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
              * @param {object} [opts.filters] Filters, by default current filters are used
              * @param {function} [opts.error] Error handler function
              * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} A promise to the pivot table data (also avialable as the <code>crosstabdata</code> member)
+             * @return {promise<object>} A promise to the pivot table data (also available as the <code>crosstabdata</code> member)
              * @function
              */
             this.crosstab = function (ctb, opts) { return __awaiter(_this, void 0, void 0, function () {
@@ -2819,7 +3022,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
                                         reject.call(_this, err);
                                 }
                                 else {
-                                    resolve.call(_this, new Doc(r.response));
+                                    resolve.call(_this, new doc_2.Doc(r.response));
                                 }
                             }, function (err) {
                                 err = ses.getError(err, undefined, origin);
@@ -2960,7 +3163,7 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
             };
             this.session = ses;
             var inst = instance || 'api_' + name;
-            this.metadata = new BusinessObjectMetadata(name, inst);
+            this.metadata = new businessobjectmetadata_1.BusinessObjectMetadata(name, inst);
             this.cacheKey = this.session.getBusinessObjectCacheKey(name, inst);
             this.path = this.session.parameters.objpath + '?object=' + encodeURIComponent(name) + '&inst=' + encodeURIComponent(inst);
             this.item = {};
@@ -2979,185 +3182,35 @@ define("simplicite", ["require", "exports", "buffer"], function (require, export
         };
         return BusinessObject;
     }());
+    exports.BusinessObject = BusinessObject;
+});
+/**
+ * Simplicite(R) platform Javascript API client module (for node.js and browser).
+ * @module simplicite
+ * @version 3.1.0
+ * @license Apache-2.0
+ */
+define("simplicite", ["require", "exports", "constants", "doc", "grant", "businessobjectmetadata", "businessobject", "externalobjectmetadata", "externalobject", "session"], function (require, exports, constants_4, doc_3, grant_2, businessobjectmetadata_2, businessobject_2, externalobjectmetadata_2, externalobject_2, session_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     /**
-     * External object meta data.
-     * <br/><span style="color: red;">You <strong>should never</strong> instanciate this class directly
-     * but rather use it from the <code>metadata</code> variable of your <code>ExternalObject</code> instances</span>.
-     * @class
+     * Simplicite application session. Same as <code>new Session(parameter)</code>.
+     * @param {object} params Parameters (see session class for details)
+     * @return {Session} session
      */
-    var ExternalObjectMetadata = /** @class */ (function () {
-        /**
-         * Constructor
-         * @param {string} name External object name
-         */
-        function ExternalObjectMetadata(name) {
-            this.name = name;
-        }
-        return ExternalObjectMetadata;
-    }());
-    /**
-     * External object.
-     * <br/><span style="color: red;">ou <strong>should never</strong> instanciate this class directly
-     * but rather call <code>getExternalObject</code></span>.
-     * @class
-     */
-    var ExternalObject = /** @class */ (function () {
-        /**
-         * Constructor
-         * @param {Session} ses Session
-         * @param {string} name Business object name
-         */
-        function ExternalObject(ses, name) {
-            var _this = this;
-            /**
-             * Get name
-             * @return {string} Name
-             * @function
-             */
-            this.getName = function () {
-                return _this.metadata.name;
-            };
-            /**
-             * Build URL-encoded parameters
-             * @param {object} params URL parameters as key/value pairs
-             * @return {string} URL-encoded parameters
-             * @function
-             */
-            this.callParams = function (params) {
-                var p = '';
-                if (!params)
-                    return p;
-                for (var _i = 0, _a = Object.entries(params); _i < _a.length; _i++) {
-                    var i = _a[_i];
-                    var k = i[0];
-                    var v = i[1] || '';
-                    if (v.sort) { // Array ?
-                        for (var _b = 0, v_1 = v; _b < v_1.length; _b++) {
-                            var vv = v_1[_b];
-                            p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(vv);
-                        }
-                    }
-                    else {
-                        p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(v);
-                    }
-                }
-                return p;
-            };
-            /**
-             * Call an external object
-             * @param {object} [params] Optional URL parameters
-             * @param {object|string|FormData} [data] Optional body data (for 'POST' and 'PUT' methods only)
-             * @param {object} [opts] Options
-             * @param {string} [opts.path] Absolute or relative path (e.g. absolute '/my/mapped/upath' or relative 'my/additional/path')
-             * @param {object} [opts.method] Optional method 'GET', 'POST', 'PUT' or 'DELETE' (defaults to 'GET' if data is not set or 'POST' if data is set)
-             * @param {function} [opts.contentType] Optional data content type (for 'POST' and 'PUT' methods only)
-             * @param {function} [opts.accept] Optional accepted response type (e.g. 'application/json")
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} Promise to the external object content
-             * @function
-             */
-            this.call = function (params, data, opts) { return __awaiter(_this, void 0, void 0, function () {
-                var origin, ses;
-                var _this = this;
-                return __generator(this, function (_a) {
-                    origin = 'ExternalObject.call';
-                    ses = this.session;
-                    opts = opts || {};
-                    return [2 /*return*/, new Promise(function (resolve, reject) {
-                            var p = '';
-                            if (params)
-                                p = _this.callParams(params);
-                            if (opts.businessCase)
-                                p += "_bc=".concat(encodeURIComponent(opts.businessCase));
-                            var m = opts.method ? opts.method.toUpperCase() : (data ? 'POST' : 'GET');
-                            var h = {};
-                            if (opts.contentType) {
-                                h['content-type'] = opts.contentType;
-                            }
-                            else if (data && !(data instanceof FormData)) { // Try to guess type...
-                                h['content-type'] = typeof data === 'string' ? 'application/x-www-form-urlencoded' : 'application/json';
-                            } // FormData = multipart/form-data with boundary string => handled by fetch
-                            //if (ses.parameters.compress)
-                            //	h['content-encoding'] = 'gzip';
-                            if (opts.accept)
-                                h.accept = opts.accept === 'json' ? 'application/json' : opts.accept;
-                            var b = ses.getBearerTokenHeader();
-                            if (b) {
-                                h[ses.authheader] = b;
-                            }
-                            else {
-                                b = ses.getBasicAuthHeader();
-                                if (b)
-                                    h[ses.authheader] = b;
-                            }
-                            var u = ses.parameters.url + (opts.path && opts.path.startsWith('/') ? opts.path : _this.path + (opts.path ? '/' + opts.path : '')) + (p !== '' ? '?' + p : '');
-                            var d = data ? (typeof data === 'string' || data instanceof FormData ? data : JSON.stringify(data)) : undefined;
-                            ses.debug('[simplicite.ExternalObject.call] ' + m + ' ' + u + (d ? ' with ' + d : ''));
-                            fetch(u, {
-                                method: m,
-                                headers: h,
-                                //compress: ses.parameters.compress,
-                                signal: AbortSignal.timeout(ses.parameters.timeout),
-                                body: d
-                            }).then(function (res) {
-                                var type = res.headers.get('content-type');
-                                ses.debug("[".concat(origin, "] HTTP status = ").concat(res.status, ", response content type = ").concat(type));
-                                if (type && type.startsWith('application/json')) { // JSON
-                                    res.json().then(function (jsonData) {
-                                        resolve.call(_this, jsonData, res.status, res.headers);
-                                    }).catch(function (err) {
-                                        err = ses.getError(err, undefined, origin);
-                                        if (!(opts.error || ses.error).call(_this, err))
-                                            reject.call(_this, err);
-                                    });
-                                }
-                                else if (type && (type.startsWith('text/') || type.startsWith('application/yaml'))) { // Text
-                                    res.text().then(function (textData) {
-                                        resolve.call(_this, textData, res.status, res.headers);
-                                    }).catch(function (err) {
-                                        err = ses.getError(err, undefined, origin);
-                                        if (!(opts.error || ses.error).call(_this, err))
-                                            reject.call(_this, err);
-                                    });
-                                }
-                                else { // Binary
-                                    res.arrayBuffer().then(function (binData) {
-                                        resolve.call(_this, binData, res.status, res.headers);
-                                    }).catch(function (err) {
-                                        err = ses.getError(err, undefined, origin);
-                                        if (!(opts.error || ses.error).call(_this, err))
-                                            reject.call(_this, err);
-                                    });
-                                }
-                            }).catch(function (err) {
-                                err = ses.getError(err, undefined, origin);
-                                if (!(opts.error || ses.error).call(_this, err))
-                                    reject.call(_this, err);
-                            });
-                        })];
-                });
-            }); };
-            /**
-             * Alias to <code>call</code>
-             * @function
-             */
-            this.invoke = this.call;
-            this.session = ses;
-            this.metadata = new ExternalObjectMetadata(name);
-            this.path = "".concat(this.session.parameters.extpath, "/").concat(encodeURIComponent(name));
-        }
-        return ExternalObject;
-    }());
+    var session = function (params) {
+        return new session_1.Session(params);
+    };
     exports.default = {
-        constants: constants,
+        constants: constants_4.constants,
         session: session,
-        Session: Session,
-        Doc: Doc,
-        Grant: Grant,
-        BusinessObject: BusinessObject,
-        BusinessObjectMetadata: BusinessObjectMetadata,
-        ExternalObject: ExternalObject
+        Session: session_1.Session,
+        Doc: doc_3.Doc,
+        Grant: grant_2.Grant,
+        BusinessObjectMetadata: businessobjectmetadata_2.BusinessObjectMetadata,
+        BusinessObject: businessobject_2.BusinessObject,
+        ExternalObjectMetadata: externalobjectmetadata_2.ExternalObjectMetadata,
+        ExternalObject: externalobject_2.ExternalObject
     };
 });
 //# sourceMappingURL=simplicite.js.map

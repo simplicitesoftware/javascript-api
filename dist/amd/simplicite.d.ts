@@ -1,4 +1,624 @@
-declare module "simplicite" {
+declare module "constants" {
+    /**
+     * Constants
+     * @constant
+     */
+    const constants: {
+        /**
+         * API client module version
+         * @constant {string}
+         */
+        MODULE_VERSION: string;
+        /**
+         * Default row ID field name
+         * @constant {string}
+         */
+        DEFAULT_ROW_ID_NAME: string;
+        /**
+         * Default row ID value
+         * @constant {string}
+         */
+        DEFAULT_ROW_ID: string;
+        /**
+         * Default context
+         * @constant {number}
+         */
+        CONTEXT_NONE: number;
+        /**
+         * Search context
+         * @constant {number}
+         */
+        CONTEXT_SEARCH: number;
+        /**
+         * List context
+         * @constant {number}
+         */
+        CONTEXT_LIST: number;
+        /**
+         * Creation context
+         * @constant {number}
+         */
+        CONTEXT_CREATE: number;
+        /**
+         * Copy context
+         * @constant {number}
+         */
+        CONTEXT_COPY: number;
+        /**
+         * Update context
+         * @constant {number}
+         */
+        CONTEXT_UPDATE: number;
+        /**
+         * Delete context
+         * @constant {number}
+         */
+        CONTEXT_DELETE: number;
+        /**
+         * Chart context
+         * @constant {number}
+         */
+        CONTEXT_GRAPH: number;
+        /**
+         * Pivot table context
+         * @constant {number}
+         */
+        CONTEXT_CROSSTAB: number;
+        /**
+         * Publication context
+         * @constant {number}
+         */
+        CONTEXT_PRINTTMPL: number;
+        /**
+         * Bulk update context
+         * @constant {number}
+         */
+        CONTEXT_UPDATEALL: number;
+        /**
+         * Reference selection context
+         * @constant {number}
+         */
+        CONTEXT_REFSELECT: number;
+        /**
+         * Data mapping selection context
+         * @constant {number}
+         */
+        CONTEXT_DATAMAPSELECT: number;
+        /**
+         * Pre validation context
+         * @constant {number}
+         */
+        CONTEXT_PREVALIDATE: number;
+        /**
+         * Post validation context
+         * @constant {number}
+         */
+        CONTEXT_POSTVALIDATE: number;
+        /**
+         * State transition context
+         * @constant {number}
+         */
+        CONTEXT_STATETRANSITION: number;
+        /**
+         * Export context
+         * @constant {number}
+         */
+        CONTEXT_EXPORT: number;
+        /**
+         * Import context
+         * @constant {number}
+         */
+        CONTEXT_IMPORT: number;
+        /**
+         * Association context
+         * @constant {number}
+         */
+        CONTEXT_ASSOCIATE: number;
+        /**
+         * Panel list context
+         * @constant {number}
+         */
+        CONTEXT_PANELLIST: number;
+        /**
+         * Action context
+         * @constant {number}
+         */
+        CONTEXT_ACTION: number;
+        /**
+         * Agenda context
+         * @constant {number}
+         */
+        CONTEXT_AGENDA: number;
+        /**
+         * Place map context
+         * @constant {number}
+         */
+        CONTEXT_PLACEMAP: number;
+        /**
+         * Foreign key (reference) type
+         * @constant {number}
+         */
+        TYPE_ID: number;
+        /**
+         * Integer type
+         * @constant {number}
+         */
+        TYPE_INT: number;
+        /**
+         * Decimal type
+         * @constant {number}
+         */
+        TYPE_FLOAT: number;
+        /**
+         * Short string type
+         * @constant {number}
+         */
+        TYPE_STRING: number;
+        /**
+         * Date type
+         * @constant {number}
+         */
+        TYPE_DATE: number;
+        /**
+         * Date and time type
+         * @constant {number}
+         */
+        TYPE_DATETIME: number;
+        /**
+         * Time type
+         * @constant {number}
+         */
+        TYPE_TIME: number;
+        /**
+         * Simple enumeration type
+         * @constant {number}
+         */
+        TYPE_ENUM: number;
+        /**
+         * Boolean type
+         * @constant {number}
+         */
+        TYPE_BOOLEAN: number;
+        /**
+         * Password type
+         * @constant {number}
+         */
+        TYPE_PASSWORD: number;
+        /**
+         * URL type
+         * @constant {number}
+         */
+        TYPE_URL: number;
+        /**
+         * HTML content type
+         * @constant {number}
+         */
+        TYPE_HTML: number;
+        /**
+         * Email type
+         * @constant {number}
+         */
+        TYPE_EMAIL: number;
+        /**
+         * Long string type
+         * @constant {number}
+         */
+        TYPE_LONG_STRING: number;
+        /**
+         * Multiple enumeration type
+         * @constant {number}
+         */
+        TYPE_ENUM_MULTI: number;
+        /**
+         * Validated string type
+         * @constant {number}
+         */
+        TYPE_REGEXP: number;
+        /**
+         * Document type
+         * @constant {number}
+         */
+        TYPE_DOC: number;
+        /**
+         * Decimal type
+         * @constant {number}
+         * @deprecated
+         */
+        TYPE_FLOAT_EMPTY: number;
+        /**
+         * External file type
+         * @constant {number}
+         * @deprecated
+         */
+        TYPE_EXTFILE: number;
+        /**
+         * Image type
+         * @constant {number}
+         */
+        TYPE_IMAGE: number;
+        /**
+         * Notepad type
+         * @constant {number}
+         */
+        TYPE_NOTEPAD: number;
+        /**
+         * Phone number type
+         * @constant {number}
+         */
+        TYPE_PHONENUM: number;
+        /**
+         * RGB color type
+         * @constant {number}
+         */
+        TYPE_COLOR: number;
+        /**
+         * Object type
+         * @constant {number}
+         */
+        TYPE_OBJECT: number;
+        /**
+         * Geographical coordinates type
+         * @constant {number}
+         */
+        TYPE_GEOCOORDS: number;
+        /**
+         * Big decimal
+         * @constant {number}
+         */
+        TYPE_BIGDECIMAL: number;
+        /**
+         * Types strings
+         * @constant {Array}
+         */
+        TYPES: string[];
+        /**
+         * Not visible
+         * @constant {number}
+         */
+        VIS_NOT: number;
+        /**
+         * Hidden (same as not visible)
+         * @constant {number}
+         */
+        VIS_HIDDEN: number;
+        /**
+         * Visible on lists only
+         * @constant {number}
+         */
+        VIS_LIST: number;
+        /**
+         * Visible on forms only
+         * @constant {number}
+         */
+        VIS_FORM: number;
+        /**
+         * Visible on both lists and forms only
+         * @constant {number}
+         */
+        VIS_BOTH: number;
+        /**
+         * No search
+         * @constant {number}
+         */
+        SEARCH_NONE: number;
+        /**
+         * Simple search
+         * @constant {number}
+         */
+        SEARCH_MONO: number;
+        /**
+         * Multiple search (checkboxes)
+         * @constant {number}
+         */
+        SEARCH_MULTI_CHECK: number;
+        /**
+         * Multiple search (listbox)
+         * @constant {number}
+         */
+        SEARCH_MULTI_LIST: number;
+        /**
+         * Search by period (date/time)
+         * @constant {number}
+         */
+        SEARCH_PERIOD: number;
+        /**
+         * True
+         * @constant {string}
+         */
+        TRUE: string;
+        /**
+         * False
+         * @constant {string}
+         */
+        FALSE: string;
+        /**
+         * Fatal error level
+         * @constant {number}
+         */
+        ERRLEVEL_FATAL: number;
+        /**
+         * Error level
+         * @constant {number}
+         */
+        ERRLEVEL_ERROR: number;
+        /**
+         * Warning level
+         * @constant {number}
+         */
+        ERRLEVEL_WARNING: number;
+        /**
+         * Image resource type
+         * @constant {number}
+         */
+        RESOURCE_TYPE_IMAGE: string;
+        /**
+         * Icon resource type
+         * @constant {number}
+         */
+        RESOURCE_TYPE_ICON: string;
+        /**
+         * Stylesheet resource type
+         * @constant {number}
+         */
+        RESOURCE_TYPE_STYLESHEET: string;
+        /**
+         * Javascript resource type
+         * @constant {number}
+         */
+        RESOURCE_TYPE_JAVASCRIPT: string;
+        /**
+         * Default authentication header
+         * @constant {string}
+         */
+        DEFAULT_AUTH_HEADER: string;
+        /**
+         * Simplicite authentication header
+         * @constant {string}
+         */
+        SIMPLICITE_AUTH_HEADER: string;
+    };
+    export { constants };
+}
+declare module "doc" {
+    /**
+     * Document
+     * @class
+     */
+    class Doc {
+        /**
+         * Constructor
+         * @param [value] {string|object} Document name or value
+         * @param [value.name] Document name
+         * @param [value.mime] Document MIME type
+         * @param [value.content] Document content
+         */
+        constructor(value?: any);
+        /**
+         * Document ID
+         * @member {string}
+         */
+        id?: string;
+        /**
+         * Document MIME type
+         * @member {string}
+         */
+        mime?: string;
+        /**
+         * Document name
+         * @member {string}
+         */
+        name?: string;
+        /**
+         * Document content as base 64
+         * @member {string}
+         */
+        content?: string;
+        /**
+         * Document thumbnail as base 64
+         * @member {string}
+         */
+        thumbnail?: string;
+        /**
+         * Get the document ID
+         * @return {string} ID
+         * @function
+         */
+        getId: () => string;
+        /**
+         * Get the document MIME type
+         * @return {string} MIME type
+         * @function
+         */
+        getMIMEType: () => string;
+        /**
+         * Alias to <code>getMIMEType</code>
+         * @return {string} MIME type
+         * @function
+         */
+        getMimeType: () => string;
+        /**
+         * Set the document MIME type
+         * @param {string} mime MIME type
+         * @return {Doc} This document for chaining
+         * @function
+         */
+        setMIMEType: (mime: string) => Doc;
+        /**
+         * Alias to <code>setMIMEType</code>
+         * @param {string} mime MIME type
+         * @function
+         */
+        setMimeType: (mime: string) => Doc;
+        /**
+         * Get the document name
+         * @return {string} Name
+         * @function
+         */
+        getName: () => string;
+        /**
+         * Alias to <code>getName</code>
+         * @return {string} Name
+         * @function
+         */
+        getFileName: () => string;
+        /**
+         * Alias to <code>getName</code>
+         * @return {string} Name
+         * @function
+         */
+        getFilename: () => string;
+        /**
+         * Set the document name
+         * @param {string} name Name
+         * @return {Doc} This document for chaining
+         * @function
+         */
+        setName: (name: string) => Doc;
+        /**
+         * Alias to <code>setName</code>
+         * @param {string} name Name
+         * @function
+         */
+        setFileName: (name: string) => Doc;
+        /**
+         * Alias to <code>setName</code>
+         * @param {string} name Name
+         * @function
+         */
+        setFilename: (name: string) => Doc;
+        private cleanContent;
+        /**
+         * Get the document content (encoded in base 64)
+         * @return {string} Content
+         * @function
+         */
+        getContent: () => string;
+        /**
+         * Get the document thumbnail (encoded in base 64)
+         * @return {string} Thumbnail
+         * @function
+         */
+        getThumbnail: () => string;
+        /**
+         * Get the document content as a buffer
+         * @param {any} data Content data
+         * @return {buffer} Content data as buffer
+         * @private
+         */
+        private getBuffer;
+        /**
+         * Get the document content as an array buffer
+         * @return {ArrayBuffer} Content as an array buffer
+         * @function
+         */
+        getContentAsArrayBuffer: () => ArrayBuffer;
+        /**
+         * Get the document thumbnail as an array buffer
+         * @return {ArrayBuffer} Thumbnail as an array buffer
+         * @function
+         */
+        getThumbnailAsArrayBuffer: () => ArrayBuffer;
+        /**
+         * Get the document content as a text
+         * @return {string} Content as plain text
+         * @function
+         */
+        getContentAsText: () => string;
+        /**
+         * Set the document content
+         * @param {string} content Content (encoded in base 64)
+         * @return {Doc} This document for chaining
+         * @function
+         */
+        setContent: (content: string) => Doc;
+        /**
+         * Set the document content from plain text string
+         * @param {string} content Content as plain text string
+         * @return {Doc} This document for chaining
+         * @function
+         */
+        setContentFromText: (content: string) => Doc;
+        /**
+         * Get the document data URL
+         * @param {boolean} [thumbnail=false] Thumbnail? If thumbnail does not exists the content is used.
+         * @return {string} Data URL or nothing if content is empty
+         * @function
+         */
+        getDataURL: (thumbnail?: boolean) => string;
+        /**
+         * Load file
+         * @param file File to load
+         * @return {promise<Doc>} A promise to the document
+         * @function
+         */
+        load: (file?: File) => Promise<Doc>;
+        /**
+         * Get the document as a plain value object
+         * @return {object} Value object
+         * @function
+         */
+        getValue: () => any;
+    }
+    export { Doc };
+}
+declare module "businessobjectmetadata" {
+    /**
+     * Business object meta data.
+     * <br/><span style="color: red;">You <strong>should never</strong> instantiate this class directly
+     * but rather use it from the <code>metadata</code> variable of your <code>BusinessObject</code> instances</span>.
+     * @class
+     */
+    class BusinessObjectMetadata {
+        /**
+         * Constructor
+         * @param {string} name Business object name
+         * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
+         */
+        constructor(name: string, instance?: string);
+        /**
+         * ID
+         * @member {string}
+         */
+        id: string;
+        /**
+         * Name
+         * @member {string}
+         */
+        name: string;
+        /**
+         * Instance name
+         * @member {string}
+         */
+        instance: string;
+        /**
+         * Row ID field name
+         * @member {string}
+         */
+        rowidfield: string;
+        /**
+         * Display label
+         * @member {string}
+         */
+        label: string;
+        /**
+         * Help
+         * @member {string}
+         */
+        help: string;
+        /**
+         * Fields definitions
+         * @member {array}
+         */
+        fields: any[];
+        /**
+         * Links definitions
+         * @member {array}
+         */
+        links: any[];
+    }
+    export { BusinessObjectMetadata };
+}
+declare module "sessionparams" {
     /**
      * Session parameters endpoints
      */
@@ -132,12 +752,261 @@ declare module "simplicite" {
          */
         errorHandler?: (...args: any[]) => any;
     };
+    export { SessionParamEndpoint, SessionParams };
+}
+declare module "grant" {
+    import { Doc } from "doc";
+    /**
+     * Grant (user).
+     * <br/><span style="color: red;">You <strong>should never</strong> instantiate this class directly
+     * but rather use it from the <code>data</code> variable got using <code>getGrant</code></span>.
+     * @class
+     */
+    class Grant {
+        /**
+         * Constructor
+         * @param grant {object} Grant object
+         */
+        constructor(grant: any);
+        /**
+         * User ID
+         * @member {string}
+         */
+        userid: string;
+        /**
+         * User name
+         * @member {string}
+         */
+        login: string;
+        /**
+         * User language
+         * @member {string}
+         */
+        lang: string;
+        /**
+         * User email address
+         * @member {string}
+         */
+        email: string;
+        /**
+         * User first name
+         * @member {string}
+         */
+        firstname: string;
+        /**
+         * User last name
+         * @member {string}
+         */
+        lastname: string;
+        /**
+         * User picture
+         * @member {Doc}
+         */
+        picture: Doc;
+        /**
+         * User responsibilities
+         * @member {array}
+         */
+        responsibilities: string[];
+        /**
+         * Translated texts
+         * @member {object}
+         */
+        texts: Map<string, string>;
+        /**
+         * System parameters
+         * @member {object}
+         */
+        sysparams: Map<string, string>;
+        /**
+         * Get user ID
+         * @return {string} User ID
+         * @function
+         */
+        getUserId: () => string;
+        /**
+         * Get username
+         * @return {string} Username
+         * @function
+         */
+        getUsername: () => string;
+        /**
+         * Alias to <code>getUsername</code>
+         * @return {string} Login
+         * @function
+         */
+        getLogin: () => string;
+        /**
+         * Get user language
+         * @return {string} User language
+         * @function
+         */
+        getLang: () => string;
+        /**
+         * Get email address
+         * @return {string} Email address
+         * @function
+         */
+        getEmail: () => string;
+        /**
+         * Get first name
+         * @return {string} First name
+         * @function
+         */
+        getFirstname: () => string;
+        /**
+         * Alias to <code>getFirstname</code>
+         * @return {string} First name
+         * @function
+         */
+        getFirstName: () => string;
+        /**
+         * Get last name
+         * @return {string} Last name
+         * @function
+         */
+        getLastname: () => string;
+        /**
+         * Alias to <code>getLastname</code>
+         * @return {string} Last name
+         * @function
+         */
+        getLastName: () => string;
+        /**
+         * Get picture data URL
+         * @return {Doc} Picture data URL
+         * @function
+         */
+        getPictureURL: () => string;
+        /**
+         * Has responsibility
+         * @param {string} group Group name
+         * @return {boolean} True if user has a responsibility on the specified group
+         * @function
+         */
+        hasResponsibility: (group: string) => boolean;
+        /**
+         * Get system parameter value
+         * @param {string} name System parameter name
+         * @return {string} System parameter value
+         * @function
+         */
+        getSystemParameter: (name: string) => string;
+        /**
+         * Alias to <code>getSystemParameter</code>
+         * @param {string} name System parameter name
+         * @return {string} System parameter value
+         * @function
+         */
+        getSysParam: (name: string) => string;
+        /**
+         * Get text value
+         * @param {string} code Text code
+         * @return {string} Text value
+         */
+        T: (code: string) => string;
+    }
+    export { Grant };
+}
+declare module "externalobjectmetadata" {
+    /**
+     * External object meta data.
+     * <br/><span style="color: red;">You <strong>should never</strong> instantiate this class directly
+     * but rather use it from the <code>metadata</code> variable of your <code>ExternalObject</code> instances</span>.
+     * @class
+     */
+    class ExternalObjectMetadata {
+        /**
+         * Constructor
+         * @param {string} name External object name
+         */
+        constructor(name: string);
+        /**
+         * Name
+         * @member {string}
+         */
+        name: string;
+    }
+    export { ExternalObjectMetadata };
+}
+declare module "externalobject" {
+    import { ExternalObjectMetadata } from "externalobjectmetadata";
+    import { Session } from "session";
+    /**
+     * External object.
+     * <br/><span style="color: red;">ou <strong>should never</strong> instantiate this class directly
+     * but rather call <code>getExternalObject</code></span>.
+     * @class
+     */
+    class ExternalObject {
+        /**
+         * Constructor
+         * @param {Session} ses Session
+         * @param {string} name Business object name
+         */
+        constructor(ses: Session, name: string);
+        /**
+         * Session
+         * @member {Session}
+         * @private
+         */
+        private session;
+        /**
+         * Metadata
+         * @member {ExternalObjectMetadata}
+         */
+        metadata: ExternalObjectMetadata;
+        /**
+         * Path
+         * @member {string}
+         * @private
+         */
+        private path;
+        /**
+         * Get name
+         * @return {string} Name
+         * @function
+         */
+        getName: () => string;
+        /**
+         * Build URL-encoded parameters
+         * @param {object} params URL parameters as key/value pairs
+         * @return {string} URL-encoded parameters
+         * @function
+         */
+        callParams: (params: any) => string;
+        /**
+         * Call an external object
+         * @param {object} [params] Optional URL parameters
+         * @param {object|string|FormData} [data] Optional body data (for 'POST' and 'PUT' methods only)
+         * @param {object} [opts] Options
+         * @param {string} [opts.path] Absolute or relative path (e.g. absolute '/my/mapped/path' or relative 'my/additional/path')
+         * @param {object} [opts.method] Optional method 'GET', 'POST', 'PUT' or 'DELETE' (defaults to 'GET' if data is not set or 'POST' if data is set)
+         * @param {function} [opts.contentType] Optional data content type (for 'POST' and 'PUT' methods only)
+         * @param {function} [opts.accept] Optional accepted response type (e.g. 'application/json")
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<object>} Promise to the external object content
+         * @function
+         */
+        call: (params?: any, data?: string | FormData | any, opts?: any) => Promise<any>;
+        /**
+         * Alias to <code>call</code>
+         * @function
+         */
+        invoke: (params?: any, data?: string | FormData | any, opts?: any) => Promise<any>;
+    }
+    export { ExternalObject };
+}
+declare module "session" {
+    import { SessionParamEndpoint, SessionParams } from "sessionparams";
+    import { Grant } from "grant";
     /**
      * Simplicite application session.
      * @param {object} params Parameters
      * @param {string} params.url Base URL of the Simplicite application
      * @param {string} params.scheme URL scheme (e.g. <code>'https'</code>) of the Simplicite application (not needed if <code>url</code> is set)
-     * @param {string} params.host Hostname or IP address (e.g. <code>'myhost.mydomain.com'</code>) of the Simplicite application (not needed if <code>url</code> is set)
+     * @param {string} params.host Hostname or IP address (e.g. <code>'host.mydomain.com'</code>) of the Simplicite application (not needed if <code>url</code> is set)
      * @param {number} params.port Port (e.g. <code>443</code>) of the Simplicite application (not needed if <code>url</code> is set)
      * @param {string} params.root Root context URL (e.g. <code>'/myapp'</code>) the Simplicite application (not needed if <code>url</code> is set)
      * @param {boolean} [params.endpoint='api'] Endpoint (<code>'api'|'ui'|'uipublic'</code>)
@@ -145,7 +1014,7 @@ declare module "simplicite" {
      * @param {string} [params.password] Password (not needed for the public UI endpoint)
      * @param {string} [params.authtoken] Authentication token (if set, username and password are not needed; not needed for the public UI endpoint)
      * @param {string} [params.authheader] Authorization HTTP header name (defaults to the standard <code>Authorization</code>, the alternative is the value of the <code>SIMPLICITE_AUTH_HEADER</code> constant, not needed for public endpoint)
-     * @param {string} [params.ajaxkey] Ajax key (only usefull for usage from the generic UI)
+     * @param {string} [params.ajaxkey] Ajax key (only useful for usage from the generic UI)
      * @param {boolean} [params.debug=false] Debug mode?
      * @param {function} [params.debugHandler] Debug handler function
      * @param {function} [params.infoHandler] Info handler function
@@ -165,377 +1034,79 @@ declare module "simplicite" {
          * @member
          */
         constants: {
-            /**
-             * API client module version
-             * @constant {string}
-             */
             MODULE_VERSION: string;
-            /**
-             * Default row ID field name
-             * @constant {string}
-             */
             DEFAULT_ROW_ID_NAME: string;
-            /**
-             * Default row ID value
-             * @constant {string}
-             */
             DEFAULT_ROW_ID: string;
-            /**
-             * Default context
-             * @constant {number}
-             */
             CONTEXT_NONE: number;
-            /**
-             * Search context
-             * @constant {number}
-             */
             CONTEXT_SEARCH: number;
-            /**
-             * List context
-             * @constant {number}
-             */
             CONTEXT_LIST: number;
-            /**
-             * Creation context
-             * @constant {number}
-             */
             CONTEXT_CREATE: number;
-            /**
-             * Copy context
-             * @constant {number}
-             */
             CONTEXT_COPY: number;
-            /**
-             * Update context
-             * @constant {number}
-             */
             CONTEXT_UPDATE: number;
-            /**
-             * Delete context
-             * @constant {number}
-             */
             CONTEXT_DELETE: number;
-            /**
-             * Chart context
-             * @constant {number}
-             */
             CONTEXT_GRAPH: number;
-            /**
-             * Pivot table context
-             * @constant {number}
-             */
             CONTEXT_CROSSTAB: number;
-            /**
-             * Publication context
-             * @constant {number}
-             */
             CONTEXT_PRINTTMPL: number;
-            /**
-             * Bulk update context
-             * @constant {number}
-             */
             CONTEXT_UPDATEALL: number;
-            /**
-             * Reference selection context
-             * @constant {number}
-             */
             CONTEXT_REFSELECT: number;
-            /**
-             * Datamap selection context
-             * @constant {number}
-             */
             CONTEXT_DATAMAPSELECT: number;
-            /**
-             * Pre validation context
-             * @constant {number}
-             */
             CONTEXT_PREVALIDATE: number;
-            /**
-             * Post validation context
-             * @constant {number}
-             */
             CONTEXT_POSTVALIDATE: number;
-            /**
-             * State transition context
-             * @constant {number}
-             */
             CONTEXT_STATETRANSITION: number;
-            /**
-             * Export context
-             * @constant {number}
-             */
             CONTEXT_EXPORT: number;
-            /**
-             * Import context
-             * @constant {number}
-             */
             CONTEXT_IMPORT: number;
-            /**
-             * Association context
-             * @constant {number}
-             */
             CONTEXT_ASSOCIATE: number;
-            /**
-             * Panel list context
-             * @constant {number}
-             */
             CONTEXT_PANELLIST: number;
-            /**
-             * Action context
-             * @constant {number}
-             */
             CONTEXT_ACTION: number;
-            /**
-             * Agenda context
-             * @constant {number}
-             */
             CONTEXT_AGENDA: number;
-            /**
-             * Place map context
-             * @constant {number}
-             */
             CONTEXT_PLACEMAP: number;
-            /**
-             * Foreign key (reference) type
-             * @constant {number}
-             */
             TYPE_ID: number;
-            /**
-             * Integer type
-             * @constant {number}
-             */
             TYPE_INT: number;
-            /**
-             * Decimal type
-             * @constant {number}
-             */
             TYPE_FLOAT: number;
-            /**
-             * Short string type
-             * @constant {number}
-             */
             TYPE_STRING: number;
-            /**
-             * Date type
-             * @constant {number}
-             */
             TYPE_DATE: number;
-            /**
-             * Date and time type
-             * @constant {number}
-             */
             TYPE_DATETIME: number;
-            /**
-             * Time type
-             * @constant {number}
-             */
             TYPE_TIME: number;
-            /**
-             * Simple enumeration type
-             * @constant {number}
-             */
             TYPE_ENUM: number;
-            /**
-             * Boolean type
-             * @constant {number}
-             */
             TYPE_BOOLEAN: number;
-            /**
-             * Password type
-             * @constant {number}
-             */
             TYPE_PASSWORD: number;
-            /**
-             * URL type
-             * @constant {number}
-             */
             TYPE_URL: number;
-            /**
-             * HTML content type
-             * @constant {number}
-             */
             TYPE_HTML: number;
-            /**
-             * Email type
-             * @constant {number}
-             */
             TYPE_EMAIL: number;
-            /**
-             * Long string type
-             * @constant {number}
-             */
             TYPE_LONG_STRING: number;
-            /**
-             * Multiple enumeration type
-             * @constant {number}
-             */
             TYPE_ENUM_MULTI: number;
-            /**
-             * Validated string type
-             * @constant {number}
-             */
             TYPE_REGEXP: number;
-            /**
-             * Document type
-             * @constant {number}
-             */
             TYPE_DOC: number;
-            /**
-             * Decimal type
-             * @constant {number}
-             * @deprecated
-             */
             TYPE_FLOAT_EMPTY: number;
-            /**
-             * External file type
-             * @constant {number}
-             * @deprecated
-             */
             TYPE_EXTFILE: number;
-            /**
-             * Image type
-             * @constant {number}
-             */
             TYPE_IMAGE: number;
-            /**
-             * Notepad type
-             * @constant {number}
-             */
             TYPE_NOTEPAD: number;
-            /**
-             * Phone number type
-             * @constant {number}
-             */
             TYPE_PHONENUM: number;
-            /**
-             * RGB color type
-             * @constant {number}
-             */
             TYPE_COLOR: number;
-            /**
-             * Object type
-             * @constant {number}
-             */
             TYPE_OBJECT: number;
-            /**
-             * Geocoordinates type
-             * @constant {number}
-             */
             TYPE_GEOCOORDS: number;
-            /**
-             * Big decimal
-             * @constant {number}
-             */
             TYPE_BIGDECIMAL: number;
-            /**
-             * Types strings
-             * @constant {Array}
-             */
             TYPES: string[];
-            /**
-             * Not visible
-             * @constant {number}
-             */
             VIS_NOT: number;
-            /**
-             * Hiiden (same as not visible)
-             * @constant {number}
-             */
             VIS_HIDDEN: number;
-            /**
-             * Visible on lists only
-             * @constant {number}
-             */
             VIS_LIST: number;
-            /**
-             * Visible on forms only
-             * @constant {number}
-             */
             VIS_FORM: number;
-            /**
-             * Visible on both lists and forms only
-             * @constant {number}
-             */
             VIS_BOTH: number;
-            /**
-             * No search
-             * @constant {number}
-             */
             SEARCH_NONE: number;
-            /**
-             * Simple search
-             * @constant {number}
-             */
             SEARCH_MONO: number;
-            /**
-             * Multiple search (checkboxes)
-             * @constant {number}
-             */
             SEARCH_MULTI_CHECK: number;
-            /**
-             * Multiple search (listbox)
-             * @constant {number}
-             */
             SEARCH_MULTI_LIST: number;
-            /**
-             * Search by period (date/time)
-             * @constant {number}
-             */
             SEARCH_PERIOD: number;
-            /**
-             * True
-             * @constant {string}
-             */
             TRUE: string;
-            /**
-             * False
-             * @constant {string}
-             */
             FALSE: string;
-            /**
-             * Fatal error level
-             * @constant {number}
-             */
             ERRLEVEL_FATAL: number;
-            /**
-             * Error level
-             * @constant {number}
-             */
             ERRLEVEL_ERROR: number;
-            /**
-             * Warning level
-             * @constant {number}
-             */
             ERRLEVEL_WARNING: number;
-            /**
-             * Image resource type
-             * @constant {number}
-             */
             RESOURCE_TYPE_IMAGE: string;
-            /**
-             * Icon resource type
-             * @constant {number}
-             */
             RESOURCE_TYPE_ICON: string;
-            /**
-             * Stylesheet resource type
-             * @constant {number}
-             */
             RESOURCE_TYPE_STYLESHEET: string;
-            /**
-             * Javascript resource type
-             * @constant {number}
-             */
             RESOURCE_TYPE_JAVASCRIPT: string;
-            /**
-             * Default authentication header
-             * @constant {string}
-             */
             DEFAULT_AUTH_HEADER: string;
-            /**
-             * Simplicite authentication header
-             * @constant {string}
-             */
             SIMPLICITE_AUTH_HEADER: string;
         };
         /**
@@ -806,7 +1377,7 @@ declare module "simplicite" {
          * @param {object} [opts] Options
          * @param {function} [opts.error] Error handler function
          * @param {string} [opts.businessCase] Business case label
-         * @return {promise<object>} A promise to the application info (also avialable as the <code>appinfo</code> member)
+         * @return {promise<object>} A promise to the application info (also available as the <code>appinfo</code> member)
          * @function
          */
         getAppInfo: (opts?: any) => Promise<any>;
@@ -820,7 +1391,7 @@ declare module "simplicite" {
          * @param {object} [opts] Options
          * @param {function} [opts.error] Error handler function
          * @param {string} [opts.businessCase] Business case label
-         * @return {promise<object>} A promise to the system info (also avialable as the <code>sysinfo</code> member)
+         * @return {promise<object>} A promise to the system info (also available as the <code>sysinfo</code> member)
          * @function
          */
         getSysInfo: (opts?: any) => Promise<any>;
@@ -835,7 +1406,7 @@ declare module "simplicite" {
          * @param {object} [opts] Options
          * @param {function} [opts.error] Error handler function
          * @param {string} [opts.businessCase] Business case label
-         * @return {promise<object>} A promise to the develoment info (also avialable as the <code>devinfo</code> member)
+         * @return {promise<object>} A promise to the development info (also available as the <code>devinfo</code> member)
          * @function
          */
         getDevInfo: (module?: string, opts?: any) => Promise<any>;
@@ -850,7 +1421,7 @@ declare module "simplicite" {
          * @param {boolean} [opts.inlineImages=false] Inline news images?
          * @param {function} [opts.error] Error handler function
          * @param {string} [opts.businessCase] Business case label
-         * @return {promise<array>} A promise to the list of news (also avialable as the <code>news</code> member)
+         * @return {promise<array>} A promise to the list of news (also available as the <code>news</code> member)
          * @function
          */
         getNews: (opts?: any) => Promise<any[]>;
@@ -891,392 +1462,14 @@ declare module "simplicite" {
          */
         getResourceURL: (code: string, type?: string, object?: any, objId?: string) => string;
     }
-    /**
-     * Document
-     * @class
-     */
-    class Doc {
-        /**
-         * Constructor
-         * @param [value] {string|object} Document name or value
-         * @param [value.name] Document name
-         * @param [value.mime] Document MIME type
-         * @param [value.content] Document content
-         */
-        constructor(value?: any);
-        /**
-         * Document ID
-         * @member {string}
-         */
-        id?: string;
-        /**
-         * Document MIME type
-         * @member {string}
-         */
-        mime?: string;
-        /**
-         * Document name
-         * @member {string}
-         */
-        name?: string;
-        /**
-         * Document content as base 64
-         * @member {string}
-         */
-        content?: string;
-        /**
-         * Document thumbnail as base 64
-         * @member {string}
-         */
-        thumbnail?: string;
-        /**
-         * Get the document ID
-         * @return {string} ID
-         * @function
-         */
-        getId: () => string;
-        /**
-         * Get the document MIME type
-         * @return {string} MIME type
-         * @function
-         */
-        getMIMEType: () => string;
-        /**
-         * Alias to <code>getMIMEType</code>
-         * @return {string} MIME type
-         * @function
-         */
-        getMimeType: () => string;
-        /**
-         * Set the document MIME type
-         * @param {string} mime MIME type
-         * @return {Doc} This document for chaining
-         * @function
-         */
-        setMIMEType: (mime: string) => Doc;
-        /**
-         * Alias to <code>setMIMEType</code>
-         * @param {string} mime MIME type
-         * @function
-         */
-        setMimeType: (mime: string) => Doc;
-        /**
-         * Get the document name
-         * @return {string} Name
-         * @function
-         */
-        getName: () => string;
-        /**
-         * Alias to <code>getName</code>
-         * @return {string} Name
-         * @function
-         */
-        getFileName: () => string;
-        /**
-         * Alias to <code>getName</code>
-         * @return {string} Name
-         * @function
-         */
-        getFilename: () => string;
-        /**
-         * Set the document name
-         * @param {string} name Name
-         * @return {Doc} This document for chaining
-         * @function
-         */
-        setName: (name: string) => Doc;
-        /**
-         * Alias to <code>setName</code>
-         * @param {string} name Name
-         * @function
-         */
-        setFileName: (name: string) => Doc;
-        /**
-         * Alias to <code>setName</code>
-         * @param {string} name Name
-         * @function
-         */
-        setFilename: (name: string) => Doc;
-        private cleanContent;
-        /**
-         * Get the document content (encoded in base 64)
-         * @return {string} Content
-         * @function
-         */
-        getContent: () => string;
-        /**
-         * Get the document thumbnail (encoded in base 64)
-         * @return {string} Thumbnail
-         * @function
-         */
-        getThumbnail: () => string;
-        /**
-         * Get the document content as a buffer
-         * @param {any} data Content data
-         * @return {buffer} Content data as buffer
-         * @private
-         */
-        private getBuffer;
-        /**
-         * Get the document content as an array buffer
-         * @return {ArrayBuffer} Content as an array buffer
-         * @function
-         */
-        getContentAsArrayBuffer: () => ArrayBuffer;
-        /**
-         * Get the document thumbnail as an array buffer
-         * @return {ArrayBuffer} Thumbnail as an array buffer
-         * @function
-         */
-        getThumbnailAsArrayBuffer: () => ArrayBuffer;
-        /**
-         * Get the document content as a text
-         * @return {string} Content as plain text
-         * @function
-         */
-        getContentAsText: () => string;
-        /**
-         * Set the document content
-         * @param {string} content Content (encoded in base 64)
-         * @return {Doc} This document for chaining
-         * @function
-         */
-        setContent: (content: string) => Doc;
-        /**
-         * Set the document content from plain text string
-         * @param {string} content Content as plain text string
-         * @return {Doc} This document for chaining
-         * @function
-         */
-        setContentFromText: (content: string) => Doc;
-        /**
-         * Get the document data URL
-         * @param {boolean} [thumbnail=false] Thumbnail? If thumbnail does not exists the content is used.
-         * @return {string} Data URL or nothing if content is empty
-         * @function
-         */
-        getDataURL: (thumbnail?: boolean) => string;
-        /**
-         * Load file
-         * @param file File to load
-         * @return {promise<Doc>} A promise to the document
-         * @function
-         */
-        load: (file?: File) => Promise<Doc>;
-        /**
-         * Get the document as a plain value object
-         * @return {object} Value object
-         * @function
-         */
-        getValue: () => any;
-    }
-    /**
-     * Grant (user).
-     * <br/><span style="color: red;">You <strong>should never</strong> instanciate this class directly
-     * but rather use it from the <code>data</code> variable got using <code>getGrant</code></span>.
-     * @class
-     */
-    class Grant {
-        /**
-         * Constructor
-         * @param grant {object} Grant object
-         */
-        constructor(grant: any);
-        /**
-         * User ID
-         * @member {string}
-         */
-        userid: string;
-        /**
-         * User name
-         * @member {string}
-         */
-        login: string;
-        /**
-         * User language
-         * @member {string}
-         */
-        lang: string;
-        /**
-         * User email address
-         * @member {string}
-         */
-        email: string;
-        /**
-         * User first name
-         * @member {string}
-         */
-        firstname: string;
-        /**
-         * User last name
-         * @member {string}
-         */
-        lastname: string;
-        /**
-         * User picture
-         * @member {Doc}
-         */
-        picture: Doc;
-        /**
-         * User responsibilities
-         * @member {array}
-         */
-        responsibilities: string[];
-        /**
-         * Translated texts
-         * @member {object}
-         */
-        texts: Map<string, string>;
-        /**
-         * System parameters
-         * @member {object}
-         */
-        sysparams: Map<string, string>;
-        /**
-         * Get user ID
-         * @return {string} User ID
-         * @function
-         */
-        getUserId: () => string;
-        /**
-         * Get username
-         * @return {string} Username
-         * @function
-         */
-        getUsername: () => string;
-        /**
-         * Alias to <code>getUsername</code>
-         * @return {string} Login
-         * @function
-         */
-        getLogin: () => string;
-        /**
-         * Get user language
-         * @return {string} User language
-         * @function
-         */
-        getLang: () => string;
-        /**
-         * Get email address
-         * @return {string} Email address
-         * @function
-         */
-        getEmail: () => string;
-        /**
-         * Get first name
-         * @return {string} First name
-         * @function
-         */
-        getFirstname: () => string;
-        /**
-         * Alias to <code>getFirstname</code>
-         * @return {string} First name
-         * @function
-         */
-        getFirstName: () => string;
-        /**
-         * Get last name
-         * @return {string} Last name
-         * @function
-         */
-        getLastname: () => string;
-        /**
-         * Alias to <code>getLastname</code>
-         * @return {string} Last name
-         * @function
-         */
-        getLastName: () => string;
-        /**
-         * Get picture data URL
-         * @return {Doc} Picture data URL
-         * @function
-         */
-        getPictureURL: () => string;
-        /**
-         * Has responsibility
-         * @param {string} group Group name
-         * @return {boolean} True if user has a responsibility on the specified group
-         * @function
-         */
-        hasResponsibility: (group: string) => boolean;
-        /**
-         * Get system parameter value
-         * @param {string} name System parameter name
-         * @return {string} System parameter value
-         * @function
-         */
-        getSystemParameter: (name: string) => string;
-        /**
-         * Alias to <code>getSystemParameter</code>
-         * @param {string} name System parameter name
-         * @return {string} System parameter value
-         * @funtion
-         */
-        getSysParam: (name: string) => string;
-        /**
-         * Get text value
-         * @param {string} code Text code
-         * @return {string} Text value
-         */
-        T: (code: string) => string;
-    }
-    /**
-     * Business object meta data.
-     * <br/><span style="color: red;">You <strong>should never</strong> instanciate this class directly
-     * but rather use it from the <code>metadata</code> variable of your <code>BusinessObject</code> instances</span>.
-     * @class
-     */
-    class BusinessObjectMetadata {
-        /**
-         * Constructor
-         * @param {string} name Business object name
-         * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
-         */
-        constructor(name: string, instance?: string);
-        /**
-         * ID
-         * @member {string}
-         */
-        id: string;
-        /**
-         * Name
-         * @member {string}
-         */
-        name: string;
-        /**
-         * Instance name
-         * @member {string}
-         */
-        instance: string;
-        /**
-         * Row ID field name
-         * @member {string}
-         */
-        rowidfield: string;
-        /**
-         * Display label
-         * @member {string}
-         */
-        label: string;
-        /**
-         * Help
-         * @member {string}
-         */
-        help: string;
-        /**
-         * Fields definitions
-         * @member {array}
-         */
-        fields: any[];
-        /**
-         * Links definitions
-         * @member {array}
-         */
-        links: any[];
-    }
+    export { Session };
+}
+declare module "businessobject" {
+    import { BusinessObjectMetadata } from "businessobjectmetadata";
+    import { Session } from "session";
     /**
      * Business object.
-     * <br/><span style="color: red;">ou <strong>should never</strong> instanciate this class directly
+     * <br/><span style="color: red;">ou <strong>should never</strong> instantiate this class directly
      * but rather call <code>getBusinessObject</code> to get a cached instance</span>.
      * @class
      */
@@ -1500,7 +1693,7 @@ declare module "simplicite" {
          */
         setFieldValue: (field: string | any, value: string | any, item?: any) => void;
         /**
-         * Reset values of item (or crrent item)
+         * Reset values of item (or current item)
          * @param {object} [item] Item (defaults to current item)
          */
         resetValues: (item?: any) => void;
@@ -1740,7 +1933,7 @@ declare module "simplicite" {
          * @param {object} [opts.filters] Filters, by default current filters are used
          * @param {function} [opts.error] Error handler function
          * @param {string} [opts.businessCase] Business case label
-         * @return {promise<object>} A promise to the pivot table data (also avialable as the <code>crosstabdata</code> member)
+         * @return {promise<object>} A promise to the pivot table data (also available as the <code>crosstabdata</code> member)
          * @function
          */
         crosstab: (ctb: string, opts?: any) => Promise<any>;
@@ -1796,469 +1989,101 @@ declare module "simplicite" {
          */
         getResourceURL: (code: string, type?: string) => string;
     }
-    /**
-     * External object meta data.
-     * <br/><span style="color: red;">You <strong>should never</strong> instanciate this class directly
-     * but rather use it from the <code>metadata</code> variable of your <code>ExternalObject</code> instances</span>.
-     * @class
-     */
-    class ExternalObjectMetadata {
-        /**
-         * Constructor
-         * @param {string} name External object name
-         */
-        constructor(name: string);
-        /**
-         * Name
-         * @member {string}
-         */
-        name: string;
-    }
-    /**
-     * External object.
-     * <br/><span style="color: red;">ou <strong>should never</strong> instanciate this class directly
-     * but rather call <code>getExternalObject</code></span>.
-     * @class
-     */
-    class ExternalObject {
-        /**
-         * Constructor
-         * @param {Session} ses Session
-         * @param {string} name Business object name
-         */
-        constructor(ses: Session, name: string);
-        /**
-         * Session
-         * @member {Session}
-         * @private
-         */
-        private session;
-        /**
-         * Metadata
-         * @member {ExternalObjectMetadata}
-         */
-        metadata: ExternalObjectMetadata;
-        /**
-         * Path
-         * @member {string}
-         * @private
-         */
-        private path;
-        /**
-         * Get name
-         * @return {string} Name
-         * @function
-         */
-        getName: () => string;
-        /**
-         * Build URL-encoded parameters
-         * @param {object} params URL parameters as key/value pairs
-         * @return {string} URL-encoded parameters
-         * @function
-         */
-        callParams: (params: any) => string;
-        /**
-         * Call an external object
-         * @param {object} [params] Optional URL parameters
-         * @param {object|string|FormData} [data] Optional body data (for 'POST' and 'PUT' methods only)
-         * @param {object} [opts] Options
-         * @param {string} [opts.path] Absolute or relative path (e.g. absolute '/my/mapped/upath' or relative 'my/additional/path')
-         * @param {object} [opts.method] Optional method 'GET', 'POST', 'PUT' or 'DELETE' (defaults to 'GET' if data is not set or 'POST' if data is set)
-         * @param {function} [opts.contentType] Optional data content type (for 'POST' and 'PUT' methods only)
-         * @param {function} [opts.accept] Optional accepted response type (e.g. 'application/json")
-         * @param {function} [opts.error] Error handler function
-         * @param {string} [opts.businessCase] Business case label
-         * @return {promise<object>} Promise to the external object content
-         * @function
-         */
-        call: (params?: any, data?: string | FormData | any, opts?: any) => Promise<any>;
-        /**
-         * Alias to <code>call</code>
-         * @function
-         */
-        invoke: (params?: any, data?: string | FormData | any, opts?: any) => Promise<any>;
-    }
+    export { BusinessObject };
+}
+declare module "simplicite" {
+    import { Doc } from "doc";
+    import { Grant } from "grant";
+    import { BusinessObjectMetadata } from "businessobjectmetadata";
+    import { BusinessObject } from "businessobject";
+    import { ExternalObjectMetadata } from "externalobjectmetadata";
+    import { ExternalObject } from "externalobject";
+    import { SessionParams } from "sessionparams";
+    import { Session } from "session";
     const _default: {
         constants: {
-            /**
-             * API client module version
-             * @constant {string}
-             */
             MODULE_VERSION: string;
-            /**
-             * Default row ID field name
-             * @constant {string}
-             */
             DEFAULT_ROW_ID_NAME: string;
-            /**
-             * Default row ID value
-             * @constant {string}
-             */
             DEFAULT_ROW_ID: string;
-            /**
-             * Default context
-             * @constant {number}
-             */
             CONTEXT_NONE: number;
-            /**
-             * Search context
-             * @constant {number}
-             */
             CONTEXT_SEARCH: number;
-            /**
-             * List context
-             * @constant {number}
-             */
             CONTEXT_LIST: number;
-            /**
-             * Creation context
-             * @constant {number}
-             */
             CONTEXT_CREATE: number;
-            /**
-             * Copy context
-             * @constant {number}
-             */
             CONTEXT_COPY: number;
-            /**
-             * Update context
-             * @constant {number}
-             */
             CONTEXT_UPDATE: number;
-            /**
-             * Delete context
-             * @constant {number}
-             */
             CONTEXT_DELETE: number;
-            /**
-             * Chart context
-             * @constant {number}
-             */
             CONTEXT_GRAPH: number;
-            /**
-             * Pivot table context
-             * @constant {number}
-             */
             CONTEXT_CROSSTAB: number;
-            /**
-             * Publication context
-             * @constant {number}
-             */
             CONTEXT_PRINTTMPL: number;
-            /**
-             * Bulk update context
-             * @constant {number}
-             */
             CONTEXT_UPDATEALL: number;
-            /**
-             * Reference selection context
-             * @constant {number}
-             */
             CONTEXT_REFSELECT: number;
-            /**
-             * Datamap selection context
-             * @constant {number}
-             */
             CONTEXT_DATAMAPSELECT: number;
-            /**
-             * Pre validation context
-             * @constant {number}
-             */
             CONTEXT_PREVALIDATE: number;
-            /**
-             * Post validation context
-             * @constant {number}
-             */
             CONTEXT_POSTVALIDATE: number;
-            /**
-             * State transition context
-             * @constant {number}
-             */
             CONTEXT_STATETRANSITION: number;
-            /**
-             * Export context
-             * @constant {number}
-             */
             CONTEXT_EXPORT: number;
-            /**
-             * Import context
-             * @constant {number}
-             */
             CONTEXT_IMPORT: number;
-            /**
-             * Association context
-             * @constant {number}
-             */
             CONTEXT_ASSOCIATE: number;
-            /**
-             * Panel list context
-             * @constant {number}
-             */
             CONTEXT_PANELLIST: number;
-            /**
-             * Action context
-             * @constant {number}
-             */
             CONTEXT_ACTION: number;
-            /**
-             * Agenda context
-             * @constant {number}
-             */
             CONTEXT_AGENDA: number;
-            /**
-             * Place map context
-             * @constant {number}
-             */
             CONTEXT_PLACEMAP: number;
-            /**
-             * Foreign key (reference) type
-             * @constant {number}
-             */
             TYPE_ID: number;
-            /**
-             * Integer type
-             * @constant {number}
-             */
             TYPE_INT: number;
-            /**
-             * Decimal type
-             * @constant {number}
-             */
             TYPE_FLOAT: number;
-            /**
-             * Short string type
-             * @constant {number}
-             */
             TYPE_STRING: number;
-            /**
-             * Date type
-             * @constant {number}
-             */
             TYPE_DATE: number;
-            /**
-             * Date and time type
-             * @constant {number}
-             */
             TYPE_DATETIME: number;
-            /**
-             * Time type
-             * @constant {number}
-             */
             TYPE_TIME: number;
-            /**
-             * Simple enumeration type
-             * @constant {number}
-             */
             TYPE_ENUM: number;
-            /**
-             * Boolean type
-             * @constant {number}
-             */
             TYPE_BOOLEAN: number;
-            /**
-             * Password type
-             * @constant {number}
-             */
             TYPE_PASSWORD: number;
-            /**
-             * URL type
-             * @constant {number}
-             */
             TYPE_URL: number;
-            /**
-             * HTML content type
-             * @constant {number}
-             */
             TYPE_HTML: number;
-            /**
-             * Email type
-             * @constant {number}
-             */
             TYPE_EMAIL: number;
-            /**
-             * Long string type
-             * @constant {number}
-             */
             TYPE_LONG_STRING: number;
-            /**
-             * Multiple enumeration type
-             * @constant {number}
-             */
             TYPE_ENUM_MULTI: number;
-            /**
-             * Validated string type
-             * @constant {number}
-             */
             TYPE_REGEXP: number;
-            /**
-             * Document type
-             * @constant {number}
-             */
             TYPE_DOC: number;
-            /**
-             * Decimal type
-             * @constant {number}
-             * @deprecated
-             */
             TYPE_FLOAT_EMPTY: number;
-            /**
-             * External file type
-             * @constant {number}
-             * @deprecated
-             */
             TYPE_EXTFILE: number;
-            /**
-             * Image type
-             * @constant {number}
-             */
             TYPE_IMAGE: number;
-            /**
-             * Notepad type
-             * @constant {number}
-             */
             TYPE_NOTEPAD: number;
-            /**
-             * Phone number type
-             * @constant {number}
-             */
             TYPE_PHONENUM: number;
-            /**
-             * RGB color type
-             * @constant {number}
-             */
             TYPE_COLOR: number;
-            /**
-             * Object type
-             * @constant {number}
-             */
             TYPE_OBJECT: number;
-            /**
-             * Geocoordinates type
-             * @constant {number}
-             */
             TYPE_GEOCOORDS: number;
-            /**
-             * Big decimal
-             * @constant {number}
-             */
             TYPE_BIGDECIMAL: number;
-            /**
-             * Types strings
-             * @constant {Array}
-             */
             TYPES: string[];
-            /**
-             * Not visible
-             * @constant {number}
-             */
             VIS_NOT: number;
-            /**
-             * Hiiden (same as not visible)
-             * @constant {number}
-             */
             VIS_HIDDEN: number;
-            /**
-             * Visible on lists only
-             * @constant {number}
-             */
             VIS_LIST: number;
-            /**
-             * Visible on forms only
-             * @constant {number}
-             */
             VIS_FORM: number;
-            /**
-             * Visible on both lists and forms only
-             * @constant {number}
-             */
             VIS_BOTH: number;
-            /**
-             * No search
-             * @constant {number}
-             */
             SEARCH_NONE: number;
-            /**
-             * Simple search
-             * @constant {number}
-             */
             SEARCH_MONO: number;
-            /**
-             * Multiple search (checkboxes)
-             * @constant {number}
-             */
             SEARCH_MULTI_CHECK: number;
-            /**
-             * Multiple search (listbox)
-             * @constant {number}
-             */
             SEARCH_MULTI_LIST: number;
-            /**
-             * Search by period (date/time)
-             * @constant {number}
-             */
             SEARCH_PERIOD: number;
-            /**
-             * True
-             * @constant {string}
-             */
             TRUE: string;
-            /**
-             * False
-             * @constant {string}
-             */
             FALSE: string;
-            /**
-             * Fatal error level
-             * @constant {number}
-             */
             ERRLEVEL_FATAL: number;
-            /**
-             * Error level
-             * @constant {number}
-             */
             ERRLEVEL_ERROR: number;
-            /**
-             * Warning level
-             * @constant {number}
-             */
             ERRLEVEL_WARNING: number;
-            /**
-             * Image resource type
-             * @constant {number}
-             */
             RESOURCE_TYPE_IMAGE: string;
-            /**
-             * Icon resource type
-             * @constant {number}
-             */
             RESOURCE_TYPE_ICON: string;
-            /**
-             * Stylesheet resource type
-             * @constant {number}
-             */
             RESOURCE_TYPE_STYLESHEET: string;
-            /**
-             * Javascript resource type
-             * @constant {number}
-             */
             RESOURCE_TYPE_JAVASCRIPT: string;
-            /**
-             * Default authentication header
-             * @constant {string}
-             */
             DEFAULT_AUTH_HEADER: string;
-            /**
-             * Simplicite authentication header
-             * @constant {string}
-             */
             SIMPLICITE_AUTH_HEADER: string;
         };
         session: (params: SessionParams) => Session;
         Session: typeof Session;
         Doc: typeof Doc;
         Grant: typeof Grant;
-        BusinessObject: typeof BusinessObject;
         BusinessObjectMetadata: typeof BusinessObjectMetadata;
+        BusinessObject: typeof BusinessObject;
+        ExternalObjectMetadata: typeof ExternalObjectMetadata;
         ExternalObject: typeof ExternalObject;
     };
     export default _default;

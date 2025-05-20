@@ -1,6 +1,6 @@
 .tern-project
-.scannerwork
 node_modules
+src/*.d.ts
 test/index.js
 dist/index.*
 **.bak

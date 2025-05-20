@@ -1,4 +1,4 @@
-import simplicite from '../dist/esm/simplicite.js';
+import simplicite from '../dist/simplicite.esm.min.js';
 
 const elt = (id, html, append) => {
 	const e = document.getElementById(id);
