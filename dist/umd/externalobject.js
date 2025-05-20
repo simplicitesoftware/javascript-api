@@ -60,56 +60,65 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
          * @param {string} name Business object name
          */
         function ExternalObject(ses, name) {
-            var _this = this;
             /**
-             * Get name
-             * @return {string} Name
+             * Alias to <code>call</code>
              * @function
              */
-            this.getName = function () {
-                return _this.metadata.name;
-            };
-            /**
-             * Build URL-encoded parameters
-             * @param {object} params URL parameters as key/value pairs
-             * @return {string} URL-encoded parameters
-             * @function
-             */
-            this.callParams = function (params) {
-                var p = '';
-                if (!params)
-                    return p;
-                for (var _i = 0, _a = Object.entries(params); _i < _a.length; _i++) {
-                    var i = _a[_i];
-                    var k = i[0];
-                    var v = i[1] || '';
-                    if (v.sort) { // Array ?
-                        for (var _b = 0, v_1 = v; _b < v_1.length; _b++) {
-                            var vv = v_1[_b];
-                            p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(vv);
-                        }
-                    }
-                    else {
-                        p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(v);
+            this.invoke = this.call;
+            this.session = ses;
+            this.metadata = new externalobjectmetadata_1.ExternalObjectMetadata(name);
+            this.path = "".concat(this.session.parameters.extpath, "/").concat(encodeURIComponent(name));
+        }
+        /**
+         * Get name
+         * @return {string} Name
+         * @function
+         */
+        ExternalObject.prototype.getName = function () {
+            return this.metadata.name;
+        };
+        /**
+         * Build URL-encoded parameters
+         * @param {object} params URL parameters as key/value pairs
+         * @return {string} URL-encoded parameters
+         * @function
+         */
+        ExternalObject.prototype.callParams = function (params) {
+            var p = '';
+            if (!params)
+                return p;
+            for (var _i = 0, _a = Object.entries(params); _i < _a.length; _i++) {
+                var i = _a[_i];
+                var k = i[0];
+                var v = i[1] || '';
+                if (v.sort) { // Array ?
+                    for (var _b = 0, v_1 = v; _b < v_1.length; _b++) {
+                        var vv = v_1[_b];
+                        p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(vv);
                     }
                 }
-                return p;
-            };
-            /**
-             * Call an external object
-             * @param {object} [params] Optional URL parameters
-             * @param {object|string|FormData} [data] Optional body data (for 'POST' and 'PUT' methods only)
-             * @param {object} [opts] Options
-             * @param {string} [opts.path] Absolute or relative path (e.g. absolute '/my/mapped/path' or relative 'my/additional/path')
-             * @param {object} [opts.method] Optional method 'GET', 'POST', 'PUT' or 'DELETE' (defaults to 'GET' if data is not set or 'POST' if data is set)
-             * @param {function} [opts.contentType] Optional data content type (for 'POST' and 'PUT' methods only)
-             * @param {function} [opts.accept] Optional accepted response type (e.g. 'application/json")
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} Promise to the external object content
-             * @function
-             */
-            this.call = function (params, data, opts) { return __awaiter(_this, void 0, void 0, function () {
+                else {
+                    p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(v);
+                }
+            }
+            return p;
+        };
+        /**
+         * Call an external object
+         * @param {object} [params] Optional URL parameters
+         * @param {object|string|FormData} [data] Optional body data (for 'POST' and 'PUT' methods only)
+         * @param {object} [opts] Options
+         * @param {string} [opts.path] Absolute or relative path (e.g. absolute '/my/mapped/path' or relative 'my/additional/path')
+         * @param {object} [opts.method] Optional method 'GET', 'POST', 'PUT' or 'DELETE' (defaults to 'GET' if data is not set or 'POST' if data is set)
+         * @param {function} [opts.contentType] Optional data content type (for 'POST' and 'PUT' methods only)
+         * @param {function} [opts.accept] Optional accepted response type (e.g. 'application/json")
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<object>} Promise to the external object content
+         * @function
+         */
+        ExternalObject.prototype.call = function (params, data, opts) {
+            return __awaiter(this, void 0, void 0, function () {
                 var origin, ses;
                 var _this = this;
                 return __generator(this, function (_a) {
@@ -189,16 +198,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                             });
                         })];
                 });
-            }); };
-            /**
-             * Alias to <code>call</code>
-             * @function
-             */
-            this.invoke = this.call;
-            this.session = ses;
-            this.metadata = new externalobjectmetadata_1.ExternalObjectMetadata(name);
-            this.path = "".concat(this.session.parameters.extpath, "/").concat(encodeURIComponent(name));
-        }
+            });
+        };
         return ExternalObject;
     }());
     exports.ExternalObject = ExternalObject;

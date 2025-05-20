@@ -40,16 +40,16 @@ declare class BusinessObjectMetadata {
      * Help
      * @member {string}
      */
-    help: string;
+    help?: string;
     /**
      * Fields definitions
      * @member {array}
      */
-    fields: any[];
+    fields?: any[];
     /**
      * Links definitions
      * @member {array}
      */
-    links: any[];
+    links?: any[];
 }
 export { BusinessObjectMetadata };

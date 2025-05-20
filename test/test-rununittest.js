@@ -1,4 +1,4 @@
-import simplicite from '../dist/esm/simplicite.js';
+import simplicite from '../dist/simplicite.esm.min.js';
 
 const app = simplicite.session({
 	url: process && process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080',
@@ -21,5 +21,5 @@ try {
 
 	app.info('OK');
 } catch(err) {
-	app.error('Catched error: ' + (err.message || JSON.stringify(err)));
+	app.error('Caught error: ' + (err.message || JSON.stringify(err)));
 }

@@ -77,7 +77,7 @@ declare class BusinessObject {
      * @return {promise<BusinessObjectMetadata>} A promise to the object's meta data (also available as the <code>metadata</code> member)
      * @function
      */
-    getMetaData: (opts?: any) => Promise<any>;
+    getMetaData(opts?: any): Promise<any>;
     /**
      * Get meta data (alias to getMetaData)
      * @function
@@ -88,70 +88,70 @@ declare class BusinessObject {
      * @return {string} Name
      * @function
      */
-    getName: () => string;
+    getName(): string;
     /**
      * Get instance name
      * @return {string} Instance name
      * @function
      */
-    getInstance: () => string;
+    getInstance(): string;
     /**
      * Get display label
      * @return {string} Display label
      * @function
      */
-    getLabel: () => string;
+    getLabel(): string;
     /**
      * Get help
      * @return {string} Help
      * @function
      */
-    getHelp: () => string;
+    getHelp(): string;
     /**
      * Get all fields definitions
      * @return {array} Array of field definitions
      * @function
      */
-    getFields: () => any[];
+    getFields(): any[];
     /**
      * Get a field definition
      * @param {string} fieldName Field name
      * @return {object} Field definition
      * @function
      */
-    getField: (fieldName: string) => any;
+    getField(fieldName: string): any;
     /**
      * Get row ID field name
      * @return {string} Row ID field name
      * @function
      */
-    getRowIdFieldName: () => string;
+    getRowIdFieldName(): string;
     /**
      * Get row ID field definition
      * @return {object} Row ID field definition
      * @function
      */
-    getRowIdField: () => any;
+    getRowIdField(): any;
     /**
      * Get links
      * @return {array} Array of links
      * @function
      */
-    getLinks: () => any[];
+    getLinks(): any[];
     /**
      * Get field type
      * @param {(string|object)} field Field name or definition
      * @return {string} Type (one of <code>constants.TYPE_*</code>)
      * @function
      */
-    getFieldType: (field: string | any) => string;
+    getFieldType(field: string | any): string;
     /**
      * Get field label
      * @param {(string|object)} field Field name or definition
      * @return {string} Field label
      * @function
      */
-    getFieldLabel: (field: string | any) => string;
+    getFieldLabel(field: string | any): string;
     /**
      * Get value of field for item (or current item)
      * @param {(string|object)} field Field name or definition
@@ -159,7 +159,7 @@ declare class BusinessObject {
      * @return {string|Doc} Value
      * @function
      */
-    getFieldValue: (field: string | any, item?: any) => string | any;
+    getFieldValue(field: string | any, item?: any): string | any;
     /**
      * Get the list value of a list of values field for item (or current item)
      * @param {(string|object)} field Field name or definition
@@ -167,7 +167,7 @@ declare class BusinessObject {
      * @return {string} List value
      * @function
      */
-    getFieldListValue: (field: string | any, item?: any) => string;
+    getFieldListValue(field: string | any, item?: any): string;
     /**
      * Get the list colors of a list of values field for item (or current item)
      * @param {(string|object)} field Field name or definition
@@ -175,7 +175,7 @@ declare class BusinessObject {
      * @return {string} List color and bgcolor
      * @function
      */
-    getFieldListColors: (field: string | any, item?: any) => any;
+    getFieldListColors(field: string | any, item?: any): any;
     /**
      * Get the data URL of an inlined document/image field for item (or current item)
      * @param {(string|object)} field Field name or definition
@@ -183,7 +183,7 @@ declare class BusinessObject {
      * @return {string} Document/image field data URL (or nothing if the field is not of document/image type or if it is not inlined or if it is empty)
      * @function
      */
-    getFieldDataURL: (field: string | any, item?: any) => string;
+    getFieldDataURL(field: string | any, item?: any): string;
     /**
      * Get the field's value as document/image for item (or current item)
      * @param {(string|object)} field Field name or definition
@@ -191,7 +191,7 @@ declare class BusinessObject {
      * @return {string|Doc} Document/image (or nothing if the field is not of document/image type or if it is empty)
      * @function
      */
-    getFieldDocument: (field: string | any, item?: any) => any;
+    getFieldDocument(field: string | any, item?: any): any;
     /**
      * Get the URL of a document/image field for item (or current item)
      * @param {(string|object)} field Field name or definition
@@ -200,7 +200,7 @@ declare class BusinessObject {
      * @return {string} Document/image field URL (or nothing if the field is not of document/image type or if it is empty)
      * @function
      */
-    getFieldDocumentURL: (field: string | any, item?: any, thumbnail?: boolean) => string;
+    getFieldDocumentURL(field: string | any, item?: any, thumbnail?: boolean): string;
     /**
      * Get list item value for code
      * @param {array} list List of values
@@ -208,7 +208,7 @@ declare class BusinessObject {
      * @return {string} Value
      * @function
      */
-    getListValue: (list: any[], code: string) => string;
+    getListValue(list: any[], code: string): string;
     /**
      * Get list item colors (color and background color) for code
      * @param {array} list List of values
@@ -216,7 +216,7 @@ declare class BusinessObject {
      * @return {any} Colors
      * @function
      */
-    getListColors: (list: any[], code: string) => any;
+    getListColors(list: any[], code: string): any;
     /**
      * Set value of field for item (or current item)
      * @param {(string|object)} field Field name or definition
@@ -224,32 +224,32 @@ declare class BusinessObject {
      * @param {object} [item] Item (defaults to current item)
      * @function
      */
-    setFieldValue: (field: string | any, value: string | any, item?: any) => void;
+    setFieldValue(field: string | any, value: string | any, item?: any): void;
     /**
      * Reset values of item (or current item)
      * @param {object} [item] Item (defaults to current item)
      */
-    resetValues: (item?: any) => void;
+    resetValues(item?: any): void;
     /**
     * Set values of item (or current item)
     * @param {object|FormData} data Data (plain object or form data)
     * @param {object} [item] Item (defaults to current item)
     */
-    setFieldValues: (data: object | FormData, item?: any) => Promise<any>;
+    setFieldValues(data: object | FormData, item?: any): Promise<any>;
     /**
      * Is the field the row ID field?
      * @param {object} field Field definition
      * @return {boolean} True if the field is the row ID field
      * @function
      */
-    isRowIdField: (field: any) => boolean;
+    isRowIdField(field: any): boolean;
     /**
      * Is the field a timestamp field?
      * @param {object} field Field definition
      * @return {boolean} True if the field is a timestamp field
      * @function
      */
-    isTimestampField: (field: any) => boolean;
+    isTimestampField(field: any): boolean;
     /**
      * Get current filters
      * @param {object} [opts] Options
@@ -260,7 +260,7 @@ declare class BusinessObject {
      * @return {promise<object>} Promise to the object's filters (also available as the <code>filters</code> member)
      * @function
      */
-    getFilters: (opts?: any) => Promise<any>;
+    getFilters(opts?: any): Promise<any>;
     /**
      * Build context option parameters
      * @param {object} options Options
@@ -307,7 +307,7 @@ declare class BusinessObject {
      * @return {promise<object>} Promise to the count
      * @function
      */
-    getCount: (filters?: any, opts?: any) => Promise<any>;
+    getCount(filters?: any, opts?: any): Promise<any>;
     /**
      * Search
      * @param {object} [filters] Filters (defaults to current filters)
@@ -320,7 +320,7 @@ declare class BusinessObject {
      * @return {promise<array>} Promise to a list of records (also available as the <code>list</code> member)
      * @function
      */
-    search: (filters?: any, opts?: any) => Promise<any[]>;
+    search(filters?: any, opts?: any): Promise<any[]>;
     /**
      * Get
      * @param {string} [rowId] Row ID (defaults to current item's row ID)
@@ -333,7 +333,7 @@ declare class BusinessObject {
      * @return {promise<object>} Promise to the record (also available as the <code>item</code> member)
      * @function
      */
-    get: (rowId?: string, opts?: any) => Promise<any>;
+    get(rowId?: string, opts?: any): Promise<any>;
     /**
      * Get for create
      * @param {object} [opts] Options
@@ -343,7 +343,7 @@ declare class BusinessObject {
      * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
      * @function
      */
-    getForCreate: (opts?: any) => Promise<any>;
+    getForCreate(opts?: any): Promise<any>;
     /**
      * Get for update
      * @param {string} [rowId] Row ID (defaults to current item's row ID)
@@ -354,7 +354,7 @@ declare class BusinessObject {
      * @return {promise<object>} Promise to the record to update (also available as the <code>item</code> member)
      * @function
      */
-    getForUpdate: (rowId?: string, opts?: any) => Promise<any>;
+    getForUpdate(rowId?: string, opts?: any): Promise<any>;
     /**
      * Get for copy
      * @param {string} [rowId] Row ID to copy (defaults to current item's row ID)
@@ -365,7 +365,7 @@ declare class BusinessObject {
      * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
      * @function
      */
-    getForCopy: (rowId?: string, opts?: any) => Promise<any>;
+    getForCopy(rowId?: string, opts?: any): Promise<any>;
     /**
      * Get for delete
      * @param {string} [rowId] Row ID (defaults to current item's row ID)
@@ -376,14 +376,14 @@ declare class BusinessObject {
      * @return {promise<object>} Promise to the record to delete (also available as the <code>item</code> member)
      * @function
      */
-    getForDelete: (rowId?: string, opts?: any) => Promise<any>;
+    getForDelete(rowId?: string, opts?: any): Promise<any>;
     /**
      * Get specified or current item's row ID value
      * @param {object} [item] Item (defaults to current item)
      * @return {string} Item's row ID value
      * @function
      */
-    getRowId: (item?: any) => string;
+    getRowId(item?: any): string;
     /**
      * Populate
      * @param {object} [item] Item (defaults to current item)
@@ -393,7 +393,7 @@ declare class BusinessObject {
      * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
      * @function
      */
-    populate: (item?: any, opts?: any) => Promise<any>;
+    populate(item?: any, opts?: any): Promise<any>;
     /**
      * Get the linked list for a list of values field and its specified value(s)
      * @param {(string|object)} field Field name or definition
@@ -405,7 +405,7 @@ declare class BusinessObject {
      * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
      * @function
      */
-    getFieldLinkedList: (field: string | any, linkedField: string | any, code?: string | boolean, opts?: any) => Promise<any>;
+    getFieldLinkedList(field: string | any, linkedField: string | any, code?: string | boolean, opts?: any): Promise<any>;
     /**
      * Save (create or update depending on item row ID value)
      * @param {object} [item] Item (defaults to current item)
@@ -415,7 +415,7 @@ declare class BusinessObject {
      * @return {promise<object>} Promise to the saved record (also available as the <code>item</code> member)
      * @function
      */
-    save: (item?: any, opts?: any) => Promise<any>;
+    save(item?: any, opts?: any): Promise<any>;
     /**
      * Create (create or update)
      * @param {object} [item] Item (defaults to current item)
@@ -425,7 +425,7 @@ declare class BusinessObject {
      * @return {promise<object>} Promise to the created record (also available as the <code>item</code> member)
      * @function
      */
-    create: (item?: any, opts?: any) => Promise<any>;
+    create(item?: any, opts?: any): Promise<any>;
     /**
      * Update
      * @param {object} [item] Item (defaults to current item)
@@ -435,7 +435,7 @@ declare class BusinessObject {
      * @return {promise<object>} Promise to the updated record (also available as the <code>item</code> member)
      * @function
      */
-    update: (item?: any, opts?: any) => Promise<any>;
+    update(item?: any, opts?: any): Promise<any>;
     /**
      * Delete
      * @param {object} [item] Item (defaults to current item)
@@ -445,7 +445,7 @@ declare class BusinessObject {
      * @return {promise<object>} Promise (the <code>item</code> member is emptied)
      * @function
      */
-    del: (item?: any, opts?: any) => Promise<any>;
+    del(item?: any, opts?: any): Promise<any>;
     /**
      * Invoke a custom action
      * @param {string} action Action name
@@ -457,7 +457,7 @@ declare class BusinessObject {
      * @return {promise<string|object>} A promise to the action result
      * @function
      */
-    action: (action: string, rowId?: string, opts?: any) => Promise<string | any>;
+    action(action: string, rowId?: string, opts?: any): Promise<string | any>;
     /**
      * Build a pivot table
      * @param {string} ctb Pivot table name
@@ -469,7 +469,7 @@ declare class BusinessObject {
      * @return {promise<object>} A promise to the pivot table data (also available as the <code>crosstabdata</code> member)
      * @function
      */
-    crosstab: (ctb: string, opts?: any) => Promise<any>;
+    crosstab(ctb: string, opts?: any): Promise<any>;
     /**
      * Build a custom publication
      * @param {string} prt Publication name
@@ -480,7 +480,7 @@ declare class BusinessObject {
      * @return {promise<Doc>} A promise to the document of the publication
      * @function
      */
-    print: (prt: string, rowId?: string, opts?: any) => Promise<any>;
+    print(prt: string, rowId?: string, opts?: any): Promise<any>;
     /**
      * Get place map data
      * @param {string} pcm Place map name
@@ -491,7 +491,7 @@ declare class BusinessObject {
      * @return {promise<any>} A promise to the place map data
      * @function
      */
-    placemap: (pcm: string, filters?: any, opts?: any) => Promise<any>;
+    placemap(pcm: string, filters?: any, opts?: any): Promise<any>;
     /**
      * Set an object parameter
      * @param {string} param Parameter name
@@ -502,7 +502,7 @@ declare class BusinessObject {
      * @return {promise<object>} Promise
      * @function
      */
-    setParameter: (param: string, value: string, opts?: any) => Promise<any>;
+    setParameter(param: string, value: string, opts?: any): Promise<any>;
     /**
      * Get an object parameter
      * @param {string} param Parameter name
@@ -512,7 +512,7 @@ declare class BusinessObject {
      * @return {promise<object>} Promise to the parameter value
      * @function
      */
-    getParameter: (param: string, opts?: any) => Promise<any>;
+    getParameter(param: string, opts?: any): Promise<any>;
     /**
      * Get an object resource URL
      * @param {string} code Resource code
@@ -520,6 +520,6 @@ declare class BusinessObject {
      * @return {string} Object resource URL
      * @function
      */
-    getResourceURL: (code: string, type?: string) => string;
+    getResourceURL(code: string, type?: string): string;
 }
 export { BusinessObject };

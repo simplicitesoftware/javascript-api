@@ -47,7 +47,7 @@ define("constants", ["require", "exports"], function (require, exports) {
          * API client module version
          * @constant {string}
          */
-        MODULE_VERSION: '3.1.0',
+        MODULE_VERSION: '3.1.1',
         /**
          * Default row ID field name
          * @constant {string}
@@ -463,23 +463,6 @@ define("doc", ["require", "exports"], function (require, exports) {
          * @param [value.content] Document content
          */
         function Doc(value) {
-            var _this = this;
-            /**
-             * Get the document ID
-             * @return {string} ID
-             * @function
-             */
-            this.getId = function () {
-                return _this.id;
-            };
-            /**
-             * Get the document MIME type
-             * @return {string} MIME type
-             * @function
-             */
-            this.getMIMEType = function () {
-                return _this.mime;
-            };
             /**
              * Alias to <code>getMIMEType</code>
              * @return {string} MIME type
@@ -487,29 +470,11 @@ define("doc", ["require", "exports"], function (require, exports) {
              */
             this.getMimeType = this.getMIMEType;
             /**
-             * Set the document MIME type
-             * @param {string} mime MIME type
-             * @return {Doc} This document for chaining
-             * @function
-             */
-            this.setMIMEType = function (mime) {
-                _this.mime = mime;
-                return _this; // Chain
-            };
-            /**
              * Alias to <code>setMIMEType</code>
              * @param {string} mime MIME type
              * @function
              */
             this.setMimeType = this.setMIMEType;
-            /**
-             * Get the document name
-             * @return {string} Name
-             * @function
-             */
-            this.getName = function () {
-                return _this.name;
-            };
             /**
              * Alias to <code>getName</code>
              * @return {string} Name
@@ -523,16 +488,6 @@ define("doc", ["require", "exports"], function (require, exports) {
              */
             this.getFilename = this.getName;
             /**
-             * Set the document name
-             * @param {string} name Name
-             * @return {Doc} This document for chaining
-             * @function
-             */
-            this.setName = function (name) {
-                _this.name = name;
-                return _this; // Chain
-            };
-            /**
              * Alias to <code>setName</code>
              * @param {string} name Name
              * @function
@@ -544,83 +499,148 @@ define("doc", ["require", "exports"], function (require, exports) {
              * @function
              */
             this.setFilename = this.setName;
-            /**
-             * Get the document content (encoded in base 64)
-             * @return {string} Content
-             * @function
-             */
-            this.getContent = function () {
-                return _this.content;
-            };
-            /**
-             * Get the document thumbnail (encoded in base 64)
-             * @return {string} Thumbnail
-             * @function
-             */
-            this.getThumbnail = function () {
-                return _this.thumbnail;
-            };
-            /**
-             * Get the document content as an array buffer
-             * @return {ArrayBuffer} Content as an array buffer
-             * @function
-             */
-            this.getContentAsArrayBuffer = function () {
-                return _this.getBuffer(_this.content).buffer;
-            };
-            /**
-             * Get the document thumbnail as an array buffer
-             * @return {ArrayBuffer} Thumbnail as an array buffer
-             * @function
-             */
-            this.getThumbnailAsArrayBuffer = function () {
-                return _this.getBuffer(_this.thumbnail || '').buffer;
-            };
-            /**
-             * Get the document content as a text
-             * @return {string} Content as plain text
-             * @function
-             */
-            this.getContentAsText = function () {
-                return _this.getBuffer(_this.content).toString('utf-8');
-            };
-            /**
-             * Set the document content
-             * @param {string} content Content (encoded in base 64)
-             * @return {Doc} This document for chaining
-             * @function
-             */
-            this.setContent = function (content) {
-                _this.content = _this.cleanContent(content);
-                return _this; // Chain
-            };
-            /**
-             * Set the document content from plain text string
-             * @param {string} content Content as plain text string
-             * @return {Doc} This document for chaining
-             * @function
-             */
-            this.setContentFromText = function (content) {
-                _this.content = Buffer.from(content, 'utf-8').toString('base64');
-                return _this; // Chain
-            };
-            /**
-             * Get the document data URL
-             * @param {boolean} [thumbnail=false] Thumbnail? If thumbnail does not exists the content is used.
-             * @return {string} Data URL or nothing if content is empty
-             * @function
-             */
-            this.getDataURL = function (thumbnail) {
-                if (_this.content)
-                    return 'data:' + _this.mime + ';base64,' + (thumbnail && _this.thumbnail ? _this.thumbnail : _this.content);
-            };
-            /**
-             * Load file
-             * @param file File to load
-             * @return {promise<Doc>} A promise to the document
-             * @function
-             */
-            this.load = function (file) { return __awaiter(_this, void 0, void 0, function () {
+            Object.assign(this, typeof value == 'string' ? { name: value } : value || {});
+            // Backward compatibility
+            if (this['filename'] && !this.name) {
+                this.name = this['filename'];
+                this['filename'] = undefined;
+            }
+        }
+        /**
+         * Get the document ID
+         * @return {string} ID
+         * @function
+         */
+        Doc.prototype.getId = function () {
+            return this.id;
+        };
+        /**
+         * Get the document MIME type
+         * @return {string} MIME type
+         * @function
+         */
+        Doc.prototype.getMIMEType = function () {
+            return this.mime;
+        };
+        /**
+         * Set the document MIME type
+         * @param {string} mime MIME type
+         * @return {Doc} This document for chaining
+         * @function
+         */
+        Doc.prototype.setMIMEType = function (mime) {
+            this.mime = mime;
+            return this; // Chain
+        };
+        /**
+         * Get the document name
+         * @return {string} Name
+         * @function
+         */
+        Doc.prototype.getName = function () {
+            return this.name;
+        };
+        /**
+         * Set the document name
+         * @param {string} name Name
+         * @return {Doc} This document for chaining
+         * @function
+         */
+        Doc.prototype.setName = function (name) {
+            this.name = name;
+            return this; // Chain
+        };
+        Doc.prototype.cleanContent = function (content) {
+            return content.startsWith('data:') ? content.replace(/data:.*;base64,/, '') : content;
+        };
+        /**
+         * Get the document content (encoded in base 64)
+         * @return {string} Content
+         * @function
+         */
+        Doc.prototype.getContent = function () {
+            return this.content;
+        };
+        /**
+         * Get the document thumbnail (encoded in base 64)
+         * @return {string} Thumbnail
+         * @function
+         */
+        Doc.prototype.getThumbnail = function () {
+            return this.thumbnail;
+        };
+        ;
+        /**
+         * Get the document content as a buffer
+         * @param {any} data Content data
+         * @return {buffer} Content data as buffer
+         * @private
+         */
+        Doc.prototype.getBuffer = function (data) {
+            return Buffer.from(data, 'base64');
+        };
+        /**
+         * Get the document content as an array buffer
+         * @return {ArrayBuffer} Content as an array buffer
+         * @function
+         */
+        Doc.prototype.getContentAsArrayBuffer = function () {
+            return this.getBuffer(this.content).buffer;
+        };
+        /**
+         * Get the document thumbnail as an array buffer
+         * @return {ArrayBuffer} Thumbnail as an array buffer
+         * @function
+         */
+        Doc.prototype.getThumbnailAsArrayBuffer = function () {
+            return this.getBuffer(this.thumbnail || '').buffer;
+        };
+        /**
+         * Get the document content as a text
+         * @return {string} Content as plain text
+         * @function
+         */
+        Doc.prototype.getContentAsText = function () {
+            return this.getBuffer(this.content).toString('utf-8');
+        };
+        /**
+         * Set the document content
+         * @param {string} content Content (encoded in base 64)
+         * @return {Doc} This document for chaining
+         * @function
+         */
+        Doc.prototype.setContent = function (content) {
+            this.content = this.cleanContent(content);
+            return this; // Chain
+        };
+        /**
+         * Set the document content from plain text string
+         * @param {string} content Content as plain text string
+         * @return {Doc} This document for chaining
+         * @function
+         */
+        Doc.prototype.setContentFromText = function (content) {
+            this.content = Buffer.from(content, 'utf-8').toString('base64');
+            return this; // Chain
+        };
+        /**
+         * Get the document data URL
+         * @param {boolean} [thumbnail=false] Thumbnail? If thumbnail does not exists the content is used.
+         * @return {string} Data URL or nothing if content is empty
+         * @function
+         */
+        Doc.prototype.getDataURL = function (thumbnail) {
+            if (this.content)
+                return 'data:' + this.mime + ';base64,' + (thumbnail && this.thumbnail ? this.thumbnail : this.content);
+        };
+        /**
+         * Load file
+         * @param file File to load
+         * @return {promise<Doc>} A promise to the document
+         * @function
+         */
+        Doc.prototype.load = function (file) {
+            return __awaiter(this, void 0, void 0, function () {
                 var _this = this;
                 return __generator(this, function (_a) {
                     return [2 /*return*/, new Promise(function (resolve, reject) {
@@ -645,39 +665,21 @@ define("doc", ["require", "exports"], function (require, exports) {
                             }
                         })];
                 });
-            }); };
-            /**
-             * Get the document as a plain value object
-             * @return {object} Value object
-             * @function
-             */
-            this.getValue = function () {
-                return {
-                    id: _this.id,
-                    name: _this['filename'] && !_this.name ? _this['filename'] : _this.name, // Backward compatibility
-                    mime: _this.mime,
-                    content: _this.content,
-                    thumbnail: _this.thumbnail
-                };
-            };
-            Object.assign(this, typeof value == 'string' ? { name: value } : value || {});
-            // Backward compatibility
-            if (this['filename'] && !this.name) {
-                this.name = this['filename'];
-                this['filename'] = undefined;
-            }
-        }
-        Doc.prototype.cleanContent = function (content) {
-            return content.startsWith('data:') ? content.replace(/data:.*;base64,/, '') : content;
+            });
         };
         /**
-         * Get the document content as a buffer
-         * @param {any} data Content data
-         * @return {buffer} Content data as buffer
-         * @private
+         * Get the document as a plain value object
+         * @return {object} Value object
+         * @function
          */
-        Doc.prototype.getBuffer = function (data) {
-            return Buffer.from(data, 'base64');
+        Doc.prototype.getValue = function () {
+            return {
+                id: this.id,
+                name: this['filename'] && !this.name ? this['filename'] : this.name, // Backward compatibility
+                mime: this.mime,
+                content: this.content,
+                thumbnail: this.thumbnail
+            };
         };
         return Doc;
     }());
@@ -731,100 +733,24 @@ define("grant", ["require", "exports"], function (require, exports) {
          * @param grant {object} Grant object
          */
         function Grant(grant) {
-            var _this = this;
-            /**
-             * Get user ID
-             * @return {string} User ID
-             * @function
-             */
-            this.getUserId = function () {
-                return _this.userid;
-            };
-            /**
-             * Get username
-             * @return {string} Username
-             * @function
-             */
-            this.getUsername = function () {
-                return _this.login;
-            };
             /**
              * Alias to <code>getUsername</code>
              * @return {string} Login
              * @function
              */
-            this.getLogin = this.getUsername; // Naming flexibility
-            /**
-             * Get user language
-             * @return {string} User language
-             * @function
-             */
-            this.getLang = function () {
-                return _this.lang;
-            };
-            /**
-             * Get email address
-             * @return {string} Email address
-             * @function
-             */
-            this.getEmail = function () {
-                return _this.email;
-            };
-            /**
-             * Get first name
-             * @return {string} First name
-             * @function
-             */
-            this.getFirstname = function () {
-                return _this.firstname;
-            };
+            this.getLogin = this.getUsername;
             /**
              * Alias to <code>getFirstname</code>
              * @return {string} First name
              * @function
              */
-            this.getFirstName = this.getFirstname; // Naming flexibility
-            /**
-             * Get last name
-             * @return {string} Last name
-             * @function
-             */
-            this.getLastname = function () {
-                return _this.lastname;
-            };
+            this.getFirstName = this.getFirstname;
             /**
              * Alias to <code>getLastname</code>
              * @return {string} Last name
              * @function
              */
-            this.getLastName = this.getLastname; // Naming flexibility
-            /**
-             * Get picture data URL
-             * @return {Doc} Picture data URL
-             * @function
-             */
-            this.getPictureURL = function () {
-                if (_this.picture)
-                    return 'data:' + _this.picture.mime + ';base64,' + _this.picture.content;
-            };
-            /**
-             * Has responsibility
-             * @param {string} group Group name
-             * @return {boolean} True if user has a responsibility on the specified group
-             * @function
-             */
-            this.hasResponsibility = function (group) {
-                return _this.responsibilities && _this.responsibilities.indexOf(group) !== -1;
-            };
-            /**
-             * Get system parameter value
-             * @param {string} name System parameter name
-             * @return {string} System parameter value
-             * @function
-             */
-            this.getSystemParameter = function (name) {
-                return _this.sysparams ? _this.sysparams[name] || '' : '';
-            };
+            this.getLastName = this.getLastname;
             /**
              * Alias to <code>getSystemParameter</code>
              * @param {string} name System parameter name
@@ -832,16 +758,106 @@ define("grant", ["require", "exports"], function (require, exports) {
              * @function
              */
             this.getSysParam = this.getSystemParameter;
-            /**
-             * Get text value
-             * @param {string} code Text code
-             * @return {string} Text value
-             */
-            this.T = function (code) {
-                return _this.texts ? _this.texts[code] || '' : '';
-            };
             Object.assign(this, grant);
         }
+        /**
+         * Get user ID
+         * @return {string} User ID
+         * @function
+         */
+        Grant.prototype.getUserId = function () {
+            return this.userid;
+        };
+        /**
+         * Get username
+         * @return {string} Username
+         * @function
+         */
+        Grant.prototype.getUsername = function () {
+            return this.login;
+        };
+        /**
+         * Get user language
+         * @return {string} User language
+         * @function
+         */
+        Grant.prototype.getLang = function () {
+            return this.lang;
+        };
+        /**
+         * Get email address
+         * @return {string} Email address
+         * @function
+         */
+        Grant.prototype.getEmail = function () {
+            return this.email;
+        };
+        /**
+         * Get first name
+         * @return {string} First name
+         * @function
+         */
+        Grant.prototype.getFirstname = function () {
+            return this.firstname;
+        };
+        /**
+         * Get last name
+         * @return {string} Last name
+         * @function
+         */
+        Grant.prototype.getLastname = function () {
+            return this.lastname;
+        };
+        /**
+         * Get picture data URL
+         * @return {Doc} Picture data URL
+         * @function
+         */
+        Grant.prototype.getPictureURL = function () {
+            if (this.picture)
+                return 'data:' + this.picture.mime + ';base64,' + this.picture.content;
+        };
+        /**
+         * Has responsibility?
+         * @param {string} group Group name
+         * @return {boolean} True if user has a responsibility on the specified group
+         * @function
+         */
+        Grant.prototype.hasResponsibility = function (group) {
+            return this.responsibilities && this.responsibilities.indexOf(group) !== -1;
+        };
+        /**
+         * Has home scope?
+         * @param {string} home Home scope name
+         * @return {boolean} True if user has the specified home scope
+         * @function
+         */
+        Grant.prototype.hasScope = function (home) {
+            if (this.apps)
+                for (var _i = 0, _a = this.apps; _i < _a.length; _i++) {
+                    var app = _a[_i];
+                    if (app.home === home)
+                        return true;
+                }
+            return false;
+        };
+        /**
+         * Get system parameter value
+         * @param {string} name System parameter name
+         * @return {string} System parameter value
+         * @function
+         */
+        Grant.prototype.getSystemParameter = function (name) {
+            return this.sysparams ? this.sysparams[name] || '' : '';
+        };
+        /**
+         * Get text value
+         * @param {string} code Text code
+         * @return {string} Text value
+         */
+        Grant.prototype.T = function (code) {
+            return this.texts ? this.texts[code] || '' : '';
+        };
         return Grant;
     }());
     exports.Grant = Grant;
@@ -885,56 +901,65 @@ define("externalobject", ["require", "exports", "externalobjectmetadata"], funct
          * @param {string} name Business object name
          */
         function ExternalObject(ses, name) {
-            var _this = this;
             /**
-             * Get name
-             * @return {string} Name
+             * Alias to <code>call</code>
              * @function
              */
-            this.getName = function () {
-                return _this.metadata.name;
-            };
-            /**
-             * Build URL-encoded parameters
-             * @param {object} params URL parameters as key/value pairs
-             * @return {string} URL-encoded parameters
-             * @function
-             */
-            this.callParams = function (params) {
-                var p = '';
-                if (!params)
-                    return p;
-                for (var _i = 0, _a = Object.entries(params); _i < _a.length; _i++) {
-                    var i = _a[_i];
-                    var k = i[0];
-                    var v = i[1] || '';
-                    if (v.sort) { // Array ?
-                        for (var _b = 0, v_1 = v; _b < v_1.length; _b++) {
-                            var vv = v_1[_b];
-                            p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(vv);
-                        }
-                    }
-                    else {
-                        p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(v);
+            this.invoke = this.call;
+            this.session = ses;
+            this.metadata = new externalobjectmetadata_1.ExternalObjectMetadata(name);
+            this.path = "".concat(this.session.parameters.extpath, "/").concat(encodeURIComponent(name));
+        }
+        /**
+         * Get name
+         * @return {string} Name
+         * @function
+         */
+        ExternalObject.prototype.getName = function () {
+            return this.metadata.name;
+        };
+        /**
+         * Build URL-encoded parameters
+         * @param {object} params URL parameters as key/value pairs
+         * @return {string} URL-encoded parameters
+         * @function
+         */
+        ExternalObject.prototype.callParams = function (params) {
+            var p = '';
+            if (!params)
+                return p;
+            for (var _i = 0, _a = Object.entries(params); _i < _a.length; _i++) {
+                var i = _a[_i];
+                var k = i[0];
+                var v = i[1] || '';
+                if (v.sort) { // Array ?
+                    for (var _b = 0, v_1 = v; _b < v_1.length; _b++) {
+                        var vv = v_1[_b];
+                        p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(vv);
                     }
                 }
-                return p;
-            };
-            /**
-             * Call an external object
-             * @param {object} [params] Optional URL parameters
-             * @param {object|string|FormData} [data] Optional body data (for 'POST' and 'PUT' methods only)
-             * @param {object} [opts] Options
-             * @param {string} [opts.path] Absolute or relative path (e.g. absolute '/my/mapped/path' or relative 'my/additional/path')
-             * @param {object} [opts.method] Optional method 'GET', 'POST', 'PUT' or 'DELETE' (defaults to 'GET' if data is not set or 'POST' if data is set)
-             * @param {function} [opts.contentType] Optional data content type (for 'POST' and 'PUT' methods only)
-             * @param {function} [opts.accept] Optional accepted response type (e.g. 'application/json")
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} Promise to the external object content
-             * @function
-             */
-            this.call = function (params, data, opts) { return __awaiter(_this, void 0, void 0, function () {
+                else {
+                    p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(v);
+                }
+            }
+            return p;
+        };
+        /**
+         * Call an external object
+         * @param {object} [params] Optional URL parameters
+         * @param {object|string|FormData} [data] Optional body data (for 'POST' and 'PUT' methods only)
+         * @param {object} [opts] Options
+         * @param {string} [opts.path] Absolute or relative path (e.g. absolute '/my/mapped/path' or relative 'my/additional/path')
+         * @param {object} [opts.method] Optional method 'GET', 'POST', 'PUT' or 'DELETE' (defaults to 'GET' if data is not set or 'POST' if data is set)
+         * @param {function} [opts.contentType] Optional data content type (for 'POST' and 'PUT' methods only)
+         * @param {function} [opts.accept] Optional accepted response type (e.g. 'application/json")
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<object>} Promise to the external object content
+         * @function
+         */
+        ExternalObject.prototype.call = function (params, data, opts) {
+            return __awaiter(this, void 0, void 0, function () {
                 var origin, ses;
                 var _this = this;
                 return __generator(this, function (_a) {
@@ -1014,16 +1039,8 @@ define("externalobject", ["require", "exports", "externalobjectmetadata"], funct
                             });
                         })];
                 });
-            }); };
-            /**
-             * Alias to <code>call</code>
-             * @function
-             */
-            this.invoke = this.call;
-            this.session = ses;
-            this.metadata = new externalobjectmetadata_1.ExternalObjectMetadata(name);
-            this.path = "".concat(this.session.parameters.extpath, "/").concat(encodeURIComponent(name));
-        }
+            });
+        };
         return ExternalObject;
     }());
     exports.ExternalObject = ExternalObject;
@@ -1067,268 +1084,6 @@ define("session", ["require", "exports", "buffer", "constants", "grant", "doc", 
              */
             this.constants = constants_2.constants;
             /**
-             * Set username
-             * @param {string} usr Username
-             * @function
-             */
-            this.setUsername = function (usr) {
-                _this.username = usr;
-            };
-            /**
-             * Set password
-             * @param {string} pwd Password
-             * @function
-             */
-            this.setPassword = function (pwd) {
-                _this.password = pwd;
-            };
-            /**
-             * Set auth token
-             * @param {string} token Auth token
-             * @function
-             */
-            this.setAuthToken = function (token) {
-                _this.authtoken = token;
-            };
-            /**
-             * Set auth token expiry date
-             * @param {Date} expiry Auth token expiry
-             * @function
-             */
-            this.setAuthTokenExpiryDate = function (expiry) {
-                _this.authtokenexpiry = expiry;
-            };
-            /**
-             * Is the auth token expired?
-             * @return {boolean} true if the auth token is expired
-             * @function
-             */
-            this.isAuthTokenExpired = function () {
-                return _this.authtokenexpiry ? new Date() > _this.authtokenexpiry : false;
-            };
-            /**
-             * Set Ajax key
-             * @param {string} key Ajax key
-             * @function
-             */
-            this.setAjaxKey = function (key) {
-                _this.ajaxkey = key;
-            };
-            /**
-             * Get business object cache key
-             * @param {string} name Business object name
-             * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
-             * @return {object} Business object cache key
-             * @function
-             */
-            this.getBusinessObjectCacheKey = function (name, instance) {
-                return name + ':' + (instance || 'js_' + name);
-            };
-            /**
-             * Clears all data (credentials, objects, ...)
-             * @function
-             */
-            this.clear = function () {
-                _this.username = undefined;
-                _this.password = undefined;
-                _this.authtoken = undefined;
-                _this.authtokenexpiry = undefined;
-                _this.sessionid = undefined;
-                _this.grant = undefined;
-                _this.appinfo = undefined;
-                _this.sysinfo = undefined;
-                _this.devinfo = undefined;
-                _this.businessObjectCache = new Map();
-            };
-            /**
-             * Basic HTTP authorization header value
-             * @return {string} HTTP authorization header value
-             * @function
-             */
-            this.getBasicAuthHeader = function () {
-                return _this.username && _this.password
-                    ? 'Basic ' + buffer_1.Buffer.from(_this.username + ':' + _this.password).toString('base64')
-                    : undefined;
-            };
-            /**
-             * Get bearer token header value
-             * @return {string} Bearer token header value
-             * @function
-             */
-            this.getBearerTokenHeader = function () {
-                return _this.authtoken
-                    ? 'Bearer ' + _this.authtoken
-                    : undefined;
-            };
-            /**
-             * Get error object
-             * @param {(string|object)} err Error
-             * @param {string} err.message Error message
-             * @param {number} [status] Optional error status (defaults to 200)
-             * @param {string} [origin] Optional error origin
-             * @return {object} Error object
-             * @function
-             */
-            this.getError = function (err, status, origin) {
-                if (typeof err === 'string') { // plain text error
-                    return { message: err, status: status || 200, origin: origin };
-                }
-                else if (err.response) { // wrapped error
-                    if (typeof err.response === 'string') {
-                        return { message: err.response, status: status || 200, origin: origin };
-                    }
-                    else {
-                        if (origin) {
-                            try {
-                                err.response.origin = origin;
-                            }
-                            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                            catch (e) {
-                                /* ignore */
-                            }
-                        }
-                        return err.response;
-                    }
-                }
-                else { // other cases
-                    if (origin) {
-                        try {
-                            err.origin = origin;
-                        }
-                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                        catch (e) {
-                            /* ignore */
-                        }
-                    }
-                    return err;
-                }
-            };
-            /**
-             * Compress data as blob
-             * @param data {string|any} Data to compress
-             * @return {Promise<Blob>} Promise to the compressed data blob
-             */
-            this.compressData = function (data) {
-                var s = typeof data === 'string'
-                    ? new Blob([data], { type: 'text/plain' }).stream()
-                    : new Blob([JSON.stringify(data)], { type: 'application/json' }).stream();
-                var cs = s.pipeThrough(new CompressionStream('gzip'));
-                return new Response(cs).blob();
-            };
-            /**
-             * Uncompress blob
-             * @param blob {Blob} Compressed data blob
-             * @return {Promise<string>} Promise to the uncompressed string
-             */
-            this.uncompressData = function (blob) {
-                var us = blob.stream().pipeThrough(new DecompressionStream('gzip'));
-                return new Response(us).text();
-            };
-            /**
-             * Send request
-             * @param {string} path Path
-             * @param {object} [data] Data
-             * @param {function} [callback] Callback
-             * @param {function} [errorHandler] Error handler
-             * @function
-             */
-            this.sendRequest = function (path, data, callback, errorHandler) {
-                var origin = 'Session.sendRequest';
-                var m = data ? 'POST' : 'GET';
-                var h = {};
-                if (data)
-                    h['content-type'] = 'application/x-www-form-urlencoded; charset=utf-8';
-                h.accept = 'application/json';
-                var b = _this.getBearerTokenHeader();
-                if (b) {
-                    h[_this.authheader] = b;
-                }
-                else {
-                    b = _this.getBasicAuthHeader();
-                    if (b)
-                        h[_this.authheader] = b;
-                }
-                var u = _this.parameters.url + (path || '/');
-                if (_this.ajaxkey)
-                    u += (u.indexOf('?') >= 0 ? '&' : '?') + '_ajaxkey=' + encodeURIComponent(_this.ajaxkey);
-                var d = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined;
-                _this.debug("[".concat(origin, "] ").concat(m, " ").concat(u).concat(d ? ' with ' + d : ''));
-                fetch(u, {
-                    method: m,
-                    headers: h,
-                    //compress: this.parameters.compress,
-                    signal: AbortSignal.timeout(_this.parameters.timeout),
-                    body: d
-                }).then(function (res) {
-                    if (callback) {
-                        res.text().then(function (textData) {
-                            callback.call(_this, textData, res.status, res.headers);
-                        });
-                    }
-                }).catch(function (err) {
-                    var s = err.response && err.response.status ? err.response.status : undefined;
-                    var e = err.response && err.response.data ? err.response.data : err;
-                    if (errorHandler)
-                        errorHandler.call(_this, _this.getError(e, s, origin));
-                    else
-                        throw e;
-                });
-            };
-            /**
-             * Parse response
-             * @param {object} res Response to parse
-             * @param {number} [status=200] HTTP status
-             * @return {object} Error object
-             * @function
-             */
-            this.parseResponse = function (res, status) {
-                try {
-                    if (status !== 200)
-                        return { type: 'error', response: _this.getError('HTTP status: ' + status, status) };
-                    return typeof res === 'object' ? res : JSON.parse(res);
-                }
-                catch (e) {
-                    return { type: 'error', response: _this.getError('Parsing error: ' + e.message, status) };
-                }
-            };
-            /**
-             * Get health check (no need to be authenticated)
-             * @param {object} [opts] Options
-             * @param {boolean} [opts.full=false] Full health check?
-             * @param {function} [opts.error] Error handler function
-             * @return {promise<object>} Promise to the health data
-             * @function
-             */
-            this.getHealth = function (opts) { return __awaiter(_this, void 0, void 0, function () {
-                var origin;
-                var _this = this;
-                return __generator(this, function (_a) {
-                    origin = 'Session.getHealth';
-                    opts = opts || {};
-                    return [2 /*return*/, new Promise(function (resolve, reject) {
-                            var p = "&full=".concat(!!opts.full);
-                            if (opts.businessCase)
-                                p += "&_bc=".concat(encodeURIComponent(opts.businessCase));
-                            _this.sendRequest("".concat(_this.parameters.healthpath).concat(p), undefined, function (res, status) {
-                                var r = _this.parseResponse(res, status);
-                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(res));
-                                if (r.type === 'error') {
-                                    var err = _this.getError(r.response, undefined, origin);
-                                    if (!(opts.error || _this.error).call(_this, err))
-                                        reject.call(_this, err);
-                                }
-                                else {
-                                    resolve.call(_this, r);
-                                }
-                            }, function (err) {
-                                err = _this.getError(err, undefined, origin);
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            });
-                        })];
-                });
-            }); };
-            /**
              * Alias to getHealth
              * @param {object} [opts] Options
              * @param {boolean} [opts.full=false] Full health check?
@@ -1337,443 +1092,6 @@ define("session", ["require", "exports", "buffer", "constants", "grant", "doc", 
              * @function
              */
             this.health = this.getHealth;
-            /**
-             * Login
-             * @param {object} [opts] Options
-             * @param {string} [opts.username] Username (exclusive with authentication token)
-             * @param {string} [opts.password] Password (required if username is set)
-             * @param {string} [opts.authtoken] Authentication token ((exclusive with username)
-             * @param {function} [opts.error] Error handler function
-             * @return {promise<object>} Promise to the login result
-             * @function
-             */
-            this.login = function (opts) { return __awaiter(_this, void 0, void 0, function () {
-                var origin;
-                var _this = this;
-                return __generator(this, function (_a) {
-                    origin = 'Session.login';
-                    opts = opts || {};
-                    return [2 /*return*/, new Promise(function (resolve, reject) {
-                            if ((opts.username || opts.login) && (opts.password || opts.pwd)) {
-                                _this.clear();
-                                _this.username = opts.username || opts.login;
-                                _this.password = opts.password || opts.pwd;
-                            }
-                            else if (opts.authtoken || opts.authToken || opts.token) {
-                                _this.clear();
-                                _this.authtoken = opts.authtoken || opts.authToken || opts.token;
-                            }
-                            _this.sendRequest(_this.parameters.loginpath, undefined, function (res, status) {
-                                var r = _this.parseResponse(res, status);
-                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type || (r.error ? 'error' : 'login')));
-                                if (r.type === 'error' || r.error) {
-                                    var err = _this.getError(r.response ? r.response : r, undefined, origin);
-                                    if (!(opts.error || _this.error).call(_this, err))
-                                        reject.call(_this, err);
-                                }
-                                else {
-                                    _this.sessionid = r.response ? r.response.id : r.sessionid;
-                                    _this.debug("[".concat(origin, "] Session ID = ").concat(_this.sessionid));
-                                    _this.username = r.response ? r.response.login : r.login;
-                                    if (_this.username)
-                                        _this.debug("[".concat(origin, "] Username = ").concat(_this.username));
-                                    _this.authtoken = r.response ? r.response.authtoken : r.authtoken;
-                                    if (_this.authtoken)
-                                        _this.debug("[".concat(origin, "] Auth token = ").concat(_this.authtoken));
-                                    try {
-                                        var exp = new Date();
-                                        exp.setTime(r.response ? r.response.authtokenexpiry : r.authtokenexpiry);
-                                        _this.authtokenexpiry = exp;
-                                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                                    }
-                                    catch (e) {
-                                        _this.authtokenexpiry = undefined;
-                                    }
-                                    if (_this.authtokenexpiry)
-                                        _this.debug("[".concat(origin, "] Auth token expiry date = ").concat(_this.authtokenexpiry.toLocaleDateString(), " ").concat(_this.authtokenexpiry.toLocaleTimeString()));
-                                    // Minimal grant from session data
-                                    _this.grant = new grant_1.Grant({
-                                        login: _this.username,
-                                        userid: r.response ? r.response.userid : r.userid,
-                                        firstname: r.response ? r.response.firstname : r.firstname,
-                                        lastname: r.response ? r.response.lastname : r.lastname,
-                                        email: r.response ? r.response.email : r.email
-                                    });
-                                    resolve.call(_this, r.response || r);
-                                }
-                            }, function (err) {
-                                err = _this.getError(err, undefined, origin);
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            });
-                        })];
-                });
-            }); };
-            /**
-             * Logout
-             * @param {function} callback Callback (called upon success)
-             * @param {object} [opts] Options
-             * @param {function} [opts.error] Error handler function
-             * @return {promise<object>} Promise to the logout result
-             * @function
-             */
-            this.logout = function (opts) { return __awaiter(_this, void 0, void 0, function () {
-                var origin;
-                var _this = this;
-                return __generator(this, function (_a) {
-                    origin = 'Session.logout';
-                    opts = opts || {};
-                    return [2 /*return*/, new Promise(function (resolve, reject) {
-                            _this.sendRequest(_this.parameters.logoutpath, undefined, function (res, status) {
-                                var r = _this.parseResponse(res, status);
-                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type || (r.error ? 'error' : 'logout')));
-                                if (r.type === 'error') {
-                                    var err = _this.getError(r.response ? r.response : r, undefined, origin);
-                                    if (!(opts.error || _this.error).call(_this, err))
-                                        reject.call(_this, err);
-                                }
-                                else {
-                                    _this.clear();
-                                    // Restore session parameter-level credentials if present
-                                    _this.username = _this.parameters.username;
-                                    _this.password = _this.parameters.password;
-                                    _this.authtoken = _this.parameters.authtoken;
-                                    resolve.call(_this, r.response || r);
-                                }
-                            }, function (err) {
-                                err = _this.getError(err, undefined, origin);
-                                if (err.status === 401) // Removes (expired or deleted) token if any
-                                    _this.authtoken = undefined;
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            });
-                        })];
-                });
-            }); };
-            /**
-             * Get grant (current user data)
-             * @param {object} [opts] Options
-             * @param {boolean} [opts.inlinePicture=false] Inline user picture?
-             * @param {boolean} [opts.includeTexts=false] Include texts?
-             * @param {boolean} [opts.includeSysparams=false] Include system parameters?
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<Grant>} A promise to the grant (also available as the <code>grant</code> member)
-             * @function
-             */
-            this.getGrant = function (opts) { return __awaiter(_this, void 0, void 0, function () {
-                var origin;
-                var _this = this;
-                return __generator(this, function (_a) {
-                    origin = 'Session.getGrant';
-                    opts = opts || {};
-                    return [2 /*return*/, new Promise(function (resolve, reject) {
-                            var p = '&web=true'; // Required to be able to include texts
-                            var txt = !!opts.includeTexts || !!opts.texts; // naming flexibility
-                            p += "&texts=".concat(encodeURIComponent(txt));
-                            var pic = !!opts.inlinePicture || !!opts.picture; // naming flexibility
-                            if (pic)
-                                p += '&inline_picture=true';
-                            var sys = !!opts.includeSysparams || !!opts.sysparams; // naming flexibility
-                            if (sys)
-                                p += '&sysparams=true';
-                            _this.sendRequest("".concat(_this.getPath('getgrant', opts)).concat(p), undefined, function (res, status) {
-                                var r = _this.parseResponse(res, status);
-                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                                if (r.type === 'error') {
-                                    var err = _this.getError(r.response, undefined, origin);
-                                    if (!(opts.error || _this.error).call(_this, err))
-                                        reject.call(_this, err);
-                                }
-                                else {
-                                    _this.grant = new grant_1.Grant(r.response); // Set as Grant
-                                    if (pic)
-                                        _this.grant.picture = new doc_1.Doc(_this.grant.picture); // Set picture as Document
-                                    if (txt)
-                                        _this.grant.texts = Object.assign(new Map(), _this.grant.texts); // Set texts as Map
-                                    resolve.call(_this, _this.grant);
-                                }
-                            }, function (err) {
-                                err = _this.getError(err, undefined, origin);
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            });
-                        })];
-                });
-            }); };
-            /**
-             * Change password
-             * @param {string} pwd Password
-             * @param {object} [opts] Options
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} A promise to the change password result
-             * @function
-             */
-            this.changePassword = function (pwd, opts) { return __awaiter(_this, void 0, void 0, function () {
-                var origin;
-                var _this = this;
-                return __generator(this, function (_a) {
-                    origin = 'Session.changePassword';
-                    opts = opts || {};
-                    return [2 /*return*/, new Promise(function (resolve, reject) {
-                            _this.sendRequest("".concat(_this.getPath('setpassword', opts), "&password=").concat(encodeURIComponent(pwd)), undefined, function (res, status) {
-                                var r = _this.parseResponse(res, status);
-                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                                if (r.type === 'error') {
-                                    var err = _this.getError(r.response, undefined, origin);
-                                    if (!(opts.error || _this.error).call(_this, err))
-                                        reject.call(_this, err);
-                                }
-                                else {
-                                    resolve.call(_this, r.response);
-                                }
-                            }, function (err) {
-                                err = _this.getError(err, undefined, origin);
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            });
-                        })];
-                });
-            }); };
-            /**
-             * Get application info
-             * @param {object} [opts] Options
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} A promise to the application info (also available as the <code>appinfo</code> member)
-             * @function
-             */
-            this.getAppInfo = function (opts) { return __awaiter(_this, void 0, void 0, function () {
-                var origin;
-                var _this = this;
-                return __generator(this, function (_a) {
-                    origin = 'Session.getAppInfo';
-                    opts = opts || {};
-                    return [2 /*return*/, new Promise(function (resolve, reject) {
-                            _this.sendRequest(_this.getPath('getinfo', opts), undefined, function (res, status) {
-                                var r = _this.parseResponse(res, status);
-                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                                if (r.type === 'error') {
-                                    var err = _this.getError(r.response, undefined, origin);
-                                    if (!(opts.error || _this.error).call(_this, err))
-                                        reject.call(_this, err);
-                                }
-                                else {
-                                    _this.appinfo = r.response;
-                                    resolve.call(_this, _this.appinfo);
-                                }
-                            }, function (err) {
-                                err = _this.getError(err, undefined, origin);
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            });
-                        })];
-                });
-            }); };
-            /**
-             * Get system info
-             * @param {object} [opts] Options
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} A promise to the system info (also available as the <code>sysinfo</code> member)
-             * @function
-             */
-            this.getSysInfo = function (opts) { return __awaiter(_this, void 0, void 0, function () {
-                var origin;
-                var _this = this;
-                return __generator(this, function (_a) {
-                    origin = 'Session.getSysInfo';
-                    opts = opts || {};
-                    return [2 /*return*/, new Promise(function (resolve, reject) {
-                            _this.sendRequest(_this.getPath('sysinfo', opts), undefined, function (res, status) {
-                                var r = _this.parseResponse(res, status);
-                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                                if (r.type === 'error') {
-                                    var err = _this.getError(r.response, undefined, origin);
-                                    if (!(opts.error || _this.error).call(_this, err))
-                                        reject.call(_this, err);
-                                }
-                                else {
-                                    _this.sysinfo = r.response;
-                                    resolve.call(_this, _this.sysinfo);
-                                }
-                            }, function (err) {
-                                err = _this.getError(err, undefined, origin);
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            });
-                        })];
-                });
-            }); };
-            /**
-             * Get development info
-             * @param {string} [module] Module name
-             * @param {object} [opts] Options
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} A promise to the development info (also available as the <code>devinfo</code> member)
-             * @function
-             */
-            this.getDevInfo = function (module, opts) { return __awaiter(_this, void 0, void 0, function () {
-                var origin;
-                var _this = this;
-                return __generator(this, function (_a) {
-                    origin = 'Session.getDevInfo';
-                    opts = opts || {};
-                    return [2 /*return*/, new Promise(function (resolve, reject) {
-                            var p = '';
-                            if (module)
-                                p += "&module=".concat(encodeURIComponent(module));
-                            _this.sendRequest("".concat(_this.getPath('devinfo', opts)).concat(p), undefined, function (res, status) {
-                                var r = _this.parseResponse(res, status);
-                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                                if (r.type === 'error') {
-                                    var err = _this.getError(r.response, undefined, origin);
-                                    if (!(opts.error || _this.error).call(_this, err))
-                                        reject.call(_this, err);
-                                }
-                                else {
-                                    if (!module)
-                                        _this.devinfo = r.response;
-                                    resolve.call(_this, r.response);
-                                }
-                            }, function (err) {
-                                err = _this.getError(err, undefined, origin);
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            });
-                        })];
-                });
-            }); };
-            /**
-             * Get news
-             * @param {object} [opts] Options
-             * @param {boolean} [opts.inlineImages=false] Inline news images?
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<array>} A promise to the list of news (also available as the <code>news</code> member)
-             * @function
-             */
-            this.getNews = function (opts) { return __awaiter(_this, void 0, void 0, function () {
-                var origin;
-                var _this = this;
-                return __generator(this, function (_a) {
-                    origin = 'Session.getNews';
-                    opts = opts || {};
-                    return [2 /*return*/, new Promise(function (resolve, reject) {
-                            var p = '';
-                            var img = !!opts.inlineImages || !!opts.images; // naming flexibility
-                            if (img)
-                                p += '&inline_images=true';
-                            _this.sendRequest("".concat(_this.getPath('news', opts)).concat(p), undefined, function (res, status) {
-                                var r = _this.parseResponse(res, status);
-                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                                if (r.type === 'error') {
-                                    var err = _this.getError(r.response, undefined, origin);
-                                    if (!(opts.error || _this.error).call(_this, err))
-                                        reject.call(_this, err);
-                                }
-                                else {
-                                    _this.news = r.response;
-                                    for (var _i = 0, _a = _this.news; _i < _a.length; _i++) {
-                                        var n = _a[_i];
-                                        n.image = new doc_1.Doc(n.image);
-                                    } // Set image as document
-                                    resolve.call(_this, _this.news);
-                                }
-                            }, function (err) {
-                                err = _this.getError(err, undefined, origin);
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            });
-                        })];
-                });
-            }); };
-            /**
-             * Index search
-             * @param {string} query Index search query
-             * @param {string} [object] Object
-             * @param {object} [opts] Options
-             * @param {boolean} [opts.metadata=false] Add meta data for each result
-             * @param {number} [opts.context] Context
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<array>} A promise to a list of index search records
-             * @function
-             */
-            this.indexSearch = function (query, object, opts) { return __awaiter(_this, void 0, void 0, function () {
-                var origin;
-                var _this = this;
-                return __generator(this, function (_a) {
-                    origin = 'Session.indexSearch';
-                    opts = opts || {};
-                    return [2 /*return*/, new Promise(function (resolve, reject) {
-                            var p = "&request=".concat(encodeURIComponent(query ? query : ''));
-                            if (object)
-                                p += "&object=".concat(encodeURIComponent(object));
-                            if (opts.metadata === true)
-                                p += '&_md=true';
-                            if (opts.context)
-                                p += "&context=".concat(encodeURIComponent(opts.context));
-                            _this.sendRequest("".concat(_this.getPath('indexsearch', opts)).concat(p), undefined, function (res, status) {
-                                var r = _this.parseResponse(res, status);
-                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                                if (r.type === 'error') {
-                                    var err = _this.getError(r.response, undefined, origin);
-                                    if (!(opts.error || _this.error).call(_this, err))
-                                        reject.call(_this, err);
-                                }
-                                else {
-                                    resolve.call(_this, r.response);
-                                }
-                            }, function (err) {
-                                err = _this.getError(err, undefined, origin);
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            });
-                        })];
-                });
-            }); };
-            /**
-             * Get business object
-             * @param {string} name Business object name
-             * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
-             * @return {BusinessObject} Business object
-             * @function
-             */
-            this.getBusinessObject = function (name, instance) {
-                var cacheKey = _this.getBusinessObjectCacheKey(name, instance);
-                var obj = _this.businessObjectCache[cacheKey];
-                if (!obj) {
-                    obj = new businessobject_1.BusinessObject(_this, name, instance);
-                    _this.businessObjectCache[cacheKey] = obj;
-                }
-                return obj;
-            };
-            /**
-             * Get an external object
-             * @param {string} name External object name
-             * @function
-             */
-            this.getExternalObject = function (name) {
-                return new externalobject_1.ExternalObject(_this, name);
-            };
-            /**
-             * Get a resource URL
-             * @param {string} code Resource code
-             * @param {string} [type=IMG] Resource type (IMG=image (default), ICO=Icon, CSS=stylesheet, JS=Javascript, HTML=HTML)
-             * @param {string} [object] Object name (not required for global resources)
-             * @param {string} [objId] Object ID (not required for global resources)
-             * @function
-             */
-            this.getResourceURL = function (code, type, object, objId) {
-                return _this.parameters.url + _this.parameters.respath
-                    + '?code=' + encodeURIComponent(code) + '&type=' + encodeURIComponent(type || 'IMG')
-                    + (object ? '&object=' + encodeURIComponent(object) : '')
-                    + (objId ? '&objid=' + encodeURIComponent(objId) : '')
-                    + (_this.authtoken ? '_x_simplicite_authorization_=' + encodeURIComponent(_this.authtoken) : '');
-            };
             params = params || {};
             // Within the generic web UI if Simplicite is defined
             var inUI = typeof globalThis.Simplicite !== 'undefined';
@@ -1918,6 +1236,395 @@ define("session", ["require", "exports", "buffer", "constants", "grant", "doc", 
             this.businessObjectCache = new Map();
         }
         /**
+         * Get API client module version
+         * @function
+         */
+        Session.prototype.getModuleVersion = function () {
+            return this.constants.MODULE_VERSION;
+        };
+        /**
+         * Set username
+         * @param {string} usr Username
+         * @function
+         */
+        Session.prototype.setUsername = function (usr) {
+            this.username = usr;
+        };
+        /**
+         * Set password
+         * @param {string} pwd Password
+         * @function
+         */
+        Session.prototype.setPassword = function (pwd) {
+            this.password = pwd;
+        };
+        /**
+         * Set auth token
+         * @param {string} token Auth token
+         * @function
+         */
+        Session.prototype.setAuthToken = function (token) {
+            this.authtoken = token;
+        };
+        /**
+         * Set auth token expiry date
+         * @param {Date} expiry Auth token expiry
+         * @function
+         */
+        Session.prototype.setAuthTokenExpiryDate = function (expiry) {
+            this.authtokenexpiry = expiry;
+        };
+        /**
+         * Is the auth token expired?
+         * @return {boolean} true if the auth token is expired
+         * @function
+         */
+        Session.prototype.isAuthTokenExpired = function () {
+            return this.authtokenexpiry ? new Date() > this.authtokenexpiry : false;
+        };
+        /**
+         * Set Ajax key
+         * @param {string} key Ajax key
+         * @function
+         */
+        Session.prototype.setAjaxKey = function (key) {
+            this.ajaxkey = key;
+        };
+        /**
+         * Get business object cache key
+         * @param {string} name Business object name
+         * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
+         * @return {object} Business object cache key
+         * @function
+         */
+        Session.prototype.getBusinessObjectCacheKey = function (name, instance) {
+            return name + ':' + (instance || 'js_' + name);
+        };
+        /**
+         * Clears all data (credentials, objects, ...)
+         * @function
+         */
+        Session.prototype.clear = function () {
+            this.username = undefined;
+            this.password = undefined;
+            this.authtoken = undefined;
+            this.authtokenexpiry = undefined;
+            this.sessionid = undefined;
+            this.grant = undefined;
+            this.appinfo = undefined;
+            this.sysinfo = undefined;
+            this.devinfo = undefined;
+            this.businessObjectCache = new Map();
+        };
+        /**
+         * Basic HTTP authorization header value
+         * @return {string} HTTP authorization header value
+         * @function
+         */
+        Session.prototype.getBasicAuthHeader = function () {
+            return this.username && this.password
+                ? 'Basic ' + buffer_1.Buffer.from(this.username + ':' + this.password).toString('base64')
+                : undefined;
+        };
+        /**
+         * Get bearer token header value
+         * @return {string} Bearer token header value
+         * @function
+         */
+        Session.prototype.getBearerTokenHeader = function () {
+            return this.authtoken
+                ? 'Bearer ' + this.authtoken
+                : undefined;
+        };
+        /**
+         * Get error object
+         * @param {(string|object)} err Error
+         * @param {string} err.message Error message
+         * @param {number} [status] Optional error status (defaults to 200)
+         * @param {string} [origin] Optional error origin
+         * @return {object} Error object
+         * @function
+         */
+        Session.prototype.getError = function (err, status, origin) {
+            if (typeof err === 'string') { // plain text error
+                return { message: err, status: status || 200, origin: origin };
+            }
+            else if (err.response) { // wrapped error
+                if (typeof err.response === 'string') {
+                    return { message: err.response, status: status || 200, origin: origin };
+                }
+                else {
+                    if (origin) {
+                        try {
+                            err.response.origin = origin;
+                        }
+                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                        catch (e) {
+                            /* ignore */
+                        }
+                    }
+                    return err.response;
+                }
+            }
+            else { // other cases
+                if (origin) {
+                    try {
+                        err.origin = origin;
+                    }
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    catch (e) {
+                        /* ignore */
+                    }
+                }
+                return err;
+            }
+        };
+        /**
+         * Compress data as blob
+         * @param data {string|any} Data to compress
+         * @return {Promise<Blob>} Promise to the compressed data blob
+         */
+        Session.prototype.compressData = function (data) {
+            var s = typeof data === 'string'
+                ? new Blob([data], { type: 'text/plain' }).stream()
+                : new Blob([JSON.stringify(data)], { type: 'application/json' }).stream();
+            var cs = s.pipeThrough(new CompressionStream('gzip'));
+            return new Response(cs).blob();
+        };
+        /**
+         * Uncompress blob
+         * @param blob {Blob} Compressed data blob
+         * @return {Promise<string>} Promise to the uncompressed string
+         */
+        Session.prototype.uncompressData = function (blob) {
+            var us = blob.stream().pipeThrough(new DecompressionStream('gzip'));
+            return new Response(us).text();
+        };
+        /**
+         * Send request
+         * @param {string} path Path
+         * @param {object} [data] Data
+         * @param {function} [callback] Callback
+         * @param {function} [errorHandler] Error handler
+         * @function
+         */
+        Session.prototype.sendRequest = function (path, data, callback, errorHandler) {
+            var _this = this;
+            var origin = 'Session.sendRequest';
+            var m = data ? 'POST' : 'GET';
+            var h = {};
+            if (data)
+                h['content-type'] = 'application/x-www-form-urlencoded; charset=utf-8';
+            h.accept = 'application/json';
+            var b = this.getBearerTokenHeader();
+            if (b) {
+                h[this.authheader] = b;
+            }
+            else {
+                b = this.getBasicAuthHeader();
+                if (b)
+                    h[this.authheader] = b;
+            }
+            var u = this.parameters.url + (path || '/');
+            if (this.ajaxkey)
+                u += (u.indexOf('?') >= 0 ? '&' : '?') + '_ajaxkey=' + encodeURIComponent(this.ajaxkey);
+            var d = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined;
+            this.debug("[".concat(origin, "] ").concat(m, " ").concat(u).concat(d ? ' with ' + d : ''));
+            fetch(u, {
+                method: m,
+                headers: h,
+                //compress: this.parameters.compress,
+                signal: AbortSignal.timeout(this.parameters.timeout),
+                body: d
+            }).then(function (res) {
+                if (callback) {
+                    res.text().then(function (textData) {
+                        callback.call(_this, textData, res.status, res.headers);
+                    });
+                }
+            }).catch(function (err) {
+                var s = err.response && err.response.status ? err.response.status : undefined;
+                var e = err.response && err.response.data ? err.response.data : err;
+                if (errorHandler)
+                    errorHandler.call(_this, _this.getError(e, s, origin));
+                else
+                    throw e;
+            });
+        };
+        /**
+         * Parse response
+         * @param {object} res Response to parse
+         * @param {number} [status=200] HTTP status
+         * @return {object} Error object
+         * @function
+         */
+        Session.prototype.parseResponse = function (res, status) {
+            try {
+                if (status !== 200)
+                    return { type: 'error', response: this.getError('HTTP status: ' + status, status) };
+                return typeof res === 'object' ? res : JSON.parse(res);
+            }
+            catch (e) {
+                return { type: 'error', response: this.getError('Parsing error: ' + e.message, status) };
+            }
+        };
+        /**
+         * Get health check (no need to be authenticated)
+         * @param {object} [opts] Options
+         * @param {boolean} [opts.full=false] Full health check?
+         * @param {function} [opts.error] Error handler function
+         * @return {promise<object>} Promise to the health data
+         * @function
+         */
+        Session.prototype.getHealth = function (opts) {
+            return __awaiter(this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.getHealth';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            var p = "&full=".concat(!!opts.full);
+                            if (opts.businessCase)
+                                p += "&_bc=".concat(encodeURIComponent(opts.businessCase));
+                            _this.sendRequest("".concat(_this.parameters.healthpath).concat(p), undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(res));
+                                if (r.type === 'error') {
+                                    var err = _this.getError(r.response, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    resolve.call(_this, r);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
+                });
+            });
+        };
+        /**
+         * Login
+         * @param {object} [opts] Options
+         * @param {string} [opts.username] Username (exclusive with authentication token)
+         * @param {string} [opts.password] Password (required if username is set)
+         * @param {string} [opts.authtoken] Authentication token ((exclusive with username)
+         * @param {function} [opts.error] Error handler function
+         * @return {promise<object>} Promise to the login result
+         * @function
+         */
+        Session.prototype.login = function (opts) {
+            return __awaiter(this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.login';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            if ((opts.username || opts.login) && (opts.password || opts.pwd)) {
+                                _this.clear();
+                                _this.username = opts.username || opts.login;
+                                _this.password = opts.password || opts.pwd;
+                            }
+                            else if (opts.authtoken || opts.authToken || opts.token) {
+                                _this.clear();
+                                _this.authtoken = opts.authtoken || opts.authToken || opts.token;
+                            }
+                            _this.sendRequest(_this.parameters.loginpath, undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type || (r.error ? 'error' : 'login')));
+                                if (r.type === 'error' || r.error) {
+                                    var err = _this.getError(r.response ? r.response : r, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    _this.sessionid = r.response ? r.response.id : r.sessionid;
+                                    _this.debug("[".concat(origin, "] Session ID = ").concat(_this.sessionid));
+                                    _this.username = r.response ? r.response.login : r.login;
+                                    if (_this.username)
+                                        _this.debug("[".concat(origin, "] Username = ").concat(_this.username));
+                                    _this.authtoken = r.response ? r.response.authtoken : r.authtoken;
+                                    if (_this.authtoken)
+                                        _this.debug("[".concat(origin, "] Auth token = ").concat(_this.authtoken));
+                                    try {
+                                        var exp = new Date();
+                                        exp.setTime(r.response ? r.response.authtokenexpiry : r.authtokenexpiry);
+                                        _this.authtokenexpiry = exp;
+                                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                                    }
+                                    catch (e) {
+                                        _this.authtokenexpiry = undefined;
+                                    }
+                                    if (_this.authtokenexpiry)
+                                        _this.debug("[".concat(origin, "] Auth token expiry date = ").concat(_this.authtokenexpiry.toLocaleDateString(), " ").concat(_this.authtokenexpiry.toLocaleTimeString()));
+                                    // Minimal grant from session data
+                                    _this.grant = new grant_1.Grant({
+                                        login: _this.username,
+                                        userid: r.response ? r.response.userid : r.userid,
+                                        firstname: r.response ? r.response.firstname : r.firstname,
+                                        lastname: r.response ? r.response.lastname : r.lastname,
+                                        email: r.response ? r.response.email : r.email
+                                    });
+                                    resolve.call(_this, r.response || r);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
+                });
+            });
+        };
+        /**
+         * Logout
+         * @param {function} callback Callback (called upon success)
+         * @param {object} [opts] Options
+         * @param {function} [opts.error] Error handler function
+         * @return {promise<object>} Promise to the logout result
+         * @function
+         */
+        Session.prototype.logout = function (opts) {
+            return __awaiter(this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.logout';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            _this.sendRequest(_this.parameters.logoutpath, undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type || (r.error ? 'error' : 'logout')));
+                                if (r.type === 'error') {
+                                    var err = _this.getError(r.response ? r.response : r, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    _this.clear();
+                                    // Restore session parameter-level credentials if present
+                                    _this.username = _this.parameters.username;
+                                    _this.password = _this.parameters.password;
+                                    _this.authtoken = _this.parameters.authtoken;
+                                    resolve.call(_this, r.response || r);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (err.status === 401) // Removes (expired or deleted) token if any
+                                    _this.authtoken = undefined;
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
+                });
+            });
+        };
+        /**
          * Get path
          * @param {string} action Action
          * @param {object} [opts] Options
@@ -1926,6 +1633,344 @@ define("session", ["require", "exports", "buffer", "constants", "grant", "doc", 
         Session.prototype.getPath = function (action, opts) {
             var bc = opts && opts.businessCase ? "&_bc=".concat(encodeURIComponent(opts.businessCase)) : '';
             return "".concat(this.parameters.apppath, "?action=").concat(encodeURIComponent(action)).concat(bc);
+        };
+        /**
+         * Get grant (current user data)
+         * @param {object} [opts] Options
+         * @param {boolean} [opts.inlinePicture=false] Inline user picture?
+         * @param {boolean} [opts.includeTexts=false] Include texts?
+         * @param {boolean} [opts.includeSysparams=false] Include system parameters?
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<Grant>} A promise to the grant (also available as the <code>grant</code> member)
+         * @function
+         */
+        Session.prototype.getGrant = function (opts) {
+            return __awaiter(this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.getGrant';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            var p = '&web=true'; // Required to be able to include texts
+                            var txt = !!opts.includeTexts || !!opts.texts; // naming flexibility
+                            p += "&texts=".concat(encodeURIComponent(txt));
+                            var pic = !!opts.inlinePicture || !!opts.picture; // naming flexibility
+                            if (pic)
+                                p += '&inline_picture=true';
+                            var sys = !!opts.includeSysparams || !!opts.sysparams; // naming flexibility
+                            if (sys)
+                                p += '&sysparams=true';
+                            _this.sendRequest("".concat(_this.getPath('getgrant', opts)).concat(p), undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = _this.getError(r.response, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    _this.grant = new grant_1.Grant(r.response); // Set as Grant
+                                    if (pic)
+                                        _this.grant.picture = new doc_1.Doc(_this.grant.picture); // Set picture as Document
+                                    if (txt)
+                                        _this.grant.texts = Object.assign(new Map(), _this.grant.texts); // Set texts as Map
+                                    resolve.call(_this, _this.grant);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
+                });
+            });
+        };
+        /**
+         * Change password
+         * @param {string} pwd Password
+         * @param {object} [opts] Options
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<object>} A promise to the change password result
+         * @function
+         */
+        Session.prototype.changePassword = function (pwd, opts) {
+            return __awaiter(this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.changePassword';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            _this.sendRequest("".concat(_this.getPath('setpassword', opts), "&password=").concat(encodeURIComponent(pwd)), undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = _this.getError(r.response, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    resolve.call(_this, r.response);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
+                });
+            });
+        };
+        /**
+         * Get application info
+         * @param {object} [opts] Options
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<object>} A promise to the application info (also available as the <code>appinfo</code> member)
+         * @function
+         */
+        Session.prototype.getAppInfo = function (opts) {
+            return __awaiter(this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.getAppInfo';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            _this.sendRequest(_this.getPath('getinfo', opts), undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = _this.getError(r.response, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    _this.appinfo = r.response;
+                                    resolve.call(_this, _this.appinfo);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
+                });
+            });
+        };
+        /**
+         * Get system info
+         * @param {object} [opts] Options
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<object>} A promise to the system info (also available as the <code>sysinfo</code> member)
+         * @function
+         */
+        Session.prototype.getSysInfo = function (opts) {
+            return __awaiter(this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.getSysInfo';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            _this.sendRequest(_this.getPath('sysinfo', opts), undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = _this.getError(r.response, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    _this.sysinfo = r.response;
+                                    resolve.call(_this, _this.sysinfo);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
+                });
+            });
+        };
+        /**
+         * Get development info
+         * @param {string} [module] Module name
+         * @param {object} [opts] Options
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<object>} A promise to the development info (also available as the <code>devinfo</code> member)
+         * @function
+         */
+        Session.prototype.getDevInfo = function (module, opts) {
+            return __awaiter(this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.getDevInfo';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            var p = '';
+                            if (module)
+                                p += "&module=".concat(encodeURIComponent(module));
+                            _this.sendRequest("".concat(_this.getPath('devinfo', opts)).concat(p), undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = _this.getError(r.response, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    if (!module)
+                                        _this.devinfo = r.response;
+                                    resolve.call(_this, r.response);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
+                });
+            });
+        };
+        /**
+         * Get news
+         * @param {object} [opts] Options
+         * @param {boolean} [opts.inlineImages=false] Inline news images?
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<array>} A promise to the list of news (also available as the <code>news</code> member)
+         * @function
+         */
+        Session.prototype.getNews = function (opts) {
+            return __awaiter(this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.getNews';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            var p = '';
+                            var img = !!opts.inlineImages || !!opts.images; // naming flexibility
+                            if (img)
+                                p += '&inline_images=true';
+                            _this.sendRequest("".concat(_this.getPath('news', opts)).concat(p), undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = _this.getError(r.response, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    _this.news = r.response;
+                                    for (var _i = 0, _a = _this.news; _i < _a.length; _i++) {
+                                        var n = _a[_i];
+                                        n.image = new doc_1.Doc(n.image);
+                                    } // Set image as document
+                                    resolve.call(_this, _this.news);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
+                });
+            });
+        };
+        /**
+         * Index search
+         * @param {string} query Index search query
+         * @param {string} [object] Object
+         * @param {object} [opts] Options
+         * @param {boolean} [opts.metadata=false] Add meta data for each result
+         * @param {number} [opts.context] Context
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<array>} A promise to a list of index search records
+         * @function
+         */
+        Session.prototype.indexSearch = function (query, object, opts) {
+            return __awaiter(this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.indexSearch';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            var p = "&request=".concat(encodeURIComponent(query ? query : ''));
+                            if (object)
+                                p += "&object=".concat(encodeURIComponent(object));
+                            if (opts.metadata === true)
+                                p += '&_md=true';
+                            if (opts.context)
+                                p += "&context=".concat(encodeURIComponent(opts.context));
+                            _this.sendRequest("".concat(_this.getPath('indexsearch', opts)).concat(p), undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = _this.getError(r.response, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    resolve.call(_this, r.response);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
+                });
+            });
+        };
+        /**
+         * Get business object
+         * @param {string} name Business object name
+         * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
+         * @return {BusinessObject} Business object
+         * @function
+         */
+        Session.prototype.getBusinessObject = function (name, instance) {
+            var cacheKey = this.getBusinessObjectCacheKey(name, instance);
+            var obj = this.businessObjectCache[cacheKey];
+            if (!obj) {
+                obj = new businessobject_1.BusinessObject(this, name, instance);
+                this.businessObjectCache[cacheKey] = obj;
+            }
+            return obj;
+        };
+        /**
+         * Get an external object
+         * @param {string} name External object name
+         * @function
+         */
+        Session.prototype.getExternalObject = function (name) {
+            return new externalobject_1.ExternalObject(this, name);
+        };
+        /**
+         * Get a resource URL
+         * @param {string} code Resource code
+         * @param {string} [type=IMG] Resource type (IMG=image (default), ICO=Icon, CSS=stylesheet, JS=Javascript, HTML=HTML)
+         * @param {string} [object] Object name (not required for global resources)
+         * @param {string} [objId] Object ID (not required for global resources)
+         * @function
+         */
+        Session.prototype.getResourceURL = function (code, type, object, objId) {
+            return this.parameters.url + this.parameters.respath
+                + '?code=' + encodeURIComponent(code) + '&type=' + encodeURIComponent(type || 'IMG')
+                + (object ? '&object=' + encodeURIComponent(object) : '')
+                + (objId ? '&objid=' + encodeURIComponent(objId) : '')
+                + (this.authtoken ? '_x_simplicite_authorization_=' + encodeURIComponent(this.authtoken) : '');
         };
         return Session;
     }());
@@ -1949,18 +1994,32 @@ define("businessobject", ["require", "exports", "constants", "doc", "businessobj
          * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
          */
         function BusinessObject(ses, name, instance) {
-            var _this = this;
             /**
-             * Get meta data
-             * @param {object} [opts] Options
-             * @param {number} [opts.context] Context
-             * @param {string} [opts.contextParam] Context parameter
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<BusinessObjectMetadata>} A promise to the object's meta data (also available as the <code>metadata</code> member)
+             * Get meta data (alias to getMetaData)
              * @function
              */
-            this.getMetaData = function (opts) { return __awaiter(_this, void 0, void 0, function () {
+            this.getMetadata = this.getMetaData;
+            this.session = ses;
+            var inst = instance || 'api_' + name;
+            this.metadata = new businessobjectmetadata_1.BusinessObjectMetadata(name, inst);
+            this.cacheKey = this.session.getBusinessObjectCacheKey(name, inst);
+            this.path = this.session.parameters.objpath + '?object=' + encodeURIComponent(name) + '&inst=' + encodeURIComponent(inst);
+            this.item = {};
+            this.filters = {};
+            this.list = [];
+        }
+        /**
+         * Get meta data
+         * @param {object} [opts] Options
+         * @param {number} [opts.context] Context
+         * @param {string} [opts.contextParam] Context parameter
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<BusinessObjectMetadata>} A promise to the object's meta data (also available as the <code>metadata</code> member)
+         * @function
+         */
+        BusinessObject.prototype.getMetaData = function (opts) {
+            return __awaiter(this, void 0, void 0, function () {
                 var origin, ses;
                 var _this = this;
                 return __generator(this, function (_a) {
@@ -1992,276 +2051,273 @@ define("businessobject", ["require", "exports", "constants", "doc", "businessobj
                             });
                         })];
                 });
-            }); };
-            /**
-             * Get meta data (alias to getMetaData)
-             * @function
-             */
-            this.getMetadata = this.getMetaData;
-            /**
-             * Get name
-             * @return {string} Name
-             * @function
-             */
-            this.getName = function () {
-                return _this.metadata.name;
-            };
-            /**
-             * Get instance name
-             * @return {string} Instance name
-             * @function
-             */
-            this.getInstance = function () {
-                return _this.metadata.instance;
-            };
-            /**
-             * Get display label
-             * @return {string} Display label
-             * @function
-             */
-            this.getLabel = function () {
-                return _this.metadata.label;
-            };
-            /**
-             * Get help
-             * @return {string} Help
-             * @function
-             */
-            this.getHelp = function () {
-                return _this.metadata.help;
-            };
-            /**
-             * Get all fields definitions
-             * @return {array} Array of field definitions
-             * @function
-             */
-            this.getFields = function () {
-                return _this.metadata.fields;
-            };
-            /**
-             * Get a field definition
-             * @param {string} fieldName Field name
-             * @return {object} Field definition
-             * @function
-             */
-            this.getField = function (fieldName) {
-                var fs = _this.getFields();
-                var n = 0;
-                while (n < fs.length && fs[n].name !== fieldName)
-                    n++;
-                if (n < fs.length)
-                    return fs[n];
-            };
-            /**
-             * Get row ID field name
-             * @return {string} Row ID field name
-             * @function
-             */
-            this.getRowIdFieldName = function () {
-                return _this.metadata.rowidfield;
-            };
-            /**
-             * Get row ID field definition
-             * @return {object} Row ID field definition
-             * @function
-             */
-            this.getRowIdField = function () {
-                return _this.getField(_this.getRowIdFieldName());
-            };
-            /**
-             * Get links
-             * @return {array} Array of links
-             * @function
-             */
-            this.getLinks = function () {
-                return _this.metadata.links;
-            };
-            /**
-             * Get field type
-             * @param {(string|object)} field Field name or definition
-             * @return {string} Type (one of <code>constants.TYPE_*</code>)
-             * @function
-             */
-            this.getFieldType = function (field) {
-                if (typeof field === 'string')
-                    field = _this.getField(field);
-                if (field)
-                    return field.type;
-            };
-            /**
-             * Get field label
-             * @param {(string|object)} field Field name or definition
-             * @return {string} Field label
-             * @function
-             */
-            this.getFieldLabel = function (field) {
-                if (typeof field === 'string')
-                    field = _this.getField(field);
-                if (field)
-                    return field.label;
-            };
-            /**
-             * Get value of field for item (or current item)
-             * @param {(string|object)} field Field name or definition
-             * @param {object} [item] Item (defaults to current item)
-             * @return {string|Doc} Value
-             * @function
-             */
-            this.getFieldValue = function (field, item) {
-                if (!item)
-                    item = _this.item;
-                if (field && item) {
-                    var val = item[typeof field === 'string' ? field : field.name];
-                    if (val && val.mime) // Document?
-                        return new doc_2.Doc(val);
-                    else
-                        return val;
-                }
-            };
-            /**
-             * Get the list value of a list of values field for item (or current item)
-             * @param {(string|object)} field Field name or definition
-             * @param {object} [item] Item (defaults to current item)
-             * @return {string} List value
-             * @function
-             */
-            this.getFieldListValue = function (field, item) {
-                if (typeof field === 'string')
-                    field = _this.getField(field);
-                var val = _this.getFieldValue(field, item);
-                return field && field.listOfValues ? _this.getListValue(field.listOfValues, val) : val;
-            };
-            /**
-             * Get the list colors of a list of values field for item (or current item)
-             * @param {(string|object)} field Field name or definition
-             * @param {object} [item] Item (defaults to current item)
-             * @return {string} List color and bgcolor
-             * @function
-             */
-            this.getFieldListColors = function (field, item) {
-                if (typeof field === 'string')
-                    field = _this.getField(field);
-                var val = _this.getFieldValue(field, item);
-                return field && field.listOfValues ? _this.getListColors(field.listOfValues, val) : val;
-            };
-            /**
-             * Get the data URL of an inlined document/image field for item (or current item)
-             * @param {(string|object)} field Field name or definition
-             * @param {object} [item] Item (defaults to current item)
-             * @return {string} Document/image field data URL (or nothing if the field is not of document/image type or if it is not inlined or if it is empty)
-             * @function
-             */
-            this.getFieldDataURL = function (field, item) {
-                if (typeof field !== 'string')
-                    field = field.fullinput || field.name;
-                var val = _this.getFieldValue(field, item);
-                if (val && val.mime) // Inlined
-                    return 'data:' + val.mime + ';base64,' + (val.content || val.thumbnail);
-            };
-            /**
-             * Get the field's value as document/image for item (or current item)
-             * @param {(string|object)} field Field name or definition
-             * @param {object} [item] Item (defaults to current item)
-             * @return {string|Doc} Document/image (or nothing if the field is not of document/image type or if it is empty)
-             * @function
-             */
-            this.getFieldDocument = function (field, item) {
-                if (typeof field !== 'string')
-                    field = field.fullinput || field.input || field.name;
-                var val = _this.getFieldValue(field, item);
-                if (val && val.mime)
+            });
+        };
+        /**
+         * Get name
+         * @return {string} Name
+         * @function
+         */
+        BusinessObject.prototype.getName = function () {
+            return this.metadata.name;
+        };
+        /**
+         * Get instance name
+         * @return {string} Instance name
+         * @function
+         */
+        BusinessObject.prototype.getInstance = function () {
+            return this.metadata.instance;
+        };
+        /**
+         * Get display label
+         * @return {string} Display label
+         * @function
+         */
+        BusinessObject.prototype.getLabel = function () {
+            return this.metadata.label;
+        };
+        /**
+         * Get help
+         * @return {string} Help
+         * @function
+         */
+        BusinessObject.prototype.getHelp = function () {
+            return this.metadata.help;
+        };
+        /**
+         * Get all fields definitions
+         * @return {array} Array of field definitions
+         * @function
+         */
+        BusinessObject.prototype.getFields = function () {
+            return this.metadata.fields;
+        };
+        /**
+         * Get a field definition
+         * @param {string} fieldName Field name
+         * @return {object} Field definition
+         * @function
+         */
+        BusinessObject.prototype.getField = function (fieldName) {
+            var fs = this.getFields();
+            var n = 0;
+            while (n < fs.length && fs[n].name !== fieldName)
+                n++;
+            if (n < fs.length)
+                return fs[n];
+        };
+        /**
+         * Get row ID field name
+         * @return {string} Row ID field name
+         * @function
+         */
+        BusinessObject.prototype.getRowIdFieldName = function () {
+            return this.metadata.rowidfield;
+        };
+        /**
+         * Get row ID field definition
+         * @return {object} Row ID field definition
+         * @function
+         */
+        BusinessObject.prototype.getRowIdField = function () {
+            return this.getField(this.getRowIdFieldName());
+        };
+        /**
+         * Get links
+         * @return {array} Array of links
+         * @function
+         */
+        BusinessObject.prototype.getLinks = function () {
+            return this.metadata.links;
+        };
+        /**
+         * Get field type
+         * @param {(string|object)} field Field name or definition
+         * @return {string} Type (one of <code>constants.TYPE_*</code>)
+         * @function
+         */
+        BusinessObject.prototype.getFieldType = function (field) {
+            if (typeof field === 'string')
+                field = this.getField(field);
+            if (field)
+                return field.type;
+        };
+        /**
+         * Get field label
+         * @param {(string|object)} field Field name or definition
+         * @return {string} Field label
+         * @function
+         */
+        BusinessObject.prototype.getFieldLabel = function (field) {
+            if (typeof field === 'string')
+                field = this.getField(field);
+            if (field)
+                return field.label;
+        };
+        /**
+         * Get value of field for item (or current item)
+         * @param {(string|object)} field Field name or definition
+         * @param {object} [item] Item (defaults to current item)
+         * @return {string|Doc} Value
+         * @function
+         */
+        BusinessObject.prototype.getFieldValue = function (field, item) {
+            if (!item)
+                item = this.item;
+            if (field && item) {
+                var val = item[typeof field === 'string' ? field : field.name];
+                if (val && val.mime) // Document?
                     return new doc_2.Doc(val);
                 else
                     return val;
-            };
-            /**
-             * Get the URL of a document/image field for item (or current item)
-             * @param {(string|object)} field Field name or definition
-             * @param {object} [item] Item (defaults to current item)
-             * @param {boolean} [thumbnail=false] Thumbnail?
-             * @return {string} Document/image field URL (or nothing if the field is not of document/image type or if it is empty)
-             * @function
-             */
-            this.getFieldDocumentURL = function (field, item, thumbnail) {
-                if (typeof field !== 'string')
-                    field = field.fullinput || field.input || field.name;
-                var val = _this.getFieldValue(field, item);
-                if (val && val.mime) // Inlined
-                    val = val.id;
-                if (val)
-                    return _this.session.parameters.url + _this.session.parameters.docpath
-                        + '?object=' + encodeURIComponent(_this.metadata.name)
-                        + '&inst=' + encodeURIComponent(_this.metadata.instance)
-                        + '&field=' + encodeURIComponent(field)
-                        + '&row_id=' + encodeURIComponent(_this.getRowId(item))
-                        + '&doc_id=' + encodeURIComponent(val)
-                        + (thumbnail ? '&thumbnail=true' : '')
-                        + (_this.session.authtoken ? '&_x_simplicite_authorization_=' + encodeURIComponent(_this.session.authtoken) : '');
-            };
-            /**
-             * Get list item value for code
-             * @param {array} list List of values
-             * @param {string} code Code
-             * @return {string} Value
-             * @function
-             */
-            this.getListValue = function (list, code) {
-                if (list) {
-                    for (var _i = 0, list_1 = list; _i < list_1.length; _i++) {
-                        var l = list_1[_i];
-                        if (l.code === code)
-                            return l.value;
-                    }
+            }
+        };
+        /**
+         * Get the list value of a list of values field for item (or current item)
+         * @param {(string|object)} field Field name or definition
+         * @param {object} [item] Item (defaults to current item)
+         * @return {string} List value
+         * @function
+         */
+        BusinessObject.prototype.getFieldListValue = function (field, item) {
+            if (typeof field === 'string')
+                field = this.getField(field);
+            var val = this.getFieldValue(field, item);
+            return field && field.listOfValues ? this.getListValue(field.listOfValues, val) : val;
+        };
+        /**
+         * Get the list colors of a list of values field for item (or current item)
+         * @param {(string|object)} field Field name or definition
+         * @param {object} [item] Item (defaults to current item)
+         * @return {string} List color and bgcolor
+         * @function
+         */
+        BusinessObject.prototype.getFieldListColors = function (field, item) {
+            if (typeof field === 'string')
+                field = this.getField(field);
+            var val = this.getFieldValue(field, item);
+            return field && field.listOfValues ? this.getListColors(field.listOfValues, val) : val;
+        };
+        /**
+         * Get the data URL of an inlined document/image field for item (or current item)
+         * @param {(string|object)} field Field name or definition
+         * @param {object} [item] Item (defaults to current item)
+         * @return {string} Document/image field data URL (or nothing if the field is not of document/image type or if it is not inlined or if it is empty)
+         * @function
+         */
+        BusinessObject.prototype.getFieldDataURL = function (field, item) {
+            if (typeof field !== 'string')
+                field = field.fullinput || field.name;
+            var val = this.getFieldValue(field, item);
+            if (val && val.mime) // Inlined
+                return 'data:' + val.mime + ';base64,' + (val.content || val.thumbnail);
+        };
+        /**
+         * Get the field's value as document/image for item (or current item)
+         * @param {(string|object)} field Field name or definition
+         * @param {object} [item] Item (defaults to current item)
+         * @return {string|Doc} Document/image (or nothing if the field is not of document/image type or if it is empty)
+         * @function
+         */
+        BusinessObject.prototype.getFieldDocument = function (field, item) {
+            if (typeof field !== 'string')
+                field = field.fullinput || field.input || field.name;
+            var val = this.getFieldValue(field, item);
+            if (val && val.mime)
+                return new doc_2.Doc(val);
+            else
+                return val;
+        };
+        /**
+         * Get the URL of a document/image field for item (or current item)
+         * @param {(string|object)} field Field name or definition
+         * @param {object} [item] Item (defaults to current item)
+         * @param {boolean} [thumbnail=false] Thumbnail?
+         * @return {string} Document/image field URL (or nothing if the field is not of document/image type or if it is empty)
+         * @function
+         */
+        BusinessObject.prototype.getFieldDocumentURL = function (field, item, thumbnail) {
+            if (typeof field !== 'string')
+                field = field.fullinput || field.input || field.name;
+            var val = this.getFieldValue(field, item);
+            if (val && val.mime) // Inlined
+                val = val.id;
+            if (val)
+                return this.session.parameters.url + this.session.parameters.docpath
+                    + '?object=' + encodeURIComponent(this.metadata.name)
+                    + '&inst=' + encodeURIComponent(this.metadata.instance)
+                    + '&field=' + encodeURIComponent(field)
+                    + '&row_id=' + encodeURIComponent(this.getRowId(item))
+                    + '&doc_id=' + encodeURIComponent(val)
+                    + (thumbnail ? '&thumbnail=true' : '')
+                    + (this.session.authtoken ? '&_x_simplicite_authorization_=' + encodeURIComponent(this.session.authtoken) : '');
+        };
+        /**
+         * Get list item value for code
+         * @param {array} list List of values
+         * @param {string} code Code
+         * @return {string} Value
+         * @function
+         */
+        BusinessObject.prototype.getListValue = function (list, code) {
+            if (list) {
+                for (var _i = 0, list_1 = list; _i < list_1.length; _i++) {
+                    var l = list_1[_i];
+                    if (l.code === code)
+                        return l.value;
                 }
-                return code;
-            };
-            /**
-             * Get list item colors (color and background color) for code
-             * @param {array} list List of values
-             * @param {string} code Code
-             * @return {any} Colors
-             * @function
-             */
-            this.getListColors = function (list, code) {
-                if (list) {
-                    for (var _i = 0, list_2 = list; _i < list_2.length; _i++) {
-                        var l = list_2[_i];
-                        if (l.code === code)
-                            return { color: l.color, bgcolor: l.bgcolor };
-                    }
+            }
+            return code;
+        };
+        /**
+         * Get list item colors (color and background color) for code
+         * @param {array} list List of values
+         * @param {string} code Code
+         * @return {any} Colors
+         * @function
+         */
+        BusinessObject.prototype.getListColors = function (list, code) {
+            if (list) {
+                for (var _i = 0, list_2 = list; _i < list_2.length; _i++) {
+                    var l = list_2[_i];
+                    if (l.code === code)
+                        return { color: l.color, bgcolor: l.bgcolor };
                 }
-                return { color: 'inherit', bgcolor: 'inherit' };
-            };
-            /**
-             * Set value of field for item (or current item)
-             * @param {(string|object)} field Field name or definition
-             * @param {(string|object)} value Value
-             * @param {object} [item] Item (defaults to current item)
-             * @function
-             */
-            this.setFieldValue = function (field, value, item) {
-                if (!item)
-                    item = _this.item;
-                if (field && item) {
-                    item[typeof field === 'string' ? field : field.name] = value instanceof doc_2.Doc ? value.getValue() : value;
-                }
-            };
-            /**
-             * Reset values of item (or current item)
-             * @param {object} [item] Item (defaults to current item)
-             */
-            this.resetValues = function (item) {
-                if (!item)
-                    item = _this.item;
-                for (var v in item)
-                    delete item[v];
-            };
-            /**
-            * Set values of item (or current item)
-            * @param {object|FormData} data Data (plain object or form data)
-            * @param {object} [item] Item (defaults to current item)
-            */
-            this.setFieldValues = function (data, item) { return __awaiter(_this, void 0, void 0, function () {
+            }
+            return { color: 'inherit', bgcolor: 'inherit' };
+        };
+        /**
+         * Set value of field for item (or current item)
+         * @param {(string|object)} field Field name or definition
+         * @param {(string|object)} value Value
+         * @param {object} [item] Item (defaults to current item)
+         * @function
+         */
+        BusinessObject.prototype.setFieldValue = function (field, value, item) {
+            if (!item)
+                item = this.item;
+            if (field && item) {
+                item[typeof field === 'string' ? field : field.name] = value instanceof doc_2.Doc ? value.getValue() : value;
+            }
+        };
+        /**
+         * Reset values of item (or current item)
+         * @param {object} [item] Item (defaults to current item)
+         */
+        BusinessObject.prototype.resetValues = function (item) {
+            if (!item)
+                item = this.item;
+            for (var v in item)
+                delete item[v];
+        };
+        /**
+        * Set values of item (or current item)
+        * @param {object|FormData} data Data (plain object or form data)
+        * @param {object} [item] Item (defaults to current item)
+        */
+        BusinessObject.prototype.setFieldValues = function (data, item) {
+            return __awaiter(this, void 0, void 0, function () {
                 var dt;
                 var _this = this;
                 return __generator(this, function (_a) {
@@ -2295,37 +2351,39 @@ define("businessobject", ["require", "exports", "constants", "doc", "businessobj
                             Promise.allSettled(promises).then(function () { return resolve.call(_this, item); });
                         })];
                 });
-            }); };
-            /**
-             * Is the field the row ID field?
-             * @param {object} field Field definition
-             * @return {boolean} True if the field is the row ID field
-             * @function
-             */
-            this.isRowIdField = function (field) {
-                return !field.ref && field.name === _this.metadata.rowidfield;
-            };
-            /**
-             * Is the field a timestamp field?
-             * @param {object} field Field definition
-             * @return {boolean} True if the field is a timestamp field
-             * @function
-             */
-            this.isTimestampField = function (field) {
-                var n = field.name;
-                return !field.ref && (n === 'created_by' || n === 'created_dt' || n === 'updated_by' || n === 'updated_dt');
-            };
-            /**
-             * Get current filters
-             * @param {object} [opts] Options
-             * @param {number} [opts.context] Context
-             * @param {boolean} [opts.reset] Reset filters?
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} Promise to the object's filters (also available as the <code>filters</code> member)
-             * @function
-             */
-            this.getFilters = function (opts) { return __awaiter(_this, void 0, void 0, function () {
+            });
+        };
+        /**
+         * Is the field the row ID field?
+         * @param {object} field Field definition
+         * @return {boolean} True if the field is the row ID field
+         * @function
+         */
+        BusinessObject.prototype.isRowIdField = function (field) {
+            return !field.ref && field.name === this.metadata.rowidfield;
+        };
+        /**
+         * Is the field a timestamp field?
+         * @param {object} field Field definition
+         * @return {boolean} True if the field is a timestamp field
+         * @function
+         */
+        BusinessObject.prototype.isTimestampField = function (field) {
+            var n = field.name;
+            return !field.ref && (n === 'created_by' || n === 'created_dt' || n === 'updated_by' || n === 'updated_dt');
+        };
+        /**
+         * Get current filters
+         * @param {object} [opts] Options
+         * @param {number} [opts.context] Context
+         * @param {boolean} [opts.reset] Reset filters?
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<object>} Promise to the object's filters (also available as the <code>filters</code> member)
+         * @function
+         */
+        BusinessObject.prototype.getFilters = function (opts) {
+            return __awaiter(this, void 0, void 0, function () {
                 var origin, ses;
                 var _this = this;
                 return __generator(this, function (_a) {
@@ -2357,92 +2415,104 @@ define("businessobject", ["require", "exports", "constants", "doc", "businessobj
                             });
                         })];
                 });
-            }); };
-            /**
-             * Build context option parameters
-             * @param {object} options Options
-             * @return {string} Option parameters
-             * @private
-             */
-            this.getReqContextOption = function (options) {
-                return options.context ? "&context=".concat(encodeURIComponent(options.context)) : '';
-            };
-            /**
-             * Build options parameters
-             * @param {object} options Options
-             * @return {string} Option parameters
-             * @private
-             */
-            this.getReqOptions = function (options) {
-                var opts = _this.getReqContextOption(options);
-                var id = options.inlineDocs || options.inlineDocuments || options.inlineImages; // Naming flexibility
-                if (id)
-                    opts += "&inline_documents=".concat(encodeURIComponent(id.join ? id.join(',') : id));
-                var it = options.inlineThumbs || options.inlineThumbnails; // Naming flexibility
-                if (it)
-                    opts += "&inline_thumbnails=".concat(encodeURIComponent(it.join ? it.join(',') : it));
-                var io = options.inlineObjs || options.inlineObjects; // Naming flexibility
-                if (io)
-                    opts += "&inline_objects=".concat(encodeURIComponent(io.join ? io.join(',') : io));
-                return opts;
-            };
-            /**
-             * Convert usual wildcards to filters wildcards
-             * @param {object} filter Filter
-             * @return {string} Filter with wildcards converted
-             * @private
-             */
-            this.convertFilterWildCards = function (filter) {
-                return typeof filter === 'string' ? filter.replace(new RegExp('\\*', 'g'), '%').replace(new RegExp('\\?', 'g'), '_') : filter;
-            };
-            /**
-             * Build request parameters
-             * @param {object} data Data
-             * @param {boolean} [filters] Filters? Used to convert wildcards if needed
-             * @return {string} Request parameters
-             * @private
-             */
-            this.getReqParams = function (data, filters) {
-                var p = '';
-                if (!data)
-                    return p;
-                for (var _i = 0, _a = Object.entries(data); _i < _a.length; _i++) {
-                    var i = _a[_i];
-                    var k = i[0];
-                    var d = i[1] || '';
-                    if (d instanceof doc_2.Doc)
-                        d = d.getValue();
-                    if (d.name && d.content) { // Document?
-                        if (d.content.startsWith('data:')) // Flexibility = extract content from a data URL (just in case...)
-                            d.content = d.content.replace(/data:.*;base64,/, '');
-                        p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent('id|' + (d.id ? d.id : '0') + '|name|' + d.name + '|content|' + d.content);
-                    }
-                    else if (d.object && d.row_id) { // Object?
-                        p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent('object|' + d.object + '|row_id|' + d.row_id);
-                    }
-                    else if (d.sort) { // Array?
-                        for (var _b = 0, d_1 = d; _b < d_1.length; _b++) {
-                            var dd = d_1[_b];
-                            p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(filters ? _this.convertFilterWildCards(dd) : dd);
-                        }
-                    }
-                    else {
-                        p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(filters ? _this.convertFilterWildCards(d) : d);
+            });
+        };
+        /**
+         * Build context option parameters
+         * @param {object} options Options
+         * @return {string} Option parameters
+         * @private
+         */
+        BusinessObject.prototype.getReqContextOption = function (options) {
+            return options.context ? "&context=".concat(encodeURIComponent(options.context)) : '';
+        };
+        /**
+         * Build options parameters
+         * @param {object} options Options
+         * @return {string} Option parameters
+         * @private
+         */
+        BusinessObject.prototype.getReqOptions = function (options) {
+            var opts = this.getReqContextOption(options);
+            var id = options.inlineDocs || options.inlineDocuments || options.inlineImages; // Naming flexibility
+            if (id)
+                opts += "&inline_documents=".concat(encodeURIComponent(id.join ? id.join(',') : id));
+            var it = options.inlineThumbs || options.inlineThumbnails; // Naming flexibility
+            if (it)
+                opts += "&inline_thumbnails=".concat(encodeURIComponent(it.join ? it.join(',') : it));
+            var io = options.inlineObjs || options.inlineObjects; // Naming flexibility
+            if (io)
+                opts += "&inline_objects=".concat(encodeURIComponent(io.join ? io.join(',') : io));
+            return opts;
+        };
+        /**
+         * Convert usual wildcards to filters wildcards
+         * @param {object} filter Filter
+         * @return {string} Filter with wildcards converted
+         * @private
+         */
+        BusinessObject.prototype.convertFilterWildCards = function (filter) {
+            return typeof filter === 'string' ? filter.replace(new RegExp('\\*', 'g'), '%').replace(new RegExp('\\?', 'g'), '_') : filter;
+        };
+        /**
+         * Build request parameters
+         * @param {object} data Data
+         * @param {boolean} [filters] Filters? Used to convert wildcards if needed
+         * @return {string} Request parameters
+         * @private
+         */
+        BusinessObject.prototype.getReqParams = function (data, filters) {
+            var p = '';
+            if (!data)
+                return p;
+            for (var _i = 0, _a = Object.entries(data); _i < _a.length; _i++) {
+                var i = _a[_i];
+                var k = i[0];
+                var d = i[1] || '';
+                if (d instanceof doc_2.Doc)
+                    d = d.getValue();
+                if (d.name && d.content) { // Document?
+                    if (d.content.startsWith('data:')) // Flexibility = extract content from a data URL (just in case...)
+                        d.content = d.content.replace(/data:.*;base64,/, '');
+                    p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent('id|' + (d.id ? d.id : '0') + '|name|' + d.name + '|content|' + d.content);
+                }
+                else if (d.object && d.row_id) { // Object?
+                    p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent('object|' + d.object + '|row_id|' + d.row_id);
+                }
+                else if (d.sort) { // Array?
+                    for (var _b = 0, d_1 = d; _b < d_1.length; _b++) {
+                        var dd = d_1[_b];
+                        p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(filters ? this.convertFilterWildCards(dd) : dd);
                     }
                 }
-                return p;
-            };
-            /**
-             * Get count
-             * @param {object} [filters] Filters (defaults to current filters)
-             * @param {object} [opts] Options
-             * @param {function} [opts.error] Error handler function
-             * @param {boolean} [opts.operations] Include operation fields results (sum, ...)
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} Promise to the count
-             * @function
-             */
-            this.getCount = function (filters, opts) { return __awaiter(_this, void 0, void 0, function () {
+                else {
+                    p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(filters ? this.convertFilterWildCards(d) : d);
+                }
+            }
+            return p;
+        };
+        /**
+         * Get path
+         * @param {string} action Action
+         * @param {object} [opts] Options
+         * @param {string} [opts.businessCase] Business case label
+         */
+        BusinessObject.prototype.getPath = function (action, opts) {
+            var bc = opts && opts.businessCase ? "&_bc=".concat(encodeURIComponent(opts.businessCase)) : '';
+            return "".concat(this.path, "&action=").concat(encodeURIComponent(action)).concat(bc);
+        };
+        /**
+         * Get count
+         * @param {object} [filters] Filters (defaults to current filters)
+         * @param {object} [opts] Options
+         * @param {function} [opts.error] Error handler function
+         * @param {boolean} [opts.operations] Include operation fields results (sum, ...)
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<object>} Promise to the count
+         * @function
+         */
+        BusinessObject.prototype.getCount = function (filters, opts) {
+            return __awaiter(this, void 0, void 0, function () {
                 var origin, ses;
                 var _this = this;
                 return __generator(this, function (_a) {
@@ -2476,20 +2546,22 @@ define("businessobject", ["require", "exports", "constants", "doc", "businessobj
                             });
                         })];
                 });
-            }); };
-            /**
-             * Search
-             * @param {object} [filters] Filters (defaults to current filters)
-             * @param {object} [opts] Options
-             * @param {number} [opts.page] Page number, a non paginated list is returned if not set
-             * @param {boolean} [opts.metadata=false] Refresh meta data?
-             * @param {boolean} [opts.visible] Return only visible fields?
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<array>} Promise to a list of records (also available as the <code>list</code> member)
-             * @function
-             */
-            this.search = function (filters, opts) { return __awaiter(_this, void 0, void 0, function () {
+            });
+        };
+        /**
+         * Search
+         * @param {object} [filters] Filters (defaults to current filters)
+         * @param {object} [opts] Options
+         * @param {number} [opts.page] Page number, a non paginated list is returned if not set
+         * @param {boolean} [opts.metadata=false] Refresh meta data?
+         * @param {boolean} [opts.visible] Return only visible fields?
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<array>} Promise to a list of records (also available as the <code>list</code> member)
+         * @function
+         */
+        BusinessObject.prototype.search = function (filters, opts) {
+            return __awaiter(this, void 0, void 0, function () {
                 var origin, ses;
                 var _this = this;
                 return __generator(this, function (_a) {
@@ -2529,20 +2601,22 @@ define("businessobject", ["require", "exports", "constants", "doc", "businessobj
                             });
                         })];
                 });
-            }); };
-            /**
-             * Get
-             * @param {string} [rowId] Row ID (defaults to current item's row ID)
-             * @param {object} [opts] Options
-             * @param {boolean} [opts.metadata=false] Refresh meta data?
-             * @param {string[]} [opts.fields] List of field names to return, all fields are returned by default
-             * @param {string} [opts.treeview] Return the named tree view structure
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} Promise to the record (also available as the <code>item</code> member)
-             * @function
-             */
-            this.get = function (rowId, opts) { return __awaiter(_this, void 0, void 0, function () {
+            });
+        };
+        /**
+         * Get
+         * @param {string} [rowId] Row ID (defaults to current item's row ID)
+         * @param {object} [opts] Options
+         * @param {boolean} [opts.metadata=false] Refresh meta data?
+         * @param {string[]} [opts.fields] List of field names to return, all fields are returned by default
+         * @param {string} [opts.treeview] Return the named tree view structure
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<object>} Promise to the record (also available as the <code>item</code> member)
+         * @function
+         */
+        BusinessObject.prototype.get = function (rowId, opts) {
+            return __awaiter(this, void 0, void 0, function () {
                 var origin, ses;
                 var _this = this;
                 return __generator(this, function (_a) {
@@ -2588,17 +2662,19 @@ define("businessobject", ["require", "exports", "constants", "doc", "businessobj
                             });
                         })];
                 });
-            }); };
-            /**
-             * Get for create
-             * @param {object} [opts] Options
-             * @param {boolean} [opts.metadata=false] Refresh meta data?
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
-             * @function
-             */
-            this.getForCreate = function (opts) { return __awaiter(_this, void 0, void 0, function () {
+            });
+        };
+        /**
+         * Get for create
+         * @param {object} [opts] Options
+         * @param {boolean} [opts.metadata=false] Refresh meta data?
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
+         * @function
+         */
+        BusinessObject.prototype.getForCreate = function (opts) {
+            return __awaiter(this, void 0, void 0, function () {
                 return __generator(this, function (_a) {
                     opts = opts || {};
                     delete opts.treeview; // Inhibited in this context
@@ -2606,18 +2682,20 @@ define("businessobject", ["require", "exports", "constants", "doc", "businessobj
                     opts.context = constants_3.constants.CONTEXT_CREATE;
                     return [2 /*return*/, this.get(constants_3.constants.DEFAULT_ROW_ID, opts)];
                 });
-            }); };
-            /**
-             * Get for update
-             * @param {string} [rowId] Row ID (defaults to current item's row ID)
-             * @param {object} [opts] Options
-             * @param {boolean} [opts.metadata=false] Refresh meta data?
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} Promise to the record to update (also available as the <code>item</code> member)
-             * @function
-             */
-            this.getForUpdate = function (rowId, opts) { return __awaiter(_this, void 0, void 0, function () {
+            });
+        };
+        /**
+         * Get for update
+         * @param {string} [rowId] Row ID (defaults to current item's row ID)
+         * @param {object} [opts] Options
+         * @param {boolean} [opts.metadata=false] Refresh meta data?
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<object>} Promise to the record to update (also available as the <code>item</code> member)
+         * @function
+         */
+        BusinessObject.prototype.getForUpdate = function (rowId, opts) {
+            return __awaiter(this, void 0, void 0, function () {
                 return __generator(this, function (_a) {
                     opts = opts || {};
                     delete opts.treeview; // Inhibited in this context
@@ -2625,18 +2703,20 @@ define("businessobject", ["require", "exports", "constants", "doc", "businessobj
                     opts.context = constants_3.constants.CONTEXT_UPDATE;
                     return [2 /*return*/, this.get(rowId || this.getRowId(), opts)];
                 });
-            }); };
-            /**
-             * Get for copy
-             * @param {string} [rowId] Row ID to copy (defaults to current item's row ID)
-             * @param {object} [opts] Options
-             * @param {boolean} [opts.metadata=false] Refresh meta data?
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
-             * @function
-             */
-            this.getForCopy = function (rowId, opts) { return __awaiter(_this, void 0, void 0, function () {
+            });
+        };
+        /**
+         * Get for copy
+         * @param {string} [rowId] Row ID to copy (defaults to current item's row ID)
+         * @param {object} [opts] Options
+         * @param {boolean} [opts.metadata=false] Refresh meta data?
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
+         * @function
+         */
+        BusinessObject.prototype.getForCopy = function (rowId, opts) {
+            return __awaiter(this, void 0, void 0, function () {
                 return __generator(this, function (_a) {
                     opts = opts || {};
                     delete opts.treeview; // Inhibited in this context
@@ -2644,18 +2724,20 @@ define("businessobject", ["require", "exports", "constants", "doc", "businessobj
                     opts.context = constants_3.constants.CONTEXT_COPY;
                     return [2 /*return*/, this.get(rowId || this.getRowId(), opts)];
                 });
-            }); };
-            /**
-             * Get for delete
-             * @param {string} [rowId] Row ID (defaults to current item's row ID)
-             * @param {object} [opts] Options
-             * @param {boolean} [opts.metadata=false] Refresh meta data?
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} Promise to the record to delete (also available as the <code>item</code> member)
-             * @function
-             */
-            this.getForDelete = function (rowId, opts) { return __awaiter(_this, void 0, void 0, function () {
+            });
+        };
+        /**
+         * Get for delete
+         * @param {string} [rowId] Row ID (defaults to current item's row ID)
+         * @param {object} [opts] Options
+         * @param {boolean} [opts.metadata=false] Refresh meta data?
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<object>} Promise to the record to delete (also available as the <code>item</code> member)
+         * @function
+         */
+        BusinessObject.prototype.getForDelete = function (rowId, opts) {
+            return __awaiter(this, void 0, void 0, function () {
                 return __generator(this, function (_a) {
                     opts = opts || {};
                     delete opts.treeview; // Inhibited in this context
@@ -2663,28 +2745,30 @@ define("businessobject", ["require", "exports", "constants", "doc", "businessobj
                     opts.context = constants_3.constants.CONTEXT_DELETE;
                     return [2 /*return*/, this.get(rowId || this.getRowId(), opts)];
                 });
-            }); };
-            /**
-             * Get specified or current item's row ID value
-             * @param {object} [item] Item (defaults to current item)
-             * @return {string} Item's row ID value
-             * @function
-             */
-            this.getRowId = function (item) {
-                item = item || _this.item;
-                if (item)
-                    return item[_this.getRowIdFieldName()];
-            };
-            /**
-             * Populate
-             * @param {object} [item] Item (defaults to current item)
-             * @param {object} [opts] Options
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
-             * @function
-             */
-            this.populate = function (item, opts) { return __awaiter(_this, void 0, void 0, function () {
+            });
+        };
+        /**
+         * Get specified or current item's row ID value
+         * @param {object} [item] Item (defaults to current item)
+         * @return {string} Item's row ID value
+         * @function
+         */
+        BusinessObject.prototype.getRowId = function (item) {
+            item = item || this.item;
+            if (item)
+                return item[this.getRowIdFieldName()];
+        };
+        /**
+         * Populate
+         * @param {object} [item] Item (defaults to current item)
+         * @param {object} [opts] Options
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
+         * @function
+         */
+        BusinessObject.prototype.populate = function (item, opts) {
+            return __awaiter(this, void 0, void 0, function () {
                 var origin, ses;
                 var _this = this;
                 return __generator(this, function (_a) {
@@ -2713,19 +2797,21 @@ define("businessobject", ["require", "exports", "constants", "doc", "businessobj
                             });
                         })];
                 });
-            }); };
-            /**
-             * Get the linked list for a list of values field and its specified value(s)
-             * @param {(string|object)} field Field name or definition
-             * @param {(string|object)} linkedField Linked field name or definition
-             * @param {string|boolean} [code] List of values code(s) (if multiple codes use ; as separator), defaults to current field value if empty, means "all" if true
-             * @param {object} [opts] Options
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
-             * @function
-             */
-            this.getFieldLinkedList = function (field, linkedField, code, opts) { return __awaiter(_this, void 0, void 0, function () {
+            });
+        };
+        /**
+         * Get the linked list for a list of values field and its specified value(s)
+         * @param {(string|object)} field Field name or definition
+         * @param {(string|object)} linkedField Linked field name or definition
+         * @param {string|boolean} [code] List of values code(s) (if multiple codes use ; as separator), defaults to current field value if empty, means "all" if true
+         * @param {object} [opts] Options
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
+         * @function
+         */
+        BusinessObject.prototype.getFieldLinkedList = function (field, linkedField, code, opts) {
+            return __awaiter(this, void 0, void 0, function () {
                 var origin, ses;
                 var _this = this;
                 return __generator(this, function (_a) {
@@ -2764,17 +2850,19 @@ define("businessobject", ["require", "exports", "constants", "doc", "businessobj
                             });
                         })];
                 });
-            }); };
-            /**
-             * Save (create or update depending on item row ID value)
-             * @param {object} [item] Item (defaults to current item)
-             * @param {object} [opts] Options
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} Promise to the saved record (also available as the <code>item</code> member)
-             * @function
-             */
-            this.save = function (item, opts) { return __awaiter(_this, void 0, void 0, function () {
+            });
+        };
+        /**
+         * Save (create or update depending on item row ID value)
+         * @param {object} [item] Item (defaults to current item)
+         * @param {object} [opts] Options
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<object>} Promise to the saved record (also available as the <code>item</code> member)
+         * @function
+         */
+        BusinessObject.prototype.save = function (item, opts) {
+            return __awaiter(this, void 0, void 0, function () {
                 var rowId;
                 return __generator(this, function (_a) {
                     if (item)
@@ -2786,17 +2874,19 @@ define("businessobject", ["require", "exports", "constants", "doc", "businessobj
                         return [2 /*return*/, this.update(item, opts)];
                     return [2 /*return*/];
                 });
-            }); };
-            /**
-             * Create (create or update)
-             * @param {object} [item] Item (defaults to current item)
-             * @param {object} [opts] Options
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} Promise to the created record (also available as the <code>item</code> member)
-             * @function
-             */
-            this.create = function (item, opts) { return __awaiter(_this, void 0, void 0, function () {
+            });
+        };
+        /**
+         * Create (create or update)
+         * @param {object} [item] Item (defaults to current item)
+         * @param {object} [opts] Options
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<object>} Promise to the created record (also available as the <code>item</code> member)
+         * @function
+         */
+        BusinessObject.prototype.create = function (item, opts) {
+            return __awaiter(this, void 0, void 0, function () {
                 var origin, ses;
                 var _this = this;
                 return __generator(this, function (_a) {
@@ -2826,17 +2916,19 @@ define("businessobject", ["require", "exports", "constants", "doc", "businessobj
                             });
                         })];
                 });
-            }); };
-            /**
-             * Update
-             * @param {object} [item] Item (defaults to current item)
-             * @param {object} [opts] Options
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} Promise to the updated record (also available as the <code>item</code> member)
-             * @function
-             */
-            this.update = function (item, opts) { return __awaiter(_this, void 0, void 0, function () {
+            });
+        };
+        /**
+         * Update
+         * @param {object} [item] Item (defaults to current item)
+         * @param {object} [opts] Options
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<object>} Promise to the updated record (also available as the <code>item</code> member)
+         * @function
+         */
+        BusinessObject.prototype.update = function (item, opts) {
+            return __awaiter(this, void 0, void 0, function () {
                 var origin, ses;
                 var _this = this;
                 return __generator(this, function (_a) {
@@ -2865,17 +2957,19 @@ define("businessobject", ["require", "exports", "constants", "doc", "businessobj
                             });
                         })];
                 });
-            }); };
-            /**
-             * Delete
-             * @param {object} [item] Item (defaults to current item)
-             * @param {object} [opts] Options
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} Promise (the <code>item</code> member is emptied)
-             * @function
-             */
-            this.del = function (item, opts) { return __awaiter(_this, void 0, void 0, function () {
+            });
+        };
+        /**
+         * Delete
+         * @param {object} [item] Item (defaults to current item)
+         * @param {object} [opts] Options
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<object>} Promise (the <code>item</code> member is emptied)
+         * @function
+         */
+        BusinessObject.prototype.del = function (item, opts) {
+            return __awaiter(this, void 0, void 0, function () {
                 var origin, ses;
                 var _this = this;
                 return __generator(this, function (_a) {
@@ -2905,19 +2999,21 @@ define("businessobject", ["require", "exports", "constants", "doc", "businessobj
                             });
                         })];
                 });
-            }); };
-            /**
-             * Invoke a custom action
-             * @param {string} action Action name
-             * @param {string} [rowId] Row ID
-             * @param {object} [opts] Options
-             * @param {function} [opts.parameters] Optional action parameters as key/value pairs
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<string|object>} A promise to the action result
-             * @function
-             */
-            this.action = function (action, rowId, opts) { return __awaiter(_this, void 0, void 0, function () {
+            });
+        };
+        /**
+         * Invoke a custom action
+         * @param {string} action Action name
+         * @param {string} [rowId] Row ID
+         * @param {object} [opts] Options
+         * @param {function} [opts.parameters] Optional action parameters as key/value pairs
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<string|object>} A promise to the action result
+         * @function
+         */
+        BusinessObject.prototype.action = function (action, rowId, opts) {
+            return __awaiter(this, void 0, void 0, function () {
                 var origin, ses;
                 var _this = this;
                 return __generator(this, function (_a) {
@@ -2945,19 +3041,21 @@ define("businessobject", ["require", "exports", "constants", "doc", "businessobj
                             });
                         })];
                 });
-            }); };
-            /**
-             * Build a pivot table
-             * @param {string} ctb Pivot table name
-             * @param {object} [opts] Options
-             * @param {boolean} [opts.cubes] Data as cubes?
-             * @param {object} [opts.filters] Filters, by default current filters are used
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} A promise to the pivot table data (also available as the <code>crosstabdata</code> member)
-             * @function
-             */
-            this.crosstab = function (ctb, opts) { return __awaiter(_this, void 0, void 0, function () {
+            });
+        };
+        /**
+         * Build a pivot table
+         * @param {string} ctb Pivot table name
+         * @param {object} [opts] Options
+         * @param {boolean} [opts.cubes] Data as cubes?
+         * @param {object} [opts.filters] Filters, by default current filters are used
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<object>} A promise to the pivot table data (also available as the <code>crosstabdata</code> member)
+         * @function
+         */
+        BusinessObject.prototype.crosstab = function (ctb, opts) {
+            return __awaiter(this, void 0, void 0, function () {
                 var origin, ses;
                 var _this = this;
                 return __generator(this, function (_a) {
@@ -2985,18 +3083,20 @@ define("businessobject", ["require", "exports", "constants", "doc", "businessobj
                             });
                         })];
                 });
-            }); };
-            /**
-             * Build a custom publication
-             * @param {string} prt Publication name
-             * @param {string} [rowId] Row ID
-             * @param {object} [opts] Options
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<Doc>} A promise to the document of the publication
-             * @function
-             */
-            this.print = function (prt, rowId, opts) { return __awaiter(_this, void 0, void 0, function () {
+            });
+        };
+        /**
+         * Build a custom publication
+         * @param {string} prt Publication name
+         * @param {string} [rowId] Row ID
+         * @param {object} [opts] Options
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<Doc>} A promise to the document of the publication
+         * @function
+         */
+        BusinessObject.prototype.print = function (prt, rowId, opts) {
+            return __awaiter(this, void 0, void 0, function () {
                 var origin, ses;
                 var _this = this;
                 return __generator(this, function (_a) {
@@ -3031,18 +3131,20 @@ define("businessobject", ["require", "exports", "constants", "doc", "businessobj
                             });
                         })];
                 });
-            }); };
-            /**
-             * Get place map data
-             * @param {string} pcm Place map name
-             * @param {string} [filters] Filters
-             * @param {object} [opts] Options
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<any>} A promise to the place map data
-             * @function
-             */
-            this.placemap = function (pcm, filters, opts) { return __awaiter(_this, void 0, void 0, function () {
+            });
+        };
+        /**
+         * Get place map data
+         * @param {string} pcm Place map name
+         * @param {string} [filters] Filters
+         * @param {object} [opts] Options
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<any>} A promise to the place map data
+         * @function
+         */
+        BusinessObject.prototype.placemap = function (pcm, filters, opts) {
+            return __awaiter(this, void 0, void 0, function () {
                 var origin, ses;
                 var _this = this;
                 return __generator(this, function (_a) {
@@ -3071,18 +3173,20 @@ define("businessobject", ["require", "exports", "constants", "doc", "businessobj
                             });
                         })];
                 });
-            }); };
-            /**
-             * Set an object parameter
-             * @param {string} param Parameter name
-             * @param {string} value Parameter value
-             * @param {object} [opts] Options
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} Promise
-             * @function
-             */
-            this.setParameter = function (param, value, opts) { return __awaiter(_this, void 0, void 0, function () {
+            });
+        };
+        /**
+         * Set an object parameter
+         * @param {string} param Parameter name
+         * @param {string} value Parameter value
+         * @param {object} [opts] Options
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<object>} Promise
+         * @function
+         */
+        BusinessObject.prototype.setParameter = function (param, value, opts) {
+            return __awaiter(this, void 0, void 0, function () {
                 var origin, ses;
                 var _this = this;
                 return __generator(this, function (_a) {
@@ -3112,17 +3216,19 @@ define("businessobject", ["require", "exports", "constants", "doc", "businessobj
                             });
                         })];
                 });
-            }); };
-            /**
-             * Get an object parameter
-             * @param {string} param Parameter name
-             * @param {object} [opts] Options
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} Promise to the parameter value
-             * @function
-             */
-            this.getParameter = function (param, opts) { return __awaiter(_this, void 0, void 0, function () {
+            });
+        };
+        /**
+         * Get an object parameter
+         * @param {string} param Parameter name
+         * @param {object} [opts] Options
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<object>} Promise to the parameter value
+         * @function
+         */
+        BusinessObject.prototype.getParameter = function (param, opts) {
+            return __awaiter(this, void 0, void 0, function () {
                 var origin, ses;
                 var _this = this;
                 return __generator(this, function (_a) {
@@ -3150,35 +3256,17 @@ define("businessobject", ["require", "exports", "constants", "doc", "businessobj
                             });
                         })];
                 });
-            }); };
-            /**
-             * Get an object resource URL
-             * @param {string} code Resource code
-             * @param {string} [type=IMG] Resource type (IMG=image (default), ICO=Icon, CSS=stylesheet, JS=Javascript, HTML=HTML)
-             * @return {string} Object resource URL
-             * @function
-             */
-            this.getResourceURL = function (code, type) {
-                return _this.session.getResourceURL(code, type, _this.metadata.name, _this.metadata.id);
-            };
-            this.session = ses;
-            var inst = instance || 'api_' + name;
-            this.metadata = new businessobjectmetadata_1.BusinessObjectMetadata(name, inst);
-            this.cacheKey = this.session.getBusinessObjectCacheKey(name, inst);
-            this.path = this.session.parameters.objpath + '?object=' + encodeURIComponent(name) + '&inst=' + encodeURIComponent(inst);
-            this.item = {};
-            this.filters = {};
-            this.list = [];
-        }
+            });
+        };
         /**
-         * Get path
-         * @param {string} action Action
-         * @param {object} [opts] Options
-         * @param {string} [opts.businessCase] Business case label
+         * Get an object resource URL
+         * @param {string} code Resource code
+         * @param {string} [type=IMG] Resource type (IMG=image (default), ICO=Icon, CSS=stylesheet, JS=Javascript, HTML=HTML)
+         * @return {string} Object resource URL
+         * @function
          */
-        BusinessObject.prototype.getPath = function (action, opts) {
-            var bc = opts && opts.businessCase ? "&_bc=".concat(encodeURIComponent(opts.businessCase)) : '';
-            return "".concat(this.path, "&action=").concat(encodeURIComponent(action)).concat(bc);
+        BusinessObject.prototype.getResourceURL = function (code, type) {
+            return this.session.getResourceURL(code, type, this.metadata.name, this.metadata.id);
         };
         return BusinessObject;
     }());
@@ -3187,7 +3275,7 @@ define("businessobject", ["require", "exports", "constants", "doc", "businessobj
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 3.1.0
+ * @version 3.1.1
  * @license Apache-2.0
  */
 define("simplicite", ["require", "exports", "constants", "doc", "grant", "businessobjectmetadata", "businessobject", "externalobjectmetadata", "externalobject", "session"], function (require, exports, constants_4, doc_3, grant_2, businessobjectmetadata_2, businessobject_2, externalobjectmetadata_2, externalobject_2, session_1) {

@@ -102,7 +102,7 @@ class BusinessObject {
 	 * @return {promise<BusinessObjectMetadata>} A promise to the object's meta data (also available as the <code>metadata</code> member)
 	 * @function
 	 */
-	public getMetaData = async (opts?: any): Promise<any> => {
+	public async getMetaData(opts?: any): Promise<any> {
 		const origin = 'BusinessObject.getMetaData';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -127,7 +127,7 @@ class BusinessObject {
 				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
-	};
+	}
 
 	/**
 	 * Get meta data (alias to getMetaData)
@@ -140,45 +140,45 @@ class BusinessObject {
 	 * @return {string} Name
 	 * @function
 	 */
-	public getName = (): string => {
+	public getName(): string {
 		return this.metadata.name;
-	};
+	}
 
 	/**
 	 * Get instance name
 	 * @return {string} Instance name
 	 * @function
 	 */
-	public getInstance = (): string => {
+	public getInstance(): string {
 		return this.metadata.instance;
-	};
+	}
 
 	/**
 	 * Get display label
 	 * @return {string} Display label
 	 * @function
 	 */
-	public getLabel = (): string => {
+	public getLabel(): string {
 		return this.metadata.label;
-	};
+	}
 
 	/**
 	 * Get help
 	 * @return {string} Help
 	 * @function
 	 */
-	public getHelp = (): string => {
+	public getHelp(): string {
 		return this.metadata.help;
-	};
+	}
 
 	/**
 	 * Get all fields definitions
 	 * @return {array} Array of field definitions
 	 * @function
 	 */
-	public getFields = (): any[] => {
+	public getFields(): any[] {
 		return this.metadata.fields;
-	};
+	}
 
 	/**
 	 * Get a field definition
@@ -186,40 +186,40 @@ class BusinessObject {
 	 * @return {object} Field definition
 	 * @function
 	 */
-	public getField = (fieldName: string): any => {
+	public getField(fieldName: string): any {
 		const fs: any[] = this.getFields();
 		let n = 0;
 		while (n < fs.length && fs[n].name !== fieldName) n++;
 		if (n < fs.length)
 			return fs[n];
-	};
+	}
 
 	/**
 	 * Get row ID field name
 	 * @return {string} Row ID field name
 	 * @function
 	 */
-	public getRowIdFieldName = (): string => {
+	public getRowIdFieldName(): string {
 		return this.metadata.rowidfield;
-	};
+	}
 
 	/**
 	 * Get row ID field definition
 	 * @return {object} Row ID field definition
 	 * @function
 	 */
-	public getRowIdField = (): any => {
+	public getRowIdField(): any {
 		return this.getField(this.getRowIdFieldName());
-	};
+	}
 
 	/**
 	 * Get links
 	 * @return {array} Array of links
 	 * @function
 	 */
-	public getLinks = (): any[] => {
+	public getLinks(): any[] {
 		return this.metadata.links;
-	};
+	}
 
 	/**
 	 * Get field type
@@ -227,12 +227,12 @@ class BusinessObject {
 	 * @return {string} Type (one of <code>constants.TYPE_*</code>)
 	 * @function
 	 */
-	public getFieldType = (field: string|any): string => {
+	public getFieldType(field: string|any): string {
 		if (typeof field === 'string')
 			field = this.getField(field);
 		if (field)
 			return field.type;
-	};
+	}
 
 	/**
 	 * Get field label
@@ -240,12 +240,12 @@ class BusinessObject {
 	 * @return {string} Field label
 	 * @function
 	 */
-	public getFieldLabel = (field: string|any): string => {
+	public getFieldLabel(field: string|any): string {
 		if (typeof field === 'string')
 			field = this.getField(field);
 		if (field)
 			return field.label;
-	};
+	}
 
 	/**
 	 * Get value of field for item (or current item)
@@ -254,7 +254,7 @@ class BusinessObject {
 	 * @return {string|Doc} Value
 	 * @function
 	 */
-	public getFieldValue = (field: string|any, item?: any): string|any => {
+	public getFieldValue(field: string|any, item?: any): string|any {
 		if (!item)
 			item = this.item;
 		if (field && item) {
@@ -264,7 +264,7 @@ class BusinessObject {
 			else
 				return val;
 		}
-	};
+	}
 
 	/**
 	 * Get the list value of a list of values field for item (or current item)
@@ -273,12 +273,12 @@ class BusinessObject {
 	 * @return {string} List value
 	 * @function
 	 */
-	public getFieldListValue = (field: string|any, item?: any): string => {
+	public getFieldListValue(field: string|any, item?: any): string {
 		if (typeof field === 'string')
 			field = this.getField(field);
 		const val: string = this.getFieldValue(field, item);
 		return field && field.listOfValues ? this.getListValue(field.listOfValues, val) : val;
-	};
+	}
 
 	/**
 	 * Get the list colors of a list of values field for item (or current item)
@@ -287,12 +287,12 @@ class BusinessObject {
 	 * @return {string} List color and bgcolor
 	 * @function
 	 */
-	public getFieldListColors = (field: string|any, item?: any): any => {
+	public getFieldListColors(field: string|any, item?: any): any {
 		if (typeof field === 'string')
 			field = this.getField(field);
 		const val: string = this.getFieldValue(field, item);
 		return field && field.listOfValues ? this.getListColors(field.listOfValues, val) : val;
-	};
+	}
 
 	/**
 	 * Get the data URL of an inlined document/image field for item (or current item)
@@ -301,13 +301,13 @@ class BusinessObject {
 	 * @return {string} Document/image field data URL (or nothing if the field is not of document/image type or if it is not inlined or if it is empty)
 	 * @function
 	 */
-	public getFieldDataURL = (field: string|any, item?: any): string => {
+	public getFieldDataURL(field: string|any, item?: any): string {
 		if (typeof field !== 'string')
 			field = field.fullinput || field.name;
 		const val: string|any = this.getFieldValue(field, item);
 		if (val && val.mime) // Inlined
 			return 'data:' + val.mime + ';base64,' + (val.content || val.thumbnail);
-	};
+	}
 
 	/**
 	 * Get the field's value as document/image for item (or current item)
@@ -316,7 +316,7 @@ class BusinessObject {
 	 * @return {string|Doc} Document/image (or nothing if the field is not of document/image type or if it is empty)
 	 * @function
 	 */
-	public getFieldDocument = (field: string|any, item?: any): any => {
+	public getFieldDocument(field: string|any, item?: any): any {
 		if (typeof field !== 'string')
 			field = field.fullinput || field.input || field.name;
 		const val: string|any = this.getFieldValue(field, item);
@@ -324,7 +324,7 @@ class BusinessObject {
 			return new Doc(val);
 		else
 			return val;
-	};
+	}
 
 	/**
 	 * Get the URL of a document/image field for item (or current item)
@@ -334,7 +334,7 @@ class BusinessObject {
 	 * @return {string} Document/image field URL (or nothing if the field is not of document/image type or if it is empty)
 	 * @function
 	 */
-	public getFieldDocumentURL = (field: string|any, item?: any, thumbnail?: boolean): string => {
+	public getFieldDocumentURL(field: string|any, item?: any, thumbnail?: boolean): string {
 		if (typeof field !== 'string')
 			field = field.fullinput || field.input || field.name;
 		let val: string|any = this.getFieldValue(field, item);
@@ -349,7 +349,7 @@ class BusinessObject {
 				+ '&doc_id=' + encodeURIComponent(val)
 				+ (thumbnail ? '&thumbnail=true' : '')
 				+ (this.session.authtoken ? '&_x_simplicite_authorization_=' + encodeURIComponent(this.session.authtoken) : '');
-	};
+	}
 
 	/**
 	 * Get list item value for code
@@ -358,7 +358,7 @@ class BusinessObject {
 	 * @return {string} Value
 	 * @function
 	 */
-	public getListValue = (list: any[], code: string): string => {
+	public getListValue(list: any[], code: string): string {
 		if (list) {
 			for (const l of list) {
 				if (l.code === code)
@@ -366,7 +366,7 @@ class BusinessObject {
 			}
 		}
 		return code;
-	};
+	}
 
 	/**
 	 * Get list item colors (color and background color) for code
@@ -375,7 +375,7 @@ class BusinessObject {
 	 * @return {any} Colors
 	 * @function
 	 */
-	public getListColors = (list: any[], code: string): any => {
+	public getListColors(list: any[], code: string): any {
 		if (list) {
 			for (const l of list) {
 				if (l.code === code)
@@ -383,7 +383,7 @@ class BusinessObject {
 			}
 		}
 		return { color: 'inherit', bgcolor: 'inherit' };
-	};
+	}
 
 	/**
 	 * Set value of field for item (or current item)
@@ -392,33 +392,33 @@ class BusinessObject {
 	 * @param {object} [item] Item (defaults to current item)
 	 * @function
 	 */
-	public setFieldValue = (field: string|any, value: string|any, item?: any): void => {
+	public setFieldValue(field: string|any, value: string|any, item?: any): void {
 		if (!item)
 			item = this.item;
 
 		if (field && item) {
 			item[typeof field === 'string' ? field : field.name] = value instanceof Doc ? (value as Doc).getValue() : value;
 		}
-	};
+	}
 
 	/**
 	 * Reset values of item (or current item)
 	 * @param {object} [item] Item (defaults to current item)
 	 */
-	public resetValues = (item?: any): void => {
+	public resetValues(item?: any): void {
 		if (!item)
 			item = this.item;
 
 		for (const v in item)
 			delete item[v];
-	};
+	}
 
 	/**
 	* Set values of item (or current item)
 	* @param {object|FormData} data Data (plain object or form data)
 	* @param {object} [item] Item (defaults to current item)
 	*/
-	public setFieldValues = async (data: object|FormData, item?: any): Promise<any> => {
+	public async setFieldValues(data: object|FormData, item?: any): Promise<any> {
 		if (!item)
 			item = this.item;
 
@@ -447,7 +447,7 @@ class BusinessObject {
 			}
 			Promise.allSettled(promises).then(() => resolve.call(this, item));
 		});
-	};
+	}
 
 	/**
 	 * Is the field the row ID field?
@@ -455,9 +455,9 @@ class BusinessObject {
 	 * @return {boolean} True if the field is the row ID field
 	 * @function
 	 */
-	public isRowIdField = (field: any): boolean => {
+	public isRowIdField(field: any): boolean {
 		return !field.ref && field.name === this.metadata.rowidfield;
-	};
+	}
 
 	/**
 	 * Is the field a timestamp field?
@@ -465,10 +465,10 @@ class BusinessObject {
 	 * @return {boolean} True if the field is a timestamp field
 	 * @function
 	 */
-	public isTimestampField = (field: any): boolean => {
+	public isTimestampField(field: any): boolean {
 		const n = field.name;
 		return !field.ref && (n === 'created_by' || n === 'created_dt' || n === 'updated_by' || n === 'updated_dt');
-	};
+	}
 
 	/**
 	 * Get current filters
@@ -480,7 +480,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the object's filters (also available as the <code>filters</code> member)
 	 * @function
 	 */
-	public getFilters = async (opts?: any): Promise<any> => {
+	public async getFilters(opts?: any): Promise<any> {
 		const origin = 'BusinessObject.getFilters';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -505,7 +505,7 @@ class BusinessObject {
 				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
-	};
+	}
 
 	/**
 	 * Build context option parameters
@@ -513,9 +513,9 @@ class BusinessObject {
 	 * @return {string} Option parameters
 	 * @private
 	 */
-	private getReqContextOption = (options: any): string => {
+	private getReqContextOption(options: any): string {
 		return options.context ? `&context=${encodeURIComponent(options.context)}` : '';
-	};
+	}
 
 	/**
 	 * Build options parameters
@@ -523,7 +523,7 @@ class BusinessObject {
 	 * @return {string} Option parameters
 	 * @private
 	 */
-	private getReqOptions = (options: any): string => {
+	private getReqOptions(options: any): string {
 		let opts = this.getReqContextOption(options);
 		const id = options.inlineDocs || options.inlineDocuments || options.inlineImages; // Naming flexibility
 		if (id)
@@ -535,7 +535,7 @@ class BusinessObject {
 		if (io)
 			opts += `&inline_objects=${encodeURIComponent(io.join ? io.join(',') : io)}`;
 		return opts;
-	};
+	}
 
 	/**
 	 * Convert usual wildcards to filters wildcards
@@ -543,9 +543,9 @@ class BusinessObject {
 	 * @return {string} Filter with wildcards converted
 	 * @private
 	 */
-	private convertFilterWildCards = (filter) => {
+	private convertFilterWildCards(filter) {
 		return typeof filter === 'string'? filter.replace(new RegExp('\\*', 'g'), '%').replace(new RegExp('\\?', 'g'), '_') : filter;
-	};
+	}
 
 	/**
 	 * Build request parameters
@@ -554,7 +554,7 @@ class BusinessObject {
 	 * @return {string} Request parameters
 	 * @private
 	 */
-	private getReqParams = (data: any, filters?: boolean): string => {
+	private getReqParams(data: any, filters?: boolean): string {
 		let p = '';
 		if (!data) return p;
 		for (const i of Object.entries(data)) {
@@ -576,7 +576,7 @@ class BusinessObject {
 			}
 		}
 		return p;
-	};
+	}
 
 	/**
 	 * Get path
@@ -599,7 +599,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the count
 	 * @function
 	 */
-	public getCount = async (filters?: any, opts?: any): Promise<any> => {
+	public async getCount(filters?: any, opts?: any): Promise<any> {
 		const origin = 'BusinessObject.getCount';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -626,7 +626,7 @@ class BusinessObject {
 				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
-	};
+	}
 
 	/**
 	 * Search
@@ -640,7 +640,7 @@ class BusinessObject {
 	 * @return {promise<array>} Promise to a list of records (also available as the <code>list</code> member)
 	 * @function
 	 */
-	public search = async (filters?: any, opts?: any): Promise<any[]> => {
+	public async search(filters?: any, opts?: any): Promise<any[]> {
 		const origin = 'BusinessObject.search';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -673,7 +673,7 @@ class BusinessObject {
 				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
-	};
+	}
 
 	/**
 	 * Get
@@ -687,7 +687,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	public get = async (rowId?: string, opts?: any): Promise<any> => {
+	public async get(rowId?: string, opts?: any): Promise<any> {
 		const origin = 'BusinessObject.get';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -724,7 +724,7 @@ class BusinessObject {
 				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
-	};
+	}
 
 	/**
 	 * Get for create
@@ -735,13 +735,13 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
 	 * @function
 	 */
-	public getForCreate = async (opts?: any): Promise<any> => {
+	public async getForCreate(opts?: any): Promise<any> {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
 		opts.context = constants.CONTEXT_CREATE;
 		return this.get(constants.DEFAULT_ROW_ID, opts);
-	};
+	}
 
 	/**
 	 * Get for update
@@ -753,13 +753,13 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the record to update (also available as the <code>item</code> member)
 	 * @function
 	 */
-	public getForUpdate = async (rowId?: string, opts?: any): Promise<any> => {
+	public async getForUpdate(rowId?: string, opts?: any): Promise<any> {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
 		opts.context = constants.CONTEXT_UPDATE;
 		return this.get(rowId || this.getRowId(), opts);
-	};
+	}
 
 	/**
 	 * Get for copy
@@ -771,13 +771,13 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
 	 * @function
 	 */
-	public getForCopy = async (rowId?: string, opts?: any): Promise<any> => {
+	public async getForCopy(rowId?: string, opts?: any): Promise<any> {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
 		opts.context = constants.CONTEXT_COPY;
 		return this.get(rowId || this.getRowId(), opts);
-	};
+	}
 
 	/**
 	 * Get for delete
@@ -789,13 +789,13 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the record to delete (also available as the <code>item</code> member)
 	 * @function
 	 */
-	public getForDelete = async (rowId?: string, opts?: any): Promise<any> => {
+	public async getForDelete(rowId?: string, opts?: any): Promise<any> {
 		opts = opts || {};
 		delete opts.treeview; // Inhibited in this context
 		delete opts.fields; // Inhibited in this context
 		opts.context = constants.CONTEXT_DELETE;
 		return this.get(rowId || this.getRowId(), opts);
-	};
+	}
 
 	/**
 	 * Get specified or current item's row ID value
@@ -803,11 +803,11 @@ class BusinessObject {
 	 * @return {string} Item's row ID value
 	 * @function
 	 */
-	public getRowId = (item?: any): string => {
+	public getRowId(item?: any): string {
 		item = item || this.item;
 		if (item)
 			return item[this.getRowIdFieldName()];
-	};
+	}
 
 	/**
 	 * Populate
@@ -818,7 +818,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	public populate = async (item?: any, opts?: any): Promise<any> => {
+	public async populate(item?: any, opts?: any): Promise<any> {
 		const origin = 'BusinessObject.populate';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -840,7 +840,7 @@ class BusinessObject {
 				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
-	};
+	}
 
 	/**
 	 * Get the linked list for a list of values field and its specified value(s)
@@ -853,7 +853,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	public getFieldLinkedList = async (field: string|any, linkedField: string|any, code?: string|boolean, opts?: any ): Promise<any> => {
+	public async getFieldLinkedList(field: string|any, linkedField: string|any, code?: string|boolean, opts?: any ): Promise<any> {
 		const origin = 'BusinessObject.getFieldLinkedList';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -884,7 +884,7 @@ class BusinessObject {
 				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
-	};
+	}
 
 	/**
 	 * Save (create or update depending on item row ID value)
@@ -895,7 +895,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the saved record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	public save = async (item?: any, opts?: any): Promise<any> => {
+	public async save(item?: any, opts?: any): Promise<any> {
 		if (item)
 			this.item = item;
 		const rowId: string = this.item[this.metadata.rowidfield];
@@ -903,7 +903,7 @@ class BusinessObject {
 			return this.create(item, opts);
 		else
 			return this.update(item, opts);
-	};
+	}
 
 	/**
 	 * Create (create or update)
@@ -914,7 +914,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the created record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	public create = async (item?: any, opts?: any): Promise<any> => {
+	public async create(item?: any, opts?: any): Promise<any> {
 		const origin = 'BusinessObject.create';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -937,7 +937,7 @@ class BusinessObject {
 				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
-	};
+	}
 
 	/**
 	 * Update
@@ -948,7 +948,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the updated record (also available as the <code>item</code> member)
 	 * @function
 	 */
-	public update = async (item?: any, opts?: any): Promise<any> => {
+	public async update(item?: any, opts?: any): Promise<any> {
 		const origin = 'BusinessObject.update';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -970,7 +970,7 @@ class BusinessObject {
 				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
-	};
+	}
 
 	/**
 	 * Delete
@@ -981,7 +981,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise (the <code>item</code> member is emptied)
 	 * @function
 	 */
-	public del = async (item?: any, opts?: any): Promise<any> => {
+	public async del(item?: any, opts?: any): Promise<any> {
 		const origin = 'BusinessObject.del';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -1004,7 +1004,7 @@ class BusinessObject {
 				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
-	};
+	}
 
 	/**
 	 * Invoke a custom action
@@ -1017,7 +1017,7 @@ class BusinessObject {
 	 * @return {promise<string|object>} A promise to the action result
 	 * @function
 	 */
-	public action = async (action: string, rowId?: string, opts?: any): Promise<string|any> => {
+	public async action(action: string, rowId?: string, opts?: any): Promise<string|any> {
 		const origin = `BusinessObject.action(${action})`;
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -1038,7 +1038,7 @@ class BusinessObject {
 				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
-	};
+	}
 
 	/**
 	 * Build a pivot table
@@ -1051,7 +1051,7 @@ class BusinessObject {
 	 * @return {promise<object>} A promise to the pivot table data (also available as the <code>crosstabdata</code> member)
 	 * @function
 	 */
-	public crosstab = async (ctb: string, opts?: any): Promise<any> => {
+	public async crosstab(ctb: string, opts?: any): Promise<any> {
 		const origin = `BusinessObject.crosstab(${ctb})`;
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -1072,7 +1072,7 @@ class BusinessObject {
 				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
-	};
+	}
 
 	/**
 	 * Build a custom publication
@@ -1084,7 +1084,7 @@ class BusinessObject {
 	 * @return {promise<Doc>} A promise to the document of the publication
 	 * @function
 	 */
-	public print = async (prt: string, rowId?: string, opts?: any): Promise<any> => {
+	public async print(prt: string, rowId?: string, opts?: any): Promise<any> {
 		const origin = `BusinessObject.print(${prt})`;
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -1112,7 +1112,7 @@ class BusinessObject {
 				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
-	};
+	}
 
 	/**
 	 * Get place map data
@@ -1124,7 +1124,7 @@ class BusinessObject {
 	 * @return {promise<any>} A promise to the place map data
 	 * @function
 	 */
-	public placemap = async (pcm: string, filters?: any, opts?: any): Promise<any> => {
+	public async placemap(pcm: string, filters?: any, opts?: any): Promise<any> {
 		const origin = `BusinessObject.placemap(${pcm})`;
 		const ses: Session = this.session;
 		this.filters = filters || {};
@@ -1146,7 +1146,7 @@ class BusinessObject {
 				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
-	};
+	}
 
 	/**
 	 * Set an object parameter
@@ -1158,7 +1158,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise
 	 * @function
 	 */
-	public setParameter = async (param: string, value: string, opts?: any): Promise<any> => {
+	public async setParameter(param: string, value: string, opts?: any): Promise<any> {
 		const origin = 'BusinessObject.setParameter';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -1181,7 +1181,7 @@ class BusinessObject {
 				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
-	};
+	}
 
 	/**
 	 * Get an object parameter
@@ -1192,7 +1192,7 @@ class BusinessObject {
 	 * @return {promise<object>} Promise to the parameter value
 	 * @function
 	 */
-	public getParameter = async (param: string, opts?: any): Promise<any> => {
+	public async getParameter(param: string, opts?: any): Promise<any> {
 		const origin = 'BusinessObject.getParameter';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -1213,7 +1213,7 @@ class BusinessObject {
 				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
-	};
+	}
 
 	/**
 	 * Get an object resource URL
@@ -1222,9 +1222,9 @@ class BusinessObject {
 	 * @return {string} Object resource URL
 	 * @function
 	 */
-	public getResourceURL = (code: string, type?: string): string => {
+	public getResourceURL(code: string, type?: string): string {
 		return this.session.getResourceURL(code, type, this.metadata.name, this.metadata.id);
-	};
+	}
 }
 
 export { BusinessObject };

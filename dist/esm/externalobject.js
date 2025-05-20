@@ -22,51 +22,61 @@ class ExternalObject {
      */
     constructor(ses, name) {
         /**
-         * Get name
-         * @return {string} Name
+         * Alias to <code>call</code>
          * @function
          */
-        this.getName = () => {
-            return this.metadata.name;
-        };
-        /**
-         * Build URL-encoded parameters
-         * @param {object} params URL parameters as key/value pairs
-         * @return {string} URL-encoded parameters
-         * @function
-         */
-        this.callParams = (params) => {
-            let p = '';
-            if (!params)
-                return p;
-            for (const i of Object.entries(params)) {
-                const k = i[0];
-                const v = i[1] || '';
-                if (v.sort) { // Array ?
-                    for (const vv of v)
-                        p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(vv);
-                }
-                else {
-                    p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(v);
-                }
-            }
+        this.invoke = this.call;
+        this.session = ses;
+        this.metadata = new ExternalObjectMetadata(name);
+        this.path = `${this.session.parameters.extpath}/${encodeURIComponent(name)}`;
+    }
+    /**
+     * Get name
+     * @return {string} Name
+     * @function
+     */
+    getName() {
+        return this.metadata.name;
+    }
+    /**
+     * Build URL-encoded parameters
+     * @param {object} params URL parameters as key/value pairs
+     * @return {string} URL-encoded parameters
+     * @function
+     */
+    callParams(params) {
+        let p = '';
+        if (!params)
             return p;
-        };
-        /**
-         * Call an external object
-         * @param {object} [params] Optional URL parameters
-         * @param {object|string|FormData} [data] Optional body data (for 'POST' and 'PUT' methods only)
-         * @param {object} [opts] Options
-         * @param {string} [opts.path] Absolute or relative path (e.g. absolute '/my/mapped/path' or relative 'my/additional/path')
-         * @param {object} [opts.method] Optional method 'GET', 'POST', 'PUT' or 'DELETE' (defaults to 'GET' if data is not set or 'POST' if data is set)
-         * @param {function} [opts.contentType] Optional data content type (for 'POST' and 'PUT' methods only)
-         * @param {function} [opts.accept] Optional accepted response type (e.g. 'application/json")
-         * @param {function} [opts.error] Error handler function
-         * @param {string} [opts.businessCase] Business case label
-         * @return {promise<object>} Promise to the external object content
-         * @function
-         */
-        this.call = (params, data, opts) => __awaiter(this, void 0, void 0, function* () {
+        for (const i of Object.entries(params)) {
+            const k = i[0];
+            const v = i[1] || '';
+            if (v.sort) { // Array ?
+                for (const vv of v)
+                    p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(vv);
+            }
+            else {
+                p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(v);
+            }
+        }
+        return p;
+    }
+    /**
+     * Call an external object
+     * @param {object} [params] Optional URL parameters
+     * @param {object|string|FormData} [data] Optional body data (for 'POST' and 'PUT' methods only)
+     * @param {object} [opts] Options
+     * @param {string} [opts.path] Absolute or relative path (e.g. absolute '/my/mapped/path' or relative 'my/additional/path')
+     * @param {object} [opts.method] Optional method 'GET', 'POST', 'PUT' or 'DELETE' (defaults to 'GET' if data is not set or 'POST' if data is set)
+     * @param {function} [opts.contentType] Optional data content type (for 'POST' and 'PUT' methods only)
+     * @param {function} [opts.accept] Optional accepted response type (e.g. 'application/json")
+     * @param {function} [opts.error] Error handler function
+     * @param {string} [opts.businessCase] Business case label
+     * @return {promise<object>} Promise to the external object content
+     * @function
+     */
+    call(params, data, opts) {
+        return __awaiter(this, void 0, void 0, function* () {
             const origin = 'ExternalObject.call';
             const ses = this.session;
             opts = opts || {};
@@ -143,14 +153,6 @@ class ExternalObject {
                 });
             });
         });
-        /**
-         * Alias to <code>call</code>
-         * @function
-         */
-        this.invoke = this.call;
-        this.session = ses;
-        this.metadata = new ExternalObjectMetadata(name);
-        this.path = `${this.session.parameters.extpath}/${encodeURIComponent(name)}`;
     }
 }
 export { ExternalObject };

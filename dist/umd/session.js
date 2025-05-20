@@ -87,268 +87,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
              */
             this.constants = constants_1.constants;
             /**
-             * Set username
-             * @param {string} usr Username
-             * @function
-             */
-            this.setUsername = function (usr) {
-                _this.username = usr;
-            };
-            /**
-             * Set password
-             * @param {string} pwd Password
-             * @function
-             */
-            this.setPassword = function (pwd) {
-                _this.password = pwd;
-            };
-            /**
-             * Set auth token
-             * @param {string} token Auth token
-             * @function
-             */
-            this.setAuthToken = function (token) {
-                _this.authtoken = token;
-            };
-            /**
-             * Set auth token expiry date
-             * @param {Date} expiry Auth token expiry
-             * @function
-             */
-            this.setAuthTokenExpiryDate = function (expiry) {
-                _this.authtokenexpiry = expiry;
-            };
-            /**
-             * Is the auth token expired?
-             * @return {boolean} true if the auth token is expired
-             * @function
-             */
-            this.isAuthTokenExpired = function () {
-                return _this.authtokenexpiry ? new Date() > _this.authtokenexpiry : false;
-            };
-            /**
-             * Set Ajax key
-             * @param {string} key Ajax key
-             * @function
-             */
-            this.setAjaxKey = function (key) {
-                _this.ajaxkey = key;
-            };
-            /**
-             * Get business object cache key
-             * @param {string} name Business object name
-             * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
-             * @return {object} Business object cache key
-             * @function
-             */
-            this.getBusinessObjectCacheKey = function (name, instance) {
-                return name + ':' + (instance || 'js_' + name);
-            };
-            /**
-             * Clears all data (credentials, objects, ...)
-             * @function
-             */
-            this.clear = function () {
-                _this.username = undefined;
-                _this.password = undefined;
-                _this.authtoken = undefined;
-                _this.authtokenexpiry = undefined;
-                _this.sessionid = undefined;
-                _this.grant = undefined;
-                _this.appinfo = undefined;
-                _this.sysinfo = undefined;
-                _this.devinfo = undefined;
-                _this.businessObjectCache = new Map();
-            };
-            /**
-             * Basic HTTP authorization header value
-             * @return {string} HTTP authorization header value
-             * @function
-             */
-            this.getBasicAuthHeader = function () {
-                return _this.username && _this.password
-                    ? 'Basic ' + buffer_1.Buffer.from(_this.username + ':' + _this.password).toString('base64')
-                    : undefined;
-            };
-            /**
-             * Get bearer token header value
-             * @return {string} Bearer token header value
-             * @function
-             */
-            this.getBearerTokenHeader = function () {
-                return _this.authtoken
-                    ? 'Bearer ' + _this.authtoken
-                    : undefined;
-            };
-            /**
-             * Get error object
-             * @param {(string|object)} err Error
-             * @param {string} err.message Error message
-             * @param {number} [status] Optional error status (defaults to 200)
-             * @param {string} [origin] Optional error origin
-             * @return {object} Error object
-             * @function
-             */
-            this.getError = function (err, status, origin) {
-                if (typeof err === 'string') { // plain text error
-                    return { message: err, status: status || 200, origin: origin };
-                }
-                else if (err.response) { // wrapped error
-                    if (typeof err.response === 'string') {
-                        return { message: err.response, status: status || 200, origin: origin };
-                    }
-                    else {
-                        if (origin) {
-                            try {
-                                err.response.origin = origin;
-                            }
-                            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                            catch (e) {
-                                /* ignore */
-                            }
-                        }
-                        return err.response;
-                    }
-                }
-                else { // other cases
-                    if (origin) {
-                        try {
-                            err.origin = origin;
-                        }
-                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                        catch (e) {
-                            /* ignore */
-                        }
-                    }
-                    return err;
-                }
-            };
-            /**
-             * Compress data as blob
-             * @param data {string|any} Data to compress
-             * @return {Promise<Blob>} Promise to the compressed data blob
-             */
-            this.compressData = function (data) {
-                var s = typeof data === 'string'
-                    ? new Blob([data], { type: 'text/plain' }).stream()
-                    : new Blob([JSON.stringify(data)], { type: 'application/json' }).stream();
-                var cs = s.pipeThrough(new CompressionStream('gzip'));
-                return new Response(cs).blob();
-            };
-            /**
-             * Uncompress blob
-             * @param blob {Blob} Compressed data blob
-             * @return {Promise<string>} Promise to the uncompressed string
-             */
-            this.uncompressData = function (blob) {
-                var us = blob.stream().pipeThrough(new DecompressionStream('gzip'));
-                return new Response(us).text();
-            };
-            /**
-             * Send request
-             * @param {string} path Path
-             * @param {object} [data] Data
-             * @param {function} [callback] Callback
-             * @param {function} [errorHandler] Error handler
-             * @function
-             */
-            this.sendRequest = function (path, data, callback, errorHandler) {
-                var origin = 'Session.sendRequest';
-                var m = data ? 'POST' : 'GET';
-                var h = {};
-                if (data)
-                    h['content-type'] = 'application/x-www-form-urlencoded; charset=utf-8';
-                h.accept = 'application/json';
-                var b = _this.getBearerTokenHeader();
-                if (b) {
-                    h[_this.authheader] = b;
-                }
-                else {
-                    b = _this.getBasicAuthHeader();
-                    if (b)
-                        h[_this.authheader] = b;
-                }
-                var u = _this.parameters.url + (path || '/');
-                if (_this.ajaxkey)
-                    u += (u.indexOf('?') >= 0 ? '&' : '?') + '_ajaxkey=' + encodeURIComponent(_this.ajaxkey);
-                var d = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined;
-                _this.debug("[".concat(origin, "] ").concat(m, " ").concat(u).concat(d ? ' with ' + d : ''));
-                fetch(u, {
-                    method: m,
-                    headers: h,
-                    //compress: this.parameters.compress,
-                    signal: AbortSignal.timeout(_this.parameters.timeout),
-                    body: d
-                }).then(function (res) {
-                    if (callback) {
-                        res.text().then(function (textData) {
-                            callback.call(_this, textData, res.status, res.headers);
-                        });
-                    }
-                }).catch(function (err) {
-                    var s = err.response && err.response.status ? err.response.status : undefined;
-                    var e = err.response && err.response.data ? err.response.data : err;
-                    if (errorHandler)
-                        errorHandler.call(_this, _this.getError(e, s, origin));
-                    else
-                        throw e;
-                });
-            };
-            /**
-             * Parse response
-             * @param {object} res Response to parse
-             * @param {number} [status=200] HTTP status
-             * @return {object} Error object
-             * @function
-             */
-            this.parseResponse = function (res, status) {
-                try {
-                    if (status !== 200)
-                        return { type: 'error', response: _this.getError('HTTP status: ' + status, status) };
-                    return typeof res === 'object' ? res : JSON.parse(res);
-                }
-                catch (e) {
-                    return { type: 'error', response: _this.getError('Parsing error: ' + e.message, status) };
-                }
-            };
-            /**
-             * Get health check (no need to be authenticated)
-             * @param {object} [opts] Options
-             * @param {boolean} [opts.full=false] Full health check?
-             * @param {function} [opts.error] Error handler function
-             * @return {promise<object>} Promise to the health data
-             * @function
-             */
-            this.getHealth = function (opts) { return __awaiter(_this, void 0, void 0, function () {
-                var origin;
-                var _this = this;
-                return __generator(this, function (_a) {
-                    origin = 'Session.getHealth';
-                    opts = opts || {};
-                    return [2 /*return*/, new Promise(function (resolve, reject) {
-                            var p = "&full=".concat(!!opts.full);
-                            if (opts.businessCase)
-                                p += "&_bc=".concat(encodeURIComponent(opts.businessCase));
-                            _this.sendRequest("".concat(_this.parameters.healthpath).concat(p), undefined, function (res, status) {
-                                var r = _this.parseResponse(res, status);
-                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(res));
-                                if (r.type === 'error') {
-                                    var err = _this.getError(r.response, undefined, origin);
-                                    if (!(opts.error || _this.error).call(_this, err))
-                                        reject.call(_this, err);
-                                }
-                                else {
-                                    resolve.call(_this, r);
-                                }
-                            }, function (err) {
-                                err = _this.getError(err, undefined, origin);
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            });
-                        })];
-                });
-            }); };
-            /**
              * Alias to getHealth
              * @param {object} [opts] Options
              * @param {boolean} [opts.full=false] Full health check?
@@ -357,443 +95,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
              * @function
              */
             this.health = this.getHealth;
-            /**
-             * Login
-             * @param {object} [opts] Options
-             * @param {string} [opts.username] Username (exclusive with authentication token)
-             * @param {string} [opts.password] Password (required if username is set)
-             * @param {string} [opts.authtoken] Authentication token ((exclusive with username)
-             * @param {function} [opts.error] Error handler function
-             * @return {promise<object>} Promise to the login result
-             * @function
-             */
-            this.login = function (opts) { return __awaiter(_this, void 0, void 0, function () {
-                var origin;
-                var _this = this;
-                return __generator(this, function (_a) {
-                    origin = 'Session.login';
-                    opts = opts || {};
-                    return [2 /*return*/, new Promise(function (resolve, reject) {
-                            if ((opts.username || opts.login) && (opts.password || opts.pwd)) {
-                                _this.clear();
-                                _this.username = opts.username || opts.login;
-                                _this.password = opts.password || opts.pwd;
-                            }
-                            else if (opts.authtoken || opts.authToken || opts.token) {
-                                _this.clear();
-                                _this.authtoken = opts.authtoken || opts.authToken || opts.token;
-                            }
-                            _this.sendRequest(_this.parameters.loginpath, undefined, function (res, status) {
-                                var r = _this.parseResponse(res, status);
-                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type || (r.error ? 'error' : 'login')));
-                                if (r.type === 'error' || r.error) {
-                                    var err = _this.getError(r.response ? r.response : r, undefined, origin);
-                                    if (!(opts.error || _this.error).call(_this, err))
-                                        reject.call(_this, err);
-                                }
-                                else {
-                                    _this.sessionid = r.response ? r.response.id : r.sessionid;
-                                    _this.debug("[".concat(origin, "] Session ID = ").concat(_this.sessionid));
-                                    _this.username = r.response ? r.response.login : r.login;
-                                    if (_this.username)
-                                        _this.debug("[".concat(origin, "] Username = ").concat(_this.username));
-                                    _this.authtoken = r.response ? r.response.authtoken : r.authtoken;
-                                    if (_this.authtoken)
-                                        _this.debug("[".concat(origin, "] Auth token = ").concat(_this.authtoken));
-                                    try {
-                                        var exp = new Date();
-                                        exp.setTime(r.response ? r.response.authtokenexpiry : r.authtokenexpiry);
-                                        _this.authtokenexpiry = exp;
-                                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                                    }
-                                    catch (e) {
-                                        _this.authtokenexpiry = undefined;
-                                    }
-                                    if (_this.authtokenexpiry)
-                                        _this.debug("[".concat(origin, "] Auth token expiry date = ").concat(_this.authtokenexpiry.toLocaleDateString(), " ").concat(_this.authtokenexpiry.toLocaleTimeString()));
-                                    // Minimal grant from session data
-                                    _this.grant = new grant_1.Grant({
-                                        login: _this.username,
-                                        userid: r.response ? r.response.userid : r.userid,
-                                        firstname: r.response ? r.response.firstname : r.firstname,
-                                        lastname: r.response ? r.response.lastname : r.lastname,
-                                        email: r.response ? r.response.email : r.email
-                                    });
-                                    resolve.call(_this, r.response || r);
-                                }
-                            }, function (err) {
-                                err = _this.getError(err, undefined, origin);
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            });
-                        })];
-                });
-            }); };
-            /**
-             * Logout
-             * @param {function} callback Callback (called upon success)
-             * @param {object} [opts] Options
-             * @param {function} [opts.error] Error handler function
-             * @return {promise<object>} Promise to the logout result
-             * @function
-             */
-            this.logout = function (opts) { return __awaiter(_this, void 0, void 0, function () {
-                var origin;
-                var _this = this;
-                return __generator(this, function (_a) {
-                    origin = 'Session.logout';
-                    opts = opts || {};
-                    return [2 /*return*/, new Promise(function (resolve, reject) {
-                            _this.sendRequest(_this.parameters.logoutpath, undefined, function (res, status) {
-                                var r = _this.parseResponse(res, status);
-                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type || (r.error ? 'error' : 'logout')));
-                                if (r.type === 'error') {
-                                    var err = _this.getError(r.response ? r.response : r, undefined, origin);
-                                    if (!(opts.error || _this.error).call(_this, err))
-                                        reject.call(_this, err);
-                                }
-                                else {
-                                    _this.clear();
-                                    // Restore session parameter-level credentials if present
-                                    _this.username = _this.parameters.username;
-                                    _this.password = _this.parameters.password;
-                                    _this.authtoken = _this.parameters.authtoken;
-                                    resolve.call(_this, r.response || r);
-                                }
-                            }, function (err) {
-                                err = _this.getError(err, undefined, origin);
-                                if (err.status === 401) // Removes (expired or deleted) token if any
-                                    _this.authtoken = undefined;
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            });
-                        })];
-                });
-            }); };
-            /**
-             * Get grant (current user data)
-             * @param {object} [opts] Options
-             * @param {boolean} [opts.inlinePicture=false] Inline user picture?
-             * @param {boolean} [opts.includeTexts=false] Include texts?
-             * @param {boolean} [opts.includeSysparams=false] Include system parameters?
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<Grant>} A promise to the grant (also available as the <code>grant</code> member)
-             * @function
-             */
-            this.getGrant = function (opts) { return __awaiter(_this, void 0, void 0, function () {
-                var origin;
-                var _this = this;
-                return __generator(this, function (_a) {
-                    origin = 'Session.getGrant';
-                    opts = opts || {};
-                    return [2 /*return*/, new Promise(function (resolve, reject) {
-                            var p = '&web=true'; // Required to be able to include texts
-                            var txt = !!opts.includeTexts || !!opts.texts; // naming flexibility
-                            p += "&texts=".concat(encodeURIComponent(txt));
-                            var pic = !!opts.inlinePicture || !!opts.picture; // naming flexibility
-                            if (pic)
-                                p += '&inline_picture=true';
-                            var sys = !!opts.includeSysparams || !!opts.sysparams; // naming flexibility
-                            if (sys)
-                                p += '&sysparams=true';
-                            _this.sendRequest("".concat(_this.getPath('getgrant', opts)).concat(p), undefined, function (res, status) {
-                                var r = _this.parseResponse(res, status);
-                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                                if (r.type === 'error') {
-                                    var err = _this.getError(r.response, undefined, origin);
-                                    if (!(opts.error || _this.error).call(_this, err))
-                                        reject.call(_this, err);
-                                }
-                                else {
-                                    _this.grant = new grant_1.Grant(r.response); // Set as Grant
-                                    if (pic)
-                                        _this.grant.picture = new doc_1.Doc(_this.grant.picture); // Set picture as Document
-                                    if (txt)
-                                        _this.grant.texts = Object.assign(new Map(), _this.grant.texts); // Set texts as Map
-                                    resolve.call(_this, _this.grant);
-                                }
-                            }, function (err) {
-                                err = _this.getError(err, undefined, origin);
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            });
-                        })];
-                });
-            }); };
-            /**
-             * Change password
-             * @param {string} pwd Password
-             * @param {object} [opts] Options
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} A promise to the change password result
-             * @function
-             */
-            this.changePassword = function (pwd, opts) { return __awaiter(_this, void 0, void 0, function () {
-                var origin;
-                var _this = this;
-                return __generator(this, function (_a) {
-                    origin = 'Session.changePassword';
-                    opts = opts || {};
-                    return [2 /*return*/, new Promise(function (resolve, reject) {
-                            _this.sendRequest("".concat(_this.getPath('setpassword', opts), "&password=").concat(encodeURIComponent(pwd)), undefined, function (res, status) {
-                                var r = _this.parseResponse(res, status);
-                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                                if (r.type === 'error') {
-                                    var err = _this.getError(r.response, undefined, origin);
-                                    if (!(opts.error || _this.error).call(_this, err))
-                                        reject.call(_this, err);
-                                }
-                                else {
-                                    resolve.call(_this, r.response);
-                                }
-                            }, function (err) {
-                                err = _this.getError(err, undefined, origin);
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            });
-                        })];
-                });
-            }); };
-            /**
-             * Get application info
-             * @param {object} [opts] Options
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} A promise to the application info (also available as the <code>appinfo</code> member)
-             * @function
-             */
-            this.getAppInfo = function (opts) { return __awaiter(_this, void 0, void 0, function () {
-                var origin;
-                var _this = this;
-                return __generator(this, function (_a) {
-                    origin = 'Session.getAppInfo';
-                    opts = opts || {};
-                    return [2 /*return*/, new Promise(function (resolve, reject) {
-                            _this.sendRequest(_this.getPath('getinfo', opts), undefined, function (res, status) {
-                                var r = _this.parseResponse(res, status);
-                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                                if (r.type === 'error') {
-                                    var err = _this.getError(r.response, undefined, origin);
-                                    if (!(opts.error || _this.error).call(_this, err))
-                                        reject.call(_this, err);
-                                }
-                                else {
-                                    _this.appinfo = r.response;
-                                    resolve.call(_this, _this.appinfo);
-                                }
-                            }, function (err) {
-                                err = _this.getError(err, undefined, origin);
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            });
-                        })];
-                });
-            }); };
-            /**
-             * Get system info
-             * @param {object} [opts] Options
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} A promise to the system info (also available as the <code>sysinfo</code> member)
-             * @function
-             */
-            this.getSysInfo = function (opts) { return __awaiter(_this, void 0, void 0, function () {
-                var origin;
-                var _this = this;
-                return __generator(this, function (_a) {
-                    origin = 'Session.getSysInfo';
-                    opts = opts || {};
-                    return [2 /*return*/, new Promise(function (resolve, reject) {
-                            _this.sendRequest(_this.getPath('sysinfo', opts), undefined, function (res, status) {
-                                var r = _this.parseResponse(res, status);
-                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                                if (r.type === 'error') {
-                                    var err = _this.getError(r.response, undefined, origin);
-                                    if (!(opts.error || _this.error).call(_this, err))
-                                        reject.call(_this, err);
-                                }
-                                else {
-                                    _this.sysinfo = r.response;
-                                    resolve.call(_this, _this.sysinfo);
-                                }
-                            }, function (err) {
-                                err = _this.getError(err, undefined, origin);
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            });
-                        })];
-                });
-            }); };
-            /**
-             * Get development info
-             * @param {string} [module] Module name
-             * @param {object} [opts] Options
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<object>} A promise to the development info (also available as the <code>devinfo</code> member)
-             * @function
-             */
-            this.getDevInfo = function (module, opts) { return __awaiter(_this, void 0, void 0, function () {
-                var origin;
-                var _this = this;
-                return __generator(this, function (_a) {
-                    origin = 'Session.getDevInfo';
-                    opts = opts || {};
-                    return [2 /*return*/, new Promise(function (resolve, reject) {
-                            var p = '';
-                            if (module)
-                                p += "&module=".concat(encodeURIComponent(module));
-                            _this.sendRequest("".concat(_this.getPath('devinfo', opts)).concat(p), undefined, function (res, status) {
-                                var r = _this.parseResponse(res, status);
-                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                                if (r.type === 'error') {
-                                    var err = _this.getError(r.response, undefined, origin);
-                                    if (!(opts.error || _this.error).call(_this, err))
-                                        reject.call(_this, err);
-                                }
-                                else {
-                                    if (!module)
-                                        _this.devinfo = r.response;
-                                    resolve.call(_this, r.response);
-                                }
-                            }, function (err) {
-                                err = _this.getError(err, undefined, origin);
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            });
-                        })];
-                });
-            }); };
-            /**
-             * Get news
-             * @param {object} [opts] Options
-             * @param {boolean} [opts.inlineImages=false] Inline news images?
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<array>} A promise to the list of news (also available as the <code>news</code> member)
-             * @function
-             */
-            this.getNews = function (opts) { return __awaiter(_this, void 0, void 0, function () {
-                var origin;
-                var _this = this;
-                return __generator(this, function (_a) {
-                    origin = 'Session.getNews';
-                    opts = opts || {};
-                    return [2 /*return*/, new Promise(function (resolve, reject) {
-                            var p = '';
-                            var img = !!opts.inlineImages || !!opts.images; // naming flexibility
-                            if (img)
-                                p += '&inline_images=true';
-                            _this.sendRequest("".concat(_this.getPath('news', opts)).concat(p), undefined, function (res, status) {
-                                var r = _this.parseResponse(res, status);
-                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                                if (r.type === 'error') {
-                                    var err = _this.getError(r.response, undefined, origin);
-                                    if (!(opts.error || _this.error).call(_this, err))
-                                        reject.call(_this, err);
-                                }
-                                else {
-                                    _this.news = r.response;
-                                    for (var _i = 0, _a = _this.news; _i < _a.length; _i++) {
-                                        var n = _a[_i];
-                                        n.image = new doc_1.Doc(n.image);
-                                    } // Set image as document
-                                    resolve.call(_this, _this.news);
-                                }
-                            }, function (err) {
-                                err = _this.getError(err, undefined, origin);
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            });
-                        })];
-                });
-            }); };
-            /**
-             * Index search
-             * @param {string} query Index search query
-             * @param {string} [object] Object
-             * @param {object} [opts] Options
-             * @param {boolean} [opts.metadata=false] Add meta data for each result
-             * @param {number} [opts.context] Context
-             * @param {function} [opts.error] Error handler function
-             * @param {string} [opts.businessCase] Business case label
-             * @return {promise<array>} A promise to a list of index search records
-             * @function
-             */
-            this.indexSearch = function (query, object, opts) { return __awaiter(_this, void 0, void 0, function () {
-                var origin;
-                var _this = this;
-                return __generator(this, function (_a) {
-                    origin = 'Session.indexSearch';
-                    opts = opts || {};
-                    return [2 /*return*/, new Promise(function (resolve, reject) {
-                            var p = "&request=".concat(encodeURIComponent(query ? query : ''));
-                            if (object)
-                                p += "&object=".concat(encodeURIComponent(object));
-                            if (opts.metadata === true)
-                                p += '&_md=true';
-                            if (opts.context)
-                                p += "&context=".concat(encodeURIComponent(opts.context));
-                            _this.sendRequest("".concat(_this.getPath('indexsearch', opts)).concat(p), undefined, function (res, status) {
-                                var r = _this.parseResponse(res, status);
-                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                                if (r.type === 'error') {
-                                    var err = _this.getError(r.response, undefined, origin);
-                                    if (!(opts.error || _this.error).call(_this, err))
-                                        reject.call(_this, err);
-                                }
-                                else {
-                                    resolve.call(_this, r.response);
-                                }
-                            }, function (err) {
-                                err = _this.getError(err, undefined, origin);
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            });
-                        })];
-                });
-            }); };
-            /**
-             * Get business object
-             * @param {string} name Business object name
-             * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
-             * @return {BusinessObject} Business object
-             * @function
-             */
-            this.getBusinessObject = function (name, instance) {
-                var cacheKey = _this.getBusinessObjectCacheKey(name, instance);
-                var obj = _this.businessObjectCache[cacheKey];
-                if (!obj) {
-                    obj = new businessobject_1.BusinessObject(_this, name, instance);
-                    _this.businessObjectCache[cacheKey] = obj;
-                }
-                return obj;
-            };
-            /**
-             * Get an external object
-             * @param {string} name External object name
-             * @function
-             */
-            this.getExternalObject = function (name) {
-                return new externalobject_1.ExternalObject(_this, name);
-            };
-            /**
-             * Get a resource URL
-             * @param {string} code Resource code
-             * @param {string} [type=IMG] Resource type (IMG=image (default), ICO=Icon, CSS=stylesheet, JS=Javascript, HTML=HTML)
-             * @param {string} [object] Object name (not required for global resources)
-             * @param {string} [objId] Object ID (not required for global resources)
-             * @function
-             */
-            this.getResourceURL = function (code, type, object, objId) {
-                return _this.parameters.url + _this.parameters.respath
-                    + '?code=' + encodeURIComponent(code) + '&type=' + encodeURIComponent(type || 'IMG')
-                    + (object ? '&object=' + encodeURIComponent(object) : '')
-                    + (objId ? '&objid=' + encodeURIComponent(objId) : '')
-                    + (_this.authtoken ? '_x_simplicite_authorization_=' + encodeURIComponent(_this.authtoken) : '');
-            };
             params = params || {};
             // Within the generic web UI if Simplicite is defined
             var inUI = typeof globalThis.Simplicite !== 'undefined';
@@ -938,6 +239,395 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
             this.businessObjectCache = new Map();
         }
         /**
+         * Get API client module version
+         * @function
+         */
+        Session.prototype.getModuleVersion = function () {
+            return this.constants.MODULE_VERSION;
+        };
+        /**
+         * Set username
+         * @param {string} usr Username
+         * @function
+         */
+        Session.prototype.setUsername = function (usr) {
+            this.username = usr;
+        };
+        /**
+         * Set password
+         * @param {string} pwd Password
+         * @function
+         */
+        Session.prototype.setPassword = function (pwd) {
+            this.password = pwd;
+        };
+        /**
+         * Set auth token
+         * @param {string} token Auth token
+         * @function
+         */
+        Session.prototype.setAuthToken = function (token) {
+            this.authtoken = token;
+        };
+        /**
+         * Set auth token expiry date
+         * @param {Date} expiry Auth token expiry
+         * @function
+         */
+        Session.prototype.setAuthTokenExpiryDate = function (expiry) {
+            this.authtokenexpiry = expiry;
+        };
+        /**
+         * Is the auth token expired?
+         * @return {boolean} true if the auth token is expired
+         * @function
+         */
+        Session.prototype.isAuthTokenExpired = function () {
+            return this.authtokenexpiry ? new Date() > this.authtokenexpiry : false;
+        };
+        /**
+         * Set Ajax key
+         * @param {string} key Ajax key
+         * @function
+         */
+        Session.prototype.setAjaxKey = function (key) {
+            this.ajaxkey = key;
+        };
+        /**
+         * Get business object cache key
+         * @param {string} name Business object name
+         * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
+         * @return {object} Business object cache key
+         * @function
+         */
+        Session.prototype.getBusinessObjectCacheKey = function (name, instance) {
+            return name + ':' + (instance || 'js_' + name);
+        };
+        /**
+         * Clears all data (credentials, objects, ...)
+         * @function
+         */
+        Session.prototype.clear = function () {
+            this.username = undefined;
+            this.password = undefined;
+            this.authtoken = undefined;
+            this.authtokenexpiry = undefined;
+            this.sessionid = undefined;
+            this.grant = undefined;
+            this.appinfo = undefined;
+            this.sysinfo = undefined;
+            this.devinfo = undefined;
+            this.businessObjectCache = new Map();
+        };
+        /**
+         * Basic HTTP authorization header value
+         * @return {string} HTTP authorization header value
+         * @function
+         */
+        Session.prototype.getBasicAuthHeader = function () {
+            return this.username && this.password
+                ? 'Basic ' + buffer_1.Buffer.from(this.username + ':' + this.password).toString('base64')
+                : undefined;
+        };
+        /**
+         * Get bearer token header value
+         * @return {string} Bearer token header value
+         * @function
+         */
+        Session.prototype.getBearerTokenHeader = function () {
+            return this.authtoken
+                ? 'Bearer ' + this.authtoken
+                : undefined;
+        };
+        /**
+         * Get error object
+         * @param {(string|object)} err Error
+         * @param {string} err.message Error message
+         * @param {number} [status] Optional error status (defaults to 200)
+         * @param {string} [origin] Optional error origin
+         * @return {object} Error object
+         * @function
+         */
+        Session.prototype.getError = function (err, status, origin) {
+            if (typeof err === 'string') { // plain text error
+                return { message: err, status: status || 200, origin: origin };
+            }
+            else if (err.response) { // wrapped error
+                if (typeof err.response === 'string') {
+                    return { message: err.response, status: status || 200, origin: origin };
+                }
+                else {
+                    if (origin) {
+                        try {
+                            err.response.origin = origin;
+                        }
+                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                        catch (e) {
+                            /* ignore */
+                        }
+                    }
+                    return err.response;
+                }
+            }
+            else { // other cases
+                if (origin) {
+                    try {
+                        err.origin = origin;
+                    }
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    catch (e) {
+                        /* ignore */
+                    }
+                }
+                return err;
+            }
+        };
+        /**
+         * Compress data as blob
+         * @param data {string|any} Data to compress
+         * @return {Promise<Blob>} Promise to the compressed data blob
+         */
+        Session.prototype.compressData = function (data) {
+            var s = typeof data === 'string'
+                ? new Blob([data], { type: 'text/plain' }).stream()
+                : new Blob([JSON.stringify(data)], { type: 'application/json' }).stream();
+            var cs = s.pipeThrough(new CompressionStream('gzip'));
+            return new Response(cs).blob();
+        };
+        /**
+         * Uncompress blob
+         * @param blob {Blob} Compressed data blob
+         * @return {Promise<string>} Promise to the uncompressed string
+         */
+        Session.prototype.uncompressData = function (blob) {
+            var us = blob.stream().pipeThrough(new DecompressionStream('gzip'));
+            return new Response(us).text();
+        };
+        /**
+         * Send request
+         * @param {string} path Path
+         * @param {object} [data] Data
+         * @param {function} [callback] Callback
+         * @param {function} [errorHandler] Error handler
+         * @function
+         */
+        Session.prototype.sendRequest = function (path, data, callback, errorHandler) {
+            var _this = this;
+            var origin = 'Session.sendRequest';
+            var m = data ? 'POST' : 'GET';
+            var h = {};
+            if (data)
+                h['content-type'] = 'application/x-www-form-urlencoded; charset=utf-8';
+            h.accept = 'application/json';
+            var b = this.getBearerTokenHeader();
+            if (b) {
+                h[this.authheader] = b;
+            }
+            else {
+                b = this.getBasicAuthHeader();
+                if (b)
+                    h[this.authheader] = b;
+            }
+            var u = this.parameters.url + (path || '/');
+            if (this.ajaxkey)
+                u += (u.indexOf('?') >= 0 ? '&' : '?') + '_ajaxkey=' + encodeURIComponent(this.ajaxkey);
+            var d = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined;
+            this.debug("[".concat(origin, "] ").concat(m, " ").concat(u).concat(d ? ' with ' + d : ''));
+            fetch(u, {
+                method: m,
+                headers: h,
+                //compress: this.parameters.compress,
+                signal: AbortSignal.timeout(this.parameters.timeout),
+                body: d
+            }).then(function (res) {
+                if (callback) {
+                    res.text().then(function (textData) {
+                        callback.call(_this, textData, res.status, res.headers);
+                    });
+                }
+            }).catch(function (err) {
+                var s = err.response && err.response.status ? err.response.status : undefined;
+                var e = err.response && err.response.data ? err.response.data : err;
+                if (errorHandler)
+                    errorHandler.call(_this, _this.getError(e, s, origin));
+                else
+                    throw e;
+            });
+        };
+        /**
+         * Parse response
+         * @param {object} res Response to parse
+         * @param {number} [status=200] HTTP status
+         * @return {object} Error object
+         * @function
+         */
+        Session.prototype.parseResponse = function (res, status) {
+            try {
+                if (status !== 200)
+                    return { type: 'error', response: this.getError('HTTP status: ' + status, status) };
+                return typeof res === 'object' ? res : JSON.parse(res);
+            }
+            catch (e) {
+                return { type: 'error', response: this.getError('Parsing error: ' + e.message, status) };
+            }
+        };
+        /**
+         * Get health check (no need to be authenticated)
+         * @param {object} [opts] Options
+         * @param {boolean} [opts.full=false] Full health check?
+         * @param {function} [opts.error] Error handler function
+         * @return {promise<object>} Promise to the health data
+         * @function
+         */
+        Session.prototype.getHealth = function (opts) {
+            return __awaiter(this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.getHealth';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            var p = "&full=".concat(!!opts.full);
+                            if (opts.businessCase)
+                                p += "&_bc=".concat(encodeURIComponent(opts.businessCase));
+                            _this.sendRequest("".concat(_this.parameters.healthpath).concat(p), undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(res));
+                                if (r.type === 'error') {
+                                    var err = _this.getError(r.response, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    resolve.call(_this, r);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
+                });
+            });
+        };
+        /**
+         * Login
+         * @param {object} [opts] Options
+         * @param {string} [opts.username] Username (exclusive with authentication token)
+         * @param {string} [opts.password] Password (required if username is set)
+         * @param {string} [opts.authtoken] Authentication token ((exclusive with username)
+         * @param {function} [opts.error] Error handler function
+         * @return {promise<object>} Promise to the login result
+         * @function
+         */
+        Session.prototype.login = function (opts) {
+            return __awaiter(this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.login';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            if ((opts.username || opts.login) && (opts.password || opts.pwd)) {
+                                _this.clear();
+                                _this.username = opts.username || opts.login;
+                                _this.password = opts.password || opts.pwd;
+                            }
+                            else if (opts.authtoken || opts.authToken || opts.token) {
+                                _this.clear();
+                                _this.authtoken = opts.authtoken || opts.authToken || opts.token;
+                            }
+                            _this.sendRequest(_this.parameters.loginpath, undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type || (r.error ? 'error' : 'login')));
+                                if (r.type === 'error' || r.error) {
+                                    var err = _this.getError(r.response ? r.response : r, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    _this.sessionid = r.response ? r.response.id : r.sessionid;
+                                    _this.debug("[".concat(origin, "] Session ID = ").concat(_this.sessionid));
+                                    _this.username = r.response ? r.response.login : r.login;
+                                    if (_this.username)
+                                        _this.debug("[".concat(origin, "] Username = ").concat(_this.username));
+                                    _this.authtoken = r.response ? r.response.authtoken : r.authtoken;
+                                    if (_this.authtoken)
+                                        _this.debug("[".concat(origin, "] Auth token = ").concat(_this.authtoken));
+                                    try {
+                                        var exp = new Date();
+                                        exp.setTime(r.response ? r.response.authtokenexpiry : r.authtokenexpiry);
+                                        _this.authtokenexpiry = exp;
+                                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                                    }
+                                    catch (e) {
+                                        _this.authtokenexpiry = undefined;
+                                    }
+                                    if (_this.authtokenexpiry)
+                                        _this.debug("[".concat(origin, "] Auth token expiry date = ").concat(_this.authtokenexpiry.toLocaleDateString(), " ").concat(_this.authtokenexpiry.toLocaleTimeString()));
+                                    // Minimal grant from session data
+                                    _this.grant = new grant_1.Grant({
+                                        login: _this.username,
+                                        userid: r.response ? r.response.userid : r.userid,
+                                        firstname: r.response ? r.response.firstname : r.firstname,
+                                        lastname: r.response ? r.response.lastname : r.lastname,
+                                        email: r.response ? r.response.email : r.email
+                                    });
+                                    resolve.call(_this, r.response || r);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
+                });
+            });
+        };
+        /**
+         * Logout
+         * @param {function} callback Callback (called upon success)
+         * @param {object} [opts] Options
+         * @param {function} [opts.error] Error handler function
+         * @return {promise<object>} Promise to the logout result
+         * @function
+         */
+        Session.prototype.logout = function (opts) {
+            return __awaiter(this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.logout';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            _this.sendRequest(_this.parameters.logoutpath, undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type || (r.error ? 'error' : 'logout')));
+                                if (r.type === 'error') {
+                                    var err = _this.getError(r.response ? r.response : r, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    _this.clear();
+                                    // Restore session parameter-level credentials if present
+                                    _this.username = _this.parameters.username;
+                                    _this.password = _this.parameters.password;
+                                    _this.authtoken = _this.parameters.authtoken;
+                                    resolve.call(_this, r.response || r);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (err.status === 401) // Removes (expired or deleted) token if any
+                                    _this.authtoken = undefined;
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
+                });
+            });
+        };
+        /**
          * Get path
          * @param {string} action Action
          * @param {object} [opts] Options
@@ -946,6 +636,344 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         Session.prototype.getPath = function (action, opts) {
             var bc = opts && opts.businessCase ? "&_bc=".concat(encodeURIComponent(opts.businessCase)) : '';
             return "".concat(this.parameters.apppath, "?action=").concat(encodeURIComponent(action)).concat(bc);
+        };
+        /**
+         * Get grant (current user data)
+         * @param {object} [opts] Options
+         * @param {boolean} [opts.inlinePicture=false] Inline user picture?
+         * @param {boolean} [opts.includeTexts=false] Include texts?
+         * @param {boolean} [opts.includeSysparams=false] Include system parameters?
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<Grant>} A promise to the grant (also available as the <code>grant</code> member)
+         * @function
+         */
+        Session.prototype.getGrant = function (opts) {
+            return __awaiter(this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.getGrant';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            var p = '&web=true'; // Required to be able to include texts
+                            var txt = !!opts.includeTexts || !!opts.texts; // naming flexibility
+                            p += "&texts=".concat(encodeURIComponent(txt));
+                            var pic = !!opts.inlinePicture || !!opts.picture; // naming flexibility
+                            if (pic)
+                                p += '&inline_picture=true';
+                            var sys = !!opts.includeSysparams || !!opts.sysparams; // naming flexibility
+                            if (sys)
+                                p += '&sysparams=true';
+                            _this.sendRequest("".concat(_this.getPath('getgrant', opts)).concat(p), undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = _this.getError(r.response, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    _this.grant = new grant_1.Grant(r.response); // Set as Grant
+                                    if (pic)
+                                        _this.grant.picture = new doc_1.Doc(_this.grant.picture); // Set picture as Document
+                                    if (txt)
+                                        _this.grant.texts = Object.assign(new Map(), _this.grant.texts); // Set texts as Map
+                                    resolve.call(_this, _this.grant);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
+                });
+            });
+        };
+        /**
+         * Change password
+         * @param {string} pwd Password
+         * @param {object} [opts] Options
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<object>} A promise to the change password result
+         * @function
+         */
+        Session.prototype.changePassword = function (pwd, opts) {
+            return __awaiter(this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.changePassword';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            _this.sendRequest("".concat(_this.getPath('setpassword', opts), "&password=").concat(encodeURIComponent(pwd)), undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = _this.getError(r.response, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    resolve.call(_this, r.response);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
+                });
+            });
+        };
+        /**
+         * Get application info
+         * @param {object} [opts] Options
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<object>} A promise to the application info (also available as the <code>appinfo</code> member)
+         * @function
+         */
+        Session.prototype.getAppInfo = function (opts) {
+            return __awaiter(this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.getAppInfo';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            _this.sendRequest(_this.getPath('getinfo', opts), undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = _this.getError(r.response, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    _this.appinfo = r.response;
+                                    resolve.call(_this, _this.appinfo);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
+                });
+            });
+        };
+        /**
+         * Get system info
+         * @param {object} [opts] Options
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<object>} A promise to the system info (also available as the <code>sysinfo</code> member)
+         * @function
+         */
+        Session.prototype.getSysInfo = function (opts) {
+            return __awaiter(this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.getSysInfo';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            _this.sendRequest(_this.getPath('sysinfo', opts), undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = _this.getError(r.response, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    _this.sysinfo = r.response;
+                                    resolve.call(_this, _this.sysinfo);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
+                });
+            });
+        };
+        /**
+         * Get development info
+         * @param {string} [module] Module name
+         * @param {object} [opts] Options
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<object>} A promise to the development info (also available as the <code>devinfo</code> member)
+         * @function
+         */
+        Session.prototype.getDevInfo = function (module, opts) {
+            return __awaiter(this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.getDevInfo';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            var p = '';
+                            if (module)
+                                p += "&module=".concat(encodeURIComponent(module));
+                            _this.sendRequest("".concat(_this.getPath('devinfo', opts)).concat(p), undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = _this.getError(r.response, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    if (!module)
+                                        _this.devinfo = r.response;
+                                    resolve.call(_this, r.response);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
+                });
+            });
+        };
+        /**
+         * Get news
+         * @param {object} [opts] Options
+         * @param {boolean} [opts.inlineImages=false] Inline news images?
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<array>} A promise to the list of news (also available as the <code>news</code> member)
+         * @function
+         */
+        Session.prototype.getNews = function (opts) {
+            return __awaiter(this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.getNews';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            var p = '';
+                            var img = !!opts.inlineImages || !!opts.images; // naming flexibility
+                            if (img)
+                                p += '&inline_images=true';
+                            _this.sendRequest("".concat(_this.getPath('news', opts)).concat(p), undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = _this.getError(r.response, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    _this.news = r.response;
+                                    for (var _i = 0, _a = _this.news; _i < _a.length; _i++) {
+                                        var n = _a[_i];
+                                        n.image = new doc_1.Doc(n.image);
+                                    } // Set image as document
+                                    resolve.call(_this, _this.news);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
+                });
+            });
+        };
+        /**
+         * Index search
+         * @param {string} query Index search query
+         * @param {string} [object] Object
+         * @param {object} [opts] Options
+         * @param {boolean} [opts.metadata=false] Add meta data for each result
+         * @param {number} [opts.context] Context
+         * @param {function} [opts.error] Error handler function
+         * @param {string} [opts.businessCase] Business case label
+         * @return {promise<array>} A promise to a list of index search records
+         * @function
+         */
+        Session.prototype.indexSearch = function (query, object, opts) {
+            return __awaiter(this, void 0, void 0, function () {
+                var origin;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    origin = 'Session.indexSearch';
+                    opts = opts || {};
+                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                            var p = "&request=".concat(encodeURIComponent(query ? query : ''));
+                            if (object)
+                                p += "&object=".concat(encodeURIComponent(object));
+                            if (opts.metadata === true)
+                                p += '&_md=true';
+                            if (opts.context)
+                                p += "&context=".concat(encodeURIComponent(opts.context));
+                            _this.sendRequest("".concat(_this.getPath('indexsearch', opts)).concat(p), undefined, function (res, status) {
+                                var r = _this.parseResponse(res, status);
+                                _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
+                                if (r.type === 'error') {
+                                    var err = _this.getError(r.response, undefined, origin);
+                                    if (!(opts.error || _this.error).call(_this, err))
+                                        reject.call(_this, err);
+                                }
+                                else {
+                                    resolve.call(_this, r.response);
+                                }
+                            }, function (err) {
+                                err = _this.getError(err, undefined, origin);
+                                if (!(opts.error || _this.error).call(_this, err))
+                                    reject.call(_this, err);
+                            });
+                        })];
+                });
+            });
+        };
+        /**
+         * Get business object
+         * @param {string} name Business object name
+         * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
+         * @return {BusinessObject} Business object
+         * @function
+         */
+        Session.prototype.getBusinessObject = function (name, instance) {
+            var cacheKey = this.getBusinessObjectCacheKey(name, instance);
+            var obj = this.businessObjectCache[cacheKey];
+            if (!obj) {
+                obj = new businessobject_1.BusinessObject(this, name, instance);
+                this.businessObjectCache[cacheKey] = obj;
+            }
+            return obj;
+        };
+        /**
+         * Get an external object
+         * @param {string} name External object name
+         * @function
+         */
+        Session.prototype.getExternalObject = function (name) {
+            return new externalobject_1.ExternalObject(this, name);
+        };
+        /**
+         * Get a resource URL
+         * @param {string} code Resource code
+         * @param {string} [type=IMG] Resource type (IMG=image (default), ICO=Icon, CSS=stylesheet, JS=Javascript, HTML=HTML)
+         * @param {string} [object] Object name (not required for global resources)
+         * @param {string} [objId] Object ID (not required for global resources)
+         * @function
+         */
+        Session.prototype.getResourceURL = function (code, type, object, objId) {
+            return this.parameters.url + this.parameters.respath
+                + '?code=' + encodeURIComponent(code) + '&type=' + encodeURIComponent(type || 'IMG')
+                + (object ? '&object=' + encodeURIComponent(object) : '')
+                + (objId ? '&objid=' + encodeURIComponent(objId) : '')
+                + (this.authtoken ? '_x_simplicite_authorization_=' + encodeURIComponent(this.authtoken) : '');
         };
         return Session;
     }());

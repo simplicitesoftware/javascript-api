@@ -59,23 +59,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
          * @param [value.content] Document content
          */
         function Doc(value) {
-            var _this = this;
-            /**
-             * Get the document ID
-             * @return {string} ID
-             * @function
-             */
-            this.getId = function () {
-                return _this.id;
-            };
-            /**
-             * Get the document MIME type
-             * @return {string} MIME type
-             * @function
-             */
-            this.getMIMEType = function () {
-                return _this.mime;
-            };
             /**
              * Alias to <code>getMIMEType</code>
              * @return {string} MIME type
@@ -83,29 +66,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
              */
             this.getMimeType = this.getMIMEType;
             /**
-             * Set the document MIME type
-             * @param {string} mime MIME type
-             * @return {Doc} This document for chaining
-             * @function
-             */
-            this.setMIMEType = function (mime) {
-                _this.mime = mime;
-                return _this; // Chain
-            };
-            /**
              * Alias to <code>setMIMEType</code>
              * @param {string} mime MIME type
              * @function
              */
             this.setMimeType = this.setMIMEType;
-            /**
-             * Get the document name
-             * @return {string} Name
-             * @function
-             */
-            this.getName = function () {
-                return _this.name;
-            };
             /**
              * Alias to <code>getName</code>
              * @return {string} Name
@@ -119,16 +84,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
              */
             this.getFilename = this.getName;
             /**
-             * Set the document name
-             * @param {string} name Name
-             * @return {Doc} This document for chaining
-             * @function
-             */
-            this.setName = function (name) {
-                _this.name = name;
-                return _this; // Chain
-            };
-            /**
              * Alias to <code>setName</code>
              * @param {string} name Name
              * @function
@@ -140,83 +95,148 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
              * @function
              */
             this.setFilename = this.setName;
-            /**
-             * Get the document content (encoded in base 64)
-             * @return {string} Content
-             * @function
-             */
-            this.getContent = function () {
-                return _this.content;
-            };
-            /**
-             * Get the document thumbnail (encoded in base 64)
-             * @return {string} Thumbnail
-             * @function
-             */
-            this.getThumbnail = function () {
-                return _this.thumbnail;
-            };
-            /**
-             * Get the document content as an array buffer
-             * @return {ArrayBuffer} Content as an array buffer
-             * @function
-             */
-            this.getContentAsArrayBuffer = function () {
-                return _this.getBuffer(_this.content).buffer;
-            };
-            /**
-             * Get the document thumbnail as an array buffer
-             * @return {ArrayBuffer} Thumbnail as an array buffer
-             * @function
-             */
-            this.getThumbnailAsArrayBuffer = function () {
-                return _this.getBuffer(_this.thumbnail || '').buffer;
-            };
-            /**
-             * Get the document content as a text
-             * @return {string} Content as plain text
-             * @function
-             */
-            this.getContentAsText = function () {
-                return _this.getBuffer(_this.content).toString('utf-8');
-            };
-            /**
-             * Set the document content
-             * @param {string} content Content (encoded in base 64)
-             * @return {Doc} This document for chaining
-             * @function
-             */
-            this.setContent = function (content) {
-                _this.content = _this.cleanContent(content);
-                return _this; // Chain
-            };
-            /**
-             * Set the document content from plain text string
-             * @param {string} content Content as plain text string
-             * @return {Doc} This document for chaining
-             * @function
-             */
-            this.setContentFromText = function (content) {
-                _this.content = Buffer.from(content, 'utf-8').toString('base64');
-                return _this; // Chain
-            };
-            /**
-             * Get the document data URL
-             * @param {boolean} [thumbnail=false] Thumbnail? If thumbnail does not exists the content is used.
-             * @return {string} Data URL or nothing if content is empty
-             * @function
-             */
-            this.getDataURL = function (thumbnail) {
-                if (_this.content)
-                    return 'data:' + _this.mime + ';base64,' + (thumbnail && _this.thumbnail ? _this.thumbnail : _this.content);
-            };
-            /**
-             * Load file
-             * @param file File to load
-             * @return {promise<Doc>} A promise to the document
-             * @function
-             */
-            this.load = function (file) { return __awaiter(_this, void 0, void 0, function () {
+            Object.assign(this, typeof value == 'string' ? { name: value } : value || {});
+            // Backward compatibility
+            if (this['filename'] && !this.name) {
+                this.name = this['filename'];
+                this['filename'] = undefined;
+            }
+        }
+        /**
+         * Get the document ID
+         * @return {string} ID
+         * @function
+         */
+        Doc.prototype.getId = function () {
+            return this.id;
+        };
+        /**
+         * Get the document MIME type
+         * @return {string} MIME type
+         * @function
+         */
+        Doc.prototype.getMIMEType = function () {
+            return this.mime;
+        };
+        /**
+         * Set the document MIME type
+         * @param {string} mime MIME type
+         * @return {Doc} This document for chaining
+         * @function
+         */
+        Doc.prototype.setMIMEType = function (mime) {
+            this.mime = mime;
+            return this; // Chain
+        };
+        /**
+         * Get the document name
+         * @return {string} Name
+         * @function
+         */
+        Doc.prototype.getName = function () {
+            return this.name;
+        };
+        /**
+         * Set the document name
+         * @param {string} name Name
+         * @return {Doc} This document for chaining
+         * @function
+         */
+        Doc.prototype.setName = function (name) {
+            this.name = name;
+            return this; // Chain
+        };
+        Doc.prototype.cleanContent = function (content) {
+            return content.startsWith('data:') ? content.replace(/data:.*;base64,/, '') : content;
+        };
+        /**
+         * Get the document content (encoded in base 64)
+         * @return {string} Content
+         * @function
+         */
+        Doc.prototype.getContent = function () {
+            return this.content;
+        };
+        /**
+         * Get the document thumbnail (encoded in base 64)
+         * @return {string} Thumbnail
+         * @function
+         */
+        Doc.prototype.getThumbnail = function () {
+            return this.thumbnail;
+        };
+        ;
+        /**
+         * Get the document content as a buffer
+         * @param {any} data Content data
+         * @return {buffer} Content data as buffer
+         * @private
+         */
+        Doc.prototype.getBuffer = function (data) {
+            return Buffer.from(data, 'base64');
+        };
+        /**
+         * Get the document content as an array buffer
+         * @return {ArrayBuffer} Content as an array buffer
+         * @function
+         */
+        Doc.prototype.getContentAsArrayBuffer = function () {
+            return this.getBuffer(this.content).buffer;
+        };
+        /**
+         * Get the document thumbnail as an array buffer
+         * @return {ArrayBuffer} Thumbnail as an array buffer
+         * @function
+         */
+        Doc.prototype.getThumbnailAsArrayBuffer = function () {
+            return this.getBuffer(this.thumbnail || '').buffer;
+        };
+        /**
+         * Get the document content as a text
+         * @return {string} Content as plain text
+         * @function
+         */
+        Doc.prototype.getContentAsText = function () {
+            return this.getBuffer(this.content).toString('utf-8');
+        };
+        /**
+         * Set the document content
+         * @param {string} content Content (encoded in base 64)
+         * @return {Doc} This document for chaining
+         * @function
+         */
+        Doc.prototype.setContent = function (content) {
+            this.content = this.cleanContent(content);
+            return this; // Chain
+        };
+        /**
+         * Set the document content from plain text string
+         * @param {string} content Content as plain text string
+         * @return {Doc} This document for chaining
+         * @function
+         */
+        Doc.prototype.setContentFromText = function (content) {
+            this.content = Buffer.from(content, 'utf-8').toString('base64');
+            return this; // Chain
+        };
+        /**
+         * Get the document data URL
+         * @param {boolean} [thumbnail=false] Thumbnail? If thumbnail does not exists the content is used.
+         * @return {string} Data URL or nothing if content is empty
+         * @function
+         */
+        Doc.prototype.getDataURL = function (thumbnail) {
+            if (this.content)
+                return 'data:' + this.mime + ';base64,' + (thumbnail && this.thumbnail ? this.thumbnail : this.content);
+        };
+        /**
+         * Load file
+         * @param file File to load
+         * @return {promise<Doc>} A promise to the document
+         * @function
+         */
+        Doc.prototype.load = function (file) {
+            return __awaiter(this, void 0, void 0, function () {
                 var _this = this;
                 return __generator(this, function (_a) {
                     return [2 /*return*/, new Promise(function (resolve, reject) {
@@ -241,39 +261,21 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                             }
                         })];
                 });
-            }); };
-            /**
-             * Get the document as a plain value object
-             * @return {object} Value object
-             * @function
-             */
-            this.getValue = function () {
-                return {
-                    id: _this.id,
-                    name: _this['filename'] && !_this.name ? _this['filename'] : _this.name, // Backward compatibility
-                    mime: _this.mime,
-                    content: _this.content,
-                    thumbnail: _this.thumbnail
-                };
-            };
-            Object.assign(this, typeof value == 'string' ? { name: value } : value || {});
-            // Backward compatibility
-            if (this['filename'] && !this.name) {
-                this.name = this['filename'];
-                this['filename'] = undefined;
-            }
-        }
-        Doc.prototype.cleanContent = function (content) {
-            return content.startsWith('data:') ? content.replace(/data:.*;base64,/, '') : content;
+            });
         };
         /**
-         * Get the document content as a buffer
-         * @param {any} data Content data
-         * @return {buffer} Content data as buffer
-         * @private
+         * Get the document as a plain value object
+         * @return {object} Value object
+         * @function
          */
-        Doc.prototype.getBuffer = function (data) {
-            return Buffer.from(data, 'base64');
+        Doc.prototype.getValue = function () {
+            return {
+                id: this.id,
+                name: this['filename'] && !this.name ? this['filename'] : this.name, // Backward compatibility
+                mime: this.mime,
+                content: this.content,
+                thumbnail: this.thumbnail
+            };
         };
         return Doc;
     }());

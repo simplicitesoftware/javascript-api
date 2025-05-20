@@ -1,4 +1,4 @@
-import simplicite from '../dist/esm/simplicite.js';
+import simplicite from '../dist/simplicite.esm.min.js';
 import assert from 'assert';
 
 const adminUsername = process && process.env.TEST_SIMPLICITE_ADMIN_USERNAME || 'designer';
@@ -27,6 +27,7 @@ app.login().then(user => {
 	app.debug(grant);
 	assert.ok(grant.getLogin() === adminUsername);
 	assert.ok(grant.hasResponsibility('ADMIN'));
+	assert.ok(grant.hasScope('Home'));
 	app.info('Hello ' + grant.getFirstName() + ' ' + grant.getLastName() + ' (' + grant.getLogin() + ')');
 	app.info(grant.T('SAVE'));
 	return app.logout();

@@ -1,4 +1,4 @@
-import simplicite from '../dist/esm/simplicite.js';
+import simplicite from '../dist/simplicite.esm.min.js';
 import assert from 'assert';
 
 const adminUsername = process && process.env.TEST_SIMPLICITE_ADMIN_USERNAME || 'designer';
@@ -16,6 +16,8 @@ app.debug('Parameters', app.parameters);
 let usr;
 let rowId;
 const login = 'test_' + Date.now();
+
+// cSpell:disable
 const png = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAuHQAALh0BBxBC1gAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTFH80I3AA\
 	AF20lEQVR4XmPABmbPnMVaXlomWl5SKjMccHVFpcy0KVOFrly+wgT1IiaYMX0GY1x0DE9oULCzs4PjNDMj44NAfGa4YAcb213+3j6VURERqgV5+SyrVq6E+hwIFi1YwJiVnqFvb2O7WkNF9buyvML/4YhVFBT/GerqPXV1cs4J9PNnh3qf\
 	gaG2ukbSzsp6q5qS8m9sGocVVlD8r6mq9iY4MDCxpLCImeHBgwcMyQmJpUDBP1g1DFOsr61zNjI8QpWhvrZW1NTIeD82RcMZa6iqfXV3dc1g8PPyNtHR0LyPTdFwxsDy4L+zvcNSBic7ewstNfXH2BQNd2xubLJtRAeAqaHRaACMBsBoAI\
@@ -44,6 +46,7 @@ const jpg = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/4QBoRXhpZgAATU0A
 	UPix4R0zULixur2ZZ7eQxyKIGIDDg84rzP4jfCvXn8S3mq6NatfWt3IZSsbDfGx6jBPIz6UDPRP8Ahc3gr/n/AJ//AAGf/CvB/wDhXPjH/oXr3/vigLHuMPxZ8AW9xcXEExjmuCGmkSzYNIQMAscc4HrXh3/CufGP/QvXv/fFAWPcLb4sf\
 	D+zWZbWXyFnkaWUR2bL5jt95mwOSe5rw/8A4Vz4x/6F69/74oCx7Db+PfhVZ3v2y2s7SG5B3CWPTdrA+oIXg149/wAK58Y/9C9e/wDfFAHt118VPh5fTW8124uJbZ/MgeWyLNE3qpI4PA5HoK8R/wCFc+Mf+hevf++KAse3P8VPh5JqMeo\
 	yOGvokKR3LWRMiKc8BsZA5P5mvEf+Fc+Mf+hevf8AvigLHvkHxg8G3NxFBFfTGSVwij7O/JJwO1eV+CPhN4hufEFpdavZPY2NvKsrmVhufBztABz+JoA//9k=';
+// cSpell:enable
 
 app.login().then(user => {
 	app.debug(user);
@@ -66,7 +69,7 @@ app.login().then(user => {
 	app.info(`Created with document ID = ${item.usr_image_id}`);
 	app.info(`Document URL (current item) = ${usr.getFieldDocumentURL('usr_image_id')}`);
 	app.info(`Document URL (created item) = ${usr.getFieldDocumentURL('usr_image_id', item)}`);
-	app.info(`Document thubnail URL = ${usr.getFieldDocumentURL('usr_image_id', item, true)}`);
+	app.info(`Document thumbnail URL = ${usr.getFieldDocumentURL('usr_image_id', item, true)}`);
 	return usr.get(rowId, { inlineDocuments: true, inlineThumbnails: true });
 }).then(item => {
 	app.debug('Get', item);
@@ -83,7 +86,7 @@ app.login().then(user => {
 	app.info(`Created with document ID = ${item.usr_image_id}`);
 	app.info(`Document URL (current item) = ${usr.getFieldDocumentURL('usr_image_id')}`);
 	app.info(`Document URL (created item) = ${usr.getFieldDocumentURL('usr_image_id', item)}`);
-	app.info(`Document thubnail URL = ${usr.getFieldDocumentURL('usr_image_id', item, true)}`);
+	app.info(`Document thumbnail URL = ${usr.getFieldDocumentURL('usr_image_id', item, true)}`);
 	return usr.del(item);
 }).then(res => {
 	app.debug('Delete', res);

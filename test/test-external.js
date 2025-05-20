@@ -1,4 +1,4 @@
-import simplicite from '../dist/esm/simplicite.js';
+import simplicite from '../dist/simplicite.esm.min.js';
 import assert from 'assert';
 
 let app = simplicite.session({

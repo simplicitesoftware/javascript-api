@@ -55,18 +55,18 @@ class Doc {
 	 * @return {string} ID
 	 * @function
 	 */
-	public getId = (): string => {
+	public getId(): string {
 		return this.id;
-	};
+	}
 
 	/**
 	 * Get the document MIME type
 	 * @return {string} MIME type
 	 * @function
 	 */
-	public getMIMEType = (): string => {
+	public getMIMEType(): string {
 		return this.mime;
-	};
+	}
 
 	/**
 	 * Alias to <code>getMIMEType</code>
@@ -81,10 +81,10 @@ class Doc {
 	 * @return {Doc} This document for chaining
 	 * @function
 	 */
-	public setMIMEType = (mime: string): Doc => {
+	public setMIMEType(mime: string): Doc {
 		this.mime = mime;
 		return this; // Chain
-	};
+	}
 
 	/**
 	 * Alias to <code>setMIMEType</code>
@@ -98,9 +98,9 @@ class Doc {
 	 * @return {string} Name
 	 * @function
 	 */
-	public getName = (): string => {
+	public getName(): string {
 		return this.name;
-	};
+	}
 
 	/**
 	 * Alias to <code>getName</code>
@@ -122,10 +122,10 @@ class Doc {
 	 * @return {Doc} This document for chaining
 	 * @function
 	 */
-	public setName = (name: string): Doc => {
+	public setName(name: string): Doc {
 		this.name = name;
 		return this; // Chain
-	};
+	}
 
 	/**
 	 * Alias to <code>setName</code>
@@ -150,16 +150,16 @@ class Doc {
 	 * @return {string} Content
 	 * @function
 	 */
-	public getContent = (): string => {
+	public getContent(): string {
 		return this.content;
-	};
+	}
 
 	/**
 	 * Get the document thumbnail (encoded in base 64)
 	 * @return {string} Thumbnail
 	 * @function
 	 */
-	public getThumbnail = (): string => {
+	public getThumbnail(): string {
 		return this.thumbnail;
 	};
 
@@ -178,27 +178,27 @@ class Doc {
 	 * @return {ArrayBuffer} Content as an array buffer
 	 * @function
 	 */
-	public getContentAsArrayBuffer = (): ArrayBuffer => {
+	public getContentAsArrayBuffer(): ArrayBuffer {
 		return this.getBuffer(this.content).buffer;
-	};
+	}
 
 	/**
 	 * Get the document thumbnail as an array buffer
 	 * @return {ArrayBuffer} Thumbnail as an array buffer
 	 * @function
 	 */
-	public getThumbnailAsArrayBuffer = (): ArrayBuffer => {
+	public getThumbnailAsArrayBuffer(): ArrayBuffer {
 		return this.getBuffer(this.thumbnail || '').buffer;
-	};
+	}
 
 	/**
 	 * Get the document content as a text
 	 * @return {string} Content as plain text
 	 * @function
 	 */
-	public getContentAsText = (): string => {
+	public getContentAsText(): string {
 		return this.getBuffer(this.content).toString('utf-8');
-	};
+	}
 
 	/**
 	 * Set the document content
@@ -206,10 +206,10 @@ class Doc {
 	 * @return {Doc} This document for chaining
 	 * @function
 	 */
-	public setContent = (content: string): Doc => {
+	public setContent(content: string): Doc {
 		this.content = this.cleanContent(content);
 		return this; // Chain
-	};
+	}
 
 	/**
 	 * Set the document content from plain text string
@@ -217,10 +217,10 @@ class Doc {
 	 * @return {Doc} This document for chaining
 	 * @function
 	 */
-	public setContentFromText = (content: string): Doc => {
+	public setContentFromText(content: string): Doc {
 		this.content = Buffer.from(content, 'utf-8').toString('base64');
 		return this; // Chain
-	};
+	}
 
 	/**
 	 * Get the document data URL
@@ -228,10 +228,10 @@ class Doc {
 	 * @return {string} Data URL or nothing if content is empty
 	 * @function
 	 */
-	public getDataURL = (thumbnail?: boolean): string => {
+	public getDataURL(thumbnail?: boolean): string {
 		if (this.content)
 			return 'data:' + this.mime + ';base64,' + (thumbnail && this.thumbnail ? this.thumbnail : this.content);
-	};
+	}
 
 	/**
 	 * Load file
@@ -239,7 +239,7 @@ class Doc {
 	 * @return {promise<Doc>} A promise to the document
 	 * @function
 	 */
-	public load = async (file?: File): Promise<Doc> => {
+	public async load(file?: File): Promise<Doc> {
 		return new Promise((resolve, reject) => {
 			try {
 				if (file) {
@@ -259,14 +259,14 @@ class Doc {
 				reject(e);
 			}
 		});
-	};
+	}
 
 	/**
 	 * Get the document as a plain value object
 	 * @return {object} Value object
 	 * @function
 	 */
-	public getValue = (): any => {
+	public getValue(): any {
 		return {
 			id: this.id,
 			name: this['filename'] && !this.name ? this['filename'] : this.name, // Backward compatibility
@@ -274,7 +274,7 @@ class Doc {
 			content: this.content,
 			thumbnail: this.thumbnail
 		};
-	};
+	}
 }
 
 export { Doc };

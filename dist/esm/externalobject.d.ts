@@ -35,14 +35,14 @@ declare class ExternalObject {
      * @return {string} Name
      * @function
      */
-    getName: () => string;
+    getName(): string;
     /**
      * Build URL-encoded parameters
      * @param {object} params URL parameters as key/value pairs
      * @return {string} URL-encoded parameters
      * @function
      */
-    callParams: (params: any) => string;
+    callParams(params: any): string;
     /**
      * Call an external object
      * @param {object} [params] Optional URL parameters
@@ -57,7 +57,7 @@ declare class ExternalObject {
      * @return {promise<object>} Promise to the external object content
      * @function
      */
-    call: (params?: any, data?: string | FormData | any, opts?: any) => Promise<any>;
+    call(params?: any, data?: string | FormData | any, opts?: any): Promise<any>;
     /**
      * Alias to <code>call</code>
      * @function

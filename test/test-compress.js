@@ -1,4 +1,4 @@
-import simplicite from '../dist/esm/simplicite.js';
+import simplicite from '../dist/simplicite.esm.min.js';
 
 const app = simplicite.session({
 	debug: process && process.env.TEST_SIMPLICITE_DEBUG === 'true'
@@ -16,5 +16,5 @@ try {
 	app.info(JSON.parse(uncompressedData));
 	app.info('OK');
 } catch(err) {
-	app.error('Catched error: ' + (err.message || JSON.stringify(err)));
+	app.error('Caught error: ' + (err.message || JSON.stringify(err)));
 }

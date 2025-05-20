@@ -45,9 +45,9 @@ class ExternalObject {
 	 * @return {string} Name
 	 * @function
 	 */
-	public getName = (): string => {
+	public getName(): string {
 		return this.metadata.name;
-	};
+	}
 
 	/**
 	 * Build URL-encoded parameters
@@ -55,7 +55,7 @@ class ExternalObject {
 	 * @return {string} URL-encoded parameters
 	 * @function
 	 */
-	public callParams = (params: any): string => {
+	public callParams(params: any): string {
 		let p = '';
 		if (!params) return p;
 		for (const i of Object.entries(params)) {
@@ -69,7 +69,7 @@ class ExternalObject {
 			}
 		}
 		return p;
-	};
+	}
 
 	/**
 	 * Call an external object
@@ -85,7 +85,7 @@ class ExternalObject {
 	 * @return {promise<object>} Promise to the external object content
 	 * @function
 	 */
-	public call = async (params?: any, data?: string|FormData|any, opts?: any): Promise<any> => {
+	public async call(params?: any, data?: string|FormData|any, opts?: any): Promise<any> {
 		const origin = 'ExternalObject.call';
 		const ses: Session = this.session;
 		opts = opts || {};
@@ -153,7 +153,7 @@ class ExternalObject {
 				if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 			});
 		});
-	};
+	}
 
 	/**
 	 * Alias to <code>call</code>

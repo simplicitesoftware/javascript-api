@@ -59,6 +59,8 @@ test('Logins', () => {
 		return app.getGrant({ inlinePicture: false });
 	}).then(grant => {
 		expect(grant.getLogin()).toBe(testUsername);
+		expect(grant.hasResponsibility('ADMIN')).toBeFalsy();
+		expect(grant.hasScope('Home')).toBeFalsy();
 		return app.logout();
 	}).then(logout => {
 		expect(logout).not.toBeUndefined();
@@ -86,7 +88,8 @@ test('Objects', () => {
 	}).then(grant => {
 		expect(grant.login).toBe(adminUsername);
 		expect(app.grant.getLogin()).toBe(adminUsername);
-		expect(app.grant.hasResponsibility('ADMIN')).toBe(true);
+		expect(app.grant.hasResponsibility('ADMIN')).toBeTruthy();
+		expect(app.grant.hasScope('Home')).toBeTruthy();
 		return app.getAppInfo();
 	}).then(appinfo => {
 		expect(appinfo.version).not.toBeUndefined();
@@ -106,21 +109,21 @@ test('Objects', () => {
 		expect(result).not.toBeUndefined();
 		return sys.getCount({ sys_code: sysCodeFilter });
 	}).then(count => {
-		expect(count >= 0).toBe(true);
+		expect(count >= 0).toBeTruthy();
 		return sys.search({ sys_code: sysCodeFilter });
 	}).then(list => {
 		expect(list.length).not.toBe(0);
 		for (let i = 0; i < list.length; i++) {
 			sys.item = list[i]; // set list item as current item
 			expect(sys.item.row_id).not.toBe(simplicite.constants.DEFAULT_ROW_ID);
-			expect(!!sys.item.sys_code).not.toBe(false);
-			expect(!!sys.item.sys_value).not.toBe(false);
+			expect(!!sys.item.sys_code).not.toBeFalsy();
+			expect(!!sys.item.sys_value).not.toBeFalsy();
 		}
 		return sys.getFilters();
 	}).then(filters => {
 		// TODO: see why this is not OK
 		//expect(filters.sys_code).toBe(sysCodeFilter);
-		expect(!!filters).not.toBe(false);
+		expect(!!filters).not.toBeFalsy();
 		sysId = sys.item.row_id;
 		mdlId = sys.item.row_module_id;
 		sys.item = {};
@@ -207,7 +210,7 @@ test('Image', () => {
 	}).then(item => {
 		rowId = item.row_id;
 		expect(rowId).not.toBe(simplicite.constants.DEFAULT_ROW_ID);
-		expect(item.usr_image_id && item.usr_image_id !== simplicite.constants.DEFAULT_ROW_ID).toBe(true);
+		expect(item.usr_image_id && item.usr_image_id !== simplicite.constants.DEFAULT_ROW_ID).toBeTruthy();
 		return usr.get(rowId, { inlineDocuments: true, inlineThumbnails: true });
 	}).then(item => {
 		expect(item.row_id).toBe(rowId);

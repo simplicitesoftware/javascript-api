@@ -10,6 +10,7 @@
         "bigdecimal",
         "businessobject",
         "businessobjectmetadata",
+        "cacheobject",
         "contextparam",
         "crosstab",
         "crosstabcubes",
@@ -19,6 +20,7 @@
         "docdash",
         "docpath",
         "ERRLEVEL",
+        "esmbundle",
         "externalobject",
         "externalobjectmetadata",
         "extfile",
@@ -32,12 +34,14 @@
         "getlinkedlist",
         "getparameter",
         "healthpath",
+        "heapmaxsize",
         "indexsearch",
         "lastname",
         "loginpath",
         "logoutpath",
         "lowcode",
         "maxpage",
+        "mdlinfo",
         "multienum",
         "newsapi",
         "newsobj",
@@ -53,6 +57,7 @@
         "REFSELECT",
         "respath",
         "rowidfield",
+        "rununittest",
         "sessionparams",
         "setparameter",
         "setpassword",
@@ -64,6 +69,7 @@
         "treeview",
         "uipublic",
         "undoredo",
-        "UPDATEALL"
+        "UPDATEALL",
+        "VCARD"
     ]
 }

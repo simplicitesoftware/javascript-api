@@ -45,34 +45,39 @@ declare class Grant {
      * User picture
      * @member {Doc}
      */
-    picture: Doc;
+    picture?: Doc;
     /**
      * User responsibilities
      * @member {array}
      */
-    responsibilities: string[];
+    responsibilities?: string[];
+    /**
+     * User home scopes
+     * @member {array}
+     */
+    apps?: any[];
     /**
      * Translated texts
      * @member {object}
      */
-    texts: Map<string, string>;
+    texts?: Map<string, string>;
     /**
      * System parameters
      * @member {object}
      */
-    sysparams: Map<string, string>;
+    sysparams?: Map<string, string>;
     /**
      * Get user ID
      * @return {string} User ID
      * @function
      */
-    getUserId: () => string;
+    getUserId(): string;
     /**
      * Get username
      * @return {string} Username
      * @function
      */
-    getUsername: () => string;
+    getUsername(): string;
     /**
      * Alias to <code>getUsername</code>
      * @return {string} Login
@@ -84,19 +89,19 @@ declare class Grant {
      * @return {string} User language
      * @function
      */
-    getLang: () => string;
+    getLang(): string;
     /**
      * Get email address
      * @return {string} Email address
      * @function
      */
-    getEmail: () => string;
+    getEmail(): string;
     /**
      * Get first name
      * @return {string} First name
      * @function
      */
-    getFirstname: () => string;
+    getFirstname(): string;
     /**
      * Alias to <code>getFirstname</code>
      * @return {string} First name
@@ -108,7 +113,7 @@ declare class Grant {
      * @return {string} Last name
      * @function
      */
-    getLastname: () => string;
+    getLastname(): string;
     /**
      * Alias to <code>getLastname</code>
      * @return {string} Last name
@@ -120,21 +125,28 @@ declare class Grant {
      * @return {Doc} Picture data URL
      * @function
      */
-    getPictureURL: () => string;
+    getPictureURL(): string;
     /**
-     * Has responsibility
+     * Has responsibility?
      * @param {string} group Group name
      * @return {boolean} True if user has a responsibility on the specified group
      * @function
      */
-    hasResponsibility: (group: string) => boolean;
+    hasResponsibility(group: string): boolean;
+    /**
+     * Has home scope?
+     * @param {string} home Home scope name
+     * @return {boolean} True if user has the specified home scope
+     * @function
+     */
+    hasScope(home: string): boolean;
     /**
      * Get system parameter value
      * @param {string} name System parameter name
      * @return {string} System parameter value
      * @function
      */
-    getSystemParameter: (name: string) => string;
+    getSystemParameter(name: string): string;
     /**
      * Alias to <code>getSystemParameter</code>
      * @param {string} name System parameter name
@@ -147,6 +159,6 @@ declare class Grant {
      * @param {string} code Text code
      * @return {string} Text value
      */
-    T: (code: string) => string;
+    T(code: string): string;
 }
 export { Grant };

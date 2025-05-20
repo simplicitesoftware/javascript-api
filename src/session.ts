@@ -181,6 +181,14 @@ class Session {
 	public constants = constants;
 
 	/**
+	 * Get API client module version
+	 * @function
+	 */
+	public getModuleVersion(): string {
+		return this.constants.MODULE_VERSION;
+	}
+
+	/**
 	 * Endpoint
 	 * @member {string}
 	 */
@@ -250,9 +258,9 @@ class Session {
 	 * @param {string} usr Username
 	 * @function
 	 */
-	public setUsername = (usr: string): void => {
+	public setUsername(usr: string): void {
 		this.username = usr;
-	};
+	}
 
 	/**
 	 * Password
@@ -265,9 +273,9 @@ class Session {
 	 * @param {string} pwd Password
 	 * @function
 	 */
-	public setPassword = (pwd: string): void => {
+	public setPassword(pwd: string): void {
 		this.password = pwd;
-	};
+	}
 
 	/**
 	 * Auth token
@@ -298,36 +306,36 @@ class Session {
 	 * @param {string} token Auth token
 	 * @function
 	 */
-	public setAuthToken = (token: string): void => {
+	public setAuthToken(token: string): void {
 		this.authtoken = token;
-	};
+	}
 
 	/**
 	 * Set auth token expiry date
 	 * @param {Date} expiry Auth token expiry
 	 * @function
 	 */
-	public setAuthTokenExpiryDate = (expiry: Date): void => {
+	public setAuthTokenExpiryDate(expiry: Date): void {
 		this.authtokenexpiry = expiry;
-	};
+	}
 
 	/**
 	 * Is the auth token expired?
 	 * @return {boolean} true if the auth token is expired
 	 * @function
 	 */
-	public isAuthTokenExpired = (): boolean => {
+	public isAuthTokenExpired(): boolean {
 		return this.authtokenexpiry ? new Date() > this.authtokenexpiry : false;
-	};
+	}
 
 	/**
 	 * Set Ajax key
 	 * @param {string} key Ajax key
 	 * @function
 	 */
-	public setAjaxKey = (key: string): void => {
+	public setAjaxKey(key: string): void {
 		this.ajaxkey = key;
-	};
+	}
 
 	/**
 	 * Business objects cache
@@ -343,15 +351,15 @@ class Session {
 	 * @return {object} Business object cache key
 	 * @function
 	 */
-	public getBusinessObjectCacheKey = (name: string, instance?: string): any => {
+	public getBusinessObjectCacheKey(name: string, instance?: string): any {
 		return name + ':' + (instance || 'js_' + name);
-	};
+	}
 
 	/**
 	 * Clears all data (credentials, objects, ...)
 	 * @function
 	 */
-	public clear = () => {
+	public clear(): void {
 		this.username = undefined;
 		this.password = undefined;
 		this.authtoken = undefined;
@@ -365,29 +373,29 @@ class Session {
 		this.devinfo = undefined;
 
 		this.businessObjectCache = new Map<string, BusinessObject>();
-	};
+	}
 
 	/**
 	 * Basic HTTP authorization header value
 	 * @return {string} HTTP authorization header value
 	 * @function
 	 */
-	public getBasicAuthHeader = (): string => {
+	public getBasicAuthHeader(): string {
 		return this.username && this.password
 			? 'Basic ' + Buffer.from(this.username + ':' + this.password).toString('base64')
 			: undefined;
-	};
+	}
 
 	/**
 	 * Get bearer token header value
 	 * @return {string} Bearer token header value
 	 * @function
 	 */
-	public getBearerTokenHeader = (): string => {
+	public getBearerTokenHeader(): string {
 		return this.authtoken
 			? 'Bearer ' + this.authtoken
 			: undefined;
-	};
+	}
 
 	/**
 	 * Get error object
@@ -398,7 +406,7 @@ class Session {
 	 * @return {object} Error object
 	 * @function
 	 */
-	public getError = (err: string|any, status?: number, origin?: string): any => {
+	public getError(err: string|any, status?: number, origin?: string): any {
 		if (typeof err === 'string') { // plain text error
 			return { message: err, status: status || 200, origin };
 		} else if (err.response) { // wrapped error
@@ -428,30 +436,30 @@ class Session {
 			}
 			return err;
 		}
-	};
+	}
 
 	/**
 	 * Compress data as blob
 	 * @param data {string|any} Data to compress
 	 * @return {Promise<Blob>} Promise to the compressed data blob
 	 */
-	public compressData = (data: string|any): Promise<Blob> => {
+	public compressData(data: string|any): Promise<Blob> {
 		const s = typeof data === 'string'
 			? new Blob([ data ], { type: 'text/plain' }).stream()
 			: new Blob([ JSON.stringify(data) ], { type: 'application/json' }).stream();
 		const cs = s.pipeThrough(new CompressionStream('gzip'));
 		return new Response(cs).blob();
-	};
+	}
 
 	/**
 	 * Uncompress blob
 	 * @param blob {Blob} Compressed data blob
 	 * @return {Promise<string>} Promise to the uncompressed string
 	 */
-	public uncompressData = (blob: Blob): Promise<string> => {
+	public uncompressData(blob: Blob): Promise<string> {
 		const us = blob.stream().pipeThrough(new DecompressionStream('gzip'));
 		return new Response(us).text();
-	};
+	}
 
 	/**
 	 * Send request
@@ -461,7 +469,7 @@ class Session {
 	 * @param {function} [errorHandler] Error handler
 	 * @function
 	 */
-	public sendRequest = (path: string, data?: any, callback?: (testData: string, status: number, headers: any) => void, errorHandler?: (err: any) => void): void => {
+	public sendRequest(path: string, data?: any, callback?: (testData: string, status: number, headers: any) => void, errorHandler?: (err: any) => void): void {
 		const origin = 'Session.sendRequest';
 		const m: string = data ? 'POST' : 'GET';
 		const h: any = {};
@@ -501,7 +509,7 @@ class Session {
 			else
 				throw e;
 		});
-	};
+	}
 
 	/**
 	 * Parse response
@@ -510,7 +518,7 @@ class Session {
 	 * @return {object} Error object
 	 * @function
 	 */
-	public parseResponse = (res: any, status?: number): any => {
+	public parseResponse(res: any, status?: number): any {
 		try {
 			if (status !== 200)
 				return { type: 'error', response: this.getError('HTTP status: ' + status, status) };
@@ -518,7 +526,7 @@ class Session {
 		} catch (e: any) {
 			return { type: 'error', response: this.getError('Parsing error: ' + e.message, status) };
 		}
-	};
+	}
 
 	/**
 	 * Get health check (no need to be authenticated)
@@ -528,7 +536,7 @@ class Session {
 	 * @return {promise<object>} Promise to the health data
 	 * @function
 	 */
-	public getHealth = async (opts?: any): Promise<any> => {
+	public async getHealth(opts?: any): Promise<any> {
 		const origin = 'Session.getHealth';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -549,7 +557,7 @@ class Session {
 				if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 			});
 		});
-	};
+	}
 
 	/**
 	 * Alias to getHealth
@@ -571,7 +579,7 @@ class Session {
 	 * @return {promise<object>} Promise to the login result
 	 * @function
 	 */
-	public login = async (opts?: any): Promise<any> => {
+	public async login(opts?: any): Promise<any> {
 		const origin = 'Session.login';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -623,7 +631,7 @@ class Session {
 				if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 			});
 		});
-	};
+	}
 
 	/**
 	 * Logout
@@ -633,7 +641,7 @@ class Session {
 	 * @return {promise<object>} Promise to the logout result
 	 * @function
 	 */
-	public logout = async (opts?: any): Promise<any> => {
+	public async logout(opts?: any): Promise<any> {
 		const origin = 'Session.logout';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -658,7 +666,7 @@ class Session {
 				if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 			});
 		});
-	};
+	}
 
 	/**
 	 * Grant
@@ -688,7 +696,7 @@ class Session {
 	 * @return {promise<Grant>} A promise to the grant (also available as the <code>grant</code> member)
 	 * @function
 	 */
-	public getGrant = async (opts?: any): Promise<any> => {
+	public async getGrant(opts?: any): Promise<any> {
 		const origin = 'Session.getGrant';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -720,7 +728,7 @@ class Session {
 				if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 			});
 		});
-	};
+	}
 
 	/**
 	 * Change password
@@ -731,7 +739,7 @@ class Session {
 	 * @return {promise<object>} A promise to the change password result
 	 * @function
 	 */
-	public changePassword = async (pwd: string, opts?: any): Promise<any> => {
+	public async changePassword(pwd: string, opts?: any): Promise<any> {
 		const origin = 'Session.changePassword';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -749,7 +757,7 @@ class Session {
 				if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 			});
 		});
-	};
+	}
 
 	/**
 	 * Application info
@@ -765,7 +773,7 @@ class Session {
 	 * @return {promise<object>} A promise to the application info (also available as the <code>appinfo</code> member)
 	 * @function
 	 */
-	public getAppInfo = async (opts?: any): Promise<any> => {
+	public async getAppInfo(opts?: any): Promise<any> {
 		const origin = 'Session.getAppInfo';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -784,7 +792,7 @@ class Session {
 				if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 			});
 		});
-	};
+	}
 
 	/**
 	 * System info
@@ -800,7 +808,7 @@ class Session {
 	 * @return {promise<object>} A promise to the system info (also available as the <code>sysinfo</code> member)
 	 * @function
 	 */
-	public getSysInfo = async (opts?: any): Promise<any> => {
+	public async getSysInfo(opts?: any): Promise<any> {
 		const origin = 'Session.getSysInfo';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -819,7 +827,7 @@ class Session {
 				if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 			});
 		});
-	};
+	}
 
 	/**
 	 * Development info
@@ -836,7 +844,7 @@ class Session {
 	 * @return {promise<object>} A promise to the development info (also available as the <code>devinfo</code> member)
 	 * @function
 	 */
-	public getDevInfo = async (module?: string, opts?: any): Promise<any> => {
+	public async getDevInfo(module?: string, opts?: any): Promise<any> {
 		const origin = 'Session.getDevInfo';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -859,7 +867,7 @@ class Session {
 				if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 			});
 		});
-	};
+	}
 
 	/**
 	 * News
@@ -876,7 +884,7 @@ class Session {
 	 * @return {promise<array>} A promise to the list of news (also available as the <code>news</code> member)
 	 * @function
 	 */
-	public getNews = async (opts?: any): Promise<any[]> => {
+	public async getNews(opts?: any): Promise<any[]> {
 		const origin = 'Session.getNews';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -901,7 +909,7 @@ class Session {
 				if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 			});
 		});
-	};
+	}
 
 	/**
 	 * Index search
@@ -915,7 +923,7 @@ class Session {
 	 * @return {promise<array>} A promise to a list of index search records
 	 * @function
 	 */
-	public indexSearch = async (query: string, object?: string, opts?: any): Promise<any[]> => {
+	public async indexSearch(query: string, object?: string, opts?: any): Promise<any[]> {
 		const origin = 'Session.indexSearch';
 		opts = opts || {};
 		return new Promise((resolve, reject) => {
@@ -940,7 +948,7 @@ class Session {
 				if (!(opts.error || this.error).call(this, err)) reject.call(this, err);
 			});
 		});
-	};
+	}
 
 	/**
 	 * Get business object
@@ -949,7 +957,7 @@ class Session {
 	 * @return {BusinessObject} Business object
 	 * @function
 	 */
-	public getBusinessObject = (name: string, instance?: string): any => {
+	public getBusinessObject(name: string, instance?: string): any {
 		const cacheKey: string = this.getBusinessObjectCacheKey(name, instance);
 		let obj: any = this.businessObjectCache[cacheKey];
 		if (!obj) {
@@ -957,16 +965,16 @@ class Session {
 			this.businessObjectCache[cacheKey] = obj;
 		}
 		return obj;
-	};
+	}
 
 	/**
 	 * Get an external object
 	 * @param {string} name External object name
 	 * @function
 	 */
-	public getExternalObject = (name: string): any => {
+	public getExternalObject(name: string): any {
 		return new ExternalObject(this, name);
-	};
+	}
 
 	/**
 	 * Get a resource URL
@@ -976,13 +984,13 @@ class Session {
 	 * @param {string} [objId] Object ID (not required for global resources)
 	 * @function
 	 */
-	public getResourceURL = (code: string, type?: string, object?: any, objId?: string) => {
+	public getResourceURL(code: string, type?: string, object?: any, objId?: string) {
 		return this.parameters.url + this.parameters.respath
 			+ '?code=' + encodeURIComponent(code) + '&type=' + encodeURIComponent(type || 'IMG')
 			+ (object ? '&object=' + encodeURIComponent(object) : '')
 			+ (objId ? '&objid=' + encodeURIComponent(objId): '')
 			+ (this.authtoken ? '_x_simplicite_authorization_=' + encodeURIComponent(this.authtoken) : '');
-	};
+	}
 }
 
 export { Session };

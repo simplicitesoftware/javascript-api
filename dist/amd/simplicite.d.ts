@@ -423,13 +423,13 @@ declare module "doc" {
          * @return {string} ID
          * @function
          */
-        getId: () => string;
+        getId(): string;
         /**
          * Get the document MIME type
          * @return {string} MIME type
          * @function
          */
-        getMIMEType: () => string;
+        getMIMEType(): string;
         /**
          * Alias to <code>getMIMEType</code>
          * @return {string} MIME type
@@ -442,7 +442,7 @@ declare module "doc" {
          * @return {Doc} This document for chaining
          * @function
          */
-        setMIMEType: (mime: string) => Doc;
+        setMIMEType(mime: string): Doc;
         /**
          * Alias to <code>setMIMEType</code>
          * @param {string} mime MIME type
@@ -454,7 +454,7 @@ declare module "doc" {
          * @return {string} Name
          * @function
          */
-        getName: () => string;
+        getName(): string;
         /**
          * Alias to <code>getName</code>
          * @return {string} Name
@@ -473,7 +473,7 @@ declare module "doc" {
          * @return {Doc} This document for chaining
          * @function
          */
-        setName: (name: string) => Doc;
+        setName(name: string): Doc;
         /**
          * Alias to <code>setName</code>
          * @param {string} name Name
@@ -492,13 +492,13 @@ declare module "doc" {
          * @return {string} Content
          * @function
          */
-        getContent: () => string;
+        getContent(): string;
         /**
          * Get the document thumbnail (encoded in base 64)
          * @return {string} Thumbnail
          * @function
          */
-        getThumbnail: () => string;
+        getThumbnail(): string;
         /**
          * Get the document content as a buffer
          * @param {any} data Content data
@@ -511,53 +511,53 @@ declare module "doc" {
          * @return {ArrayBuffer} Content as an array buffer
          * @function
          */
-        getContentAsArrayBuffer: () => ArrayBuffer;
+        getContentAsArrayBuffer(): ArrayBuffer;
         /**
          * Get the document thumbnail as an array buffer
          * @return {ArrayBuffer} Thumbnail as an array buffer
          * @function
          */
-        getThumbnailAsArrayBuffer: () => ArrayBuffer;
+        getThumbnailAsArrayBuffer(): ArrayBuffer;
         /**
          * Get the document content as a text
          * @return {string} Content as plain text
          * @function
          */
-        getContentAsText: () => string;
+        getContentAsText(): string;
         /**
          * Set the document content
          * @param {string} content Content (encoded in base 64)
          * @return {Doc} This document for chaining
          * @function
          */
-        setContent: (content: string) => Doc;
+        setContent(content: string): Doc;
         /**
          * Set the document content from plain text string
          * @param {string} content Content as plain text string
          * @return {Doc} This document for chaining
          * @function
          */
-        setContentFromText: (content: string) => Doc;
+        setContentFromText(content: string): Doc;
         /**
          * Get the document data URL
          * @param {boolean} [thumbnail=false] Thumbnail? If thumbnail does not exists the content is used.
          * @return {string} Data URL or nothing if content is empty
          * @function
          */
-        getDataURL: (thumbnail?: boolean) => string;
+        getDataURL(thumbnail?: boolean): string;
         /**
          * Load file
          * @param file File to load
          * @return {promise<Doc>} A promise to the document
          * @function
          */
-        load: (file?: File) => Promise<Doc>;
+        load(file?: File): Promise<Doc>;
         /**
          * Get the document as a plain value object
          * @return {object} Value object
          * @function
          */
-        getValue: () => any;
+        getValue(): any;
     }
     export { Doc };
 }
@@ -604,17 +604,17 @@ declare module "businessobjectmetadata" {
          * Help
          * @member {string}
          */
-        help: string;
+        help?: string;
         /**
          * Fields definitions
          * @member {array}
          */
-        fields: any[];
+        fields?: any[];
         /**
          * Links definitions
          * @member {array}
          */
-        links: any[];
+        links?: any[];
     }
     export { BusinessObjectMetadata };
 }
@@ -802,34 +802,39 @@ declare module "grant" {
          * User picture
          * @member {Doc}
          */
-        picture: Doc;
+        picture?: Doc;
         /**
          * User responsibilities
          * @member {array}
          */
-        responsibilities: string[];
+        responsibilities?: string[];
+        /**
+         * User home scopes
+         * @member {array}
+         */
+        apps?: any[];
         /**
          * Translated texts
          * @member {object}
          */
-        texts: Map<string, string>;
+        texts?: Map<string, string>;
         /**
          * System parameters
          * @member {object}
          */
-        sysparams: Map<string, string>;
+        sysparams?: Map<string, string>;
         /**
          * Get user ID
          * @return {string} User ID
          * @function
          */
-        getUserId: () => string;
+        getUserId(): string;
         /**
          * Get username
          * @return {string} Username
          * @function
          */
-        getUsername: () => string;
+        getUsername(): string;
         /**
          * Alias to <code>getUsername</code>
          * @return {string} Login
@@ -841,19 +846,19 @@ declare module "grant" {
          * @return {string} User language
          * @function
          */
-        getLang: () => string;
+        getLang(): string;
         /**
          * Get email address
          * @return {string} Email address
          * @function
          */
-        getEmail: () => string;
+        getEmail(): string;
         /**
          * Get first name
          * @return {string} First name
          * @function
          */
-        getFirstname: () => string;
+        getFirstname(): string;
         /**
          * Alias to <code>getFirstname</code>
          * @return {string} First name
@@ -865,7 +870,7 @@ declare module "grant" {
          * @return {string} Last name
          * @function
          */
-        getLastname: () => string;
+        getLastname(): string;
         /**
          * Alias to <code>getLastname</code>
          * @return {string} Last name
@@ -877,21 +882,28 @@ declare module "grant" {
          * @return {Doc} Picture data URL
          * @function
          */
-        getPictureURL: () => string;
+        getPictureURL(): string;
         /**
-         * Has responsibility
+         * Has responsibility?
          * @param {string} group Group name
          * @return {boolean} True if user has a responsibility on the specified group
          * @function
          */
-        hasResponsibility: (group: string) => boolean;
+        hasResponsibility(group: string): boolean;
+        /**
+         * Has home scope?
+         * @param {string} home Home scope name
+         * @return {boolean} True if user has the specified home scope
+         * @function
+         */
+        hasScope(home: string): boolean;
         /**
          * Get system parameter value
          * @param {string} name System parameter name
          * @return {string} System parameter value
          * @function
          */
-        getSystemParameter: (name: string) => string;
+        getSystemParameter(name: string): string;
         /**
          * Alias to <code>getSystemParameter</code>
          * @param {string} name System parameter name
@@ -904,7 +916,7 @@ declare module "grant" {
          * @param {string} code Text code
          * @return {string} Text value
          */
-        T: (code: string) => string;
+        T(code: string): string;
     }
     export { Grant };
 }
@@ -967,14 +979,14 @@ declare module "externalobject" {
          * @return {string} Name
          * @function
          */
-        getName: () => string;
+        getName(): string;
         /**
          * Build URL-encoded parameters
          * @param {object} params URL parameters as key/value pairs
          * @return {string} URL-encoded parameters
          * @function
          */
-        callParams: (params: any) => string;
+        callParams(params: any): string;
         /**
          * Call an external object
          * @param {object} [params] Optional URL parameters
@@ -989,7 +1001,7 @@ declare module "externalobject" {
          * @return {promise<object>} Promise to the external object content
          * @function
          */
-        call: (params?: any, data?: string | FormData | any, opts?: any) => Promise<any>;
+        call(params?: any, data?: string | FormData | any, opts?: any): Promise<any>;
         /**
          * Alias to <code>call</code>
          * @function
@@ -1110,6 +1122,11 @@ declare module "session" {
             SIMPLICITE_AUTH_HEADER: string;
         };
         /**
+         * Get API client module version
+         * @function
+         */
+        getModuleVersion(): string;
+        /**
          * Endpoint
          * @member {string}
          */
@@ -1169,7 +1186,7 @@ declare module "session" {
          * @param {string} usr Username
          * @function
          */
-        setUsername: (usr: string) => void;
+        setUsername(usr: string): void;
         /**
          * Password
          * @member {string}
@@ -1180,7 +1197,7 @@ declare module "session" {
          * @param {string} pwd Password
          * @function
          */
-        setPassword: (pwd: string) => void;
+        setPassword(pwd: string): void;
         /**
          * Auth token
          * @member {string}
@@ -1206,25 +1223,25 @@ declare module "session" {
          * @param {string} token Auth token
          * @function
          */
-        setAuthToken: (token: string) => void;
+        setAuthToken(token: string): void;
         /**
          * Set auth token expiry date
          * @param {Date} expiry Auth token expiry
          * @function
          */
-        setAuthTokenExpiryDate: (expiry: Date) => void;
+        setAuthTokenExpiryDate(expiry: Date): void;
         /**
          * Is the auth token expired?
          * @return {boolean} true if the auth token is expired
          * @function
          */
-        isAuthTokenExpired: () => boolean;
+        isAuthTokenExpired(): boolean;
         /**
          * Set Ajax key
          * @param {string} key Ajax key
          * @function
          */
-        setAjaxKey: (key: string) => void;
+        setAjaxKey(key: string): void;
         /**
          * Business objects cache
          * @member {object}
@@ -1238,24 +1255,24 @@ declare module "session" {
          * @return {object} Business object cache key
          * @function
          */
-        getBusinessObjectCacheKey: (name: string, instance?: string) => any;
+        getBusinessObjectCacheKey(name: string, instance?: string): any;
         /**
          * Clears all data (credentials, objects, ...)
          * @function
          */
-        clear: () => void;
+        clear(): void;
         /**
          * Basic HTTP authorization header value
          * @return {string} HTTP authorization header value
          * @function
          */
-        getBasicAuthHeader: () => string;
+        getBasicAuthHeader(): string;
         /**
          * Get bearer token header value
          * @return {string} Bearer token header value
          * @function
          */
-        getBearerTokenHeader: () => string;
+        getBearerTokenHeader(): string;
         /**
          * Get error object
          * @param {(string|object)} err Error
@@ -1265,19 +1282,19 @@ declare module "session" {
          * @return {object} Error object
          * @function
          */
-        getError: (err: string | any, status?: number, origin?: string) => any;
+        getError(err: string | any, status?: number, origin?: string): any;
         /**
          * Compress data as blob
          * @param data {string|any} Data to compress
          * @return {Promise<Blob>} Promise to the compressed data blob
          */
-        compressData: (data: string | any) => Promise<Blob>;
+        compressData(data: string | any): Promise<Blob>;
         /**
          * Uncompress blob
          * @param blob {Blob} Compressed data blob
          * @return {Promise<string>} Promise to the uncompressed string
          */
-        uncompressData: (blob: Blob) => Promise<string>;
+        uncompressData(blob: Blob): Promise<string>;
         /**
          * Send request
          * @param {string} path Path
@@ -1286,7 +1303,7 @@ declare module "session" {
          * @param {function} [errorHandler] Error handler
          * @function
          */
-        sendRequest: (path: string, data?: any, callback?: (testData: string, status: number, headers: any) => void, errorHandler?: (err: any) => void) => void;
+        sendRequest(path: string, data?: any, callback?: (testData: string, status: number, headers: any) => void, errorHandler?: (err: any) => void): void;
         /**
          * Parse response
          * @param {object} res Response to parse
@@ -1294,7 +1311,7 @@ declare module "session" {
          * @return {object} Error object
          * @function
          */
-        parseResponse: (res: any, status?: number) => any;
+        parseResponse(res: any, status?: number): any;
         /**
          * Get health check (no need to be authenticated)
          * @param {object} [opts] Options
@@ -1303,7 +1320,7 @@ declare module "session" {
          * @return {promise<object>} Promise to the health data
          * @function
          */
-        getHealth: (opts?: any) => Promise<any>;
+        getHealth(opts?: any): Promise<any>;
         /**
          * Alias to getHealth
          * @param {object} [opts] Options
@@ -1323,7 +1340,7 @@ declare module "session" {
          * @return {promise<object>} Promise to the login result
          * @function
          */
-        login: (opts?: any) => Promise<any>;
+        login(opts?: any): Promise<any>;
         /**
          * Logout
          * @param {function} callback Callback (called upon success)
@@ -1332,7 +1349,7 @@ declare module "session" {
          * @return {promise<object>} Promise to the logout result
          * @function
          */
-        logout: (opts?: any) => Promise<any>;
+        logout(opts?: any): Promise<any>;
         /**
          * Grant
          * @member {Grant}
@@ -1356,7 +1373,7 @@ declare module "session" {
          * @return {promise<Grant>} A promise to the grant (also available as the <code>grant</code> member)
          * @function
          */
-        getGrant: (opts?: any) => Promise<any>;
+        getGrant(opts?: any): Promise<any>;
         /**
          * Change password
          * @param {string} pwd Password
@@ -1366,7 +1383,7 @@ declare module "session" {
          * @return {promise<object>} A promise to the change password result
          * @function
          */
-        changePassword: (pwd: string, opts?: any) => Promise<any>;
+        changePassword(pwd: string, opts?: any): Promise<any>;
         /**
          * Application info
          * @member {object}
@@ -1380,7 +1397,7 @@ declare module "session" {
          * @return {promise<object>} A promise to the application info (also available as the <code>appinfo</code> member)
          * @function
          */
-        getAppInfo: (opts?: any) => Promise<any>;
+        getAppInfo(opts?: any): Promise<any>;
         /**
          * System info
          * @member {object}
@@ -1394,7 +1411,7 @@ declare module "session" {
          * @return {promise<object>} A promise to the system info (also available as the <code>sysinfo</code> member)
          * @function
          */
-        getSysInfo: (opts?: any) => Promise<any>;
+        getSysInfo(opts?: any): Promise<any>;
         /**
          * Development info
          * @member {object}
@@ -1409,7 +1426,7 @@ declare module "session" {
          * @return {promise<object>} A promise to the development info (also available as the <code>devinfo</code> member)
          * @function
          */
-        getDevInfo: (module?: string, opts?: any) => Promise<any>;
+        getDevInfo(module?: string, opts?: any): Promise<any>;
         /**
          * News
          * @member {array}
@@ -1424,7 +1441,7 @@ declare module "session" {
          * @return {promise<array>} A promise to the list of news (also available as the <code>news</code> member)
          * @function
          */
-        getNews: (opts?: any) => Promise<any[]>;
+        getNews(opts?: any): Promise<any[]>;
         /**
          * Index search
          * @param {string} query Index search query
@@ -1437,7 +1454,7 @@ declare module "session" {
          * @return {promise<array>} A promise to a list of index search records
          * @function
          */
-        indexSearch: (query: string, object?: string, opts?: any) => Promise<any[]>;
+        indexSearch(query: string, object?: string, opts?: any): Promise<any[]>;
         /**
          * Get business object
          * @param {string} name Business object name
@@ -1445,13 +1462,13 @@ declare module "session" {
          * @return {BusinessObject} Business object
          * @function
          */
-        getBusinessObject: (name: string, instance?: string) => any;
+        getBusinessObject(name: string, instance?: string): any;
         /**
          * Get an external object
          * @param {string} name External object name
          * @function
          */
-        getExternalObject: (name: string) => any;
+        getExternalObject(name: string): any;
         /**
          * Get a resource URL
          * @param {string} code Resource code
@@ -1460,7 +1477,7 @@ declare module "session" {
          * @param {string} [objId] Object ID (not required for global resources)
          * @function
          */
-        getResourceURL: (code: string, type?: string, object?: any, objId?: string) => string;
+        getResourceURL(code: string, type?: string, object?: any, objId?: string): string;
     }
     export { Session };
 }
@@ -1544,7 +1561,7 @@ declare module "businessobject" {
          * @return {promise<BusinessObjectMetadata>} A promise to the object's meta data (also available as the <code>metadata</code> member)
          * @function
          */
-        getMetaData: (opts?: any) => Promise<any>;
+        getMetaData(opts?: any): Promise<any>;
         /**
          * Get meta data (alias to getMetaData)
          * @function
@@ -1555,70 +1572,70 @@ declare module "businessobject" {
          * @return {string} Name
          * @function
          */
-        getName: () => string;
+        getName(): string;
         /**
          * Get instance name
          * @return {string} Instance name
          * @function
          */
-        getInstance: () => string;
+        getInstance(): string;
         /**
          * Get display label
          * @return {string} Display label
          * @function
          */
-        getLabel: () => string;
+        getLabel(): string;
         /**
          * Get help
          * @return {string} Help
          * @function
          */
-        getHelp: () => string;
+        getHelp(): string;
         /**
          * Get all fields definitions
          * @return {array} Array of field definitions
          * @function
          */
-        getFields: () => any[];
+        getFields(): any[];
         /**
          * Get a field definition
          * @param {string} fieldName Field name
          * @return {object} Field definition
          * @function
          */
-        getField: (fieldName: string) => any;
+        getField(fieldName: string): any;
         /**
          * Get row ID field name
          * @return {string} Row ID field name
          * @function
          */
-        getRowIdFieldName: () => string;
+        getRowIdFieldName(): string;
         /**
          * Get row ID field definition
          * @return {object} Row ID field definition
          * @function
          */
-        getRowIdField: () => any;
+        getRowIdField(): any;
         /**
          * Get links
          * @return {array} Array of links
          * @function
          */
-        getLinks: () => any[];
+        getLinks(): any[];
         /**
          * Get field type
          * @param {(string|object)} field Field name or definition
          * @return {string} Type (one of <code>constants.TYPE_*</code>)
          * @function
          */
-        getFieldType: (field: string | any) => string;
+        getFieldType(field: string | any): string;
         /**
          * Get field label
          * @param {(string|object)} field Field name or definition
          * @return {string} Field label
          * @function
          */
-        getFieldLabel: (field: string | any) => string;
+        getFieldLabel(field: string | any): string;
         /**
          * Get value of field for item (or current item)
          * @param {(string|object)} field Field name or definition
@@ -1626,7 +1643,7 @@ declare module "businessobject" {
          * @return {string|Doc} Value
          * @function
          */
-        getFieldValue: (field: string | any, item?: any) => string | any;
+        getFieldValue(field: string | any, item?: any): string | any;
         /**
          * Get the list value of a list of values field for item (or current item)
          * @param {(string|object)} field Field name or definition
@@ -1634,7 +1651,7 @@ declare module "businessobject" {
          * @return {string} List value
          * @function
          */
-        getFieldListValue: (field: string | any, item?: any) => string;
+        getFieldListValue(field: string | any, item?: any): string;
         /**
          * Get the list colors of a list of values field for item (or current item)
          * @param {(string|object)} field Field name or definition
@@ -1642,7 +1659,7 @@ declare module "businessobject" {
          * @return {string} List color and bgcolor
          * @function
          */
-        getFieldListColors: (field: string | any, item?: any) => any;
+        getFieldListColors(field: string | any, item?: any): any;
         /**
          * Get the data URL of an inlined document/image field for item (or current item)
          * @param {(string|object)} field Field name or definition
@@ -1650,7 +1667,7 @@ declare module "businessobject" {
          * @return {string} Document/image field data URL (or nothing if the field is not of document/image type or if it is not inlined or if it is empty)
          * @function
          */
-        getFieldDataURL: (field: string | any, item?: any) => string;
+        getFieldDataURL(field: string | any, item?: any): string;
         /**
          * Get the field's value as document/image for item (or current item)
          * @param {(string|object)} field Field name or definition
@@ -1658,7 +1675,7 @@ declare module "businessobject" {
          * @return {string|Doc} Document/image (or nothing if the field is not of document/image type or if it is empty)
          * @function
          */
-        getFieldDocument: (field: string | any, item?: any) => any;
+        getFieldDocument(field: string | any, item?: any): any;
         /**
          * Get the URL of a document/image field for item (or current item)
          * @param {(string|object)} field Field name or definition
@@ -1667,7 +1684,7 @@ declare module "businessobject" {
          * @return {string} Document/image field URL (or nothing if the field is not of document/image type or if it is empty)
          * @function
          */
-        getFieldDocumentURL: (field: string | any, item?: any, thumbnail?: boolean) => string;
+        getFieldDocumentURL(field: string | any, item?: any, thumbnail?: boolean): string;
         /**
          * Get list item value for code
          * @param {array} list List of values
@@ -1675,7 +1692,7 @@ declare module "businessobject" {
          * @return {string} Value
          * @function
          */
-        getListValue: (list: any[], code: string) => string;
+        getListValue(list: any[], code: string): string;
         /**
          * Get list item colors (color and background color) for code
          * @param {array} list List of values
@@ -1683,7 +1700,7 @@ declare module "businessobject" {
          * @return {any} Colors
          * @function
          */
-        getListColors: (list: any[], code: string) => any;
+        getListColors(list: any[], code: string): any;
         /**
          * Set value of field for item (or current item)
          * @param {(string|object)} field Field name or definition
@@ -1691,32 +1708,32 @@ declare module "businessobject" {
          * @param {object} [item] Item (defaults to current item)
          * @function
          */
-        setFieldValue: (field: string | any, value: string | any, item?: any) => void;
+        setFieldValue(field: string | any, value: string | any, item?: any): void;
         /**
          * Reset values of item (or current item)
          * @param {object} [item] Item (defaults to current item)
          */
-        resetValues: (item?: any) => void;
+        resetValues(item?: any): void;
         /**
         * Set values of item (or current item)
         * @param {object|FormData} data Data (plain object or form data)
         * @param {object} [item] Item (defaults to current item)
         */
-        setFieldValues: (data: object | FormData, item?: any) => Promise<any>;
+        setFieldValues(data: object | FormData, item?: any): Promise<any>;
         /**
          * Is the field the row ID field?
          * @param {object} field Field definition
          * @return {boolean} True if the field is the row ID field
          * @function
          */
-        isRowIdField: (field: any) => boolean;
+        isRowIdField(field: any): boolean;
         /**
          * Is the field a timestamp field?
          * @param {object} field Field definition
          * @return {boolean} True if the field is a timestamp field
          * @function
          */
-        isTimestampField: (field: any) => boolean;
+        isTimestampField(field: any): boolean;
         /**
          * Get current filters
          * @param {object} [opts] Options
@@ -1727,7 +1744,7 @@ declare module "businessobject" {
          * @return {promise<object>} Promise to the object's filters (also available as the <code>filters</code> member)
          * @function
          */
-        getFilters: (opts?: any) => Promise<any>;
+        getFilters(opts?: any): Promise<any>;
         /**
          * Build context option parameters
          * @param {object} options Options
@@ -1774,7 +1791,7 @@ declare module "businessobject" {
          * @return {promise<object>} Promise to the count
          * @function
          */
-        getCount: (filters?: any, opts?: any) => Promise<any>;
+        getCount(filters?: any, opts?: any): Promise<any>;
         /**
          * Search
          * @param {object} [filters] Filters (defaults to current filters)
@@ -1787,7 +1804,7 @@ declare module "businessobject" {
          * @return {promise<array>} Promise to a list of records (also available as the <code>list</code> member)
          * @function
          */
-        search: (filters?: any, opts?: any) => Promise<any[]>;
+        search(filters?: any, opts?: any): Promise<any[]>;
         /**
          * Get
          * @param {string} [rowId] Row ID (defaults to current item's row ID)
@@ -1800,7 +1817,7 @@ declare module "businessobject" {
          * @return {promise<object>} Promise to the record (also available as the <code>item</code> member)
          * @function
          */
-        get: (rowId?: string, opts?: any) => Promise<any>;
+        get(rowId?: string, opts?: any): Promise<any>;
         /**
          * Get for create
          * @param {object} [opts] Options
@@ -1810,7 +1827,7 @@ declare module "businessobject" {
          * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
          * @function
          */
-        getForCreate: (opts?: any) => Promise<any>;
+        getForCreate(opts?: any): Promise<any>;
         /**
          * Get for update
          * @param {string} [rowId] Row ID (defaults to current item's row ID)
@@ -1821,7 +1838,7 @@ declare module "businessobject" {
          * @return {promise<object>} Promise to the record to update (also available as the <code>item</code> member)
          * @function
          */
-        getForUpdate: (rowId?: string, opts?: any) => Promise<any>;
+        getForUpdate(rowId?: string, opts?: any): Promise<any>;
         /**
          * Get for copy
          * @param {string} [rowId] Row ID to copy (defaults to current item's row ID)
@@ -1832,7 +1849,7 @@ declare module "businessobject" {
          * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
          * @function
          */
-        getForCopy: (rowId?: string, opts?: any) => Promise<any>;
+        getForCopy(rowId?: string, opts?: any): Promise<any>;
         /**
          * Get for delete
          * @param {string} [rowId] Row ID (defaults to current item's row ID)
@@ -1843,14 +1860,14 @@ declare module "businessobject" {
          * @return {promise<object>} Promise to the record to delete (also available as the <code>item</code> member)
          * @function
          */
-        getForDelete: (rowId?: string, opts?: any) => Promise<any>;
+        getForDelete(rowId?: string, opts?: any): Promise<any>;
         /**
          * Get specified or current item's row ID value
          * @param {object} [item] Item (defaults to current item)
          * @return {string} Item's row ID value
          * @function
          */
-        getRowId: (item?: any) => string;
+        getRowId(item?: any): string;
         /**
          * Populate
          * @param {object} [item] Item (defaults to current item)
@@ -1860,7 +1877,7 @@ declare module "businessobject" {
          * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
          * @function
          */
-        populate: (item?: any, opts?: any) => Promise<any>;
+        populate(item?: any, opts?: any): Promise<any>;
         /**
          * Get the linked list for a list of values field and its specified value(s)
          * @param {(string|object)} field Field name or definition
@@ -1872,7 +1889,7 @@ declare module "businessobject" {
          * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
          * @function
          */
-        getFieldLinkedList: (field: string | any, linkedField: string | any, code?: string | boolean, opts?: any) => Promise<any>;
+        getFieldLinkedList(field: string | any, linkedField: string | any, code?: string | boolean, opts?: any): Promise<any>;
         /**
          * Save (create or update depending on item row ID value)
          * @param {object} [item] Item (defaults to current item)
@@ -1882,7 +1899,7 @@ declare module "businessobject" {
          * @return {promise<object>} Promise to the saved record (also available as the <code>item</code> member)
          * @function
          */
-        save: (item?: any, opts?: any) => Promise<any>;
+        save(item?: any, opts?: any): Promise<any>;
         /**
          * Create (create or update)
          * @param {object} [item] Item (defaults to current item)
@@ -1892,7 +1909,7 @@ declare module "businessobject" {
          * @return {promise<object>} Promise to the created record (also available as the <code>item</code> member)
          * @function
          */
-        create: (item?: any, opts?: any) => Promise<any>;
+        create(item?: any, opts?: any): Promise<any>;
         /**
          * Update
          * @param {object} [item] Item (defaults to current item)
@@ -1902,7 +1919,7 @@ declare module "businessobject" {
          * @return {promise<object>} Promise to the updated record (also available as the <code>item</code> member)
          * @function
          */
-        update: (item?: any, opts?: any) => Promise<any>;
+        update(item?: any, opts?: any): Promise<any>;
         /**
          * Delete
          * @param {object} [item] Item (defaults to current item)
@@ -1912,7 +1929,7 @@ declare module "businessobject" {
          * @return {promise<object>} Promise (the <code>item</code> member is emptied)
          * @function
          */
-        del: (item?: any, opts?: any) => Promise<any>;
+        del(item?: any, opts?: any): Promise<any>;
         /**
          * Invoke a custom action
          * @param {string} action Action name
@@ -1924,7 +1941,7 @@ declare module "businessobject" {
          * @return {promise<string|object>} A promise to the action result
          * @function
          */
-        action: (action: string, rowId?: string, opts?: any) => Promise<string | any>;
+        action(action: string, rowId?: string, opts?: any): Promise<string | any>;
         /**
          * Build a pivot table
          * @param {string} ctb Pivot table name
@@ -1936,7 +1953,7 @@ declare module "businessobject" {
          * @return {promise<object>} A promise to the pivot table data (also available as the <code>crosstabdata</code> member)
          * @function
          */
-        crosstab: (ctb: string, opts?: any) => Promise<any>;
+        crosstab(ctb: string, opts?: any): Promise<any>;
         /**
          * Build a custom publication
          * @param {string} prt Publication name
@@ -1947,7 +1964,7 @@ declare module "businessobject" {
          * @return {promise<Doc>} A promise to the document of the publication
          * @function
          */
-        print: (prt: string, rowId?: string, opts?: any) => Promise<any>;
+        print(prt: string, rowId?: string, opts?: any): Promise<any>;
         /**
          * Get place map data
          * @param {string} pcm Place map name
@@ -1958,7 +1975,7 @@ declare module "businessobject" {
          * @return {promise<any>} A promise to the place map data
          * @function
          */
-        placemap: (pcm: string, filters?: any, opts?: any) => Promise<any>;
+        placemap(pcm: string, filters?: any, opts?: any): Promise<any>;
         /**
          * Set an object parameter
          * @param {string} param Parameter name
@@ -1969,7 +1986,7 @@ declare module "businessobject" {
          * @return {promise<object>} Promise
          * @function
          */
-        setParameter: (param: string, value: string, opts?: any) => Promise<any>;
+        setParameter(param: string, value: string, opts?: any): Promise<any>;
         /**
          * Get an object parameter
          * @param {string} param Parameter name
@@ -1979,7 +1996,7 @@ declare module "businessobject" {
          * @return {promise<object>} Promise to the parameter value
          * @function
          */
-        getParameter: (param: string, opts?: any) => Promise<any>;
+        getParameter(param: string, opts?: any): Promise<any>;
         /**
          * Get an object resource URL
          * @param {string} code Resource code
@@ -1987,7 +2004,7 @@ declare module "businessobject" {
          * @return {string} Object resource URL
          * @function
          */
-        getResourceURL: (code: string, type?: string) => string;
+        getResourceURL(code: string, type?: string): string;
     }
     export { BusinessObject };
 }

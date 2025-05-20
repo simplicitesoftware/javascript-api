@@ -109,6 +109,11 @@ declare class Session {
         SIMPLICITE_AUTH_HEADER: string;
     };
     /**
+     * Get API client module version
+     * @function
+     */
+    getModuleVersion(): string;
+    /**
      * Endpoint
      * @member {string}
      */
@@ -168,7 +173,7 @@ declare class Session {
      * @param {string} usr Username
      * @function
      */
-    setUsername: (usr: string) => void;
+    setUsername(usr: string): void;
     /**
      * Password
      * @member {string}
@@ -179,7 +184,7 @@ declare class Session {
      * @param {string} pwd Password
      * @function
      */
-    setPassword: (pwd: string) => void;
+    setPassword(pwd: string): void;
     /**
      * Auth token
      * @member {string}
@@ -205,25 +210,25 @@ declare class Session {
      * @param {string} token Auth token
      * @function
      */
-    setAuthToken: (token: string) => void;
+    setAuthToken(token: string): void;
     /**
      * Set auth token expiry date
      * @param {Date} expiry Auth token expiry
      * @function
      */
-    setAuthTokenExpiryDate: (expiry: Date) => void;
+    setAuthTokenExpiryDate(expiry: Date): void;
     /**
      * Is the auth token expired?
      * @return {boolean} true if the auth token is expired
      * @function
      */
-    isAuthTokenExpired: () => boolean;
+    isAuthTokenExpired(): boolean;
     /**
      * Set Ajax key
      * @param {string} key Ajax key
      * @function
      */
-    setAjaxKey: (key: string) => void;
+    setAjaxKey(key: string): void;
     /**
      * Business objects cache
      * @member {object}
@@ -237,24 +242,24 @@ declare class Session {
      * @return {object} Business object cache key
      * @function
      */
-    getBusinessObjectCacheKey: (name: string, instance?: string) => any;
+    getBusinessObjectCacheKey(name: string, instance?: string): any;
     /**
      * Clears all data (credentials, objects, ...)
      * @function
      */
-    clear: () => void;
+    clear(): void;
     /**
      * Basic HTTP authorization header value
      * @return {string} HTTP authorization header value
      * @function
      */
-    getBasicAuthHeader: () => string;
+    getBasicAuthHeader(): string;
     /**
      * Get bearer token header value
      * @return {string} Bearer token header value
      * @function
      */
-    getBearerTokenHeader: () => string;
+    getBearerTokenHeader(): string;
     /**
      * Get error object
      * @param {(string|object)} err Error
@@ -264,19 +269,19 @@ declare class Session {
      * @return {object} Error object
      * @function
      */
-    getError: (err: string | any, status?: number, origin?: string) => any;
+    getError(err: string | any, status?: number, origin?: string): any;
     /**
      * Compress data as blob
      * @param data {string|any} Data to compress
      * @return {Promise<Blob>} Promise to the compressed data blob
      */
-    compressData: (data: string | any) => Promise<Blob>;
+    compressData(data: string | any): Promise<Blob>;
     /**
      * Uncompress blob
      * @param blob {Blob} Compressed data blob
      * @return {Promise<string>} Promise to the uncompressed string
      */
-    uncompressData: (blob: Blob) => Promise<string>;
+    uncompressData(blob: Blob): Promise<string>;
     /**
      * Send request
      * @param {string} path Path
@@ -285,7 +290,7 @@ declare class Session {
      * @param {function} [errorHandler] Error handler
      * @function
      */
-    sendRequest: (path: string, data?: any, callback?: (testData: string, status: number, headers: any) => void, errorHandler?: (err: any) => void) => void;
+    sendRequest(path: string, data?: any, callback?: (testData: string, status: number, headers: any) => void, errorHandler?: (err: any) => void): void;
     /**
      * Parse response
      * @param {object} res Response to parse
@@ -293,7 +298,7 @@ declare class Session {
      * @return {object} Error object
      * @function
      */
-    parseResponse: (res: any, status?: number) => any;
+    parseResponse(res: any, status?: number): any;
     /**
      * Get health check (no need to be authenticated)
      * @param {object} [opts] Options
@@ -302,7 +307,7 @@ declare class Session {
      * @return {promise<object>} Promise to the health data
      * @function
      */
-    getHealth: (opts?: any) => Promise<any>;
+    getHealth(opts?: any): Promise<any>;
     /**
      * Alias to getHealth
      * @param {object} [opts] Options
@@ -322,7 +327,7 @@ declare class Session {
      * @return {promise<object>} Promise to the login result
      * @function
      */
-    login: (opts?: any) => Promise<any>;
+    login(opts?: any): Promise<any>;
     /**
      * Logout
      * @param {function} callback Callback (called upon success)
@@ -331,7 +336,7 @@ declare class Session {
      * @return {promise<object>} Promise to the logout result
      * @function
      */
-    logout: (opts?: any) => Promise<any>;
+    logout(opts?: any): Promise<any>;
     /**
      * Grant
      * @member {Grant}
@@ -355,7 +360,7 @@ declare class Session {
      * @return {promise<Grant>} A promise to the grant (also available as the <code>grant</code> member)
      * @function
      */
-    getGrant: (opts?: any) => Promise<any>;
+    getGrant(opts?: any): Promise<any>;
     /**
      * Change password
      * @param {string} pwd Password
@@ -365,7 +370,7 @@ declare class Session {
      * @return {promise<object>} A promise to the change password result
      * @function
      */
-    changePassword: (pwd: string, opts?: any) => Promise<any>;
+    changePassword(pwd: string, opts?: any): Promise<any>;
     /**
      * Application info
      * @member {object}
@@ -379,7 +384,7 @@ declare class Session {
      * @return {promise<object>} A promise to the application info (also available as the <code>appinfo</code> member)
      * @function
      */
-    getAppInfo: (opts?: any) => Promise<any>;
+    getAppInfo(opts?: any): Promise<any>;
     /**
      * System info
      * @member {object}
@@ -393,7 +398,7 @@ declare class Session {
      * @return {promise<object>} A promise to the system info (also available as the <code>sysinfo</code> member)
      * @function
      */
-    getSysInfo: (opts?: any) => Promise<any>;
+    getSysInfo(opts?: any): Promise<any>;
     /**
      * Development info
      * @member {object}
@@ -408,7 +413,7 @@ declare class Session {
      * @return {promise<object>} A promise to the development info (also available as the <code>devinfo</code> member)
      * @function
      */
-    getDevInfo: (module?: string, opts?: any) => Promise<any>;
+    getDevInfo(module?: string, opts?: any): Promise<any>;
     /**
      * News
      * @member {array}
@@ -423,7 +428,7 @@ declare class Session {
      * @return {promise<array>} A promise to the list of news (also available as the <code>news</code> member)
      * @function
      */
-    getNews: (opts?: any) => Promise<any[]>;
+    getNews(opts?: any): Promise<any[]>;
     /**
      * Index search
      * @param {string} query Index search query
@@ -436,7 +441,7 @@ declare class Session {
      * @return {promise<array>} A promise to a list of index search records
      * @function
      */
-    indexSearch: (query: string, object?: string, opts?: any) => Promise<any[]>;
+    indexSearch(query: string, object?: string, opts?: any): Promise<any[]>;
     /**
      * Get business object
      * @param {string} name Business object name
@@ -444,13 +449,13 @@ declare class Session {
      * @return {BusinessObject} Business object
      * @function
      */
-    getBusinessObject: (name: string, instance?: string) => any;
+    getBusinessObject(name: string, instance?: string): any;
     /**
      * Get an external object
      * @param {string} name External object name
      * @function
      */
-    getExternalObject: (name: string) => any;
+    getExternalObject(name: string): any;
     /**
      * Get a resource URL
      * @param {string} code Resource code
@@ -459,6 +464,6 @@ declare class Session {
      * @param {string} [objId] Object ID (not required for global resources)
      * @function
      */
-    getResourceURL: (code: string, type?: string, object?: any, objId?: string) => string;
+    getResourceURL(code: string, type?: string, object?: any, objId?: string): string;
 }
 export { Session };

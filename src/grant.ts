@@ -55,120 +55,140 @@ class Grant {
 	 * User picture
 	 * @member {Doc}
 	 */
-	picture: Doc;
+	picture?: Doc;
 
 	/**
 	 * User responsibilities
 	 * @member {array}
 	 */
-	responsibilities: string[];
+	responsibilities?: string[];
+
+	/**
+	 * User home scopes
+	 * @member {array}
+	 */
+	apps?: any[];
 
 	/**
 	 * Translated texts
 	 * @member {object}
 	 */
-	texts: Map<string, string>;
+	texts?: Map<string, string>;
 
 	/**
 	 * System parameters
 	 * @member {object}
 	 */
-	sysparams: Map<string, string>;
+	sysparams?: Map<string, string>;
 
 	/**
 	 * Get user ID
 	 * @return {string} User ID
 	 * @function
 	 */
-	getUserId = (): string => {
+	public getUserId(): string{
 		return this.userid;
-	};
+	}
 
 	/**
 	 * Get username
 	 * @return {string} Username
 	 * @function
 	 */
-	getUsername = (): string => {
+	public getUsername(): string {
 		return this.login;
-	};
+	}
 
 	/**
 	 * Alias to <code>getUsername</code>
 	 * @return {string} Login
 	 * @function
 	 */
-	getLogin = this.getUsername; // Naming flexibility
+	public getLogin = this.getUsername;
 
 	/**
 	 * Get user language
 	 * @return {string} User language
 	 * @function
 	 */
-	getLang = (): string => {
+	public getLang(): string {
 		return this.lang;
-	};
+	}
 
 	/**
 	 * Get email address
 	 * @return {string} Email address
 	 * @function
 	 */
-	getEmail = (): string => {
+	public getEmail(): string {
 		return this.email;
-	};
+	}
 
 	/**
 	 * Get first name
 	 * @return {string} First name
 	 * @function
 	 */
-	getFirstname = (): string => {
+	getFirstname(): string {
 		return this.firstname;
-	};
+	}
 
 	/**
 	 * Alias to <code>getFirstname</code>
 	 * @return {string} First name
 	 * @function
 	 */
-	getFirstName = this.getFirstname; // Naming flexibility
+	public getFirstName = this.getFirstname;
 
 	/**
 	 * Get last name
 	 * @return {string} Last name
 	 * @function
 	 */
-	getLastname = (): string => {
+	public getLastname(): string {
 		return this.lastname;
-	};
+	}
 
 	/**
 	 * Alias to <code>getLastname</code>
 	 * @return {string} Last name
 	 * @function
 	 */
-	getLastName = this.getLastname; // Naming flexibility
+	public getLastName = this.getLastname;
 
 	/**
 	 * Get picture data URL
 	 * @return {Doc} Picture data URL
 	 * @function
 	 */
-	getPictureURL = (): string => {
+	public getPictureURL(): string {
 		if (this.picture)
 			return 'data:' + this.picture.mime + ';base64,' + this.picture.content;
-	};
+	}
 
 	/**
-	 * Has responsibility
+	 * Has responsibility?
 	 * @param {string} group Group name
 	 * @return {boolean} True if user has a responsibility on the specified group
 	 * @function
 	 */
-	hasResponsibility = (group: string): boolean => {
+	public hasResponsibility(group: string): boolean {
 		return this.responsibilities && this.responsibilities.indexOf(group) !== -1;
-	};
+	}
+
+	/**
+	 * Has home scope?
+	 * @param {string} home Home scope name
+	 * @return {boolean} True if user has the specified home scope
+	 * @function
+	 */
+	public hasScope(home: string): boolean {
+		if (this.apps)
+			for (const app of this.apps)
+				if (app.home === home)
+					return true;
+		return false;
+	}
 
 	/**
 	 * Get system parameter value
@@ -176,9 +196,9 @@ class Grant {
 	 * @return {string} System parameter value
 	 * @function
 	 */
-	getSystemParameter = (name: string): string => {
+	public getSystemParameter(name: string): string {
 		return this.sysparams ? this.sysparams[name] || '' : '';
-	};
+	}
 
 	/**
 	 * Alias to <code>getSystemParameter</code>
@@ -186,16 +206,16 @@ class Grant {
 	 * @return {string} System parameter value
 	 * @function
 	 */
-	getSysParam = this.getSystemParameter;
+	public getSysParam = this.getSystemParameter;
 
 	/**
 	 * Get text value
 	 * @param {string} code Text code
 	 * @return {string} Text value
 	 */
-	T = (code: string): string => {
+	public T(code: string): string {
 		return this.texts ? this.texts[code] || '' : '';
-	};
+	}
 }
 
 export { Grant };
