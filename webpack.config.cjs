@@ -1,4 +1,5 @@
-const TerserPlugin = require("terser-webpack-plugin");
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
 	mode: 'production',
