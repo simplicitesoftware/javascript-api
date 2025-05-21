@@ -39,7 +39,6 @@
     "jsdoc-plugin-typescript": "3.2.0",
     "file-cli": "1.2.0",
     "npm-check-updates": "18.0.1",
-    "prettier": "3.5.3",
     "typescript": "5.8.3",
     "replace": "1.2.2",
     "serve": "14.2.4",
@@ -48,9 +47,7 @@
     "terser-webpack-plugin": "5.3.14"
   },
   "scripts": {
-    "clean": "rm -fr remove ./dist ./docs ./src/*.d.ts ./test/index.js",
-    "lint": "fcli remove test/index.js && eslint src/*.ts src/browser.js test/*.js",
-    "prettier": "prettier --write --single-quote --use-tabs test/*",
+    "lint": "fcli remove test/index.js && eslint --fix \"src/*.ts\" \"src/browser.js\" \"test/*.js\"",
     "build:esm": "fcli remove ./dist/esm && tsc --module es6 --target es6 --outDir ./dist/esm",
     "build:cjs": "fcli remove ./dist/cjs && fcli copy ./package-cjs.json ./dist/cjs/package.json && tsc --module commonjs --target es5 --esModuleInterop true --outDir ./dist/cjs",
     "build:bundle": "fcli remove ./dist/simplicite.min.js && fcli remove ./dist/simplicite.min.js.map && esbuild src/browser.js --bundle --minify --sourcemap --outfile=./dist/simplicite.min.js",
