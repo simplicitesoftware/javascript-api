@@ -1,15 +1,15 @@
-![Simplicit&eacute; Software](https://platform.simplicite.io/logos/logo250-grey.png)
+![Simplicité Software](https://platform.simplicite.io/logos/logo250-grey.png)
 * * *
 
 <a href="https://www.simplicite.io"><img src="https://img.shields.io/badge/author-Simplicite_Software-blue.svg?style=flat-square" alt="Author"></a>&nbsp;<img src="https://img.shields.io/badge/license-Apache--2.0-orange.svg?style=flat-square" alt="License">
 
-Simplicit&eacute; JavaScript API for node.js and web browsers
+Simplicité JavaScript API for node.js and web browsers
 ======================================================
 
 Introduction
 ------------
 
-This is the node.js&reg; &amp; browser **JavaScript API client module** for the [Simplicit&eacute;&reg; platform](https://www.simplicitesoftware.com).
+This is the node.js&reg; &amp; browser **JavaScript API client module** for the [Simplicité&reg; platform](https://www.simplicitesoftware.com).
 
 Usage
 -----
@@ -53,7 +53,7 @@ For more advanced usage demos, check these repositories:
 	- [Angular&reg; demo](https://github.com/simplicitesoftware/angular-demo)
 - **Native**:
 	- [ReactNative&reg; demo](https://github.com/simplicitesoftware/react-native-demo)
-- From within the **Simplicit&eacute;&reg; generic web UI**:
+- From within the **Simplicité&reg; generic web UI**:
 	- [Demo module](https://github.com/simplicitesoftware/module-demo-jslib)
 
 See the [documentation](https://simplicitesoftware.github.io/javascript-api/) for details.
@@ -61,7 +61,7 @@ See the [documentation](https://simplicitesoftware.github.io/javascript-api/) fo
 License
 -------
 
-Copyright 2014-2024 Simplicit&eacute; Software
+Copyright 2014-2024 Simplicité Software
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

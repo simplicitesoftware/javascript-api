@@ -1,7 +1,7 @@
 {
   "name": "simplicite",
   "description": "Simplicite(R) platform Javascript API (for node.js and browser)",
-  "version": "3.1.2",
+  "version": "3.1.3",
   "author": "Simplicite Software <contact@simplicitesoftware.com> (https://www.simplicitesoftware.com/)",
   "license": "Apache-2.0",
   "keywords": [
@@ -56,6 +56,7 @@
     "build:bundle": "fcli remove ./dist/simplicite.min.js && fcli remove ./dist/simplicite.min.js.map && esbuild src/browser.js --bundle --minify --sourcemap --outfile=./dist/simplicite.min.js",
     "build:esmbundle": "fcli remove ./dist/simplicite.min.mjs && fcli remove ./dist/simplicite.min.mjs.map && esbuild src/simplicite.ts --platform=neutral --bundle --minify --sourcemap --outfile=./dist/simplicite.min.mjs",
     "build": "fcli remove ./dist && npm run lint && npm run build:esm && npm run build:cjs && npm run build:bundle && npm run build:esmbundle",
+    "build:all": "npm run build && npm run test && npm run doc",
     "doc": "fcli remove ./docs && jsdoc -t node_modules/docdash -d docs ./dist/esm/ README.md && replace '#fc83ff' '#98cbff' docs/styles/jsdoc.css && replace '#6d426d' '#2e76bd' docs/styles/jsdoc.css && replace '#CA79CA' '#edb8b8' docs/styles/jsdoc.css && replace '#606' '#094e93' docs/styles/jsdoc.css",
     "test": "jest -- ./test/simplicite.test.js",
     "test-coverage": "jest --coverage -- ./test/simplicite.test.js",
@@ -85,13 +86,11 @@
   ],
   "type": "module",
   "main": "./dist/cjs/simplicite.js",
+  "module": "./dist/esm/simplicite.js",
   "exports": {
     ".": {
-      "require":  "./dist/simplicite.min.js",
-      "default": "./dist/simplicite.min.mjs"
-    },
-    "./cjs": "./dist/cjs/simplicite.js",
-    "./esm": "./dist/esm/simplicite.js"
-  },
-  "module": "./dist/simplicite.min.mjs"
+      "require": "./dist/cjs/simplicite.js",
+      "import": "./dist/esm/simplicite.js"
+    }
+  }
 }
