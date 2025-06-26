@@ -15,7 +15,7 @@ const enum SessionParamEndpoint {
 	/**
 	 * Public UI endpoint
 	 */
-	PUBLIC = 'uipublic'
+	UIPUBLIC = 'uipublic'
 }
 
 /**

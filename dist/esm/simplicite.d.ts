@@ -1,7 +1,7 @@
 /**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 3.1.3
+ * @version 3.1.4
  * @license Apache-2.0
  */
 import { Doc } from './doc';
@@ -82,12 +82,17 @@ declare const _default: {
         ERRLEVEL_FATAL: number;
         ERRLEVEL_ERROR: number;
         ERRLEVEL_WARNING: number;
+        ENDPOINT_API: import("./sessionparams").SessionParamEndpoint;
+        ENDPOINT_UI: import("./sessionparams").SessionParamEndpoint;
+        ENDPOINT_UIPUBLIC: import("./sessionparams").SessionParamEndpoint;
         RESOURCE_TYPE_IMAGE: string;
         RESOURCE_TYPE_ICON: string;
         RESOURCE_TYPE_STYLESHEET: string;
         RESOURCE_TYPE_JAVASCRIPT: string;
         DEFAULT_AUTH_HEADER: string;
         SIMPLICITE_AUTH_HEADER: string;
+        UI_AUTH_TOKEN_STORAGE_KEY: string;
+        UI_AJAX_KEY_STORAGE_KEY: string;
     };
     session: (params: SessionParams) => Session;
     Session: typeof Session;

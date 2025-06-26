@@ -216,19 +216,31 @@ var Session = /** @class */ (function () {
         this.username = params.username || params.login; // naming flexibility
         this.password = params.password || params.pwd; // naming flexibility
         this.authtoken = params.authtoken || params.token; // explicit token with naming flexibility
-        if (!this.authtoken && inUI) {
-            // If in standard UI, get auth token from local storage or from the constant
-            var ls = globalThis.window ? globalThis.window.localStorage : null;
-            this.authtoken = ls ? ls.getItem('_authToken') : globalThis.Simplicite.AUTH_TOKEN;
+        if (!this.authtoken && this.endpoint === "ui" /* SessionParamEndpoint.UI */) {
+            // If on the UI endpoint, get the auth token from browser's storages or from the constant
+            this.authtoken = this.getFromStorage(this.constants.UI_AUTH_TOKEN_STORAGE_KEY) || (inUI ? globalThis.Simplicite.AUTH_TOKEN : undefined);
         }
         this.ajaxkey = params.ajaxkey; // explicit Ajax key
-        if (!this.ajaxkey && inUI) {
-            // If in standard UI, get Ajax key from local storage or from the constant
-            var ls = globalThis.window ? globalThis.window.localStorage : null;
-            this.ajaxkey = ls ? ls.getItem('_ajaxKey') : globalThis.Simplicite.AJAX_KEY;
+        if (!this.ajaxkey && this.endpoint === "ui" /* SessionParamEndpoint.UI */) {
+            // If on the UI endpoint, get the ajax key from browser's storages or from the constant
+            this.ajaxkey = this.getFromStorage(this.constants.UI_AJAX_KEY_STORAGE_KEY) || (inUI ? globalThis.Simplicite.AJAX_KEY : undefined);
         }
         this.businessObjectCache = new Map();
     }
+    Session.prototype.getFromStorage = function (key) {
+        var val = null;
+        // First search in local storage if available
+        var ls = globalThis.window ? globalThis.window.localStorage : null;
+        if (ls)
+            val = ls.getItem(key) || ls.getItem(key.toLowerCase()); // also try lowercase key for compatibility with older versions
+        if (!val) {
+            // Then search in session storage if available
+            var ss = globalThis.window ? globalThis.window.sessionStorage : null;
+            if (ss)
+                val = ss.getItem(key) || ss.getItem(key.toLowerCase()); // also try lowercase key for compatibility with older versions
+        }
+        return val;
+    };
     /**
      * Get API client module version
      * @function

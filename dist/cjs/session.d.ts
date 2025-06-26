@@ -28,6 +28,7 @@ declare class Session {
      * @param params {object} Parameters
      */
     constructor(params: SessionParams);
+    private getFromStorage;
     /**
      * Constants
      * @member
@@ -101,12 +102,17 @@ declare class Session {
         ERRLEVEL_FATAL: number;
         ERRLEVEL_ERROR: number;
         ERRLEVEL_WARNING: number;
+        ENDPOINT_API: SessionParamEndpoint;
+        ENDPOINT_UI: SessionParamEndpoint;
+        ENDPOINT_UIPUBLIC: SessionParamEndpoint;
         RESOURCE_TYPE_IMAGE: string;
         RESOURCE_TYPE_ICON: string;
         RESOURCE_TYPE_STYLESHEET: string;
         RESOURCE_TYPE_JAVASCRIPT: string;
         DEFAULT_AUTH_HEADER: string;
         SIMPLICITE_AUTH_HEADER: string;
+        UI_AUTH_TOKEN_STORAGE_KEY: string;
+        UI_AJAX_KEY_STORAGE_KEY: string;
     };
     /**
      * Get API client module version

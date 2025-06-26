@@ -7,7 +7,7 @@ const constants = {
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '3.1.3',
+    MODULE_VERSION: '3.1.4',
     /**
      * Default row ID field name
      * @constant {string}
@@ -374,6 +374,21 @@ const constants = {
      */
     ERRLEVEL_WARNING: 3,
     /**
+     * API endpoint name
+     * @constant {string}
+     */
+    ENDPOINT_API: "api" /* SessionParamEndpoint.API */,
+    /**
+     * UI endpoint name
+     * @constant {string}
+     */
+    ENDPOINT_UI: "ui" /* SessionParamEndpoint.UI */,
+    /**
+     * Public UI endpoint name
+     * @constant {string}
+     */
+    ENDPOINT_UIPUBLIC: "uipublic" /* SessionParamEndpoint.UIPUBLIC */,
+    /**
      * Image resource type
      * @constant {number}
      */
@@ -402,7 +417,17 @@ const constants = {
      * Simplicite authentication header
      * @constant {string}
      */
-    SIMPLICITE_AUTH_HEADER: 'x-simplicite-authorization'
+    SIMPLICITE_AUTH_HEADER: 'x-simplicite-authorization',
+    /**
+     * Simplicite UI endpoint kay name in storage for authentication token
+     * @constant {string}
+     */
+    UI_AUTH_TOKEN_STORAGE_KEY: '_authToken',
+    /**
+     * Simplicite UI endpoint key name in storage for Ajax key
+     * @constant {string}
+     */
+    UI_AJAX_KEY_STORAGE_KEY: '_ajaxKey'
 };
 export { constants };
 //# sourceMappingURL=constants.js.map

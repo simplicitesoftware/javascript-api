@@ -1,3 +1,4 @@
+import { SessionParamEndpoint } from './sessionparams';
 /**
  * Constants
  * @constant
@@ -346,6 +347,21 @@ declare const constants: {
      */
     ERRLEVEL_WARNING: number;
     /**
+     * API endpoint name
+     * @constant {string}
+     */
+    ENDPOINT_API: SessionParamEndpoint;
+    /**
+     * UI endpoint name
+     * @constant {string}
+     */
+    ENDPOINT_UI: SessionParamEndpoint;
+    /**
+     * Public UI endpoint name
+     * @constant {string}
+     */
+    ENDPOINT_UIPUBLIC: SessionParamEndpoint;
+    /**
      * Image resource type
      * @constant {number}
      */
@@ -375,5 +391,15 @@ declare const constants: {
      * @constant {string}
      */
     SIMPLICITE_AUTH_HEADER: string;
+    /**
+     * Simplicite UI endpoint kay name in storage for authentication token
+     * @constant {string}
+     */
+    UI_AUTH_TOKEN_STORAGE_KEY: string;
+    /**
+     * Simplicite UI endpoint key name in storage for Ajax key
+     * @constant {string}
+     */
+    UI_AJAX_KEY_STORAGE_KEY: string;
 };
 export { constants };
