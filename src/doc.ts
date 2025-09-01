@@ -179,7 +179,7 @@ class Doc {
 	 * @function
 	 */
 	public getContentAsArrayBuffer(): ArrayBuffer {
-		return this.getBuffer(this.content).buffer;
+		return this.getBuffer(this.content).buffer as ArrayBuffer;
 	}
 
 	/**
@@ -188,7 +188,7 @@ class Doc {
 	 * @function
 	 */
 	public getThumbnailAsArrayBuffer(): ArrayBuffer {
-		return this.getBuffer(this.thumbnail || '').buffer;
+		return this.getBuffer(this.thumbnail || '').buffer as ArrayBuffer;
 	}
 
 	/**
