@@ -324,7 +324,7 @@ const constants = {
 	 * @constant {Array}
 	 */
 	TYPES: [
-		'ID',            //.0
+		'ID',            // 0
 		'integer',       // 1
 		'decimal',       // 2
 		'string',        // 3

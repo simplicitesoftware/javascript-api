@@ -86,7 +86,7 @@ class Grant {
 	 * @return {string} User ID
 	 * @function
 	 */
-	public getUserId(): string{
+	public getUserId(): string {
 		return this.userid;
 	}
 
@@ -129,7 +129,7 @@ class Grant {
 	 * @return {string} First name
 	 * @function
 	 */
-	getFirstname(): string {
+	public getFirstname(): string {
 		return this.firstname;
 	}
 

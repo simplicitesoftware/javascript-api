@@ -15,7 +15,7 @@ class Doc {
 
 		// Backward compatibility
 		if (this['filename'] && !this.name) {
-			this. name = this['filename'];
+			this.name = this['filename'];
 			this['filename'] = undefined;
 		}
 	}
@@ -161,7 +161,7 @@ class Doc {
 	 */
 	public getThumbnail(): string {
 		return this.thumbnail;
-	};
+	}
 
 	/**
 	 * Get the document content as a buffer

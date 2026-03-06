@@ -143,7 +143,7 @@ class Session {
 			password: params.password,
 			authtoken: params.authtoken,
 			timeout: (params.timeout || 30) * 1000, // milliseconds
-			compress: params.compress || true,
+			compress: !!params.compress,
 			healthpath: (ep === '/ui' ? ep : '') + '/health?format=json',
 			loginpath: ep === '/api' ? '/api/login?format=json' : ep + '/json/app?action=session',
 			logoutpath: ep === '/api' ? '/api/logout?format=json' : ep + '/json/app?action=logout',
@@ -163,7 +163,7 @@ class Session {
 			this.authtoken = this.getFromStorage(this.constants.UI_AUTH_TOKEN_STORAGE_KEY) || (inUI ? globalThis.Simplicite.AUTH_TOKEN : undefined);
 		}
 
-		this.ajaxkey = params.ajaxkey ; // explicit Ajax key
+		this.ajaxkey = params.ajaxkey; // explicit Ajax key
 		if (!this.ajaxkey && this.endpoint === SessionParamEndpoint.UI) {
 			// If on the UI endpoint, get the ajax key from browser's storages or from the constant
 			this.ajaxkey = this.getFromStorage(this.constants.UI_AJAX_KEY_STORAGE_KEY) || (inUI ? globalThis.Simplicite.AJAX_KEY : undefined);
@@ -365,7 +365,7 @@ class Session {
 	 * @function
 	 */
 	public getBusinessObjectCacheKey(name: string, instance?: string): any {
-		return name + ':' + (instance || 'js_' + name);
+		return name + ':' + (instance || 'api_' + name);
 	}
 
 	/**
@@ -625,7 +625,7 @@ class Session {
 					if (this.authtokenexpiry)
 						this.debug(`[${origin}] Auth token expiry date = ${this.authtokenexpiry.toLocaleDateString()} ${this.authtokenexpiry.toLocaleTimeString()}`);
 					// Minimal grant from session data
-					this.grant =new Grant({
+					this.grant = new Grant({
 						login: this.username,
 						userid: r.response ? r.response.userid : r.userid,
 						firstname: r.response ? r.response.firstname : r.firstname,
@@ -997,7 +997,7 @@ class Session {
 			+ '?code=' + encodeURIComponent(code) + '&type=' + encodeURIComponent(type || 'IMG')
 			+ (object ? '&object=' + encodeURIComponent(object) : '')
 			+ (objId ? '&objid=' + encodeURIComponent(objId): '')
-			+ (this.authtoken ? '_x_simplicite_authorization_=' + encodeURIComponent(this.authtoken) : '');
+			+ (this.authtoken ? '&_x_simplicite_authorization_=' + encodeURIComponent(this.authtoken) : '');
 	}
 }
 
