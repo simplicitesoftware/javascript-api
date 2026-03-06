@@ -1,7 +1,8 @@
 ![Simplicité Software](https://platform.simplicite.io/logos/logo250-grey.png)
 * * *
 
-<a href="https://www.simplicite.io"><img src="https://img.shields.io/badge/author-Simplicite_Software-blue.svg?style=flat-square" alt="Author"></a>&nbsp;<img src="https://img.shields.io/badge/license-Apache--2.0-orange.svg?style=flat-square" alt="License">
+[![](https://img.shields.io/badge/author-Simplicite_Software-blue.svg?style=flat-square)](https://www.simplicite.io)
+&nbsp;![](https://img.shields.io/badge/license-Apache--2.0-orange.svg?style=flat-square)
 
 Simplicité JavaScript API for node.js and web browsers
 ======================================================
@@ -45,16 +46,16 @@ Read the [JSDoc documentation](https://simplicitesoftware.github.io/javascript-a
 For more advanced usage demos, check these repositories:
 
 - **Server-side**:
-	- [Node.js&reg; demo](https://github.com/simplicitesoftware/nodejs-demo)
+  - [Node.js&reg; demo](https://github.com/simplicitesoftware/nodejs-demo)
 - **Client-side**:
-	- [Plain web demo](https://github.com/simplicitesoftware/web-demo)
-	- [Vue.js&reg; demo](https://github.com/simplicitesoftware/vue-demo)
-	- [React&reg; demo](https://github.com/simplicitesoftware/react-demo)
-	- [Angular&reg; demo](https://github.com/simplicitesoftware/angular-demo)
+  - [Plain web demo](https://github.com/simplicitesoftware/web-demo)
+  - [Vue.js&reg; demo](https://github.com/simplicitesoftware/vue-demo)
+  - [React&reg; demo](https://github.com/simplicitesoftware/react-demo)
+  - [Angular&reg; demo](https://github.com/simplicitesoftware/angular-demo)
 - **Native**:
-	- [ReactNative&reg; demo](https://github.com/simplicitesoftware/react-native-demo)
+  - [ReactNative&reg; demo](https://github.com/simplicitesoftware/react-native-demo)
 - From within the **Simplicité&reg; generic web UI**:
-	- [Demo module](https://github.com/simplicitesoftware/module-demo-jslib)
+  - [Demo module](https://github.com/simplicitesoftware/module-demo-jslib)
 
 See the [documentation](https://simplicitesoftware.github.io/javascript-api/) for details.
 
