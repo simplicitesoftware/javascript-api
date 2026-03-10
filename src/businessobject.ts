@@ -660,7 +660,7 @@ class BusinessObject {
 					const err = ses.getError(r.response, undefined, origin);
 					if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 				} else {
-					if (res.response.meta)
+					if (r.response.meta)
 						this.metadata = r.response.meta;
 					this.count = r.response.count;
 					this.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
