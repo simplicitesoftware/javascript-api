@@ -12,7 +12,7 @@ import { Doc } from './doc';
 import { BusinessObjectMetadata } from './businessobjectmetadata';
 /**
  * Business object.
- * <br/><span style="color: red;">ou <strong>should never</strong> instantiate this class directly
+ * <br/><span style="color: red;">You <strong>should never</strong> instantiate this class directly
  * but rather call <code>getBusinessObject</code> to get a cached instance</span>.
  * @class
  */
@@ -461,7 +461,7 @@ class BusinessObject {
     }
     /**
      * Convert usual wildcards to filters wildcards
-     * @param {object} filter Filter
+     * @param {string|object} filter Filter
      * @return {string} Filter with wildcards converted
      * @private
      */
@@ -590,7 +590,7 @@ class BusinessObject {
                             reject.call(this, err);
                     }
                     else {
-                        if (res.meta)
+                        if (r.response.meta)
                             this.metadata = r.response.meta;
                         this.count = r.response.count;
                         this.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
@@ -629,7 +629,7 @@ class BusinessObject {
                 if (tv)
                     p += `&treeview=${encodeURIComponent(tv)}`;
                 if (opts.fields) {
-                    for (const f of opts.fields.length)
+                    for (const f of opts.fields)
                         p += `&fields=${encodeURIComponent(f.replace('.', '__'))}`;
                 }
                 if (opts.metadata)

@@ -2,7 +2,7 @@ import { ExternalObjectMetadata } from './externalobjectmetadata';
 import { Session } from './session';
 /**
  * External object.
- * <br/><span style="color: red;">ou <strong>should never</strong> instantiate this class directly
+ * <br/><span style="color: red;">You <strong>should never</strong> instantiate this class directly
  * but rather call <code>getExternalObject</code></span>.
  * @class
  */

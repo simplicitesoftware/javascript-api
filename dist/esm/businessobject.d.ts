@@ -2,7 +2,7 @@ import { BusinessObjectMetadata } from './businessobjectmetadata';
 import { Session } from './session';
 /**
  * Business object.
- * <br/><span style="color: red;">ou <strong>should never</strong> instantiate this class directly
+ * <br/><span style="color: red;">You <strong>should never</strong> instantiate this class directly
  * but rather call <code>getBusinessObject</code> to get a cached instance</span>.
  * @class
  */
@@ -277,7 +277,7 @@ declare class BusinessObject {
     private getReqOptions;
     /**
      * Convert usual wildcards to filters wildcards
-     * @param {object} filter Filter
+     * @param {string|object} filter Filter
      * @return {string} Filter with wildcards converted
      * @private
      */

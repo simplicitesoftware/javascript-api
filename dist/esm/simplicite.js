@@ -1,7 +1,7 @@
 /*!
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 3.1.5-dev
+ * @version 3.1.5
  * @license Apache-2.0
  */
 import { constants } from './constants';

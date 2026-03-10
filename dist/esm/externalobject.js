@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { ExternalObjectMetadata } from './externalobjectmetadata';
 /**
  * External object.
- * <br/><span style="color: red;">ou <strong>should never</strong> instantiate this class directly
+ * <br/><span style="color: red;">You <strong>should never</strong> instantiate this class directly
  * but rather call <code>getExternalObject</code></span>.
  * @class
  */

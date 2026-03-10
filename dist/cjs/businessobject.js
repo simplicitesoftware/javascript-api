@@ -42,7 +42,7 @@ var doc_1 = require("./doc");
 var businessobjectmetadata_1 = require("./businessobjectmetadata");
 /**
  * Business object.
- * <br/><span style="color: red;">ou <strong>should never</strong> instantiate this class directly
+ * <br/><span style="color: red;">You <strong>should never</strong> instantiate this class directly
  * but rather call <code>getBusinessObject</code> to get a cached instance</span>.
  * @class
  */
@@ -507,7 +507,7 @@ var BusinessObject = /** @class */ (function () {
     };
     /**
      * Convert usual wildcards to filters wildcards
-     * @param {object} filter Filter
+     * @param {string|object} filter Filter
      * @return {string} Filter with wildcards converted
      * @private
      */
@@ -646,7 +646,7 @@ var BusinessObject = /** @class */ (function () {
                                     reject.call(_this, err);
                             }
                             else {
-                                if (res.meta)
+                                if (r.response.meta)
                                     _this.metadata = r.response.meta;
                                 _this.count = r.response.count;
                                 _this.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
@@ -689,7 +689,7 @@ var BusinessObject = /** @class */ (function () {
                         if (tv)
                             p += "&treeview=".concat(encodeURIComponent(tv));
                         if (opts.fields) {
-                            for (var _i = 0, _a = opts.fields.length; _i < _a.length; _i++) {
+                            for (var _i = 0, _a = opts.fields; _i < _a.length; _i++) {
                                 var f = _a[_i];
                                 p += "&fields=".concat(encodeURIComponent(f.replace('.', '__')));
                             }

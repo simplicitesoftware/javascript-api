@@ -126,7 +126,6 @@ class Doc {
     getThumbnail() {
         return this.thumbnail;
     }
-    ;
     /**
      * Get the document content as a buffer
      * @param {any} data Content data

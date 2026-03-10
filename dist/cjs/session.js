@@ -203,7 +203,7 @@ var Session = /** @class */ (function () {
             password: params.password,
             authtoken: params.authtoken,
             timeout: (params.timeout || 30) * 1000, // milliseconds
-            compress: params.compress || true,
+            compress: !!params.compress,
             healthpath: (ep === '/ui' ? ep : '') + '/health?format=json',
             loginpath: ep === '/api' ? '/api/login?format=json' : ep + '/json/app?action=session',
             logoutpath: ep === '/api' ? '/api/logout?format=json' : ep + '/json/app?action=logout',
@@ -304,7 +304,7 @@ var Session = /** @class */ (function () {
      * @function
      */
     Session.prototype.getBusinessObjectCacheKey = function (name, instance) {
-        return name + ':' + (instance || 'js_' + name);
+        return name + ':' + (instance || 'api_' + name);
     };
     /**
      * Clears all data (credentials, objects, ...)
@@ -364,8 +364,7 @@ var Session = /** @class */ (function () {
                     try {
                         err.response.origin = origin;
                     }
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    catch (e) {
+                    catch (e) { // eslint-disable-line @typescript-eslint/no-unused-vars
                         /* ignore */
                     }
                 }
@@ -377,8 +376,7 @@ var Session = /** @class */ (function () {
                 try {
                     err.origin = origin;
                 }
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                catch (e) {
+                catch (e) { // eslint-disable-line @typescript-eslint/no-unused-vars
                     /* ignore */
                 }
             }
@@ -561,9 +559,8 @@ var Session = /** @class */ (function () {
                                     var exp = new Date();
                                     exp.setTime(r.response ? r.response.authtokenexpiry : r.authtokenexpiry);
                                     _this.authtokenexpiry = exp;
-                                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                                 }
-                                catch (e) {
+                                catch (e) { // eslint-disable-line @typescript-eslint/no-unused-vars
                                     _this.authtokenexpiry = undefined;
                                 }
                                 if (_this.authtokenexpiry)
@@ -976,7 +973,7 @@ var Session = /** @class */ (function () {
             + '?code=' + encodeURIComponent(code) + '&type=' + encodeURIComponent(type || 'IMG')
             + (object ? '&object=' + encodeURIComponent(object) : '')
             + (objId ? '&objid=' + encodeURIComponent(objId) : '')
-            + (this.authtoken ? '_x_simplicite_authorization_=' + encodeURIComponent(this.authtoken) : '');
+            + (this.authtoken ? '&_x_simplicite_authorization_=' + encodeURIComponent(this.authtoken) : '');
     };
     return Session;
 }());
