@@ -1,4 +1,4 @@
-/*!
+/**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
  * @version 3.1.5
