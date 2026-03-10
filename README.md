@@ -1,8 +1,8 @@
 ![Simplicité Software](https://platform.simplicite.io/logos/logo250-grey.png)
 * * *
 
-[![](https://img.shields.io/badge/author-Simplicite_Software-blue.svg?style=flat-square)](https://www.simplicite.io)
-&nbsp;![](https://img.shields.io/badge/license-Apache--2.0-orange.svg?style=flat-square)
+[![Author](https://img.shields.io/badge/author-Simplicite_Software-blue.svg?style=flat-square)](https://www.simplicite.io)
+&nbsp;![License](https://img.shields.io/badge/license-Apache--2.0-orange.svg?style=flat-square)
 
 Simplicité JavaScript API for node.js and web browsers
 ======================================================
@@ -62,7 +62,7 @@ See the [documentation](https://simplicitesoftware.github.io/javascript-api/) fo
 License
 -------
 
-Copyright 2014-2024 Simplicité Software
+Copyright 2014-2026 Simplicité Software
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
