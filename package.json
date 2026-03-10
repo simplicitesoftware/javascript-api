@@ -21,6 +21,8 @@
     "buffer": "6.0.3"
   },
   "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@eslint/eslintrc": "3.3.5",
     "@babel/preset-env": "7.29.0",
     "@jest/globals": "30.3.0",
     "@typescript-eslint/parser": "8.57.0",
@@ -28,7 +30,7 @@
     "@types/node": "25.4.0",
     "cross-env": "10.1.0",
     "docdash": "2.0.2",
-    "eslint": "9.39.3",
+    "eslint": "10.0.3",
     "esbuild": "0.27.3",
     "globals": "17.4.0",
     "jest": "30.3.0",

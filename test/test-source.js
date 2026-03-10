@@ -43,7 +43,7 @@ app.login().then(user => {
 		throw new Error('No source for object ' + objName);
 	let src = doc.getContentAsText();
 	app.debug(src);
-	doc.setContentFromText(src += '\n// ' + new Date());
+	doc.setContentFromText(src + '\n// ' + new Date());
 	obj.setFieldValue('obo_script_id', doc);
 	return obj.update(item, { inlineDocuments: true });
 }).then(item => {
