@@ -1,4 +1,4 @@
-import simplicite from '../dist/simplicite.esm.min.js';
+import simplicite from '../dist/simplicite.min.mjs';
 
 const app = simplicite.session({
 	url: process && process.env.TEST_SIMPLICITE_URL || 'http://localhost:8080',

@@ -1,4 +1,4 @@
-import simplicite from '../dist/simplicite.esm.min.js';
+import simplicite from '../dist/simplicite.min.mjs';
 import assert from 'assert';
 
 const adminUsername = process && process.env.TEST_SIMPLICITE_ADMIN_USERNAME || 'designer';

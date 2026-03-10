@@ -1,4 +1,4 @@
-import simplicite from '../dist/simplicite.esm.min.js';
+import simplicite from '../dist/simplicite.min.mjs';
 
 const app = simplicite.session({
 	debug: process && process.env.TEST_SIMPLICITE_DEBUG === 'true'
