@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "moduleResolution": "Node",
+        "skipLibCheck": true,
         "declaration": true,
         "sourceMap": true
     },
