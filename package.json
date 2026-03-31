@@ -52,8 +52,8 @@
   "scripts": {
     "lint": "fcli remove test/index.js && eslint --fix \"src/*.ts\" \"src/browser.js\" \"test/*.js\"",
     "mdlint": "markdownlint-cli2 \"*.md\"",
-    "build:esm": "fcli remove ./dist/esm && tsc --module es6 --target es6 --outDir ./dist/esm",
-    "build:cjs": "fcli remove ./dist/cjs && fcli copy ./package-cjs.json ./dist/cjs/package.json && tsc --module commonjs --target es5 --esModuleInterop true --outDir ./dist/cjs",
+    "build:esm": "fcli remove ./dist/esm && tsc --module Node16 --moduleResolution Node16 --outDir ./dist/esm",
+    "build:cjs": "fcli remove ./dist/cjs && fcli copy ./package-cjs.json ./dist/cjs/package.json && tsc --module CommonJS --moduleResolution Node --esModuleInterop true --outDir ./dist/cjs",
     "build:bundle": "fcli remove ./dist/simplicite.min.js && fcli remove ./dist/simplicite.min.js.map && esbuild src/browser.js --bundle --minify --sourcemap --outfile=./dist/simplicite.min.js",
     "build:esmbundle": "fcli remove ./dist/simplicite.min.mjs && fcli remove ./dist/simplicite.min.mjs.map && esbuild src/simplicite.ts --platform=neutral --bundle --minify --sourcemap --outfile=./dist/simplicite.min.mjs",
     "build": "fcli remove ./dist && npm run lint && npm run build:esm && npm run build:cjs && npm run build:bundle && npm run build:esmbundle",

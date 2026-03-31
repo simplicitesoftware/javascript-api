@@ -1,5 +1,5 @@
-import { ExternalObjectMetadata } from './externalobjectmetadata';
-import { Session } from './session';
+import { ExternalObjectMetadata } from './externalobjectmetadata.js';
+import { Session } from './session.js';
 
 /**
  * External object.

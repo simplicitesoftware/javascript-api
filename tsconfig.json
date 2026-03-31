@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "moduleResolution": "Node",
+        "rootDir": "./src",
         "skipLibCheck": true,
         "declaration": true,
         "sourceMap": true

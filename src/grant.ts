@@ -1,4 +1,4 @@
-import { Doc } from './doc';
+import { Doc } from './doc.js';
 
 /**
  * Grant (user).

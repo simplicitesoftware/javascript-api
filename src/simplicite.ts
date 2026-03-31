@@ -5,15 +5,15 @@
  * @license Apache-2.0
  */
 
-import { constants } from './constants';
-import { Doc } from './doc';
-import { Grant } from './grant';
-import { BusinessObjectMetadata } from './businessobjectmetadata';
-import { BusinessObject } from './businessobject';
-import { ExternalObjectMetadata } from './externalobjectmetadata';
-import { ExternalObject } from './externalobject';
-import { SessionParams } from './sessionparams';
-import { Session } from './session';
+import { constants } from './constants.js';
+import { Doc } from './doc.js';
+import { Grant } from './grant.js';
+import { BusinessObjectMetadata } from './businessobjectmetadata.js';
+import { BusinessObject } from './businessobject.js';
+import { ExternalObjectMetadata } from './externalobjectmetadata.js';
+import { ExternalObject } from './externalobject.js';
+import { SessionParams } from './sessionparams.js';
+import { Session } from './session.js';
 
 /**
  * Simplicite application session. Same as <code>new Session(parameter)</code>.

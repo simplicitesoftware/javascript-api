@@ -1,7 +1,7 @@
-import { constants } from './constants';
-import { Doc } from './doc';
-import { BusinessObjectMetadata } from './businessobjectmetadata';
-import { Session } from './session';
+import { constants } from './constants.js';
+import { Doc } from './doc.js';
+import { BusinessObjectMetadata } from './businessobjectmetadata.js';
+import { Session } from './session.js';
 
 /**
  * Business object.

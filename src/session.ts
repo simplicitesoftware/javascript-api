@@ -1,11 +1,11 @@
 import { Buffer } from 'buffer'; // Browser polyfill for Buffer
 
-import { constants } from './constants';
-import { SessionParamEndpoint, SessionParams } from './sessionparams';
-import { Grant } from './grant';
-import { Doc } from './doc';
-import { BusinessObject } from './businessobject';
-import { ExternalObject } from './externalobject';
+import { constants } from './constants.js';
+import { SessionParamEndpoint, SessionParams } from './sessionparams.js';
+import { Grant } from './grant.js';
+import { Doc } from './doc.js';
+import { BusinessObject } from './businessobject.js';
+import { ExternalObject } from './externalobject.js';
 
 /**
  * Simplicite application session.
