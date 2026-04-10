@@ -1,18 +1,9 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import { Buffer } from 'buffer'; // Browser polyfill for Buffer
-import { constants } from './constants';
-import { Grant } from './grant';
-import { Doc } from './doc';
-import { BusinessObject } from './businessobject';
-import { ExternalObject } from './externalobject';
+import { constants } from './constants.js';
+import { Grant } from './grant.js';
+import { Doc } from './doc.js';
+import { BusinessObject } from './businessobject.js';
+import { ExternalObject } from './externalobject.js';
 /**
  * Simplicite application session.
  * @param {object} params Parameters
@@ -41,20 +32,6 @@ class Session {
      * @param params {object} Parameters
      */
     constructor(params) {
-        /**
-         * Constants
-         * @member
-         */
-        this.constants = constants;
-        /**
-         * Alias to getHealth
-         * @param {object} [opts] Options
-         * @param {boolean} [opts.full=false] Full health check?
-         * @param {function} [opts.error] Error handler function
-         * @return {promise<object>} Promise to the health data
-         * @function
-         */
-        this.health = this.getHealth;
         params = params || {};
         // Within the generic web UI if Simplicite is defined
         const inUI = typeof globalThis.Simplicite !== 'undefined';
@@ -191,12 +168,72 @@ class Session {
         return val;
     }
     /**
+     * Constants
+     * @member
+     */
+    constants = constants;
+    /**
      * Get API client module version
      * @function
      */
     getModuleVersion() {
         return this.constants.MODULE_VERSION;
     }
+    /**
+     * Endpoint
+     * @member {string}
+     */
+    endpoint;
+    /**
+     * Authorization HTTP header name
+     * @member {string}
+     */
+    authheader;
+    /**
+     * Log handler
+     * @param {...any} args Arguments
+     * @function
+     */
+    log;
+    /**
+     * Info handler
+     * @param {...any} args Arguments
+     * @function
+     */
+    info;
+    /**
+     * Warning handler
+     * @param {...any} args Arguments
+     * @function
+     */
+    warn;
+    /**
+     * Error handler
+     * @param {...any} args Arguments
+     * @function
+     */
+    error;
+    /**
+     * Debug mode enabled?
+     * @member {boolean}
+     */
+    debugMode;
+    /**
+     * Debug handler
+     * @param {...any} args Arguments
+     * @function
+     */
+    debug;
+    /**
+     * Parameters
+     * @member {object}
+     */
+    parameters;
+    /**
+     * Username
+     * @member {string}
+     */
+    username;
     /**
      * Set username
      * @param {string} usr Username
@@ -206,6 +243,11 @@ class Session {
         this.username = usr;
     }
     /**
+     * Password
+     * @member {string}
+     */
+    password;
+    /**
      * Set password
      * @param {string} pwd Password
      * @function
@@ -213,6 +255,26 @@ class Session {
     setPassword(pwd) {
         this.password = pwd;
     }
+    /**
+     * Auth token
+     * @member {string}
+     */
+    authtoken;
+    /**
+     * Auth token expiry date
+     * @member {Date}
+     */
+    authtokenexpiry;
+    /**
+     * Ajax key
+     * @member {string}
+     */
+    ajaxkey;
+    /**
+     * Session ID
+     * @member {string}
+     */
+    sessionid;
     /**
      * Set auth token
      * @param {string} token Auth token
@@ -245,6 +307,12 @@ class Session {
     setAjaxKey(key) {
         this.ajaxkey = key;
     }
+    /**
+     * Business objects cache
+     * @member {object}
+     * @private
+     */
+    businessObjectCache;
     /**
      * Get business object cache key
      * @param {string} name Business object name
@@ -428,33 +496,40 @@ class Session {
      * @return {promise<object>} Promise to the health data
      * @function
      */
-    getHealth(opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const origin = 'Session.getHealth';
-            opts = opts || {};
-            return new Promise((resolve, reject) => {
-                let p = `&full=${!!opts.full}`;
-                if (opts.businessCase)
-                    p += `&_bc=${encodeURIComponent(opts.businessCase)}`;
-                this.sendRequest(`${this.parameters.healthpath}${p}`, undefined, (res, status) => {
-                    const r = this.parseResponse(res, status);
-                    this.debug(`[${origin}] HTTP status = ${status}, response type = ${res}`);
-                    if (r.type === 'error') {
-                        const err = this.getError(r.response, undefined, origin);
-                        if (!(opts.error || this.error).call(this, err))
-                            reject.call(this, err);
-                    }
-                    else {
-                        resolve.call(this, r);
-                    }
-                }, (err) => {
-                    err = this.getError(err, undefined, origin);
+    async getHealth(opts) {
+        const origin = 'Session.getHealth';
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            let p = `&full=${!!opts.full}`;
+            if (opts.businessCase)
+                p += `&_bc=${encodeURIComponent(opts.businessCase)}`;
+            this.sendRequest(`${this.parameters.healthpath}${p}`, undefined, (res, status) => {
+                const r = this.parseResponse(res, status);
+                this.debug(`[${origin}] HTTP status = ${status}, response type = ${res}`);
+                if (r.type === 'error') {
+                    const err = this.getError(r.response, undefined, origin);
                     if (!(opts.error || this.error).call(this, err))
                         reject.call(this, err);
-                });
+                }
+                else {
+                    resolve.call(this, r);
+                }
+            }, (err) => {
+                err = this.getError(err, undefined, origin);
+                if (!(opts.error || this.error).call(this, err))
+                    reject.call(this, err);
             });
         });
     }
+    /**
+     * Alias to getHealth
+     * @param {object} [opts] Options
+     * @param {boolean} [opts.full=false] Full health check?
+     * @param {function} [opts.error] Error handler function
+     * @return {promise<object>} Promise to the health data
+     * @function
+     */
+    health = this.getHealth;
     /**
      * Login
      * @param {object} [opts] Options
@@ -465,62 +540,60 @@ class Session {
      * @return {promise<object>} Promise to the login result
      * @function
      */
-    login(opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const origin = 'Session.login';
-            opts = opts || {};
-            return new Promise((resolve, reject) => {
-                if ((opts.username || opts.login) && (opts.password || opts.pwd)) {
-                    this.clear();
-                    this.username = opts.username || opts.login;
-                    this.password = opts.password || opts.pwd;
-                }
-                else if (opts.authtoken || opts.authToken || opts.token) {
-                    this.clear();
-                    this.authtoken = opts.authtoken || opts.authToken || opts.token;
-                }
-                this.sendRequest(this.parameters.loginpath, undefined, (res, status) => {
-                    const r = this.parseResponse(res, status);
-                    this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type || (r.error ? 'error' : 'login')}`);
-                    if (r.type === 'error' || r.error) {
-                        const err = this.getError(r.response ? r.response : r, undefined, origin);
-                        if (!(opts.error || this.error).call(this, err))
-                            reject.call(this, err);
-                    }
-                    else {
-                        this.sessionid = r.response ? r.response.id : r.sessionid;
-                        this.debug(`[${origin}] Session ID = ${this.sessionid}`);
-                        this.username = r.response ? r.response.login : r.login;
-                        if (this.username)
-                            this.debug(`[${origin}] Username = ${this.username}`);
-                        this.authtoken = r.response ? r.response.authtoken : r.authtoken;
-                        if (this.authtoken)
-                            this.debug(`[${origin}] Auth token = ${this.authtoken}`);
-                        try {
-                            const exp = new Date();
-                            exp.setTime(r.response ? r.response.authtokenexpiry : r.authtokenexpiry);
-                            this.authtokenexpiry = exp;
-                        }
-                        catch (e) { // eslint-disable-line @typescript-eslint/no-unused-vars
-                            this.authtokenexpiry = undefined;
-                        }
-                        if (this.authtokenexpiry)
-                            this.debug(`[${origin}] Auth token expiry date = ${this.authtokenexpiry.toLocaleDateString()} ${this.authtokenexpiry.toLocaleTimeString()}`);
-                        // Minimal grant from session data
-                        this.grant = new Grant({
-                            login: this.username,
-                            userid: r.response ? r.response.userid : r.userid,
-                            firstname: r.response ? r.response.firstname : r.firstname,
-                            lastname: r.response ? r.response.lastname : r.lastname,
-                            email: r.response ? r.response.email : r.email
-                        });
-                        resolve.call(this, r.response || r);
-                    }
-                }, (err) => {
-                    err = this.getError(err, undefined, origin);
+    async login(opts) {
+        const origin = 'Session.login';
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            if ((opts.username || opts.login) && (opts.password || opts.pwd)) {
+                this.clear();
+                this.username = opts.username || opts.login;
+                this.password = opts.password || opts.pwd;
+            }
+            else if (opts.authtoken || opts.authToken || opts.token) {
+                this.clear();
+                this.authtoken = opts.authtoken || opts.authToken || opts.token;
+            }
+            this.sendRequest(this.parameters.loginpath, undefined, (res, status) => {
+                const r = this.parseResponse(res, status);
+                this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type || (r.error ? 'error' : 'login')}`);
+                if (r.type === 'error' || r.error) {
+                    const err = this.getError(r.response ? r.response : r, undefined, origin);
                     if (!(opts.error || this.error).call(this, err))
                         reject.call(this, err);
-                });
+                }
+                else {
+                    this.sessionid = r.response ? r.response.id : r.sessionid;
+                    this.debug(`[${origin}] Session ID = ${this.sessionid}`);
+                    this.username = r.response ? r.response.login : r.login;
+                    if (this.username)
+                        this.debug(`[${origin}] Username = ${this.username}`);
+                    this.authtoken = r.response ? r.response.authtoken : r.authtoken;
+                    if (this.authtoken)
+                        this.debug(`[${origin}] Auth token = ${this.authtoken}`);
+                    try {
+                        const exp = new Date();
+                        exp.setTime(r.response ? r.response.authtokenexpiry : r.authtokenexpiry);
+                        this.authtokenexpiry = exp;
+                    }
+                    catch (e) { // eslint-disable-line @typescript-eslint/no-unused-vars
+                        this.authtokenexpiry = undefined;
+                    }
+                    if (this.authtokenexpiry)
+                        this.debug(`[${origin}] Auth token expiry date = ${this.authtokenexpiry.toLocaleDateString()} ${this.authtokenexpiry.toLocaleTimeString()}`);
+                    // Minimal grant from session data
+                    this.grant = new Grant({
+                        login: this.username,
+                        userid: r.response ? r.response.userid : r.userid,
+                        firstname: r.response ? r.response.firstname : r.firstname,
+                        lastname: r.response ? r.response.lastname : r.lastname,
+                        email: r.response ? r.response.email : r.email
+                    });
+                    resolve.call(this, r.response || r);
+                }
+            }, (err) => {
+                err = this.getError(err, undefined, origin);
+                if (!(opts.error || this.error).call(this, err))
+                    reject.call(this, err);
             });
         });
     }
@@ -532,37 +605,40 @@ class Session {
      * @return {promise<object>} Promise to the logout result
      * @function
      */
-    logout(opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const origin = 'Session.logout';
-            opts = opts || {};
-            return new Promise((resolve, reject) => {
-                this.sendRequest(this.parameters.logoutpath, undefined, (res, status) => {
-                    const r = this.parseResponse(res, status);
-                    this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type || (r.error ? 'error' : 'logout')}`);
-                    if (r.type === 'error') {
-                        const err = this.getError(r.response ? r.response : r, undefined, origin);
-                        if (!(opts.error || this.error).call(this, err))
-                            reject.call(this, err);
-                    }
-                    else {
-                        this.clear();
-                        // Restore session parameter-level credentials if present
-                        this.username = this.parameters.username;
-                        this.password = this.parameters.password;
-                        this.authtoken = this.parameters.authtoken;
-                        resolve.call(this, r.response || r);
-                    }
-                }, (err) => {
-                    err = this.getError(err, undefined, origin);
-                    if (err.status === 401) // Removes (expired or deleted) token if any
-                        this.authtoken = undefined;
+    async logout(opts) {
+        const origin = 'Session.logout';
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            this.sendRequest(this.parameters.logoutpath, undefined, (res, status) => {
+                const r = this.parseResponse(res, status);
+                this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type || (r.error ? 'error' : 'logout')}`);
+                if (r.type === 'error') {
+                    const err = this.getError(r.response ? r.response : r, undefined, origin);
                     if (!(opts.error || this.error).call(this, err))
                         reject.call(this, err);
-                });
+                }
+                else {
+                    this.clear();
+                    // Restore session parameter-level credentials if present
+                    this.username = this.parameters.username;
+                    this.password = this.parameters.password;
+                    this.authtoken = this.parameters.authtoken;
+                    resolve.call(this, r.response || r);
+                }
+            }, (err) => {
+                err = this.getError(err, undefined, origin);
+                if (err.status === 401) // Removes (expired or deleted) token if any
+                    this.authtoken = undefined;
+                if (!(opts.error || this.error).call(this, err))
+                    reject.call(this, err);
             });
         });
     }
+    /**
+     * Grant
+     * @member {Grant}
+     */
+    grant;
     /**
      * Get path
      * @param {string} action Action
@@ -584,41 +660,39 @@ class Session {
      * @return {promise<Grant>} A promise to the grant (also available as the <code>grant</code> member)
      * @function
      */
-    getGrant(opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const origin = 'Session.getGrant';
-            opts = opts || {};
-            return new Promise((resolve, reject) => {
-                let p = '&web=true'; // Required to be able to include texts
-                const txt = !!opts.includeTexts || !!opts.texts; // naming flexibility
-                p += `&texts=${encodeURIComponent(txt)}`;
-                const pic = !!opts.inlinePicture || !!opts.picture; // naming flexibility
-                if (pic)
-                    p += '&inline_picture=true';
-                const sys = !!opts.includeSysparams || !!opts.sysparams; // naming flexibility
-                if (sys)
-                    p += '&sysparams=true';
-                this.sendRequest(`${this.getPath('getgrant', opts)}${p}`, undefined, (res, status) => {
-                    const r = this.parseResponse(res, status);
-                    this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
-                    if (r.type === 'error') {
-                        const err = this.getError(r.response, undefined, origin);
-                        if (!(opts.error || this.error).call(this, err))
-                            reject.call(this, err);
-                    }
-                    else {
-                        this.grant = new Grant(r.response); // Set as Grant
-                        if (pic)
-                            this.grant.picture = new Doc(this.grant.picture); // Set picture as Document
-                        if (txt)
-                            this.grant.texts = Object.assign(new Map(), this.grant.texts); // Set texts as Map
-                        resolve.call(this, this.grant);
-                    }
-                }, (err) => {
-                    err = this.getError(err, undefined, origin);
+    async getGrant(opts) {
+        const origin = 'Session.getGrant';
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            let p = '&web=true'; // Required to be able to include texts
+            const txt = !!opts.includeTexts || !!opts.texts; // naming flexibility
+            p += `&texts=${encodeURIComponent(txt)}`;
+            const pic = !!opts.inlinePicture || !!opts.picture; // naming flexibility
+            if (pic)
+                p += '&inline_picture=true';
+            const sys = !!opts.includeSysparams || !!opts.sysparams; // naming flexibility
+            if (sys)
+                p += '&sysparams=true';
+            this.sendRequest(`${this.getPath('getgrant', opts)}${p}`, undefined, (res, status) => {
+                const r = this.parseResponse(res, status);
+                this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = this.getError(r.response, undefined, origin);
                     if (!(opts.error || this.error).call(this, err))
                         reject.call(this, err);
-                });
+                }
+                else {
+                    this.grant = new Grant(r.response); // Set as Grant
+                    if (pic)
+                        this.grant.picture = new Doc(this.grant.picture); // Set picture as Document
+                    if (txt)
+                        this.grant.texts = Object.assign(new Map(), this.grant.texts); // Set texts as Map
+                    resolve.call(this, this.grant);
+                }
+            }, (err) => {
+                err = this.getError(err, undefined, origin);
+                if (!(opts.error || this.error).call(this, err))
+                    reject.call(this, err);
             });
         });
     }
@@ -631,30 +705,33 @@ class Session {
      * @return {promise<object>} A promise to the change password result
      * @function
      */
-    changePassword(pwd, opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const origin = 'Session.changePassword';
-            opts = opts || {};
-            return new Promise((resolve, reject) => {
-                this.sendRequest(`${this.getPath('setpassword', opts)}&password=${encodeURIComponent(pwd)}`, undefined, (res, status) => {
-                    const r = this.parseResponse(res, status);
-                    this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
-                    if (r.type === 'error') {
-                        const err = this.getError(r.response, undefined, origin);
-                        if (!(opts.error || this.error).call(this, err))
-                            reject.call(this, err);
-                    }
-                    else {
-                        resolve.call(this, r.response);
-                    }
-                }, (err) => {
-                    err = this.getError(err, undefined, origin);
+    async changePassword(pwd, opts) {
+        const origin = 'Session.changePassword';
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            this.sendRequest(`${this.getPath('setpassword', opts)}&password=${encodeURIComponent(pwd)}`, undefined, (res, status) => {
+                const r = this.parseResponse(res, status);
+                this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = this.getError(r.response, undefined, origin);
                     if (!(opts.error || this.error).call(this, err))
                         reject.call(this, err);
-                });
+                }
+                else {
+                    resolve.call(this, r.response);
+                }
+            }, (err) => {
+                err = this.getError(err, undefined, origin);
+                if (!(opts.error || this.error).call(this, err))
+                    reject.call(this, err);
             });
         });
     }
+    /**
+     * Application info
+     * @member {object}
+     */
+    appinfo;
     /**
      * Get application info
      * @param {object} [opts] Options
@@ -663,31 +740,34 @@ class Session {
      * @return {promise<object>} A promise to the application info (also available as the <code>appinfo</code> member)
      * @function
      */
-    getAppInfo(opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const origin = 'Session.getAppInfo';
-            opts = opts || {};
-            return new Promise((resolve, reject) => {
-                this.sendRequest(this.getPath('getinfo', opts), undefined, (res, status) => {
-                    const r = this.parseResponse(res, status);
-                    this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
-                    if (r.type === 'error') {
-                        const err = this.getError(r.response, undefined, origin);
-                        if (!(opts.error || this.error).call(this, err))
-                            reject.call(this, err);
-                    }
-                    else {
-                        this.appinfo = r.response;
-                        resolve.call(this, this.appinfo);
-                    }
-                }, (err) => {
-                    err = this.getError(err, undefined, origin);
+    async getAppInfo(opts) {
+        const origin = 'Session.getAppInfo';
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            this.sendRequest(this.getPath('getinfo', opts), undefined, (res, status) => {
+                const r = this.parseResponse(res, status);
+                this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = this.getError(r.response, undefined, origin);
                     if (!(opts.error || this.error).call(this, err))
                         reject.call(this, err);
-                });
+                }
+                else {
+                    this.appinfo = r.response;
+                    resolve.call(this, this.appinfo);
+                }
+            }, (err) => {
+                err = this.getError(err, undefined, origin);
+                if (!(opts.error || this.error).call(this, err))
+                    reject.call(this, err);
             });
         });
     }
+    /**
+     * System info
+     * @member {object}
+     */
+    sysinfo;
     /**
      * Get system info
      * @param {object} [opts] Options
@@ -696,31 +776,34 @@ class Session {
      * @return {promise<object>} A promise to the system info (also available as the <code>sysinfo</code> member)
      * @function
      */
-    getSysInfo(opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const origin = 'Session.getSysInfo';
-            opts = opts || {};
-            return new Promise((resolve, reject) => {
-                this.sendRequest(this.getPath('sysinfo', opts), undefined, (res, status) => {
-                    const r = this.parseResponse(res, status);
-                    this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
-                    if (r.type === 'error') {
-                        const err = this.getError(r.response, undefined, origin);
-                        if (!(opts.error || this.error).call(this, err))
-                            reject.call(this, err);
-                    }
-                    else {
-                        this.sysinfo = r.response;
-                        resolve.call(this, this.sysinfo);
-                    }
-                }, (err) => {
-                    err = this.getError(err, undefined, origin);
+    async getSysInfo(opts) {
+        const origin = 'Session.getSysInfo';
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            this.sendRequest(this.getPath('sysinfo', opts), undefined, (res, status) => {
+                const r = this.parseResponse(res, status);
+                this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = this.getError(r.response, undefined, origin);
                     if (!(opts.error || this.error).call(this, err))
                         reject.call(this, err);
-                });
+                }
+                else {
+                    this.sysinfo = r.response;
+                    resolve.call(this, this.sysinfo);
+                }
+            }, (err) => {
+                err = this.getError(err, undefined, origin);
+                if (!(opts.error || this.error).call(this, err))
+                    reject.call(this, err);
             });
         });
     }
+    /**
+     * Development info
+     * @member {object}
+     */
+    devinfo;
     /**
      * Get development info
      * @param {string} [module] Module name
@@ -730,35 +813,38 @@ class Session {
      * @return {promise<object>} A promise to the development info (also available as the <code>devinfo</code> member)
      * @function
      */
-    getDevInfo(module, opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const origin = 'Session.getDevInfo';
-            opts = opts || {};
-            return new Promise((resolve, reject) => {
-                let p = '';
-                if (module)
-                    p += `&module=${encodeURIComponent(module)}`;
-                this.sendRequest(`${this.getPath('devinfo', opts)}${p}`, undefined, (res, status) => {
-                    const r = this.parseResponse(res, status);
-                    this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
-                    if (r.type === 'error') {
-                        const err = this.getError(r.response, undefined, origin);
-                        if (!(opts.error || this.error).call(this, err))
-                            reject.call(this, err);
-                    }
-                    else {
-                        if (!module)
-                            this.devinfo = r.response;
-                        resolve.call(this, r.response);
-                    }
-                }, (err) => {
-                    err = this.getError(err, undefined, origin);
+    async getDevInfo(module, opts) {
+        const origin = 'Session.getDevInfo';
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            let p = '';
+            if (module)
+                p += `&module=${encodeURIComponent(module)}`;
+            this.sendRequest(`${this.getPath('devinfo', opts)}${p}`, undefined, (res, status) => {
+                const r = this.parseResponse(res, status);
+                this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = this.getError(r.response, undefined, origin);
                     if (!(opts.error || this.error).call(this, err))
                         reject.call(this, err);
-                });
+                }
+                else {
+                    if (!module)
+                        this.devinfo = r.response;
+                    resolve.call(this, r.response);
+                }
+            }, (err) => {
+                err = this.getError(err, undefined, origin);
+                if (!(opts.error || this.error).call(this, err))
+                    reject.call(this, err);
             });
         });
     }
+    /**
+     * News
+     * @member {array}
+     */
+    news;
     /**
      * Get news
      * @param {object} [opts] Options
@@ -768,34 +854,32 @@ class Session {
      * @return {promise<array>} A promise to the list of news (also available as the <code>news</code> member)
      * @function
      */
-    getNews(opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const origin = 'Session.getNews';
-            opts = opts || {};
-            return new Promise((resolve, reject) => {
-                let p = '';
-                const img = !!opts.inlineImages || !!opts.images; // naming flexibility
-                if (img)
-                    p += '&inline_images=true';
-                this.sendRequest(`${this.getPath('news', opts)}${p}`, undefined, (res, status) => {
-                    const r = this.parseResponse(res, status);
-                    this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
-                    if (r.type === 'error') {
-                        const err = this.getError(r.response, undefined, origin);
-                        if (!(opts.error || this.error).call(this, err))
-                            reject.call(this, err);
-                    }
-                    else {
-                        this.news = r.response;
-                        for (const n of this.news)
-                            n.image = new Doc(n.image); // Set image as document
-                        resolve.call(this, this.news);
-                    }
-                }, (err) => {
-                    err = this.getError(err, undefined, origin);
+    async getNews(opts) {
+        const origin = 'Session.getNews';
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            let p = '';
+            const img = !!opts.inlineImages || !!opts.images; // naming flexibility
+            if (img)
+                p += '&inline_images=true';
+            this.sendRequest(`${this.getPath('news', opts)}${p}`, undefined, (res, status) => {
+                const r = this.parseResponse(res, status);
+                this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = this.getError(r.response, undefined, origin);
                     if (!(opts.error || this.error).call(this, err))
                         reject.call(this, err);
-                });
+                }
+                else {
+                    this.news = r.response;
+                    for (const n of this.news)
+                        n.image = new Doc(n.image); // Set image as document
+                    resolve.call(this, this.news);
+                }
+            }, (err) => {
+                err = this.getError(err, undefined, origin);
+                if (!(opts.error || this.error).call(this, err))
+                    reject.call(this, err);
             });
         });
     }
@@ -811,34 +895,32 @@ class Session {
      * @return {promise<array>} A promise to a list of index search records
      * @function
      */
-    indexSearch(query, object, opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const origin = 'Session.indexSearch';
-            opts = opts || {};
-            return new Promise((resolve, reject) => {
-                let p = `&request=${encodeURIComponent(query ? query : '')}`;
-                if (object)
-                    p += `&object=${encodeURIComponent(object)}`;
-                if (opts.metadata === true)
-                    p += '&_md=true';
-                if (opts.context)
-                    p += `&context=${encodeURIComponent(opts.context)}`;
-                this.sendRequest(`${this.getPath('indexsearch', opts)}${p}`, undefined, (res, status) => {
-                    const r = this.parseResponse(res, status);
-                    this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
-                    if (r.type === 'error') {
-                        const err = this.getError(r.response, undefined, origin);
-                        if (!(opts.error || this.error).call(this, err))
-                            reject.call(this, err);
-                    }
-                    else {
-                        resolve.call(this, r.response);
-                    }
-                }, (err) => {
-                    err = this.getError(err, undefined, origin);
+    async indexSearch(query, object, opts) {
+        const origin = 'Session.indexSearch';
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            let p = `&request=${encodeURIComponent(query ? query : '')}`;
+            if (object)
+                p += `&object=${encodeURIComponent(object)}`;
+            if (opts.metadata === true)
+                p += '&_md=true';
+            if (opts.context)
+                p += `&context=${encodeURIComponent(opts.context)}`;
+            this.sendRequest(`${this.getPath('indexsearch', opts)}${p}`, undefined, (res, status) => {
+                const r = this.parseResponse(res, status);
+                this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = this.getError(r.response, undefined, origin);
                     if (!(opts.error || this.error).call(this, err))
                         reject.call(this, err);
-                });
+                }
+                else {
+                    resolve.call(this, r.response);
+                }
+            }, (err) => {
+                err = this.getError(err, undefined, origin);
+                if (!(opts.error || this.error).call(this, err))
+                    reject.call(this, err);
             });
         });
     }
@@ -851,10 +933,10 @@ class Session {
      */
     getBusinessObject(name, instance) {
         const cacheKey = this.getBusinessObjectCacheKey(name, instance);
-        let obj = this.businessObjectCache[cacheKey];
+        let obj = this.businessObjectCache.get(cacheKey);
         if (!obj) {
             obj = new BusinessObject(this, name, instance);
-            this.businessObjectCache[cacheKey] = obj;
+            this.businessObjectCache.set(cacheKey, obj);
         }
         return obj;
     }

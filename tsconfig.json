@@ -2,6 +2,8 @@
     "compilerOptions": {
         "rootDir": "./src",
         "skipLibCheck": true,
+        "strictPropertyInitialization": false,
+        "types": [ "node" ],
         "declaration": true,
         "sourceMap": true
     },

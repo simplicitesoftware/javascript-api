@@ -1,48 +1,12 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
-    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (g && (g = 0, op[0] && (_ = 0)), _) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Session = void 0;
-var buffer_1 = require("buffer"); // Browser polyfill for Buffer
-var constants_1 = require("./constants");
-var grant_1 = require("./grant");
-var doc_1 = require("./doc");
-var businessobject_1 = require("./businessobject");
-var externalobject_1 = require("./externalobject");
+const buffer_1 = require("buffer"); // Browser polyfill for Buffer
+const constants_js_1 = require("./constants.js");
+const grant_js_1 = require("./grant.js");
+const doc_js_1 = require("./doc.js");
+const businessobject_js_1 = require("./businessobject.js");
+const externalobject_js_1 = require("./externalobject.js");
 /**
  * Simplicite application session.
  * @param {object} params Parameters
@@ -65,97 +29,62 @@ var externalobject_1 = require("./externalobject");
  * @param {function} [params.logHandler] Log handler function
  * @class
  */
-var Session = /** @class */ (function () {
+class Session {
     /**
      * Constructor
      * @param params {object} Parameters
      */
-    function Session(params) {
-        var _this = this;
-        /**
-         * Constants
-         * @member
-         */
-        this.constants = constants_1.constants;
-        /**
-         * Alias to getHealth
-         * @param {object} [opts] Options
-         * @param {boolean} [opts.full=false] Full health check?
-         * @param {function} [opts.error] Error handler function
-         * @return {promise<object>} Promise to the health data
-         * @function
-         */
-        this.health = this.getHealth;
+    constructor(params) {
         params = params || {};
         // Within the generic web UI if Simplicite is defined
-        var inUI = typeof globalThis.Simplicite !== 'undefined';
+        const inUI = typeof globalThis.Simplicite !== 'undefined';
         this.endpoint = params.endpoint || (inUI ? globalThis.Simplicite.ENDPOINT : "api" /* SessionParamEndpoint.API */);
         this.authheader = params.authheader || this.constants.DEFAULT_AUTH_HEADER;
-        this.log = params.logHandler || (function () {
-            var args = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i] = arguments[_i];
-            }
+        this.log = params.logHandler || ((...args) => {
             // eslint-disable-next-line no-console
             console.log(args);
         });
-        this.info = params.infoHandler || (function () {
-            var args = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i] = arguments[_i];
-            }
+        this.info = params.infoHandler || ((...args) => {
             if (args && args.length === 1 && typeof args[0] === 'string')
                 // eslint-disable-next-line no-console
-                console.info("INFO - ".concat(args[0]));
+                console.info(`INFO - ${args[0]}`);
             else
                 // eslint-disable-next-line no-console
                 console.info('INFO', args);
         });
-        this.warn = params.warningHandler || (function () {
-            var args = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i] = arguments[_i];
-            }
+        this.warn = params.warningHandler || ((...args) => {
             if (args && args.length === 1 && typeof args[0] === 'string')
                 // eslint-disable-next-line no-console
-                console.warn("WARN - ".concat(args[0]));
+                console.warn(`WARN - ${args[0]}`);
             else
                 // eslint-disable-next-line no-console
-                console.warn("WARN".concat(args && args.length > 0 && args[0].message ? " - ".concat(args[0].message) : ''), args);
+                console.warn(`WARN${args && args.length > 0 && args[0].message ? ` - ${args[0].message}` : ''}`, args);
         });
-        this.error = params.errorHandler || (function () {
-            var args = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i] = arguments[_i];
-            }
+        this.error = params.errorHandler || ((...args) => {
             if (args && args.length === 1 && typeof args[0] === 'string')
                 // eslint-disable-next-line no-console
-                console.error("ERROR - ".concat(args[0]));
+                console.error(`ERROR - ${args[0]}`);
             else
                 // eslint-disable-next-line no-console
-                console.error("ERROR".concat(args && args.length > 0 && args[0].message ? " - ".concat(args[0].message) : ''), args);
+                console.error(`ERROR${args && args.length > 0 && args[0].message ? ` - ${args[0].message}` : ''}`, args);
         });
         this.debugMode = !!params.debug;
-        this.debug = params.debugHandler || (function () {
-            var args = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i] = arguments[_i];
-            }
-            if (_this.debugMode) {
+        this.debug = params.debugHandler || ((...args) => {
+            if (this.debugMode) {
                 if (args && args.length === 1 && typeof args[0] === 'string')
                     // eslint-disable-next-line no-console
-                    console.info("DEBUG - ".concat(args[0]));
+                    console.info(`DEBUG - ${args[0]}`);
                 else
                     // eslint-disable-next-line no-console
                     console.log('DEBUG', args);
             }
         });
-        var purl = params.url || (inUI && globalThis.Simplicite.URL) || (globalThis.window && globalThis.window.location.origin);
+        const purl = params.url || (inUI && globalThis.Simplicite.URL) || (globalThis.window && globalThis.window.location.origin);
         this.debug('[simplicite] URL parameter = ' + purl);
         if (purl) {
             try {
                 params.scheme = purl.replace(/:.*$/, '');
-                var u = purl.replace(new RegExp('^' + params.scheme + '://'), '').split(':');
+                const u = purl.replace(new RegExp('^' + params.scheme + '://'), '').split(':');
                 if (u.length === 1) {
                     params.host = u[0].replace(/\/.*$/, '');
                     params.port = params.scheme === 'http' ? 80 : 443;
@@ -176,29 +105,29 @@ var Session = /** @class */ (function () {
                 return;
             }
         }
-        var scheme = params.scheme || (params.port === 443 ? 'https' : 'http');
+        const scheme = params.scheme || (params.port === 443 ? 'https' : 'http');
         if (scheme !== 'http' && scheme !== 'https') {
             this.error('Incorrect scheme [' + params.scheme + ']');
             return;
         }
-        var host = params.host || 'localhost';
-        var port = params.port || 8080;
-        var root = params.root || '';
+        const host = params.host || 'localhost';
+        const port = params.port || 8080;
+        let root = params.root || '';
         if (root === '/')
             root = '';
-        var url = scheme + '://' + host;
+        let url = scheme + '://' + host;
         if ((scheme === 'http' && port !== 80) || (scheme === 'https' && port !== 443))
             url += ':' + port;
         if (root !== '')
             url += root.startsWith('/') ? root : '/' + root;
         this.debug('[simplicite] Base URL = ' + url);
-        var ep = this.endpoint === 'uipublic' ? '' : '/' + this.endpoint;
+        const ep = this.endpoint === 'uipublic' ? '' : '/' + this.endpoint;
         this.parameters = {
-            scheme: scheme,
-            host: host,
-            port: port,
-            root: root,
-            url: url,
+            scheme,
+            host,
+            port,
+            root,
+            url,
             username: params.username,
             password: params.password,
             authtoken: params.authtoken,
@@ -227,75 +156,166 @@ var Session = /** @class */ (function () {
         }
         this.businessObjectCache = new Map();
     }
-    Session.prototype.getFromStorage = function (key) {
-        var val = null;
+    getFromStorage(key) {
+        let val = null;
         // First search in local storage if available
-        var ls = globalThis.window ? globalThis.window.localStorage : null;
+        const ls = globalThis.window ? globalThis.window.localStorage : null;
         if (ls)
             val = ls.getItem(key) || ls.getItem(key.toLowerCase()); // also try lowercase key for compatibility with older versions
         if (!val) {
             // Then search in session storage if available
-            var ss = globalThis.window ? globalThis.window.sessionStorage : null;
+            const ss = globalThis.window ? globalThis.window.sessionStorage : null;
             if (ss)
                 val = ss.getItem(key) || ss.getItem(key.toLowerCase()); // also try lowercase key for compatibility with older versions
         }
         return val;
-    };
+    }
+    /**
+     * Constants
+     * @member
+     */
+    constants = constants_js_1.constants;
     /**
      * Get API client module version
      * @function
      */
-    Session.prototype.getModuleVersion = function () {
+    getModuleVersion() {
         return this.constants.MODULE_VERSION;
-    };
+    }
+    /**
+     * Endpoint
+     * @member {string}
+     */
+    endpoint;
+    /**
+     * Authorization HTTP header name
+     * @member {string}
+     */
+    authheader;
+    /**
+     * Log handler
+     * @param {...any} args Arguments
+     * @function
+     */
+    log;
+    /**
+     * Info handler
+     * @param {...any} args Arguments
+     * @function
+     */
+    info;
+    /**
+     * Warning handler
+     * @param {...any} args Arguments
+     * @function
+     */
+    warn;
+    /**
+     * Error handler
+     * @param {...any} args Arguments
+     * @function
+     */
+    error;
+    /**
+     * Debug mode enabled?
+     * @member {boolean}
+     */
+    debugMode;
+    /**
+     * Debug handler
+     * @param {...any} args Arguments
+     * @function
+     */
+    debug;
+    /**
+     * Parameters
+     * @member {object}
+     */
+    parameters;
+    /**
+     * Username
+     * @member {string}
+     */
+    username;
     /**
      * Set username
      * @param {string} usr Username
      * @function
      */
-    Session.prototype.setUsername = function (usr) {
+    setUsername(usr) {
         this.username = usr;
-    };
+    }
+    /**
+     * Password
+     * @member {string}
+     */
+    password;
     /**
      * Set password
      * @param {string} pwd Password
      * @function
      */
-    Session.prototype.setPassword = function (pwd) {
+    setPassword(pwd) {
         this.password = pwd;
-    };
+    }
+    /**
+     * Auth token
+     * @member {string}
+     */
+    authtoken;
+    /**
+     * Auth token expiry date
+     * @member {Date}
+     */
+    authtokenexpiry;
+    /**
+     * Ajax key
+     * @member {string}
+     */
+    ajaxkey;
+    /**
+     * Session ID
+     * @member {string}
+     */
+    sessionid;
     /**
      * Set auth token
      * @param {string} token Auth token
      * @function
      */
-    Session.prototype.setAuthToken = function (token) {
+    setAuthToken(token) {
         this.authtoken = token;
-    };
+    }
     /**
      * Set auth token expiry date
      * @param {Date} expiry Auth token expiry
      * @function
      */
-    Session.prototype.setAuthTokenExpiryDate = function (expiry) {
+    setAuthTokenExpiryDate(expiry) {
         this.authtokenexpiry = expiry;
-    };
+    }
     /**
      * Is the auth token expired?
      * @return {boolean} true if the auth token is expired
      * @function
      */
-    Session.prototype.isAuthTokenExpired = function () {
+    isAuthTokenExpired() {
         return this.authtokenexpiry ? new Date() > this.authtokenexpiry : false;
-    };
+    }
     /**
      * Set Ajax key
      * @param {string} key Ajax key
      * @function
      */
-    Session.prototype.setAjaxKey = function (key) {
+    setAjaxKey(key) {
         this.ajaxkey = key;
-    };
+    }
+    /**
+     * Business objects cache
+     * @member {object}
+     * @private
+     */
+    businessObjectCache;
     /**
      * Get business object cache key
      * @param {string} name Business object name
@@ -303,14 +323,14 @@ var Session = /** @class */ (function () {
      * @return {object} Business object cache key
      * @function
      */
-    Session.prototype.getBusinessObjectCacheKey = function (name, instance) {
+    getBusinessObjectCacheKey(name, instance) {
         return name + ':' + (instance || 'api_' + name);
-    };
+    }
     /**
      * Clears all data (credentials, objects, ...)
      * @function
      */
-    Session.prototype.clear = function () {
+    clear() {
         this.username = undefined;
         this.password = undefined;
         this.authtoken = undefined;
@@ -321,27 +341,27 @@ var Session = /** @class */ (function () {
         this.sysinfo = undefined;
         this.devinfo = undefined;
         this.businessObjectCache = new Map();
-    };
+    }
     /**
      * Basic HTTP authorization header value
      * @return {string} HTTP authorization header value
      * @function
      */
-    Session.prototype.getBasicAuthHeader = function () {
+    getBasicAuthHeader() {
         return this.username && this.password
             ? 'Basic ' + buffer_1.Buffer.from(this.username + ':' + this.password).toString('base64')
             : undefined;
-    };
+    }
     /**
      * Get bearer token header value
      * @return {string} Bearer token header value
      * @function
      */
-    Session.prototype.getBearerTokenHeader = function () {
+    getBearerTokenHeader() {
         return this.authtoken
             ? 'Bearer ' + this.authtoken
             : undefined;
-    };
+    }
     /**
      * Get error object
      * @param {(string|object)} err Error
@@ -351,13 +371,13 @@ var Session = /** @class */ (function () {
      * @return {object} Error object
      * @function
      */
-    Session.prototype.getError = function (err, status, origin) {
+    getError(err, status, origin) {
         if (typeof err === 'string') { // plain text error
-            return { message: err, status: status || 200, origin: origin };
+            return { message: err, status: status || 200, origin };
         }
         else if (err.response) { // wrapped error
             if (typeof err.response === 'string') {
-                return { message: err.response, status: status || 200, origin: origin };
+                return { message: err.response, status: status || 200, origin };
             }
             else {
                 if (origin) {
@@ -382,28 +402,28 @@ var Session = /** @class */ (function () {
             }
             return err;
         }
-    };
+    }
     /**
      * Compress data as blob
      * @param data {string|any} Data to compress
      * @return {Promise<Blob>} Promise to the compressed data blob
      */
-    Session.prototype.compressData = function (data) {
-        var s = typeof data === 'string'
+    compressData(data) {
+        const s = typeof data === 'string'
             ? new Blob([data], { type: 'text/plain' }).stream()
             : new Blob([JSON.stringify(data)], { type: 'application/json' }).stream();
-        var cs = s.pipeThrough(new CompressionStream('gzip'));
+        const cs = s.pipeThrough(new CompressionStream('gzip'));
         return new Response(cs).blob();
-    };
+    }
     /**
      * Uncompress blob
      * @param blob {Blob} Compressed data blob
      * @return {Promise<string>} Promise to the uncompressed string
      */
-    Session.prototype.uncompressData = function (blob) {
-        var us = blob.stream().pipeThrough(new DecompressionStream('gzip'));
+    uncompressData(blob) {
+        const us = blob.stream().pipeThrough(new DecompressionStream('gzip'));
         return new Response(us).text();
-    };
+    }
     /**
      * Send request
      * @param {string} path Path
@@ -412,15 +432,14 @@ var Session = /** @class */ (function () {
      * @param {function} [errorHandler] Error handler
      * @function
      */
-    Session.prototype.sendRequest = function (path, data, callback, errorHandler) {
-        var _this = this;
-        var origin = 'Session.sendRequest';
-        var m = data ? 'POST' : 'GET';
-        var h = {};
+    sendRequest(path, data, callback, errorHandler) {
+        const origin = 'Session.sendRequest';
+        const m = data ? 'POST' : 'GET';
+        const h = {};
         if (data)
             h['content-type'] = 'application/x-www-form-urlencoded; charset=utf-8';
         h.accept = 'application/json';
-        var b = this.getBearerTokenHeader();
+        let b = this.getBearerTokenHeader();
         if (b) {
             h[this.authheader] = b;
         }
@@ -429,32 +448,32 @@ var Session = /** @class */ (function () {
             if (b)
                 h[this.authheader] = b;
         }
-        var u = this.parameters.url + (path || '/');
+        let u = this.parameters.url + (path || '/');
         if (this.ajaxkey)
             u += (u.indexOf('?') >= 0 ? '&' : '?') + '_ajaxkey=' + encodeURIComponent(this.ajaxkey);
-        var d = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined;
-        this.debug("[".concat(origin, "] ").concat(m, " ").concat(u).concat(d ? ' with ' + d : ''));
+        const d = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined;
+        this.debug(`[${origin}] ${m} ${u}${d ? ' with ' + d : ''}`);
         fetch(u, {
             method: m,
             headers: h,
             //compress: this.parameters.compress,
             signal: AbortSignal.timeout(this.parameters.timeout),
             body: d
-        }).then(function (res) {
+        }).then((res) => {
             if (callback) {
-                res.text().then(function (textData) {
-                    callback.call(_this, textData, res.status, res.headers);
+                res.text().then((textData) => {
+                    callback.call(this, textData, res.status, res.headers);
                 });
             }
-        }).catch(function (err) {
-            var s = err.response && err.response.status ? err.response.status : undefined;
-            var e = err.response && err.response.data ? err.response.data : err;
+        }).catch((err) => {
+            const s = err.response && err.response.status ? err.response.status : undefined;
+            const e = err.response && err.response.data ? err.response.data : err;
             if (errorHandler)
-                errorHandler.call(_this, _this.getError(e, s, origin));
+                errorHandler.call(this, this.getError(e, s, origin));
             else
                 throw e;
         });
-    };
+    }
     /**
      * Parse response
      * @param {object} res Response to parse
@@ -462,7 +481,7 @@ var Session = /** @class */ (function () {
      * @return {object} Error object
      * @function
      */
-    Session.prototype.parseResponse = function (res, status) {
+    parseResponse(res, status) {
         try {
             if (status !== 200)
                 return { type: 'error', response: this.getError('HTTP status: ' + status, status) };
@@ -471,7 +490,7 @@ var Session = /** @class */ (function () {
         catch (e) {
             return { type: 'error', response: this.getError('Parsing error: ' + e.message, status) };
         }
-    };
+    }
     /**
      * Get health check (no need to be authenticated)
      * @param {object} [opts] Options
@@ -480,37 +499,40 @@ var Session = /** @class */ (function () {
      * @return {promise<object>} Promise to the health data
      * @function
      */
-    Session.prototype.getHealth = function (opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            var origin;
-            var _this = this;
-            return __generator(this, function (_a) {
-                origin = 'Session.getHealth';
-                opts = opts || {};
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        var p = "&full=".concat(!!opts.full);
-                        if (opts.businessCase)
-                            p += "&_bc=".concat(encodeURIComponent(opts.businessCase));
-                        _this.sendRequest("".concat(_this.parameters.healthpath).concat(p), undefined, function (res, status) {
-                            var r = _this.parseResponse(res, status);
-                            _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(res));
-                            if (r.type === 'error') {
-                                var err = _this.getError(r.response, undefined, origin);
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            }
-                            else {
-                                resolve.call(_this, r);
-                            }
-                        }, function (err) {
-                            err = _this.getError(err, undefined, origin);
-                            if (!(opts.error || _this.error).call(_this, err))
-                                reject.call(_this, err);
-                        });
-                    })];
+    async getHealth(opts) {
+        const origin = 'Session.getHealth';
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            let p = `&full=${!!opts.full}`;
+            if (opts.businessCase)
+                p += `&_bc=${encodeURIComponent(opts.businessCase)}`;
+            this.sendRequest(`${this.parameters.healthpath}${p}`, undefined, (res, status) => {
+                const r = this.parseResponse(res, status);
+                this.debug(`[${origin}] HTTP status = ${status}, response type = ${res}`);
+                if (r.type === 'error') {
+                    const err = this.getError(r.response, undefined, origin);
+                    if (!(opts.error || this.error).call(this, err))
+                        reject.call(this, err);
+                }
+                else {
+                    resolve.call(this, r);
+                }
+            }, (err) => {
+                err = this.getError(err, undefined, origin);
+                if (!(opts.error || this.error).call(this, err))
+                    reject.call(this, err);
             });
         });
-    };
+    }
+    /**
+     * Alias to getHealth
+     * @param {object} [opts] Options
+     * @param {boolean} [opts.full=false] Full health check?
+     * @param {function} [opts.error] Error handler function
+     * @return {promise<object>} Promise to the health data
+     * @function
+     */
+    health = this.getHealth;
     /**
      * Login
      * @param {object} [opts] Options
@@ -521,69 +543,63 @@ var Session = /** @class */ (function () {
      * @return {promise<object>} Promise to the login result
      * @function
      */
-    Session.prototype.login = function (opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            var origin;
-            var _this = this;
-            return __generator(this, function (_a) {
-                origin = 'Session.login';
-                opts = opts || {};
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        if ((opts.username || opts.login) && (opts.password || opts.pwd)) {
-                            _this.clear();
-                            _this.username = opts.username || opts.login;
-                            _this.password = opts.password || opts.pwd;
-                        }
-                        else if (opts.authtoken || opts.authToken || opts.token) {
-                            _this.clear();
-                            _this.authtoken = opts.authtoken || opts.authToken || opts.token;
-                        }
-                        _this.sendRequest(_this.parameters.loginpath, undefined, function (res, status) {
-                            var r = _this.parseResponse(res, status);
-                            _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type || (r.error ? 'error' : 'login')));
-                            if (r.type === 'error' || r.error) {
-                                var err = _this.getError(r.response ? r.response : r, undefined, origin);
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            }
-                            else {
-                                _this.sessionid = r.response ? r.response.id : r.sessionid;
-                                _this.debug("[".concat(origin, "] Session ID = ").concat(_this.sessionid));
-                                _this.username = r.response ? r.response.login : r.login;
-                                if (_this.username)
-                                    _this.debug("[".concat(origin, "] Username = ").concat(_this.username));
-                                _this.authtoken = r.response ? r.response.authtoken : r.authtoken;
-                                if (_this.authtoken)
-                                    _this.debug("[".concat(origin, "] Auth token = ").concat(_this.authtoken));
-                                try {
-                                    var exp = new Date();
-                                    exp.setTime(r.response ? r.response.authtokenexpiry : r.authtokenexpiry);
-                                    _this.authtokenexpiry = exp;
-                                }
-                                catch (e) { // eslint-disable-line @typescript-eslint/no-unused-vars
-                                    _this.authtokenexpiry = undefined;
-                                }
-                                if (_this.authtokenexpiry)
-                                    _this.debug("[".concat(origin, "] Auth token expiry date = ").concat(_this.authtokenexpiry.toLocaleDateString(), " ").concat(_this.authtokenexpiry.toLocaleTimeString()));
-                                // Minimal grant from session data
-                                _this.grant = new grant_1.Grant({
-                                    login: _this.username,
-                                    userid: r.response ? r.response.userid : r.userid,
-                                    firstname: r.response ? r.response.firstname : r.firstname,
-                                    lastname: r.response ? r.response.lastname : r.lastname,
-                                    email: r.response ? r.response.email : r.email
-                                });
-                                resolve.call(_this, r.response || r);
-                            }
-                        }, function (err) {
-                            err = _this.getError(err, undefined, origin);
-                            if (!(opts.error || _this.error).call(_this, err))
-                                reject.call(_this, err);
-                        });
-                    })];
+    async login(opts) {
+        const origin = 'Session.login';
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            if ((opts.username || opts.login) && (opts.password || opts.pwd)) {
+                this.clear();
+                this.username = opts.username || opts.login;
+                this.password = opts.password || opts.pwd;
+            }
+            else if (opts.authtoken || opts.authToken || opts.token) {
+                this.clear();
+                this.authtoken = opts.authtoken || opts.authToken || opts.token;
+            }
+            this.sendRequest(this.parameters.loginpath, undefined, (res, status) => {
+                const r = this.parseResponse(res, status);
+                this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type || (r.error ? 'error' : 'login')}`);
+                if (r.type === 'error' || r.error) {
+                    const err = this.getError(r.response ? r.response : r, undefined, origin);
+                    if (!(opts.error || this.error).call(this, err))
+                        reject.call(this, err);
+                }
+                else {
+                    this.sessionid = r.response ? r.response.id : r.sessionid;
+                    this.debug(`[${origin}] Session ID = ${this.sessionid}`);
+                    this.username = r.response ? r.response.login : r.login;
+                    if (this.username)
+                        this.debug(`[${origin}] Username = ${this.username}`);
+                    this.authtoken = r.response ? r.response.authtoken : r.authtoken;
+                    if (this.authtoken)
+                        this.debug(`[${origin}] Auth token = ${this.authtoken}`);
+                    try {
+                        const exp = new Date();
+                        exp.setTime(r.response ? r.response.authtokenexpiry : r.authtokenexpiry);
+                        this.authtokenexpiry = exp;
+                    }
+                    catch (e) { // eslint-disable-line @typescript-eslint/no-unused-vars
+                        this.authtokenexpiry = undefined;
+                    }
+                    if (this.authtokenexpiry)
+                        this.debug(`[${origin}] Auth token expiry date = ${this.authtokenexpiry.toLocaleDateString()} ${this.authtokenexpiry.toLocaleTimeString()}`);
+                    // Minimal grant from session data
+                    this.grant = new grant_js_1.Grant({
+                        login: this.username,
+                        userid: r.response ? r.response.userid : r.userid,
+                        firstname: r.response ? r.response.firstname : r.firstname,
+                        lastname: r.response ? r.response.lastname : r.lastname,
+                        email: r.response ? r.response.email : r.email
+                    });
+                    resolve.call(this, r.response || r);
+                }
+            }, (err) => {
+                err = this.getError(err, undefined, origin);
+                if (!(opts.error || this.error).call(this, err))
+                    reject.call(this, err);
             });
         });
-    };
+    }
     /**
      * Logout
      * @param {function} callback Callback (called upon success)
@@ -592,51 +608,50 @@ var Session = /** @class */ (function () {
      * @return {promise<object>} Promise to the logout result
      * @function
      */
-    Session.prototype.logout = function (opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            var origin;
-            var _this = this;
-            return __generator(this, function (_a) {
-                origin = 'Session.logout';
-                opts = opts || {};
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        _this.sendRequest(_this.parameters.logoutpath, undefined, function (res, status) {
-                            var r = _this.parseResponse(res, status);
-                            _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type || (r.error ? 'error' : 'logout')));
-                            if (r.type === 'error') {
-                                var err = _this.getError(r.response ? r.response : r, undefined, origin);
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            }
-                            else {
-                                _this.clear();
-                                // Restore session parameter-level credentials if present
-                                _this.username = _this.parameters.username;
-                                _this.password = _this.parameters.password;
-                                _this.authtoken = _this.parameters.authtoken;
-                                resolve.call(_this, r.response || r);
-                            }
-                        }, function (err) {
-                            err = _this.getError(err, undefined, origin);
-                            if (err.status === 401) // Removes (expired or deleted) token if any
-                                _this.authtoken = undefined;
-                            if (!(opts.error || _this.error).call(_this, err))
-                                reject.call(_this, err);
-                        });
-                    })];
+    async logout(opts) {
+        const origin = 'Session.logout';
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            this.sendRequest(this.parameters.logoutpath, undefined, (res, status) => {
+                const r = this.parseResponse(res, status);
+                this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type || (r.error ? 'error' : 'logout')}`);
+                if (r.type === 'error') {
+                    const err = this.getError(r.response ? r.response : r, undefined, origin);
+                    if (!(opts.error || this.error).call(this, err))
+                        reject.call(this, err);
+                }
+                else {
+                    this.clear();
+                    // Restore session parameter-level credentials if present
+                    this.username = this.parameters.username;
+                    this.password = this.parameters.password;
+                    this.authtoken = this.parameters.authtoken;
+                    resolve.call(this, r.response || r);
+                }
+            }, (err) => {
+                err = this.getError(err, undefined, origin);
+                if (err.status === 401) // Removes (expired or deleted) token if any
+                    this.authtoken = undefined;
+                if (!(opts.error || this.error).call(this, err))
+                    reject.call(this, err);
             });
         });
-    };
+    }
+    /**
+     * Grant
+     * @member {Grant}
+     */
+    grant;
     /**
      * Get path
      * @param {string} action Action
      * @param {object} [opts] Options
      * @param {string} [opts.businessCase] Business case label
      */
-    Session.prototype.getPath = function (action, opts) {
-        var bc = opts && opts.businessCase ? "&_bc=".concat(encodeURIComponent(opts.businessCase)) : '';
-        return "".concat(this.parameters.apppath, "?action=").concat(encodeURIComponent(action)).concat(bc);
-    };
+    getPath(action, opts) {
+        const bc = opts && opts.businessCase ? `&_bc=${encodeURIComponent(opts.businessCase)}` : '';
+        return `${this.parameters.apppath}?action=${encodeURIComponent(action)}${bc}`;
+    }
     /**
      * Get grant (current user data)
      * @param {object} [opts] Options
@@ -648,48 +663,42 @@ var Session = /** @class */ (function () {
      * @return {promise<Grant>} A promise to the grant (also available as the <code>grant</code> member)
      * @function
      */
-    Session.prototype.getGrant = function (opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            var origin;
-            var _this = this;
-            return __generator(this, function (_a) {
-                origin = 'Session.getGrant';
-                opts = opts || {};
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        var p = '&web=true'; // Required to be able to include texts
-                        var txt = !!opts.includeTexts || !!opts.texts; // naming flexibility
-                        p += "&texts=".concat(encodeURIComponent(txt));
-                        var pic = !!opts.inlinePicture || !!opts.picture; // naming flexibility
-                        if (pic)
-                            p += '&inline_picture=true';
-                        var sys = !!opts.includeSysparams || !!opts.sysparams; // naming flexibility
-                        if (sys)
-                            p += '&sysparams=true';
-                        _this.sendRequest("".concat(_this.getPath('getgrant', opts)).concat(p), undefined, function (res, status) {
-                            var r = _this.parseResponse(res, status);
-                            _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                            if (r.type === 'error') {
-                                var err = _this.getError(r.response, undefined, origin);
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            }
-                            else {
-                                _this.grant = new grant_1.Grant(r.response); // Set as Grant
-                                if (pic)
-                                    _this.grant.picture = new doc_1.Doc(_this.grant.picture); // Set picture as Document
-                                if (txt)
-                                    _this.grant.texts = Object.assign(new Map(), _this.grant.texts); // Set texts as Map
-                                resolve.call(_this, _this.grant);
-                            }
-                        }, function (err) {
-                            err = _this.getError(err, undefined, origin);
-                            if (!(opts.error || _this.error).call(_this, err))
-                                reject.call(_this, err);
-                        });
-                    })];
+    async getGrant(opts) {
+        const origin = 'Session.getGrant';
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            let p = '&web=true'; // Required to be able to include texts
+            const txt = !!opts.includeTexts || !!opts.texts; // naming flexibility
+            p += `&texts=${encodeURIComponent(txt)}`;
+            const pic = !!opts.inlinePicture || !!opts.picture; // naming flexibility
+            if (pic)
+                p += '&inline_picture=true';
+            const sys = !!opts.includeSysparams || !!opts.sysparams; // naming flexibility
+            if (sys)
+                p += '&sysparams=true';
+            this.sendRequest(`${this.getPath('getgrant', opts)}${p}`, undefined, (res, status) => {
+                const r = this.parseResponse(res, status);
+                this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = this.getError(r.response, undefined, origin);
+                    if (!(opts.error || this.error).call(this, err))
+                        reject.call(this, err);
+                }
+                else {
+                    this.grant = new grant_js_1.Grant(r.response); // Set as Grant
+                    if (pic)
+                        this.grant.picture = new doc_js_1.Doc(this.grant.picture); // Set picture as Document
+                    if (txt)
+                        this.grant.texts = Object.assign(new Map(), this.grant.texts); // Set texts as Map
+                    resolve.call(this, this.grant);
+                }
+            }, (err) => {
+                err = this.getError(err, undefined, origin);
+                if (!(opts.error || this.error).call(this, err))
+                    reject.call(this, err);
             });
         });
-    };
+    }
     /**
      * Change password
      * @param {string} pwd Password
@@ -699,34 +708,33 @@ var Session = /** @class */ (function () {
      * @return {promise<object>} A promise to the change password result
      * @function
      */
-    Session.prototype.changePassword = function (pwd, opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            var origin;
-            var _this = this;
-            return __generator(this, function (_a) {
-                origin = 'Session.changePassword';
-                opts = opts || {};
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        _this.sendRequest("".concat(_this.getPath('setpassword', opts), "&password=").concat(encodeURIComponent(pwd)), undefined, function (res, status) {
-                            var r = _this.parseResponse(res, status);
-                            _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                            if (r.type === 'error') {
-                                var err = _this.getError(r.response, undefined, origin);
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            }
-                            else {
-                                resolve.call(_this, r.response);
-                            }
-                        }, function (err) {
-                            err = _this.getError(err, undefined, origin);
-                            if (!(opts.error || _this.error).call(_this, err))
-                                reject.call(_this, err);
-                        });
-                    })];
+    async changePassword(pwd, opts) {
+        const origin = 'Session.changePassword';
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            this.sendRequest(`${this.getPath('setpassword', opts)}&password=${encodeURIComponent(pwd)}`, undefined, (res, status) => {
+                const r = this.parseResponse(res, status);
+                this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = this.getError(r.response, undefined, origin);
+                    if (!(opts.error || this.error).call(this, err))
+                        reject.call(this, err);
+                }
+                else {
+                    resolve.call(this, r.response);
+                }
+            }, (err) => {
+                err = this.getError(err, undefined, origin);
+                if (!(opts.error || this.error).call(this, err))
+                    reject.call(this, err);
             });
         });
-    };
+    }
+    /**
+     * Application info
+     * @member {object}
+     */
+    appinfo;
     /**
      * Get application info
      * @param {object} [opts] Options
@@ -735,35 +743,34 @@ var Session = /** @class */ (function () {
      * @return {promise<object>} A promise to the application info (also available as the <code>appinfo</code> member)
      * @function
      */
-    Session.prototype.getAppInfo = function (opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            var origin;
-            var _this = this;
-            return __generator(this, function (_a) {
-                origin = 'Session.getAppInfo';
-                opts = opts || {};
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        _this.sendRequest(_this.getPath('getinfo', opts), undefined, function (res, status) {
-                            var r = _this.parseResponse(res, status);
-                            _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                            if (r.type === 'error') {
-                                var err = _this.getError(r.response, undefined, origin);
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            }
-                            else {
-                                _this.appinfo = r.response;
-                                resolve.call(_this, _this.appinfo);
-                            }
-                        }, function (err) {
-                            err = _this.getError(err, undefined, origin);
-                            if (!(opts.error || _this.error).call(_this, err))
-                                reject.call(_this, err);
-                        });
-                    })];
+    async getAppInfo(opts) {
+        const origin = 'Session.getAppInfo';
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            this.sendRequest(this.getPath('getinfo', opts), undefined, (res, status) => {
+                const r = this.parseResponse(res, status);
+                this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = this.getError(r.response, undefined, origin);
+                    if (!(opts.error || this.error).call(this, err))
+                        reject.call(this, err);
+                }
+                else {
+                    this.appinfo = r.response;
+                    resolve.call(this, this.appinfo);
+                }
+            }, (err) => {
+                err = this.getError(err, undefined, origin);
+                if (!(opts.error || this.error).call(this, err))
+                    reject.call(this, err);
             });
         });
-    };
+    }
+    /**
+     * System info
+     * @member {object}
+     */
+    sysinfo;
     /**
      * Get system info
      * @param {object} [opts] Options
@@ -772,35 +779,34 @@ var Session = /** @class */ (function () {
      * @return {promise<object>} A promise to the system info (also available as the <code>sysinfo</code> member)
      * @function
      */
-    Session.prototype.getSysInfo = function (opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            var origin;
-            var _this = this;
-            return __generator(this, function (_a) {
-                origin = 'Session.getSysInfo';
-                opts = opts || {};
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        _this.sendRequest(_this.getPath('sysinfo', opts), undefined, function (res, status) {
-                            var r = _this.parseResponse(res, status);
-                            _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                            if (r.type === 'error') {
-                                var err = _this.getError(r.response, undefined, origin);
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            }
-                            else {
-                                _this.sysinfo = r.response;
-                                resolve.call(_this, _this.sysinfo);
-                            }
-                        }, function (err) {
-                            err = _this.getError(err, undefined, origin);
-                            if (!(opts.error || _this.error).call(_this, err))
-                                reject.call(_this, err);
-                        });
-                    })];
+    async getSysInfo(opts) {
+        const origin = 'Session.getSysInfo';
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            this.sendRequest(this.getPath('sysinfo', opts), undefined, (res, status) => {
+                const r = this.parseResponse(res, status);
+                this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = this.getError(r.response, undefined, origin);
+                    if (!(opts.error || this.error).call(this, err))
+                        reject.call(this, err);
+                }
+                else {
+                    this.sysinfo = r.response;
+                    resolve.call(this, this.sysinfo);
+                }
+            }, (err) => {
+                err = this.getError(err, undefined, origin);
+                if (!(opts.error || this.error).call(this, err))
+                    reject.call(this, err);
             });
         });
-    };
+    }
+    /**
+     * Development info
+     * @member {object}
+     */
+    devinfo;
     /**
      * Get development info
      * @param {string} [module] Module name
@@ -810,39 +816,38 @@ var Session = /** @class */ (function () {
      * @return {promise<object>} A promise to the development info (also available as the <code>devinfo</code> member)
      * @function
      */
-    Session.prototype.getDevInfo = function (module, opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            var origin;
-            var _this = this;
-            return __generator(this, function (_a) {
-                origin = 'Session.getDevInfo';
-                opts = opts || {};
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        var p = '';
-                        if (module)
-                            p += "&module=".concat(encodeURIComponent(module));
-                        _this.sendRequest("".concat(_this.getPath('devinfo', opts)).concat(p), undefined, function (res, status) {
-                            var r = _this.parseResponse(res, status);
-                            _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                            if (r.type === 'error') {
-                                var err = _this.getError(r.response, undefined, origin);
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            }
-                            else {
-                                if (!module)
-                                    _this.devinfo = r.response;
-                                resolve.call(_this, r.response);
-                            }
-                        }, function (err) {
-                            err = _this.getError(err, undefined, origin);
-                            if (!(opts.error || _this.error).call(_this, err))
-                                reject.call(_this, err);
-                        });
-                    })];
+    async getDevInfo(module, opts) {
+        const origin = 'Session.getDevInfo';
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            let p = '';
+            if (module)
+                p += `&module=${encodeURIComponent(module)}`;
+            this.sendRequest(`${this.getPath('devinfo', opts)}${p}`, undefined, (res, status) => {
+                const r = this.parseResponse(res, status);
+                this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = this.getError(r.response, undefined, origin);
+                    if (!(opts.error || this.error).call(this, err))
+                        reject.call(this, err);
+                }
+                else {
+                    if (!module)
+                        this.devinfo = r.response;
+                    resolve.call(this, r.response);
+                }
+            }, (err) => {
+                err = this.getError(err, undefined, origin);
+                if (!(opts.error || this.error).call(this, err))
+                    reject.call(this, err);
             });
         });
-    };
+    }
+    /**
+     * News
+     * @member {array}
+     */
+    news;
     /**
      * Get news
      * @param {object} [opts] Options
@@ -852,43 +857,35 @@ var Session = /** @class */ (function () {
      * @return {promise<array>} A promise to the list of news (also available as the <code>news</code> member)
      * @function
      */
-    Session.prototype.getNews = function (opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            var origin;
-            var _this = this;
-            return __generator(this, function (_a) {
-                origin = 'Session.getNews';
-                opts = opts || {};
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        var p = '';
-                        var img = !!opts.inlineImages || !!opts.images; // naming flexibility
-                        if (img)
-                            p += '&inline_images=true';
-                        _this.sendRequest("".concat(_this.getPath('news', opts)).concat(p), undefined, function (res, status) {
-                            var r = _this.parseResponse(res, status);
-                            _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                            if (r.type === 'error') {
-                                var err = _this.getError(r.response, undefined, origin);
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            }
-                            else {
-                                _this.news = r.response;
-                                for (var _i = 0, _a = _this.news; _i < _a.length; _i++) {
-                                    var n = _a[_i];
-                                    n.image = new doc_1.Doc(n.image);
-                                } // Set image as document
-                                resolve.call(_this, _this.news);
-                            }
-                        }, function (err) {
-                            err = _this.getError(err, undefined, origin);
-                            if (!(opts.error || _this.error).call(_this, err))
-                                reject.call(_this, err);
-                        });
-                    })];
+    async getNews(opts) {
+        const origin = 'Session.getNews';
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            let p = '';
+            const img = !!opts.inlineImages || !!opts.images; // naming flexibility
+            if (img)
+                p += '&inline_images=true';
+            this.sendRequest(`${this.getPath('news', opts)}${p}`, undefined, (res, status) => {
+                const r = this.parseResponse(res, status);
+                this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = this.getError(r.response, undefined, origin);
+                    if (!(opts.error || this.error).call(this, err))
+                        reject.call(this, err);
+                }
+                else {
+                    this.news = r.response;
+                    for (const n of this.news)
+                        n.image = new doc_js_1.Doc(n.image); // Set image as document
+                    resolve.call(this, this.news);
+                }
+            }, (err) => {
+                err = this.getError(err, undefined, origin);
+                if (!(opts.error || this.error).call(this, err))
+                    reject.call(this, err);
             });
         });
-    };
+    }
     /**
      * Index search
      * @param {string} query Index search query
@@ -901,41 +898,35 @@ var Session = /** @class */ (function () {
      * @return {promise<array>} A promise to a list of index search records
      * @function
      */
-    Session.prototype.indexSearch = function (query, object, opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            var origin;
-            var _this = this;
-            return __generator(this, function (_a) {
-                origin = 'Session.indexSearch';
-                opts = opts || {};
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        var p = "&request=".concat(encodeURIComponent(query ? query : ''));
-                        if (object)
-                            p += "&object=".concat(encodeURIComponent(object));
-                        if (opts.metadata === true)
-                            p += '&_md=true';
-                        if (opts.context)
-                            p += "&context=".concat(encodeURIComponent(opts.context));
-                        _this.sendRequest("".concat(_this.getPath('indexsearch', opts)).concat(p), undefined, function (res, status) {
-                            var r = _this.parseResponse(res, status);
-                            _this.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                            if (r.type === 'error') {
-                                var err = _this.getError(r.response, undefined, origin);
-                                if (!(opts.error || _this.error).call(_this, err))
-                                    reject.call(_this, err);
-                            }
-                            else {
-                                resolve.call(_this, r.response);
-                            }
-                        }, function (err) {
-                            err = _this.getError(err, undefined, origin);
-                            if (!(opts.error || _this.error).call(_this, err))
-                                reject.call(_this, err);
-                        });
-                    })];
+    async indexSearch(query, object, opts) {
+        const origin = 'Session.indexSearch';
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            let p = `&request=${encodeURIComponent(query ? query : '')}`;
+            if (object)
+                p += `&object=${encodeURIComponent(object)}`;
+            if (opts.metadata === true)
+                p += '&_md=true';
+            if (opts.context)
+                p += `&context=${encodeURIComponent(opts.context)}`;
+            this.sendRequest(`${this.getPath('indexsearch', opts)}${p}`, undefined, (res, status) => {
+                const r = this.parseResponse(res, status);
+                this.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = this.getError(r.response, undefined, origin);
+                    if (!(opts.error || this.error).call(this, err))
+                        reject.call(this, err);
+                }
+                else {
+                    resolve.call(this, r.response);
+                }
+            }, (err) => {
+                err = this.getError(err, undefined, origin);
+                if (!(opts.error || this.error).call(this, err))
+                    reject.call(this, err);
             });
         });
-    };
+    }
     /**
      * Get business object
      * @param {string} name Business object name
@@ -943,23 +934,23 @@ var Session = /** @class */ (function () {
      * @return {BusinessObject} Business object
      * @function
      */
-    Session.prototype.getBusinessObject = function (name, instance) {
-        var cacheKey = this.getBusinessObjectCacheKey(name, instance);
-        var obj = this.businessObjectCache[cacheKey];
+    getBusinessObject(name, instance) {
+        const cacheKey = this.getBusinessObjectCacheKey(name, instance);
+        let obj = this.businessObjectCache.get(cacheKey);
         if (!obj) {
-            obj = new businessobject_1.BusinessObject(this, name, instance);
-            this.businessObjectCache[cacheKey] = obj;
+            obj = new businessobject_js_1.BusinessObject(this, name, instance);
+            this.businessObjectCache.set(cacheKey, obj);
         }
         return obj;
-    };
+    }
     /**
      * Get an external object
      * @param {string} name External object name
      * @function
      */
-    Session.prototype.getExternalObject = function (name) {
-        return new externalobject_1.ExternalObject(this, name);
-    };
+    getExternalObject(name) {
+        return new externalobject_js_1.ExternalObject(this, name);
+    }
     /**
      * Get a resource URL
      * @param {string} code Resource code
@@ -968,14 +959,13 @@ var Session = /** @class */ (function () {
      * @param {string} [objId] Object ID (not required for global resources)
      * @function
      */
-    Session.prototype.getResourceURL = function (code, type, object, objId) {
+    getResourceURL(code, type, object, objId) {
         return this.parameters.url + this.parameters.respath
             + '?code=' + encodeURIComponent(code) + '&type=' + encodeURIComponent(type || 'IMG')
             + (object ? '&object=' + encodeURIComponent(object) : '')
             + (objId ? '&objid=' + encodeURIComponent(objId) : '')
             + (this.authtoken ? '&_x_simplicite_authorization_=' + encodeURIComponent(this.authtoken) : '');
-    };
-    return Session;
-}());
+    }
+}
 exports.Session = Session;
 //# sourceMappingURL=session.js.map

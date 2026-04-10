@@ -25,7 +25,7 @@ declare class BusinessObjectMetadata {
      * Instance name
      * @member {string}
      */
-    instance: string;
+    instance: string | undefined;
     /**
      * Row ID field name
      * @member {string}

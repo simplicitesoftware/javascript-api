@@ -10,33 +10,63 @@ class Grant {
      * @param grant {object} Grant object
      */
     constructor(grant) {
-        /**
-         * Alias to <code>getUsername</code>
-         * @return {string} Login
-         * @function
-         */
-        this.getLogin = this.getUsername;
-        /**
-         * Alias to <code>getFirstname</code>
-         * @return {string} First name
-         * @function
-         */
-        this.getFirstName = this.getFirstname;
-        /**
-         * Alias to <code>getLastname</code>
-         * @return {string} Last name
-         * @function
-         */
-        this.getLastName = this.getLastname;
-        /**
-         * Alias to <code>getSystemParameter</code>
-         * @param {string} name System parameter name
-         * @return {string} System parameter value
-         * @function
-         */
-        this.getSysParam = this.getSystemParameter;
         Object.assign(this, grant);
     }
+    /**
+     * User ID
+     * @member {string}
+     */
+    userid;
+    /**
+     * User name
+     * @member {string}
+     */
+    login;
+    /**
+     * User language
+     * @member {string}
+     */
+    lang;
+    /**
+     * User email address
+     * @member {string}
+     */
+    email;
+    /**
+     * User first name
+     * @member {string}
+     */
+    firstname;
+    /**
+     * User last name
+     * @member {string}
+     */
+    lastname;
+    /**
+     * User picture
+     * @member {Doc}
+     */
+    picture;
+    /**
+     * User responsibilities
+     * @member {array}
+     */
+    responsibilities;
+    /**
+     * User home scopes
+     * @member {array}
+     */
+    apps;
+    /**
+     * Translated texts
+     * @member {object}
+     */
+    texts;
+    /**
+     * System parameters
+     * @member {object}
+     */
+    sysparams;
     /**
      * Get user ID
      * @return {string} User ID
@@ -53,6 +83,12 @@ class Grant {
     getUsername() {
         return this.login;
     }
+    /**
+     * Alias to <code>getUsername</code>
+     * @return {string} Login
+     * @function
+     */
+    getLogin = this.getUsername;
     /**
      * Get user language
      * @return {string} User language
@@ -78,6 +114,12 @@ class Grant {
         return this.firstname;
     }
     /**
+     * Alias to <code>getFirstname</code>
+     * @return {string} First name
+     * @function
+     */
+    getFirstName = this.getFirstname;
+    /**
      * Get last name
      * @return {string} Last name
      * @function
@@ -85,6 +127,12 @@ class Grant {
     getLastname() {
         return this.lastname;
     }
+    /**
+     * Alias to <code>getLastname</code>
+     * @return {string} Last name
+     * @function
+     */
+    getLastName = this.getLastname;
     /**
      * Get picture data URL
      * @return {Doc} Picture data URL
@@ -101,7 +149,7 @@ class Grant {
      * @function
      */
     hasResponsibility(group) {
-        return this.responsibilities && this.responsibilities.indexOf(group) !== -1;
+        return this.responsibilities ? this.responsibilities.indexOf(group) !== -1 : false;
     }
     /**
      * Has home scope?
@@ -123,15 +171,22 @@ class Grant {
      * @function
      */
     getSystemParameter(name) {
-        return this.sysparams ? this.sysparams[name] || '' : '';
+        return this.sysparams ? this.sysparams.get(name) || '' : '';
     }
+    /**
+     * Alias to <code>getSystemParameter</code>
+     * @param {string} name System parameter name
+     * @return {string} System parameter value
+     * @function
+     */
+    getSysParam = this.getSystemParameter;
     /**
      * Get text value
      * @param {string} code Text code
      * @return {string} Text value
      */
     T(code) {
-        return this.texts ? this.texts[code] || '' : '';
+        return this.texts ? this.texts.get(code) || '' : '';
     }
 }
 export { Grant };

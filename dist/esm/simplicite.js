@@ -1,17 +1,17 @@
-/*!
+/**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 3.1.5
+ * @version 3.1.6
  * @license Apache-2.0
  */
-import { constants } from './constants';
-import { Doc } from './doc';
-import { Grant } from './grant';
-import { BusinessObjectMetadata } from './businessobjectmetadata';
-import { BusinessObject } from './businessobject';
-import { ExternalObjectMetadata } from './externalobjectmetadata';
-import { ExternalObject } from './externalobject';
-import { Session } from './session';
+import { constants } from './constants.js';
+import { Doc } from './doc.js';
+import { Grant } from './grant.js';
+import { BusinessObjectMetadata } from './businessobjectmetadata.js';
+import { BusinessObject } from './businessobject.js';
+import { ExternalObjectMetadata } from './externalobjectmetadata.js';
+import { ExternalObject } from './externalobject.js';
+import { Session } from './session.js';
 /**
  * Simplicite application session. Same as <code>new Session(parameter)</code>.
  * @param {object} params Parameters (see session class for details)

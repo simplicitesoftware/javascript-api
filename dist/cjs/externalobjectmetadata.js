@@ -7,15 +7,19 @@ exports.ExternalObjectMetadata = void 0;
  * but rather use it from the <code>metadata</code> variable of your <code>ExternalObject</code> instances</span>.
  * @class
  */
-var ExternalObjectMetadata = /** @class */ (function () {
+class ExternalObjectMetadata {
     /**
      * Constructor
      * @param {string} name External object name
      */
-    function ExternalObjectMetadata(name) {
+    constructor(name) {
         this.name = name;
     }
-    return ExternalObjectMetadata;
-}());
+    /**
+     * Name
+     * @member {string}
+     */
+    name;
+}
 exports.ExternalObjectMetadata = ExternalObjectMetadata;
 //# sourceMappingURL=externalobjectmetadata.js.map

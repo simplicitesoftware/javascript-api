@@ -41,19 +41,19 @@ declare class Doc {
      * @return {string} ID
      * @function
      */
-    getId(): string;
+    getId(): string | undefined;
     /**
      * Get the document MIME type
      * @return {string} MIME type
      * @function
      */
-    getMIMEType(): string;
+    getMIMEType(): string | undefined;
     /**
      * Alias to <code>getMIMEType</code>
      * @return {string} MIME type
      * @function
      */
-    getMimeType: () => string;
+    getMimeType: () => string | undefined;
     /**
      * Set the document MIME type
      * @param {string} mime MIME type
@@ -72,19 +72,19 @@ declare class Doc {
      * @return {string} Name
      * @function
      */
-    getName(): string;
+    getName(): string | undefined;
     /**
      * Alias to <code>getName</code>
      * @return {string} Name
      * @function
      */
-    getFileName: () => string;
+    getFileName: () => string | undefined;
     /**
      * Alias to <code>getName</code>
      * @return {string} Name
      * @function
      */
-    getFilename: () => string;
+    getFilename: () => string | undefined;
     /**
      * Set the document name
      * @param {string} name Name
@@ -110,13 +110,13 @@ declare class Doc {
      * @return {string} Content
      * @function
      */
-    getContent(): string;
+    getContent(): string | undefined;
     /**
      * Get the document thumbnail (encoded in base 64)
      * @return {string} Thumbnail
      * @function
      */
-    getThumbnail(): string;
+    getThumbnail(): string | undefined;
     /**
      * Get the document content as a buffer
      * @param {any} data Content data
@@ -162,7 +162,7 @@ declare class Doc {
      * @return {string} Data URL or nothing if content is empty
      * @function
      */
-    getDataURL(thumbnail?: boolean): string;
+    getDataURL(thumbnail?: boolean): string | undefined;
     /**
      * Load file
      * @param file File to load

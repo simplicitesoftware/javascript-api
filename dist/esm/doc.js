@@ -1,12 +1,3 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 /**
  * Document
  * @class
@@ -20,42 +11,6 @@ class Doc {
      * @param [value.content] Document content
      */
     constructor(value) {
-        /**
-         * Alias to <code>getMIMEType</code>
-         * @return {string} MIME type
-         * @function
-         */
-        this.getMimeType = this.getMIMEType;
-        /**
-         * Alias to <code>setMIMEType</code>
-         * @param {string} mime MIME type
-         * @function
-         */
-        this.setMimeType = this.setMIMEType;
-        /**
-         * Alias to <code>getName</code>
-         * @return {string} Name
-         * @function
-         */
-        this.getFileName = this.getName;
-        /**
-         * Alias to <code>getName</code>
-         * @return {string} Name
-         * @function
-         */
-        this.getFilename = this.getName;
-        /**
-         * Alias to <code>setName</code>
-         * @param {string} name Name
-         * @function
-         */
-        this.setFileName = this.setName;
-        /**
-         * Alias to <code>setName</code>
-         * @param {string} name Name
-         * @function
-         */
-        this.setFilename = this.setName;
         Object.assign(this, typeof value == 'string' ? { name: value } : value || {});
         // Backward compatibility
         if (this['filename'] && !this.name) {
@@ -63,6 +18,31 @@ class Doc {
             this['filename'] = undefined;
         }
     }
+    /**
+     * Document ID
+     * @member {string}
+     */
+    id;
+    /**
+     * Document MIME type
+     * @member {string}
+     */
+    mime;
+    /**
+     * Document name
+     * @member {string}
+     */
+    name;
+    /**
+     * Document content as base 64
+     * @member {string}
+     */
+    content;
+    /**
+     * Document thumbnail as base 64
+     * @member {string}
+     */
+    thumbnail;
     /**
      * Get the document ID
      * @return {string} ID
@@ -80,6 +60,12 @@ class Doc {
         return this.mime;
     }
     /**
+     * Alias to <code>getMIMEType</code>
+     * @return {string} MIME type
+     * @function
+     */
+    getMimeType = this.getMIMEType;
+    /**
      * Set the document MIME type
      * @param {string} mime MIME type
      * @return {Doc} This document for chaining
@@ -90,6 +76,12 @@ class Doc {
         return this; // Chain
     }
     /**
+     * Alias to <code>setMIMEType</code>
+     * @param {string} mime MIME type
+     * @function
+     */
+    setMimeType = this.setMIMEType;
+    /**
      * Get the document name
      * @return {string} Name
      * @function
@@ -97,6 +89,18 @@ class Doc {
     getName() {
         return this.name;
     }
+    /**
+     * Alias to <code>getName</code>
+     * @return {string} Name
+     * @function
+     */
+    getFileName = this.getName;
+    /**
+     * Alias to <code>getName</code>
+     * @return {string} Name
+     * @function
+     */
+    getFilename = this.getName;
     /**
      * Set the document name
      * @param {string} name Name
@@ -107,6 +111,18 @@ class Doc {
         this.name = name;
         return this; // Chain
     }
+    /**
+     * Alias to <code>setName</code>
+     * @param {string} name Name
+     * @function
+     */
+    setFileName = this.setName;
+    /**
+     * Alias to <code>setName</code>
+     * @param {string} name Name
+     * @function
+     */
+    setFilename = this.setName;
     cleanContent(content) {
         return content.startsWith('data:') ? content.replace(/data:.*;base64,/, '') : content;
     }
@@ -186,8 +202,9 @@ class Doc {
      * @function
      */
     getDataURL(thumbnail) {
-        if (this.content)
-            return 'data:' + this.mime + ';base64,' + (thumbnail && this.thumbnail ? this.thumbnail : this.content);
+        return this.content
+            ? 'data:' + this.mime + ';base64,' + (thumbnail && this.thumbnail ? this.thumbnail : this.content)
+            : undefined;
     }
     /**
      * Load file
@@ -195,29 +212,27 @@ class Doc {
      * @return {promise<Doc>} A promise to the document
      * @function
      */
-    load(file) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return new Promise((resolve, reject) => {
-                try {
-                    if (file) {
-                        this.name = file.name;
-                        this.mime = file.type;
-                        const reader = new FileReader();
-                        reader.onload = () => {
-                            this.content = reader.result ? this.cleanContent(reader.result) : '';
-                            resolve(this);
-                        };
-                        reader.readAsDataURL(file); // this sets the result as a string
-                    }
-                    else {
-                        this.content = '';
+    async load(file) {
+        return new Promise((resolve, reject) => {
+            try {
+                if (file) {
+                    this.name = file.name;
+                    this.mime = file.type;
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        this.content = reader.result ? this.cleanContent(reader.result) : '';
                         resolve(this);
-                    }
+                    };
+                    reader.readAsDataURL(file); // this sets the result as a string
                 }
-                catch (e) {
-                    reject(e);
+                else {
+                    this.content = '';
+                    resolve(this);
                 }
-            });
+            }
+            catch (e) {
+                reject(e);
+            }
         });
     }
     /**

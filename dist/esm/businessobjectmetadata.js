@@ -1,4 +1,4 @@
-import { constants } from './constants';
+import { constants } from './constants.js';
 /**
  * Business object meta data.
  * <br/><span style="color: red;">You <strong>should never</strong> instantiate this class directly
@@ -19,6 +19,46 @@ class BusinessObjectMetadata {
         this.help = '';
         this.fields = new Array();
     }
+    /**
+     * ID
+     * @member {string}
+     */
+    id;
+    /**
+     * Name
+     * @member {string}
+     */
+    name;
+    /**
+     * Instance name
+     * @member {string}
+     */
+    instance;
+    /**
+     * Row ID field name
+     * @member {string}
+     */
+    rowidfield;
+    /**
+     * Display label
+     * @member {string}
+     */
+    label;
+    /**
+     * Help
+     * @member {string}
+     */
+    help;
+    /**
+     * Fields definitions
+     * @member {array}
+     */
+    fields;
+    /**
+     * Links definitions
+     * @member {array}
+     */
+    links;
 }
 export { BusinessObjectMetadata };
 //# sourceMappingURL=businessobjectmetadata.js.map

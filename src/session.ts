@@ -38,9 +38,9 @@ class Session {
 		params = params || {};
 
 		// Within the generic web UI if Simplicite is defined
-		const inUI = typeof globalThis.Simplicite !== 'undefined';
+		const inUI = typeof (globalThis as any).Simplicite !== 'undefined';
 
-		this.endpoint = params.endpoint || (inUI ? globalThis.Simplicite.ENDPOINT : SessionParamEndpoint.API);
+		this.endpoint = params.endpoint || (inUI ? (globalThis as any).Simplicite.ENDPOINT : SessionParamEndpoint.API);
 
 		this.authheader = params.authheader || this.constants.DEFAULT_AUTH_HEADER;
 
@@ -88,7 +88,7 @@ class Session {
 			}
 		});
 
-		const purl = params.url || (inUI && globalThis.Simplicite.URL) || (globalThis.window && globalThis.window.location.origin);
+		const purl = params.url || (inUI && (globalThis as any).Simplicite.URL) || (globalThis.window && globalThis.window.location.origin);
 		this.debug('[simplicite] URL parameter = ' + purl);
 		if (purl) {
 			try {
@@ -160,19 +160,19 @@ class Session {
 		this.authtoken = params.authtoken || params.token; // explicit token with naming flexibility
 		if (!this.authtoken && this.endpoint === SessionParamEndpoint.UI) {
 			// If on the UI endpoint, get the auth token from browser's storages or from the constant
-			this.authtoken = this.getFromStorage(this.constants.UI_AUTH_TOKEN_STORAGE_KEY) || (inUI ? globalThis.Simplicite.AUTH_TOKEN : undefined);
+			this.authtoken = this.getFromStorage(this.constants.UI_AUTH_TOKEN_STORAGE_KEY) || (inUI ? (globalThis as any).Simplicite.AUTH_TOKEN : undefined);
 		}
 
 		this.ajaxkey = params.ajaxkey; // explicit Ajax key
 		if (!this.ajaxkey && this.endpoint === SessionParamEndpoint.UI) {
 			// If on the UI endpoint, get the ajax key from browser's storages or from the constant
-			this.ajaxkey = this.getFromStorage(this.constants.UI_AJAX_KEY_STORAGE_KEY) || (inUI ? globalThis.Simplicite.AJAX_KEY : undefined);
+			this.ajaxkey = this.getFromStorage(this.constants.UI_AJAX_KEY_STORAGE_KEY) || (inUI ? (globalThis as any).Simplicite.AJAX_KEY : undefined);
 		}
 
 		this.businessObjectCache = new Map<string, BusinessObject>();
 	}
 
-	private getFromStorage(key: string): string {
+	private getFromStorage(key: string): string|null {
 		let val = null;
 		// First search in local storage if available
 		const ls = globalThis.window ? globalThis.window.localStorage : null;
@@ -264,7 +264,7 @@ class Session {
 	 * Username
 	 * @member {string}
 	 */
-	public username: string;
+	public username: string|undefined;
 
 	/**
 	 * Set username
@@ -279,7 +279,7 @@ class Session {
 	 * Password
 	 * @member {string}
 	 */
-	public password: string;
+	public password: string|undefined;
 
 	/**
 	 * Set password
@@ -294,25 +294,25 @@ class Session {
 	 * Auth token
 	 * @member {string}
 	 */
-	public authtoken: string;
+	public authtoken: string|undefined;
 
 	/**
 	 * Auth token expiry date
 	 * @member {Date}
 	 */
-	public authtokenexpiry: Date;
+	public authtokenexpiry: Date|undefined;
 
 	/**
 	 * Ajax key
 	 * @member {string}
 	 */
-	public ajaxkey: string;
+	public ajaxkey: string|undefined;
 
 	/**
 	 * Session ID
 	 * @member {string}
 	 */
-	public sessionid: string;
+	public sessionid: string|undefined;
 
 	/**
 	 * Set auth token
@@ -393,7 +393,7 @@ class Session {
 	 * @return {string} HTTP authorization header value
 	 * @function
 	 */
-	public getBasicAuthHeader(): string {
+	public getBasicAuthHeader(): string|undefined {
 		return this.username && this.password
 			? 'Basic ' + Buffer.from(this.username + ':' + this.password).toString('base64')
 			: undefined;
@@ -404,7 +404,7 @@ class Session {
 	 * @return {string} Bearer token header value
 	 * @function
 	 */
-	public getBearerTokenHeader(): string {
+	public getBearerTokenHeader(): string|undefined {
 		return this.authtoken
 			? 'Bearer ' + this.authtoken
 			: undefined;
@@ -680,7 +680,7 @@ class Session {
 	 * Grant
 	 * @member {Grant}
 	 */
-	public grant: Grant;
+	public grant: Grant|undefined;
 
 	/**
 	 * Get path
@@ -967,10 +967,10 @@ class Session {
 	 */
 	public getBusinessObject(name: string, instance?: string): any {
 		const cacheKey: string = this.getBusinessObjectCacheKey(name, instance);
-		let obj: any = this.businessObjectCache[cacheKey];
+		let obj: BusinessObject|undefined = this.businessObjectCache.get(cacheKey);
 		if (!obj) {
 			obj = new BusinessObject(this, name, instance);
-			this.businessObjectCache[cacheKey] = obj;
+			this.businessObjectCache.set(cacheKey, obj);
 		}
 		return obj;
 	}

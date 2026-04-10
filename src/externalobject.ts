@@ -106,7 +106,7 @@ class ExternalObject {
 			//	h['content-encoding'] = 'gzip';
 			if (opts.accept)
 				h.accept = opts.accept === 'json' ? 'application/json' : opts.accept;
-			let b: string = ses.getBearerTokenHeader();
+			let b: string|undefined = ses.getBearerTokenHeader();
 			if (b) {
 				h[ses.authheader] = b;
 			} else {
@@ -125,24 +125,24 @@ class ExternalObject {
 				body: d
 			}).then((res: any) => {
 				const type: string = res.headers.get('content-type');
-				ses.debug(`[${origin}] HTTP status = ${res.status}, response content type = ${type}`);
+				ses.debug(`[${origin}] HTTP status = ${res.status}, res)ponse content type = ${type}`);
 				if (type && type.startsWith('application/json')) { // JSON
-					res.json().then(jsonData => {
-						resolve.call(this, jsonData, res.status, res.headers);
+					res.json().then((jsonData: any) => {
+						resolve.call(this, jsonData);
 					}).catch((err: any) => {
 						err = ses.getError(err, undefined, origin);
 						if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 					});
 				} else if (type && (type.startsWith('text/') || type.startsWith('application/yaml'))) { // Text
-					res.text().then(textData => {
-						resolve.call(this, textData, res.status, res.headers);
+					res.text().then((textData: string) => {
+						resolve.call(this, textData);
 					}).catch((err: any) => {
 						err = ses.getError(err, undefined, origin);
 						if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);
 					});
 				} else { // Binary
-					res.arrayBuffer().then(binData => {
-						resolve.call(this, binData, res.status, res.headers);
+					res.arrayBuffer().then((binData: any) => {
+						resolve.call(this, binData);
 					}).catch((err: any) => {
 						err = ses.getError(err, undefined, origin);
 						if (!(opts.error || ses.error).call(this, err)) reject.call(this, err);

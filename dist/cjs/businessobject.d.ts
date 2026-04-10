@@ -1,5 +1,5 @@
-import { BusinessObjectMetadata } from './businessobjectmetadata';
-import { Session } from './session';
+import { BusinessObjectMetadata } from './businessobjectmetadata.js';
+import { Session } from './session.js';
 /**
  * Business object.
  * <br/><span style="color: red;">You <strong>should never</strong> instantiate this class directly
@@ -94,25 +94,25 @@ declare class BusinessObject {
      * @return {string} Instance name
      * @function
      */
-    getInstance(): string;
+    getInstance(): string | undefined;
     /**
      * Get display label
      * @return {string} Display label
      * @function
      */
-    getLabel(): string;
+    getLabel(): string | undefined;
     /**
      * Get help
      * @return {string} Help
      * @function
      */
-    getHelp(): string;
+    getHelp(): string | undefined;
     /**
      * Get all fields definitions
      * @return {array} Array of field definitions
      * @function
      */
-    getFields(): any[];
+    getFields(): any[] | undefined;
     /**
      * Get a field definition
      * @param {string} fieldName Field name
@@ -137,21 +137,21 @@ declare class BusinessObject {
      * @return {array} Array of links
      * @function
      */
-    getLinks(): any[];
+    getLinks(): any[] | undefined;
     /**
      * Get field type
      * @param {(string|object)} field Field name or definition
      * @return {string} Type (one of <code>constants.TYPE_*</code>)
      * @function
      */
-    getFieldType(field: string | any): string;
+    getFieldType(field: string | any): string | undefined;
     /**
      * Get field label
      * @param {(string|object)} field Field name or definition
      * @return {string} Field label
      * @function
      */
-    getFieldLabel(field: string | any): string;
+    getFieldLabel(field: string | any): string | undefined;
     /**
      * Get value of field for item (or current item)
      * @param {(string|object)} field Field name or definition
@@ -183,7 +183,7 @@ declare class BusinessObject {
      * @return {string} Document/image field data URL (or nothing if the field is not of document/image type or if it is not inlined or if it is empty)
      * @function
      */
-    getFieldDataURL(field: string | any, item?: any): string;
+    getFieldDataURL(field: string | any, item?: any): string | undefined;
     /**
      * Get the field's value as document/image for item (or current item)
      * @param {(string|object)} field Field name or definition
@@ -200,7 +200,7 @@ declare class BusinessObject {
      * @return {string} Document/image field URL (or nothing if the field is not of document/image type or if it is empty)
      * @function
      */
-    getFieldDocumentURL(field: string | any, item?: any, thumbnail?: boolean): string;
+    getFieldDocumentURL(field: string | any, item?: any, thumbnail?: boolean): string | undefined;
     /**
      * Get list item value for code
      * @param {array} list List of values
@@ -383,7 +383,7 @@ declare class BusinessObject {
      * @return {string} Item's row ID value
      * @function
      */
-    getRowId(item?: any): string;
+    getRowId(item?: any): string | undefined;
     /**
      * Populate
      * @param {object} [item] Item (defaults to current item)

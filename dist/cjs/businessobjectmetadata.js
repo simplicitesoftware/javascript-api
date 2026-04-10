@@ -1,28 +1,67 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BusinessObjectMetadata = void 0;
-var constants_1 = require("./constants");
+const constants_js_1 = require("./constants.js");
 /**
  * Business object meta data.
  * <br/><span style="color: red;">You <strong>should never</strong> instantiate this class directly
  * but rather use it from the <code>metadata</code> variable of your <code>BusinessObject</code> instances</span>.
  * @class
  */
-var BusinessObjectMetadata = /** @class */ (function () {
+class BusinessObjectMetadata {
     /**
      * Constructor
      * @param {string} name Business object name
      * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
      */
-    function BusinessObjectMetadata(name, instance) {
+    constructor(name, instance) {
         this.name = name;
         this.instance = instance;
-        this.rowidfield = constants_1.constants.DEFAULT_ROW_ID_NAME;
+        this.rowidfield = constants_js_1.constants.DEFAULT_ROW_ID_NAME;
         this.label = name;
         this.help = '';
         this.fields = new Array();
     }
-    return BusinessObjectMetadata;
-}());
+    /**
+     * ID
+     * @member {string}
+     */
+    id;
+    /**
+     * Name
+     * @member {string}
+     */
+    name;
+    /**
+     * Instance name
+     * @member {string}
+     */
+    instance;
+    /**
+     * Row ID field name
+     * @member {string}
+     */
+    rowidfield;
+    /**
+     * Display label
+     * @member {string}
+     */
+    label;
+    /**
+     * Help
+     * @member {string}
+     */
+    help;
+    /**
+     * Fields definitions
+     * @member {array}
+     */
+    fields;
+    /**
+     * Links definitions
+     * @member {array}
+     */
+    links;
+}
 exports.BusinessObjectMetadata = BusinessObjectMetadata;
 //# sourceMappingURL=businessobjectmetadata.js.map

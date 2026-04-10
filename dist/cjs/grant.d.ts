@@ -1,4 +1,4 @@
-import { Doc } from './doc';
+import { Doc } from './doc.js';
 /**
  * Grant (user).
  * <br/><span style="color: red;">You <strong>should never</strong> instantiate this class directly
@@ -125,7 +125,7 @@ declare class Grant {
      * @return {Doc} Picture data URL
      * @function
      */
-    getPictureURL(): string;
+    getPictureURL(): string | undefined;
     /**
      * Has responsibility?
      * @param {string} group Group name

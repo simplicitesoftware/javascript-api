@@ -1,4 +1,4 @@
-import { SessionParamEndpoint } from './sessionparams';
+import { SessionParamEndpoint } from './sessionparams.js';
 /**
  * Constants
  * @constant

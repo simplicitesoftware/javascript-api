@@ -5,12 +5,12 @@ exports.constants = void 0;
  * Constants
  * @constant
  */
-var constants = {
+const constants = {
     /**
      * API client module version
      * @constant {string}
      */
-    MODULE_VERSION: '3.1.5',
+    MODULE_VERSION: '3.1.6',
     /**
      * Default row ID field name
      * @constant {string}

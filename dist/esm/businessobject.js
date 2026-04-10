@@ -1,15 +1,6 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-import { constants } from './constants';
-import { Doc } from './doc';
-import { BusinessObjectMetadata } from './businessobjectmetadata';
+import { constants } from './constants.js';
+import { Doc } from './doc.js';
+import { BusinessObjectMetadata } from './businessobjectmetadata.js';
 /**
  * Business object.
  * <br/><span style="color: red;">You <strong>should never</strong> instantiate this class directly
@@ -24,11 +15,6 @@ class BusinessObject {
      * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
      */
     constructor(ses, name, instance) {
-        /**
-         * Get meta data (alias to getMetaData)
-         * @function
-         */
-        this.getMetadata = this.getMetaData;
         this.session = ses;
         const inst = instance || 'api_' + name;
         this.metadata = new BusinessObjectMetadata(name, inst);
@@ -39,6 +25,59 @@ class BusinessObject {
         this.list = [];
     }
     /**
+     * Session
+     * @member {Session}
+     * @private
+     */
+    session;
+    /**
+     * Object metadata
+     * @member {BusinessObjectMetadata}
+     */
+    metadata;
+    /**
+     * Cache key
+     * @constant {string}
+     * @private
+     */
+    cacheKey;
+    /**
+     * Path
+     * @constant {string}
+     * @private
+     */
+    path;
+    /**
+     * Current item
+     * @member {object}
+     */
+    item;
+    /**
+     * Current filters
+     * @member {object}
+     */
+    filters;
+    /**
+     * Current list
+     * @member {array}
+     */
+    list;
+    /**
+     * Current count
+     * @member {number}
+     */
+    count;
+    /**
+     * Current page number
+     * @member {number}
+     */
+    page;
+    /**
+     * Number of pages
+     * @member {number}
+     */
+    maxpage;
+    /**
      * Get meta data
      * @param {object} [opts] Options
      * @param {number} [opts.context] Context
@@ -48,37 +87,40 @@ class BusinessObject {
      * @return {promise<BusinessObjectMetadata>} A promise to the object's meta data (also available as the <code>metadata</code> member)
      * @function
      */
-    getMetaData(opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const origin = 'BusinessObject.getMetaData';
-            const ses = this.session;
-            opts = opts || {};
-            return new Promise((resolve, reject) => {
-                let p = '';
-                if (opts.context)
-                    p += '&context=' + encodeURIComponent(opts.context);
-                if (opts.contextParam)
-                    p += '&contextparam=' + encodeURIComponent(opts.contextParam);
-                ses.sendRequest(this.path + '&action=metadata' + p, undefined, (res, status) => {
-                    const r = ses.parseResponse(res, status);
-                    ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
-                    if (r.type === 'error') {
-                        const err = ses.getError(r.response, undefined, origin);
-                        if (!(opts.error || ses.error).call(this, err))
-                            reject.call(this, err);
-                    }
-                    else {
-                        this.metadata = r.response;
-                        resolve.call(this, this.metadata);
-                    }
-                }, (err) => {
-                    err = ses.getError(err, undefined, origin);
+    async getMetaData(opts) {
+        const origin = 'BusinessObject.getMetaData';
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            let p = '';
+            if (opts.context)
+                p += '&context=' + encodeURIComponent(opts.context);
+            if (opts.contextParam)
+                p += '&contextparam=' + encodeURIComponent(opts.contextParam);
+            ses.sendRequest(this.path + '&action=metadata' + p, undefined, (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
                     if (!(opts.error || ses.error).call(this, err))
                         reject.call(this, err);
-                });
+                }
+                else {
+                    this.metadata = r.response;
+                    resolve.call(this, this.metadata);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
     }
+    /**
+     * Get meta data (alias to getMetaData)
+     * @function
+     */
+    getMetadata = this.getMetaData;
     /**
      * Get name
      * @return {string} Name
@@ -126,7 +168,7 @@ class BusinessObject {
      * @function
      */
     getField(fieldName) {
-        const fs = this.getFields();
+        const fs = this.getFields() || [];
         let n = 0;
         while (n < fs.length && fs[n].name !== fieldName)
             n++;
@@ -272,9 +314,9 @@ class BusinessObject {
         if (val)
             return this.session.parameters.url + this.session.parameters.docpath
                 + '?object=' + encodeURIComponent(this.metadata.name)
-                + '&inst=' + encodeURIComponent(this.metadata.instance)
+                + '&inst=' + encodeURIComponent(this.metadata.instance || '')
                 + '&field=' + encodeURIComponent(field)
-                + '&row_id=' + encodeURIComponent(this.getRowId(item))
+                + '&row_id=' + encodeURIComponent(this.getRowId(item) || '')
                 + '&doc_id=' + encodeURIComponent(val)
                 + (thumbnail ? '&thumbnail=true' : '')
                 + (this.session.authtoken ? '&_x_simplicite_authorization_=' + encodeURIComponent(this.session.authtoken) : '');
@@ -340,35 +382,33 @@ class BusinessObject {
     * @param {object|FormData} data Data (plain object or form data)
     * @param {object} [item] Item (defaults to current item)
     */
-    setFieldValues(data, item) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (!item)
-                item = this.item;
-            // Convert form data to plain object
-            let dt;
-            if (data instanceof FormData) {
-                dt = {};
-                data.forEach((v, k) => dt[k] = v);
+    async setFieldValues(data, item) {
+        if (!item)
+            item = this.item;
+        // Convert form data to plain object
+        let dt;
+        if (data instanceof FormData) {
+            dt = {};
+            data.forEach((v, k) => dt[k] = v);
+        }
+        else {
+            dt = data;
+        }
+        return new Promise(resolve => {
+            const promises = [];
+            for (const k of Object.keys(dt)) {
+                const v = dt[k];
+                if (v instanceof File)
+                    promises.push(new Promise(r => {
+                        new Doc().load(v).then(doc => {
+                            this.setFieldValue(k, doc);
+                            r.call(this, doc);
+                        });
+                    }));
+                else
+                    this.setFieldValue(k, v);
             }
-            else {
-                dt = data;
-            }
-            return new Promise(resolve => {
-                const promises = [];
-                for (const k of Object.keys(dt)) {
-                    const v = dt[k];
-                    if (v instanceof File)
-                        promises.push(new Promise(r => {
-                            new Doc().load(v).then(doc => {
-                                this.setFieldValue(k, doc);
-                                r.call(this);
-                            });
-                        }));
-                    else
-                        this.setFieldValue(k, v);
-                }
-                Promise.allSettled(promises).then(() => resolve.call(this, item));
-            });
+            Promise.allSettled(promises).then(() => resolve.call(this, item));
         });
     }
     /**
@@ -400,34 +440,32 @@ class BusinessObject {
      * @return {promise<object>} Promise to the object's filters (also available as the <code>filters</code> member)
      * @function
      */
-    getFilters(opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const origin = 'BusinessObject.getFilters';
-            const ses = this.session;
-            opts = opts || {};
-            return new Promise((resolve, reject) => {
-                let p = '';
-                if (opts.context)
-                    p += '&context=' + encodeURIComponent(opts.context);
-                if (opts.reset)
-                    p += '&reset=' + !!opts.reset;
-                ses.sendRequest(this.path + '&action=filters' + p, undefined, (res, status) => {
-                    const r = ses.parseResponse(res, status);
-                    ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
-                    if (r.type === 'error') {
-                        const err = ses.getError(r.response, undefined, origin);
-                        if (!(opts.error || ses.error).call(this, err))
-                            reject.call(this, err);
-                    }
-                    else {
-                        this.filters = r.response;
-                        resolve.call(this, this.filters);
-                    }
-                }, (err) => {
-                    err = ses.getError(err, undefined, origin);
+    async getFilters(opts) {
+        const origin = 'BusinessObject.getFilters';
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            let p = '';
+            if (opts.context)
+                p += '&context=' + encodeURIComponent(opts.context);
+            if (opts.reset)
+                p += '&reset=' + !!opts.reset;
+            ses.sendRequest(this.path + '&action=filters' + p, undefined, (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
                     if (!(opts.error || ses.error).call(this, err))
                         reject.call(this, err);
-                });
+                }
+                else {
+                    this.filters = r.response;
+                    resolve.call(this, this.filters);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
     }
@@ -522,36 +560,34 @@ class BusinessObject {
      * @return {promise<object>} Promise to the count
      * @function
      */
-    getCount(filters, opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const origin = 'BusinessObject.getCount';
-            const ses = this.session;
-            opts = opts || {};
-            return new Promise((resolve, reject) => {
-                let p = this.getReqContextOption(opts);
-                if (opts.operations === true)
-                    p += '&_operations=true';
-                this.filters = filters || {};
-                ses.sendRequest(`${this.getPath('count', opts)}${p}`, this.getReqParams(this.filters, true), (res, status) => {
-                    const r = ses.parseResponse(res, status);
-                    ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
-                    if (r.type === 'error') {
-                        const err = ses.getError(r.response, undefined, origin);
-                        if (!(opts.error || ses.error).call(this, err))
-                            reject.call(this, err);
-                    }
-                    else {
-                        this.count = r.response.count;
-                        this.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
-                        this.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
-                        this.list = [];
-                        resolve.call(this, this.count);
-                    }
-                }, (err) => {
-                    err = ses.getError(err, undefined, origin);
+    async getCount(filters, opts) {
+        const origin = 'BusinessObject.getCount';
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            let p = this.getReqContextOption(opts);
+            if (opts.operations === true)
+                p += '&_operations=true';
+            this.filters = filters || {};
+            ses.sendRequest(`${this.getPath('count', opts)}${p}`, this.getReqParams(this.filters, true), (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
                     if (!(opts.error || ses.error).call(this, err))
                         reject.call(this, err);
-                });
+                }
+                else {
+                    this.count = r.response.count;
+                    this.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
+                    this.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
+                    this.list = [];
+                    resolve.call(this, this.count);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
     }
@@ -567,42 +603,40 @@ class BusinessObject {
      * @return {promise<array>} Promise to a list of records (also available as the <code>list</code> member)
      * @function
      */
-    search(filters, opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const origin = 'BusinessObject.search';
-            const ses = this.session;
-            opts = opts || {};
-            return new Promise((resolve, reject) => {
-                let p = this.getReqOptions(opts);
-                if (opts.page > 0)
-                    p += `&page=${opts.page - 1}`;
-                if (opts.metadata === true)
-                    p += '&_md=true';
-                if (opts.visible === true)
-                    p += '&_visible=true';
-                this.filters = filters || {};
-                ses.sendRequest(`${this.getPath('search', opts)}${p}`, this.getReqParams(this.filters, true), (res, status) => {
-                    const r = ses.parseResponse(res, status);
-                    ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
-                    if (r.type === 'error') {
-                        const err = ses.getError(r.response, undefined, origin);
-                        if (!(opts.error || ses.error).call(this, err))
-                            reject.call(this, err);
-                    }
-                    else {
-                        if (r.response.meta)
-                            this.metadata = r.response.meta;
-                        this.count = r.response.count;
-                        this.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
-                        this.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
-                        this.list = r.response.list;
-                        resolve.call(this, this.list);
-                    }
-                }, (err) => {
-                    err = ses.getError(err, undefined, origin);
+    async search(filters, opts) {
+        const origin = 'BusinessObject.search';
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            let p = this.getReqOptions(opts);
+            if (opts.page > 0)
+                p += `&page=${opts.page - 1}`;
+            if (opts.metadata === true)
+                p += '&_md=true';
+            if (opts.visible === true)
+                p += '&_visible=true';
+            this.filters = filters || {};
+            ses.sendRequest(`${this.getPath('search', opts)}${p}`, this.getReqParams(this.filters, true), (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
                     if (!(opts.error || ses.error).call(this, err))
                         reject.call(this, err);
-                });
+                }
+                else {
+                    if (r.response.meta)
+                        this.metadata = r.response.meta;
+                    this.count = r.response.count;
+                    this.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
+                    this.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
+                    this.list = r.response.list;
+                    resolve.call(this, this.list);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
     }
@@ -618,46 +652,44 @@ class BusinessObject {
      * @return {promise<object>} Promise to the record (also available as the <code>item</code> member)
      * @function
      */
-    get(rowId, opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const origin = 'BusinessObject.get';
-            const ses = this.session;
-            opts = opts || {};
-            return new Promise((resolve, reject) => {
-                let p = this.getReqOptions(opts);
-                const tv = opts.treeView;
-                if (tv)
-                    p += `&treeview=${encodeURIComponent(tv)}`;
-                if (opts.fields) {
-                    for (const f of opts.fields)
-                        p += `&fields=${encodeURIComponent(f.replace('.', '__'))}`;
-                }
-                if (opts.metadata)
-                    p += '&_md=true';
-                if (opts.social)
-                    p += '&_social=true';
-                ses.sendRequest(`${this.getPath('get', opts)}&${this.metadata.rowidfield}=${encodeURIComponent(rowId || this.getRowId())}${p}`, undefined, (res, status) => {
-                    const r = ses.parseResponse(res, status);
-                    ses.debug('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response type = ' + r.type);
-                    if (r.type === 'error') {
-                        const err = ses.getError(r.response, undefined, origin);
-                        if (!(opts.error || ses.error).call(this, err))
-                            reject.call(this, err);
-                    }
-                    else {
-                        if (r.response.meta)
-                            this.metadata = r.response.meta;
-                        if (r.response.data)
-                            this.item = tv ? r.response.data.item : r.response.data;
-                        else
-                            this.item = tv ? r.response.item : r.response;
-                        resolve.call(this, tv ? r.response : this.item);
-                    }
-                }, (err) => {
-                    err = ses.getError(err, undefined, origin);
+    async get(rowId, opts) {
+        const origin = 'BusinessObject.get';
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            let p = this.getReqOptions(opts);
+            const tv = opts.treeView;
+            if (tv)
+                p += `&treeview=${encodeURIComponent(tv)}`;
+            if (opts.fields) {
+                for (const f of opts.fields)
+                    p += `&fields=${encodeURIComponent(f.replace('.', '__'))}`;
+            }
+            if (opts.metadata)
+                p += '&_md=true';
+            if (opts.social)
+                p += '&_social=true';
+            ses.sendRequest(`${this.getPath('get', opts)}&${this.metadata.rowidfield}=${encodeURIComponent(rowId || this.getRowId() || '')}${p}`, undefined, (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response type = ' + r.type);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
                     if (!(opts.error || ses.error).call(this, err))
                         reject.call(this, err);
-                });
+                }
+                else {
+                    if (r.response.meta)
+                        this.metadata = r.response.meta;
+                    if (r.response.data)
+                        this.item = tv ? r.response.data.item : r.response.data;
+                    else
+                        this.item = tv ? r.response.item : r.response;
+                    resolve.call(this, tv ? r.response : this.item);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
     }
@@ -670,14 +702,12 @@ class BusinessObject {
      * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
      * @function
      */
-    getForCreate(opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            opts = opts || {};
-            delete opts.treeview; // Inhibited in this context
-            delete opts.fields; // Inhibited in this context
-            opts.context = constants.CONTEXT_CREATE;
-            return this.get(constants.DEFAULT_ROW_ID, opts);
-        });
+    async getForCreate(opts) {
+        opts = opts || {};
+        delete opts.treeview; // Inhibited in this context
+        delete opts.fields; // Inhibited in this context
+        opts.context = constants.CONTEXT_CREATE;
+        return this.get(constants.DEFAULT_ROW_ID, opts);
     }
     /**
      * Get for update
@@ -689,14 +719,12 @@ class BusinessObject {
      * @return {promise<object>} Promise to the record to update (also available as the <code>item</code> member)
      * @function
      */
-    getForUpdate(rowId, opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            opts = opts || {};
-            delete opts.treeview; // Inhibited in this context
-            delete opts.fields; // Inhibited in this context
-            opts.context = constants.CONTEXT_UPDATE;
-            return this.get(rowId || this.getRowId(), opts);
-        });
+    async getForUpdate(rowId, opts) {
+        opts = opts || {};
+        delete opts.treeview; // Inhibited in this context
+        delete opts.fields; // Inhibited in this context
+        opts.context = constants.CONTEXT_UPDATE;
+        return this.get(rowId || this.getRowId(), opts);
     }
     /**
      * Get for copy
@@ -708,14 +736,12 @@ class BusinessObject {
      * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
      * @function
      */
-    getForCopy(rowId, opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            opts = opts || {};
-            delete opts.treeview; // Inhibited in this context
-            delete opts.fields; // Inhibited in this context
-            opts.context = constants.CONTEXT_COPY;
-            return this.get(rowId || this.getRowId(), opts);
-        });
+    async getForCopy(rowId, opts) {
+        opts = opts || {};
+        delete opts.treeview; // Inhibited in this context
+        delete opts.fields; // Inhibited in this context
+        opts.context = constants.CONTEXT_COPY;
+        return this.get(rowId || this.getRowId(), opts);
     }
     /**
      * Get for delete
@@ -727,14 +753,12 @@ class BusinessObject {
      * @return {promise<object>} Promise to the record to delete (also available as the <code>item</code> member)
      * @function
      */
-    getForDelete(rowId, opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            opts = opts || {};
-            delete opts.treeview; // Inhibited in this context
-            delete opts.fields; // Inhibited in this context
-            opts.context = constants.CONTEXT_DELETE;
-            return this.get(rowId || this.getRowId(), opts);
-        });
+    async getForDelete(rowId, opts) {
+        opts = opts || {};
+        delete opts.treeview; // Inhibited in this context
+        delete opts.fields; // Inhibited in this context
+        opts.context = constants.CONTEXT_DELETE;
+        return this.get(rowId || this.getRowId(), opts);
     }
     /**
      * Get specified or current item's row ID value
@@ -744,8 +768,7 @@ class BusinessObject {
      */
     getRowId(item) {
         item = item || this.item;
-        if (item)
-            return item[this.getRowIdFieldName()];
+        return item ? item[this.getRowIdFieldName()] : undefined;
     }
     /**
      * Populate
@@ -756,31 +779,29 @@ class BusinessObject {
      * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
      * @function
      */
-    populate(item, opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const origin = 'BusinessObject.populate';
-            const ses = this.session;
-            opts = opts || {};
-            return new Promise((resolve, reject) => {
-                if (item)
-                    this.item = item;
-                ses.sendRequest(`${this.getPath('populate', opts)}${this.getReqOptions(opts)}`, this.getReqParams(this.item), (res, status) => {
-                    const r = ses.parseResponse(res, status);
-                    ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
-                    if (r.type === 'error') {
-                        const err = ses.getError(r.response, undefined, origin);
-                        if (!(opts.error || ses.error).call(this, err))
-                            reject.call(this, err);
-                    }
-                    else {
-                        this.item = r.response.data ? r.response.data : r.response;
-                        resolve.call(this, this.item);
-                    }
-                }, (err) => {
-                    err = ses.getError(err, undefined, origin);
+    async populate(item, opts) {
+        const origin = 'BusinessObject.populate';
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            if (item)
+                this.item = item;
+            ses.sendRequest(`${this.getPath('populate', opts)}${this.getReqOptions(opts)}`, this.getReqParams(this.item), (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
                     if (!(opts.error || ses.error).call(this, err))
                         reject.call(this, err);
-                });
+                }
+                else {
+                    this.item = r.response.data ? r.response.data : r.response;
+                    resolve.call(this, this.item);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
     }
@@ -795,41 +816,39 @@ class BusinessObject {
      * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
      * @function
      */
-    getFieldLinkedList(field, linkedField, code, opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const origin = 'BusinessObject.getFieldLinkedList';
-            const ses = this.session;
-            opts = opts || {};
-            return new Promise((resolve, reject) => {
-                if (typeof field !== 'string')
-                    field = field.fullinput || field.name;
-                if (typeof linkedField !== 'string')
-                    linkedField = linkedField.fullinput || linkedField.name;
-                let all = false;
-                if (code === true) {
-                    all = true;
-                    code = undefined;
-                }
-                else if (typeof code === 'undefined') {
-                    code = this.getFieldValue(field);
-                }
-                ses.sendRequest(this.getPath('getlinkedlist', opts), this.getReqParams({ origin: field, input: linkedField, code, all }), (res, status) => {
-                    const r = ses.parseResponse(res, status);
-                    ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
-                    if (r.type === 'error') {
-                        const err = ses.getError(r.response, undefined, origin);
-                        if (!(opts.error || ses.error).call(this, err))
-                            reject.call(this, err);
-                    }
-                    else {
-                        this.item = r.response.result ? r.response.result : r.response;
-                        resolve.call(this, this.item);
-                    }
-                }, (err) => {
-                    err = ses.getError(err, undefined, origin);
+    async getFieldLinkedList(field, linkedField, code, opts) {
+        const origin = 'BusinessObject.getFieldLinkedList';
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            if (typeof field !== 'string')
+                field = field.fullinput || field.name;
+            if (typeof linkedField !== 'string')
+                linkedField = linkedField.fullinput || linkedField.name;
+            let all = false;
+            if (code === true) {
+                all = true;
+                code = undefined;
+            }
+            else if (typeof code === 'undefined') {
+                code = this.getFieldValue(field);
+            }
+            ses.sendRequest(this.getPath('getlinkedlist', opts), this.getReqParams({ origin: field, input: linkedField, code, all }), (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
                     if (!(opts.error || ses.error).call(this, err))
                         reject.call(this, err);
-                });
+                }
+                else {
+                    this.item = r.response.result ? r.response.result : r.response;
+                    resolve.call(this, this.item);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
     }
@@ -842,16 +861,14 @@ class BusinessObject {
      * @return {promise<object>} Promise to the saved record (also available as the <code>item</code> member)
      * @function
      */
-    save(item, opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (item)
-                this.item = item;
-            const rowId = this.item[this.metadata.rowidfield];
-            if (!rowId || rowId === constants.DEFAULT_ROW_ID)
-                return this.create(item, opts);
-            else
-                return this.update(item, opts);
-        });
+    async save(item, opts) {
+        if (item)
+            this.item = item;
+        const rowId = this.item[this.metadata.rowidfield];
+        if (!rowId || rowId === constants.DEFAULT_ROW_ID)
+            return this.create(item, opts);
+        else
+            return this.update(item, opts);
     }
     /**
      * Create (create or update)
@@ -862,32 +879,30 @@ class BusinessObject {
      * @return {promise<object>} Promise to the created record (also available as the <code>item</code> member)
      * @function
      */
-    create(item, opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const origin = 'BusinessObject.create';
-            const ses = this.session;
-            opts = opts || {};
-            return new Promise((resolve, reject) => {
-                if (item)
-                    this.item = item;
-                this.item.row_id = constants.DEFAULT_ROW_ID;
-                ses.sendRequest(`${this.getPath('create', opts)}${this.getReqOptions(opts)}`, this.getReqParams(this.item), (res, status) => {
-                    const r = ses.parseResponse(res, status);
-                    ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
-                    if (r.type === 'error') {
-                        const err = ses.getError(r.response, undefined, origin);
-                        if (!(opts.error || ses.error).call(this, err))
-                            reject.call(this, err);
-                    }
-                    else {
-                        this.item = r.response.data ? r.response.data : r.response;
-                        resolve.call(this, this.item);
-                    }
-                }, (err) => {
-                    err = ses.getError(err, undefined, origin);
+    async create(item, opts) {
+        const origin = 'BusinessObject.create';
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            if (item)
+                this.item = item;
+            this.item.row_id = constants.DEFAULT_ROW_ID;
+            ses.sendRequest(`${this.getPath('create', opts)}${this.getReqOptions(opts)}`, this.getReqParams(this.item), (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
                     if (!(opts.error || ses.error).call(this, err))
                         reject.call(this, err);
-                });
+                }
+                else {
+                    this.item = r.response.data ? r.response.data : r.response;
+                    resolve.call(this, this.item);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
     }
@@ -900,31 +915,29 @@ class BusinessObject {
      * @return {promise<object>} Promise to the updated record (also available as the <code>item</code> member)
      * @function
      */
-    update(item, opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const origin = 'BusinessObject.update';
-            const ses = this.session;
-            opts = opts || {};
-            return new Promise((resolve, reject) => {
-                if (item)
-                    this.item = item;
-                ses.sendRequest(`${this.getPath('update', opts)}${this.getReqOptions(opts)}`, this.getReqParams(this.item), (res, status) => {
-                    const r = ses.parseResponse(res, status);
-                    ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
-                    if (r.type === 'error') {
-                        const err = ses.getError(r.response, undefined, origin);
-                        if (!(opts.error || ses.error).call(this, err))
-                            reject.call(this, err);
-                    }
-                    else {
-                        this.item = r.response.data ? r.response.data : r.response;
-                        resolve.call(this, this.item);
-                    }
-                }, (err) => {
-                    err = ses.getError(err, undefined, origin);
+    async update(item, opts) {
+        const origin = 'BusinessObject.update';
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            if (item)
+                this.item = item;
+            ses.sendRequest(`${this.getPath('update', opts)}${this.getReqOptions(opts)}`, this.getReqParams(this.item), (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
                     if (!(opts.error || ses.error).call(this, err))
                         reject.call(this, err);
-                });
+                }
+                else {
+                    this.item = r.response.data ? r.response.data : r.response;
+                    resolve.call(this, this.item);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
     }
@@ -937,32 +950,30 @@ class BusinessObject {
      * @return {promise<object>} Promise (the <code>item</code> member is emptied)
      * @function
      */
-    del(item, opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const origin = 'BusinessObject.del';
-            const ses = this.session;
-            opts = opts || {};
-            return new Promise((resolve, reject) => {
-                if (item)
-                    this.item = item;
-                ses.sendRequest(`${this.getPath('delete', opts)}&${this.metadata.rowidfield}=${encodeURIComponent(this.item[this.metadata.rowidfield])}`, undefined, (res, status) => {
-                    const r = ses.parseResponse(res, status);
-                    ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
-                    if (r.type === 'error') {
-                        const err = ses.getError(r.response, undefined, origin);
-                        if (!(opts.error || ses.error).call(this, err))
-                            reject.call(this, err);
-                    }
-                    else {
-                        this.item = undefined;
-                        delete r.response.undoredo;
-                        resolve.call(this, r.response);
-                    }
-                }, (err) => {
-                    err = ses.getError(err, undefined, origin);
+    async del(item, opts) {
+        const origin = 'BusinessObject.del';
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            if (item)
+                this.item = item;
+            ses.sendRequest(`${this.getPath('delete', opts)}&${this.metadata.rowidfield}=${encodeURIComponent(this.item[this.metadata.rowidfield])}`, undefined, (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
                     if (!(opts.error || ses.error).call(this, err))
                         reject.call(this, err);
-                });
+                }
+                else {
+                    this.item = undefined;
+                    delete r.response.undoredo;
+                    resolve.call(this, r.response);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
     }
@@ -977,30 +988,28 @@ class BusinessObject {
      * @return {promise<string|object>} A promise to the action result
      * @function
      */
-    action(action, rowId, opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const origin = `BusinessObject.action(${action})`;
-            const ses = this.session;
-            opts = opts || {};
-            return new Promise((resolve, reject) => {
-                const p = rowId ? `&${this.getRowIdFieldName()}=${encodeURIComponent(rowId)}` : '';
-                ses.sendRequest(`${this.getPath(action, opts)}${p}`, this.getReqParams(opts.parameters), (res, status) => {
-                    const r = ses.parseResponse(res, status);
-                    ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
-                    if (r.type === 'error') {
-                        const err = ses.getError(r.response, undefined, origin);
-                        if (!(opts.error || ses.error).call(this, err))
-                            reject.call(this, err);
-                    }
-                    else {
-                        const result = r.response.result;
-                        resolve.call(this, result);
-                    }
-                }, (err) => {
-                    err = ses.getError(err, undefined, origin);
+    async action(action, rowId, opts) {
+        const origin = `BusinessObject.action(${action})`;
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            const p = rowId ? `&${this.getRowIdFieldName()}=${encodeURIComponent(rowId)}` : '';
+            ses.sendRequest(`${this.getPath(action, opts)}${p}`, this.getReqParams(opts.parameters), (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
                     if (!(opts.error || ses.error).call(this, err))
                         reject.call(this, err);
-                });
+                }
+                else {
+                    const result = r.response.result;
+                    resolve.call(this, result);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
     }
@@ -1015,30 +1024,28 @@ class BusinessObject {
      * @return {promise<object>} A promise to the pivot table data (also available as the <code>crosstabdata</code> member)
      * @function
      */
-    crosstab(ctb, opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const origin = `BusinessObject.crosstab(${ctb})`;
-            const ses = this.session;
-            opts = opts || {};
-            return new Promise((resolve, reject) => {
-                if (opts.filters)
-                    this.filters = opts.filters;
-                ses.sendRequest(`${this.getPath(opts.cubes ? 'crosstabcubes' : 'crosstab', opts)}&crosstab=${encodeURIComponent(ctb)}`, this.getReqParams(opts.filters || this.filters, true), (res, status) => {
-                    const r = ses.parseResponse(res, status);
-                    ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
-                    if (r.type === 'error') {
-                        const err = ses.getError(r.response, undefined, origin);
-                        if (!(opts.error || ses.error).call(this, err))
-                            reject.call(this, err);
-                    }
-                    else {
-                        resolve.call(this, r.response);
-                    }
-                }, (err) => {
-                    err = ses.getError(err, undefined, origin);
+    async crosstab(ctb, opts) {
+        const origin = `BusinessObject.crosstab(${ctb})`;
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            if (opts.filters)
+                this.filters = opts.filters;
+            ses.sendRequest(`${this.getPath(opts.cubes ? 'crosstabcubes' : 'crosstab', opts)}&crosstab=${encodeURIComponent(ctb)}`, this.getReqParams(opts.filters || this.filters, true), (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
                     if (!(opts.error || ses.error).call(this, err))
                         reject.call(this, err);
-                });
+                }
+                else {
+                    resolve.call(this, r.response);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
     }
@@ -1052,37 +1059,35 @@ class BusinessObject {
      * @return {promise<Doc>} A promise to the document of the publication
      * @function
      */
-    print(prt, rowId, opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const origin = `BusinessObject.print(${prt})`;
-            const ses = this.session;
-            opts = opts || {};
-            return new Promise((resolve, reject) => {
-                if (opts.filters)
-                    this.filters = opts.filters;
-                let p = '';
-                if (opts.all)
-                    p += '&all=' + !!opts.all;
-                if (opts.mailing)
-                    p += '&mailing=' + !!opts.mailing;
-                if (rowId)
-                    p += `&${this.getRowIdFieldName()}=${encodeURIComponent(rowId)}`;
-                ses.sendRequest(`${this.getPath('print', opts)}&printtemplate=${encodeURIComponent(prt)}${p}`, undefined, (res, status) => {
-                    const r = ses.parseResponse(res, status);
-                    ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
-                    if (r.type === 'error') {
-                        const err = ses.getError(r.response, undefined, origin);
-                        if (!(opts.error || ses.error).call(this, err))
-                            reject.call(this, err);
-                    }
-                    else {
-                        resolve.call(this, new Doc(r.response));
-                    }
-                }, (err) => {
-                    err = ses.getError(err, undefined, origin);
+    async print(prt, rowId, opts) {
+        const origin = `BusinessObject.print(${prt})`;
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            if (opts.filters)
+                this.filters = opts.filters;
+            let p = '';
+            if (opts.all)
+                p += '&all=' + !!opts.all;
+            if (opts.mailing)
+                p += '&mailing=' + !!opts.mailing;
+            if (rowId)
+                p += `&${this.getRowIdFieldName()}=${encodeURIComponent(rowId)}`;
+            ses.sendRequest(`${this.getPath('print', opts)}&printtemplate=${encodeURIComponent(prt)}${p}`, undefined, (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
                     if (!(opts.error || ses.error).call(this, err))
                         reject.call(this, err);
-                });
+                }
+                else {
+                    resolve.call(this, new Doc(r.response));
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
     }
@@ -1096,31 +1101,29 @@ class BusinessObject {
      * @return {promise<any>} A promise to the place map data
      * @function
      */
-    placemap(pcm, filters, opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const origin = `BusinessObject.placemap(${pcm})`;
-            const ses = this.session;
-            this.filters = filters || {};
-            opts = opts || {};
-            return new Promise((resolve, reject) => {
-                if (opts.filters)
-                    this.filters = opts.filters;
-                ses.sendRequest(`${this.getPath('placemap', opts)}&placemap=${encodeURIComponent(pcm)}`, this.getReqParams(this.filters, true), (res, status) => {
-                    const r = ses.parseResponse(res, status);
-                    ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
-                    if (r.type === 'error') {
-                        const err = ses.getError(r.response, undefined, origin);
-                        if (!(opts.error || ses.error).call(this, err))
-                            reject.call(this, err);
-                    }
-                    else {
-                        resolve.call(this, r.response);
-                    }
-                }, (err) => {
-                    err = ses.getError(err, undefined, origin);
+    async placemap(pcm, filters, opts) {
+        const origin = `BusinessObject.placemap(${pcm})`;
+        const ses = this.session;
+        this.filters = filters || {};
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            if (opts.filters)
+                this.filters = opts.filters;
+            ses.sendRequest(`${this.getPath('placemap', opts)}&placemap=${encodeURIComponent(pcm)}`, this.getReqParams(this.filters, true), (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
                     if (!(opts.error || ses.error).call(this, err))
                         reject.call(this, err);
-                });
+                }
+                else {
+                    resolve.call(this, r.response);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
     }
@@ -1134,32 +1137,30 @@ class BusinessObject {
      * @return {promise<object>} Promise
      * @function
      */
-    setParameter(param, value, opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const origin = 'BusinessObject.setParameter';
-            const ses = this.session;
-            opts = opts || {};
-            return new Promise((resolve, reject) => {
-                const p = { name: param };
-                if (value)
-                    p.value = value;
-                ses.sendRequest(this.getPath('setparameter', opts), this.getReqParams(p), (res, status) => {
-                    const r = ses.parseResponse(res, status);
-                    ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
-                    if (r.type === 'error') {
-                        const err = ses.getError(r.response, undefined, origin);
-                        if (!(opts.error || ses.error).call(this, err))
-                            reject.call(this, err);
-                    }
-                    else {
-                        const result = r.response.result;
-                        resolve.call(this, result);
-                    }
-                }, (err) => {
-                    err = ses.getError(err, undefined, origin);
+    async setParameter(param, value, opts) {
+        const origin = 'BusinessObject.setParameter';
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            const p = { name: param };
+            if (value)
+                p.value = value;
+            ses.sendRequest(this.getPath('setparameter', opts), this.getReqParams(p), (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
                     if (!(opts.error || ses.error).call(this, err))
                         reject.call(this, err);
-                });
+                }
+                else {
+                    const result = r.response.result;
+                    resolve.call(this, result);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
     }
@@ -1172,30 +1173,28 @@ class BusinessObject {
      * @return {promise<object>} Promise to the parameter value
      * @function
      */
-    getParameter(param, opts) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const origin = 'BusinessObject.getParameter';
-            const ses = this.session;
-            opts = opts || {};
-            return new Promise((resolve, reject) => {
-                const p = { name: param };
-                ses.sendRequest(this.getPath('getparameter', opts), this.getReqParams(p), (res, status) => {
-                    const r = ses.parseResponse(res, status);
-                    ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
-                    if (r.type === 'error') {
-                        const err = ses.getError(r.response, undefined, origin);
-                        if (!(opts.error || ses.error).call(this, err))
-                            reject.call(this, err);
-                    }
-                    else {
-                        const result = r.response.result;
-                        resolve.call(this, result);
-                    }
-                }, (err) => {
-                    err = ses.getError(err, undefined, origin);
+    async getParameter(param, opts) {
+        const origin = 'BusinessObject.getParameter';
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            const p = { name: param };
+            ses.sendRequest(this.getPath('getparameter', opts), this.getReqParams(p), (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
                     if (!(opts.error || ses.error).call(this, err))
                         reject.call(this, err);
-                });
+                }
+                else {
+                    const result = r.response.result;
+                    resolve.call(this, result);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
     }

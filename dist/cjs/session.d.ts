@@ -1,5 +1,5 @@
-import { SessionParamEndpoint, SessionParams } from './sessionparams';
-import { Grant } from './grant';
+import { SessionParamEndpoint, SessionParams } from './sessionparams.js';
+import { Grant } from './grant.js';
 /**
  * Simplicite application session.
  * @param {object} params Parameters
@@ -173,7 +173,7 @@ declare class Session {
      * Username
      * @member {string}
      */
-    username: string;
+    username: string | undefined;
     /**
      * Set username
      * @param {string} usr Username
@@ -184,7 +184,7 @@ declare class Session {
      * Password
      * @member {string}
      */
-    password: string;
+    password: string | undefined;
     /**
      * Set password
      * @param {string} pwd Password
@@ -195,22 +195,22 @@ declare class Session {
      * Auth token
      * @member {string}
      */
-    authtoken: string;
+    authtoken: string | undefined;
     /**
      * Auth token expiry date
      * @member {Date}
      */
-    authtokenexpiry: Date;
+    authtokenexpiry: Date | undefined;
     /**
      * Ajax key
      * @member {string}
      */
-    ajaxkey: string;
+    ajaxkey: string | undefined;
     /**
      * Session ID
      * @member {string}
      */
-    sessionid: string;
+    sessionid: string | undefined;
     /**
      * Set auth token
      * @param {string} token Auth token
@@ -259,13 +259,13 @@ declare class Session {
      * @return {string} HTTP authorization header value
      * @function
      */
-    getBasicAuthHeader(): string;
+    getBasicAuthHeader(): string | undefined;
     /**
      * Get bearer token header value
      * @return {string} Bearer token header value
      * @function
      */
-    getBearerTokenHeader(): string;
+    getBearerTokenHeader(): string | undefined;
     /**
      * Get error object
      * @param {(string|object)} err Error
@@ -347,7 +347,7 @@ declare class Session {
      * Grant
      * @member {Grant}
      */
-    grant: Grant;
+    grant: Grant | undefined;
     /**
      * Get path
      * @param {string} action Action

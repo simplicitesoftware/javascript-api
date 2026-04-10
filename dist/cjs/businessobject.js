@@ -1,73 +1,85 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
-    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (g && (g = 0, op[0] && (_ = 0)), _) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BusinessObject = void 0;
-var constants_1 = require("./constants");
-var doc_1 = require("./doc");
-var businessobjectmetadata_1 = require("./businessobjectmetadata");
+const constants_js_1 = require("./constants.js");
+const doc_js_1 = require("./doc.js");
+const businessobjectmetadata_js_1 = require("./businessobjectmetadata.js");
 /**
  * Business object.
  * <br/><span style="color: red;">You <strong>should never</strong> instantiate this class directly
  * but rather call <code>getBusinessObject</code> to get a cached instance</span>.
  * @class
  */
-var BusinessObject = /** @class */ (function () {
+class BusinessObject {
     /**
      * Constructor
      * @param {Session} ses Session
      * @param {string} name Business object name
      * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
      */
-    function BusinessObject(ses, name, instance) {
-        /**
-         * Get meta data (alias to getMetaData)
-         * @function
-         */
-        this.getMetadata = this.getMetaData;
+    constructor(ses, name, instance) {
         this.session = ses;
-        var inst = instance || 'api_' + name;
-        this.metadata = new businessobjectmetadata_1.BusinessObjectMetadata(name, inst);
+        const inst = instance || 'api_' + name;
+        this.metadata = new businessobjectmetadata_js_1.BusinessObjectMetadata(name, inst);
         this.cacheKey = this.session.getBusinessObjectCacheKey(name, inst);
         this.path = this.session.parameters.objpath + '?object=' + encodeURIComponent(name) + '&inst=' + encodeURIComponent(inst);
         this.item = {};
         this.filters = {};
         this.list = [];
     }
+    /**
+     * Session
+     * @member {Session}
+     * @private
+     */
+    session;
+    /**
+     * Object metadata
+     * @member {BusinessObjectMetadata}
+     */
+    metadata;
+    /**
+     * Cache key
+     * @constant {string}
+     * @private
+     */
+    cacheKey;
+    /**
+     * Path
+     * @constant {string}
+     * @private
+     */
+    path;
+    /**
+     * Current item
+     * @member {object}
+     */
+    item;
+    /**
+     * Current filters
+     * @member {object}
+     */
+    filters;
+    /**
+     * Current list
+     * @member {array}
+     */
+    list;
+    /**
+     * Current count
+     * @member {number}
+     */
+    count;
+    /**
+     * Current page number
+     * @member {number}
+     */
+    page;
+    /**
+     * Number of pages
+     * @member {number}
+     */
+    maxpage;
     /**
      * Get meta data
      * @param {object} [opts] Options
@@ -78,143 +90,142 @@ var BusinessObject = /** @class */ (function () {
      * @return {promise<BusinessObjectMetadata>} A promise to the object's meta data (also available as the <code>metadata</code> member)
      * @function
      */
-    BusinessObject.prototype.getMetaData = function (opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            var origin, ses;
-            var _this = this;
-            return __generator(this, function (_a) {
-                origin = 'BusinessObject.getMetaData';
-                ses = this.session;
-                opts = opts || {};
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        var p = '';
-                        if (opts.context)
-                            p += '&context=' + encodeURIComponent(opts.context);
-                        if (opts.contextParam)
-                            p += '&contextparam=' + encodeURIComponent(opts.contextParam);
-                        ses.sendRequest(_this.path + '&action=metadata' + p, undefined, function (res, status) {
-                            var r = ses.parseResponse(res, status);
-                            ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                            if (r.type === 'error') {
-                                var err = ses.getError(r.response, undefined, origin);
-                                if (!(opts.error || ses.error).call(_this, err))
-                                    reject.call(_this, err);
-                            }
-                            else {
-                                _this.metadata = r.response;
-                                resolve.call(_this, _this.metadata);
-                            }
-                        }, function (err) {
-                            err = ses.getError(err, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        });
-                    })];
+    async getMetaData(opts) {
+        const origin = 'BusinessObject.getMetaData';
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            let p = '';
+            if (opts.context)
+                p += '&context=' + encodeURIComponent(opts.context);
+            if (opts.contextParam)
+                p += '&contextparam=' + encodeURIComponent(opts.contextParam);
+            ses.sendRequest(this.path + '&action=metadata' + p, undefined, (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
+                    if (!(opts.error || ses.error).call(this, err))
+                        reject.call(this, err);
+                }
+                else {
+                    this.metadata = r.response;
+                    resolve.call(this, this.metadata);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
-    };
+    }
+    /**
+     * Get meta data (alias to getMetaData)
+     * @function
+     */
+    getMetadata = this.getMetaData;
     /**
      * Get name
      * @return {string} Name
      * @function
      */
-    BusinessObject.prototype.getName = function () {
+    getName() {
         return this.metadata.name;
-    };
+    }
     /**
      * Get instance name
      * @return {string} Instance name
      * @function
      */
-    BusinessObject.prototype.getInstance = function () {
+    getInstance() {
         return this.metadata.instance;
-    };
+    }
     /**
      * Get display label
      * @return {string} Display label
      * @function
      */
-    BusinessObject.prototype.getLabel = function () {
+    getLabel() {
         return this.metadata.label;
-    };
+    }
     /**
      * Get help
      * @return {string} Help
      * @function
      */
-    BusinessObject.prototype.getHelp = function () {
+    getHelp() {
         return this.metadata.help;
-    };
+    }
     /**
      * Get all fields definitions
      * @return {array} Array of field definitions
      * @function
      */
-    BusinessObject.prototype.getFields = function () {
+    getFields() {
         return this.metadata.fields;
-    };
+    }
     /**
      * Get a field definition
      * @param {string} fieldName Field name
      * @return {object} Field definition
      * @function
      */
-    BusinessObject.prototype.getField = function (fieldName) {
-        var fs = this.getFields();
-        var n = 0;
+    getField(fieldName) {
+        const fs = this.getFields() || [];
+        let n = 0;
         while (n < fs.length && fs[n].name !== fieldName)
             n++;
         if (n < fs.length)
             return fs[n];
-    };
+    }
     /**
      * Get row ID field name
      * @return {string} Row ID field name
      * @function
      */
-    BusinessObject.prototype.getRowIdFieldName = function () {
+    getRowIdFieldName() {
         return this.metadata.rowidfield;
-    };
+    }
     /**
      * Get row ID field definition
      * @return {object} Row ID field definition
      * @function
      */
-    BusinessObject.prototype.getRowIdField = function () {
+    getRowIdField() {
         return this.getField(this.getRowIdFieldName());
-    };
+    }
     /**
      * Get links
      * @return {array} Array of links
      * @function
      */
-    BusinessObject.prototype.getLinks = function () {
+    getLinks() {
         return this.metadata.links;
-    };
+    }
     /**
      * Get field type
      * @param {(string|object)} field Field name or definition
      * @return {string} Type (one of <code>constants.TYPE_*</code>)
      * @function
      */
-    BusinessObject.prototype.getFieldType = function (field) {
+    getFieldType(field) {
         if (typeof field === 'string')
             field = this.getField(field);
         if (field)
             return field.type;
-    };
+    }
     /**
      * Get field label
      * @param {(string|object)} field Field name or definition
      * @return {string} Field label
      * @function
      */
-    BusinessObject.prototype.getFieldLabel = function (field) {
+    getFieldLabel(field) {
         if (typeof field === 'string')
             field = this.getField(field);
         if (field)
             return field.label;
-    };
+    }
     /**
      * Get value of field for item (or current item)
      * @param {(string|object)} field Field name or definition
@@ -222,17 +233,17 @@ var BusinessObject = /** @class */ (function () {
      * @return {string|Doc} Value
      * @function
      */
-    BusinessObject.prototype.getFieldValue = function (field, item) {
+    getFieldValue(field, item) {
         if (!item)
             item = this.item;
         if (field && item) {
-            var val = item[typeof field === 'string' ? field : field.name];
+            const val = item[typeof field === 'string' ? field : field.name];
             if (val && val.mime) // Document?
-                return new doc_1.Doc(val);
+                return new doc_js_1.Doc(val);
             else
                 return val;
         }
-    };
+    }
     /**
      * Get the list value of a list of values field for item (or current item)
      * @param {(string|object)} field Field name or definition
@@ -240,12 +251,12 @@ var BusinessObject = /** @class */ (function () {
      * @return {string} List value
      * @function
      */
-    BusinessObject.prototype.getFieldListValue = function (field, item) {
+    getFieldListValue(field, item) {
         if (typeof field === 'string')
             field = this.getField(field);
-        var val = this.getFieldValue(field, item);
+        const val = this.getFieldValue(field, item);
         return field && field.listOfValues ? this.getListValue(field.listOfValues, val) : val;
-    };
+    }
     /**
      * Get the list colors of a list of values field for item (or current item)
      * @param {(string|object)} field Field name or definition
@@ -253,12 +264,12 @@ var BusinessObject = /** @class */ (function () {
      * @return {string} List color and bgcolor
      * @function
      */
-    BusinessObject.prototype.getFieldListColors = function (field, item) {
+    getFieldListColors(field, item) {
         if (typeof field === 'string')
             field = this.getField(field);
-        var val = this.getFieldValue(field, item);
+        const val = this.getFieldValue(field, item);
         return field && field.listOfValues ? this.getListColors(field.listOfValues, val) : val;
-    };
+    }
     /**
      * Get the data URL of an inlined document/image field for item (or current item)
      * @param {(string|object)} field Field name or definition
@@ -266,13 +277,13 @@ var BusinessObject = /** @class */ (function () {
      * @return {string} Document/image field data URL (or nothing if the field is not of document/image type or if it is not inlined or if it is empty)
      * @function
      */
-    BusinessObject.prototype.getFieldDataURL = function (field, item) {
+    getFieldDataURL(field, item) {
         if (typeof field !== 'string')
             field = field.fullinput || field.name;
-        var val = this.getFieldValue(field, item);
+        const val = this.getFieldValue(field, item);
         if (val && val.mime) // Inlined
             return 'data:' + val.mime + ';base64,' + (val.content || val.thumbnail);
-    };
+    }
     /**
      * Get the field's value as document/image for item (or current item)
      * @param {(string|object)} field Field name or definition
@@ -280,15 +291,15 @@ var BusinessObject = /** @class */ (function () {
      * @return {string|Doc} Document/image (or nothing if the field is not of document/image type or if it is empty)
      * @function
      */
-    BusinessObject.prototype.getFieldDocument = function (field, item) {
+    getFieldDocument(field, item) {
         if (typeof field !== 'string')
             field = field.fullinput || field.input || field.name;
-        var val = this.getFieldValue(field, item);
+        const val = this.getFieldValue(field, item);
         if (val && val.mime)
-            return new doc_1.Doc(val);
+            return new doc_js_1.Doc(val);
         else
             return val;
-    };
+    }
     /**
      * Get the URL of a document/image field for item (or current item)
      * @param {(string|object)} field Field name or definition
@@ -297,22 +308,22 @@ var BusinessObject = /** @class */ (function () {
      * @return {string} Document/image field URL (or nothing if the field is not of document/image type or if it is empty)
      * @function
      */
-    BusinessObject.prototype.getFieldDocumentURL = function (field, item, thumbnail) {
+    getFieldDocumentURL(field, item, thumbnail) {
         if (typeof field !== 'string')
             field = field.fullinput || field.input || field.name;
-        var val = this.getFieldValue(field, item);
+        let val = this.getFieldValue(field, item);
         if (val && val.mime) // Inlined
             val = val.id;
         if (val)
             return this.session.parameters.url + this.session.parameters.docpath
                 + '?object=' + encodeURIComponent(this.metadata.name)
-                + '&inst=' + encodeURIComponent(this.metadata.instance)
+                + '&inst=' + encodeURIComponent(this.metadata.instance || '')
                 + '&field=' + encodeURIComponent(field)
-                + '&row_id=' + encodeURIComponent(this.getRowId(item))
+                + '&row_id=' + encodeURIComponent(this.getRowId(item) || '')
                 + '&doc_id=' + encodeURIComponent(val)
                 + (thumbnail ? '&thumbnail=true' : '')
                 + (this.session.authtoken ? '&_x_simplicite_authorization_=' + encodeURIComponent(this.session.authtoken) : '');
-    };
+    }
     /**
      * Get list item value for code
      * @param {array} list List of values
@@ -320,16 +331,15 @@ var BusinessObject = /** @class */ (function () {
      * @return {string} Value
      * @function
      */
-    BusinessObject.prototype.getListValue = function (list, code) {
+    getListValue(list, code) {
         if (list) {
-            for (var _i = 0, list_1 = list; _i < list_1.length; _i++) {
-                var l = list_1[_i];
+            for (const l of list) {
                 if (l.code === code)
                     return l.value;
             }
         }
         return code;
-    };
+    }
     /**
      * Get list item colors (color and background color) for code
      * @param {array} list List of values
@@ -337,16 +347,15 @@ var BusinessObject = /** @class */ (function () {
      * @return {any} Colors
      * @function
      */
-    BusinessObject.prototype.getListColors = function (list, code) {
+    getListColors(list, code) {
         if (list) {
-            for (var _i = 0, list_2 = list; _i < list_2.length; _i++) {
-                var l = list_2[_i];
+            for (const l of list) {
                 if (l.code === code)
                     return { color: l.color, bgcolor: l.bgcolor };
             }
         }
         return { color: 'inherit', bgcolor: 'inherit' };
-    };
+    }
     /**
      * Set value of field for item (or current item)
      * @param {(string|object)} field Field name or definition
@@ -354,84 +363,76 @@ var BusinessObject = /** @class */ (function () {
      * @param {object} [item] Item (defaults to current item)
      * @function
      */
-    BusinessObject.prototype.setFieldValue = function (field, value, item) {
+    setFieldValue(field, value, item) {
         if (!item)
             item = this.item;
         if (field && item) {
-            item[typeof field === 'string' ? field : field.name] = value instanceof doc_1.Doc ? value.getValue() : value;
+            item[typeof field === 'string' ? field : field.name] = value instanceof doc_js_1.Doc ? value.getValue() : value;
         }
-    };
+    }
     /**
      * Reset values of item (or current item)
      * @param {object} [item] Item (defaults to current item)
      */
-    BusinessObject.prototype.resetValues = function (item) {
+    resetValues(item) {
         if (!item)
             item = this.item;
-        for (var v in item)
+        for (const v in item)
             delete item[v];
-    };
+    }
     /**
     * Set values of item (or current item)
     * @param {object|FormData} data Data (plain object or form data)
     * @param {object} [item] Item (defaults to current item)
     */
-    BusinessObject.prototype.setFieldValues = function (data, item) {
-        return __awaiter(this, void 0, void 0, function () {
-            var dt;
-            var _this = this;
-            return __generator(this, function (_a) {
-                if (!item)
-                    item = this.item;
-                if (data instanceof FormData) {
-                    dt = {};
-                    data.forEach(function (v, k) { return dt[k] = v; });
-                }
-                else {
-                    dt = data;
-                }
-                return [2 /*return*/, new Promise(function (resolve) {
-                        var promises = [];
-                        var _loop_1 = function (k) {
-                            var v = dt[k];
-                            if (v instanceof File)
-                                promises.push(new Promise(function (r) {
-                                    new doc_1.Doc().load(v).then(function (doc) {
-                                        _this.setFieldValue(k, doc);
-                                        r.call(_this);
-                                    });
-                                }));
-                            else
-                                _this.setFieldValue(k, v);
-                        };
-                        for (var _i = 0, _a = Object.keys(dt); _i < _a.length; _i++) {
-                            var k = _a[_i];
-                            _loop_1(k);
-                        }
-                        Promise.allSettled(promises).then(function () { return resolve.call(_this, item); });
-                    })];
-            });
+    async setFieldValues(data, item) {
+        if (!item)
+            item = this.item;
+        // Convert form data to plain object
+        let dt;
+        if (data instanceof FormData) {
+            dt = {};
+            data.forEach((v, k) => dt[k] = v);
+        }
+        else {
+            dt = data;
+        }
+        return new Promise(resolve => {
+            const promises = [];
+            for (const k of Object.keys(dt)) {
+                const v = dt[k];
+                if (v instanceof File)
+                    promises.push(new Promise(r => {
+                        new doc_js_1.Doc().load(v).then(doc => {
+                            this.setFieldValue(k, doc);
+                            r.call(this, doc);
+                        });
+                    }));
+                else
+                    this.setFieldValue(k, v);
+            }
+            Promise.allSettled(promises).then(() => resolve.call(this, item));
         });
-    };
+    }
     /**
      * Is the field the row ID field?
      * @param {object} field Field definition
      * @return {boolean} True if the field is the row ID field
      * @function
      */
-    BusinessObject.prototype.isRowIdField = function (field) {
+    isRowIdField(field) {
         return !field.ref && field.name === this.metadata.rowidfield;
-    };
+    }
     /**
      * Is the field a timestamp field?
      * @param {object} field Field definition
      * @return {boolean} True if the field is a timestamp field
      * @function
      */
-    BusinessObject.prototype.isTimestampField = function (field) {
-        var n = field.name;
+    isTimestampField(field) {
+        const n = field.name;
         return !field.ref && (n === 'created_by' || n === 'created_dt' || n === 'updated_by' || n === 'updated_dt');
-    };
+    }
     /**
      * Get current filters
      * @param {object} [opts] Options
@@ -442,78 +443,72 @@ var BusinessObject = /** @class */ (function () {
      * @return {promise<object>} Promise to the object's filters (also available as the <code>filters</code> member)
      * @function
      */
-    BusinessObject.prototype.getFilters = function (opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            var origin, ses;
-            var _this = this;
-            return __generator(this, function (_a) {
-                origin = 'BusinessObject.getFilters';
-                ses = this.session;
-                opts = opts || {};
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        var p = '';
-                        if (opts.context)
-                            p += '&context=' + encodeURIComponent(opts.context);
-                        if (opts.reset)
-                            p += '&reset=' + !!opts.reset;
-                        ses.sendRequest(_this.path + '&action=filters' + p, undefined, function (res, status) {
-                            var r = ses.parseResponse(res, status);
-                            ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                            if (r.type === 'error') {
-                                var err = ses.getError(r.response, undefined, origin);
-                                if (!(opts.error || ses.error).call(_this, err))
-                                    reject.call(_this, err);
-                            }
-                            else {
-                                _this.filters = r.response;
-                                resolve.call(_this, _this.filters);
-                            }
-                        }, function (err) {
-                            err = ses.getError(err, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        });
-                    })];
+    async getFilters(opts) {
+        const origin = 'BusinessObject.getFilters';
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            let p = '';
+            if (opts.context)
+                p += '&context=' + encodeURIComponent(opts.context);
+            if (opts.reset)
+                p += '&reset=' + !!opts.reset;
+            ses.sendRequest(this.path + '&action=filters' + p, undefined, (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
+                    if (!(opts.error || ses.error).call(this, err))
+                        reject.call(this, err);
+                }
+                else {
+                    this.filters = r.response;
+                    resolve.call(this, this.filters);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
-    };
+    }
     /**
      * Build context option parameters
      * @param {object} options Options
      * @return {string} Option parameters
      * @private
      */
-    BusinessObject.prototype.getReqContextOption = function (options) {
-        return options.context ? "&context=".concat(encodeURIComponent(options.context)) : '';
-    };
+    getReqContextOption(options) {
+        return options.context ? `&context=${encodeURIComponent(options.context)}` : '';
+    }
     /**
      * Build options parameters
      * @param {object} options Options
      * @return {string} Option parameters
      * @private
      */
-    BusinessObject.prototype.getReqOptions = function (options) {
-        var opts = this.getReqContextOption(options);
-        var id = options.inlineDocs || options.inlineDocuments || options.inlineImages; // Naming flexibility
+    getReqOptions(options) {
+        let opts = this.getReqContextOption(options);
+        const id = options.inlineDocs || options.inlineDocuments || options.inlineImages; // Naming flexibility
         if (id)
-            opts += "&inline_documents=".concat(encodeURIComponent(id.join ? id.join(',') : id));
-        var it = options.inlineThumbs || options.inlineThumbnails; // Naming flexibility
+            opts += `&inline_documents=${encodeURIComponent(id.join ? id.join(',') : id)}`;
+        const it = options.inlineThumbs || options.inlineThumbnails; // Naming flexibility
         if (it)
-            opts += "&inline_thumbnails=".concat(encodeURIComponent(it.join ? it.join(',') : it));
-        var io = options.inlineObjs || options.inlineObjects; // Naming flexibility
+            opts += `&inline_thumbnails=${encodeURIComponent(it.join ? it.join(',') : it)}`;
+        const io = options.inlineObjs || options.inlineObjects; // Naming flexibility
         if (io)
-            opts += "&inline_objects=".concat(encodeURIComponent(io.join ? io.join(',') : io));
+            opts += `&inline_objects=${encodeURIComponent(io.join ? io.join(',') : io)}`;
         return opts;
-    };
+    }
     /**
      * Convert usual wildcards to filters wildcards
      * @param {string|object} filter Filter
      * @return {string} Filter with wildcards converted
      * @private
      */
-    BusinessObject.prototype.convertFilterWildCards = function (filter) {
+    convertFilterWildCards(filter) {
         return typeof filter === 'string' ? filter.replace(new RegExp('\\*', 'g'), '%').replace(new RegExp('\\?', 'g'), '_') : filter;
-    };
+    }
     /**
      * Build request parameters
      * @param {object} data Data
@@ -521,15 +516,14 @@ var BusinessObject = /** @class */ (function () {
      * @return {string} Request parameters
      * @private
      */
-    BusinessObject.prototype.getReqParams = function (data, filters) {
-        var p = '';
+    getReqParams(data, filters) {
+        let p = '';
         if (!data)
             return p;
-        for (var _i = 0, _a = Object.entries(data); _i < _a.length; _i++) {
-            var i = _a[_i];
-            var k = i[0];
-            var d = i[1] || '';
-            if (d instanceof doc_1.Doc)
+        for (const i of Object.entries(data)) {
+            const k = i[0];
+            let d = i[1] || '';
+            if (d instanceof doc_js_1.Doc)
                 d = d.getValue();
             if (d.name && d.content) { // Document?
                 if (d.content.startsWith('data:')) // Flexibility = extract content from a data URL (just in case...)
@@ -540,27 +534,25 @@ var BusinessObject = /** @class */ (function () {
                 p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent('object|' + d.object + '|row_id|' + d.row_id);
             }
             else if (d.sort) { // Array?
-                for (var _b = 0, d_1 = d; _b < d_1.length; _b++) {
-                    var dd = d_1[_b];
+                for (const dd of d)
                     p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(filters ? this.convertFilterWildCards(dd) : dd);
-                }
             }
             else {
                 p += (p !== '' ? '&' : '') + k + '=' + encodeURIComponent(filters ? this.convertFilterWildCards(d) : d);
             }
         }
         return p;
-    };
+    }
     /**
      * Get path
      * @param {string} action Action
      * @param {object} [opts] Options
      * @param {string} [opts.businessCase] Business case label
      */
-    BusinessObject.prototype.getPath = function (action, opts) {
-        var bc = opts && opts.businessCase ? "&_bc=".concat(encodeURIComponent(opts.businessCase)) : '';
-        return "".concat(this.path, "&action=").concat(encodeURIComponent(action)).concat(bc);
-    };
+    getPath(action, opts) {
+        const bc = opts && opts.businessCase ? `&_bc=${encodeURIComponent(opts.businessCase)}` : '';
+        return `${this.path}&action=${encodeURIComponent(action)}${bc}`;
+    }
     /**
      * Get count
      * @param {object} [filters] Filters (defaults to current filters)
@@ -571,43 +563,37 @@ var BusinessObject = /** @class */ (function () {
      * @return {promise<object>} Promise to the count
      * @function
      */
-    BusinessObject.prototype.getCount = function (filters, opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            var origin, ses;
-            var _this = this;
-            return __generator(this, function (_a) {
-                origin = 'BusinessObject.getCount';
-                ses = this.session;
-                opts = opts || {};
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        var p = _this.getReqContextOption(opts);
-                        if (opts.operations === true)
-                            p += '&_operations=true';
-                        _this.filters = filters || {};
-                        ses.sendRequest("".concat(_this.getPath('count', opts)).concat(p), _this.getReqParams(_this.filters, true), function (res, status) {
-                            var r = ses.parseResponse(res, status);
-                            ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
-                            if (r.type === 'error') {
-                                var err = ses.getError(r.response, undefined, origin);
-                                if (!(opts.error || ses.error).call(_this, err))
-                                    reject.call(_this, err);
-                            }
-                            else {
-                                _this.count = r.response.count;
-                                _this.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
-                                _this.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
-                                _this.list = [];
-                                resolve.call(_this, _this.count);
-                            }
-                        }, function (err) {
-                            err = ses.getError(err, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        });
-                    })];
+    async getCount(filters, opts) {
+        const origin = 'BusinessObject.getCount';
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            let p = this.getReqContextOption(opts);
+            if (opts.operations === true)
+                p += '&_operations=true';
+            this.filters = filters || {};
+            ses.sendRequest(`${this.getPath('count', opts)}${p}`, this.getReqParams(this.filters, true), (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
+                    if (!(opts.error || ses.error).call(this, err))
+                        reject.call(this, err);
+                }
+                else {
+                    this.count = r.response.count;
+                    this.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
+                    this.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
+                    this.list = [];
+                    resolve.call(this, this.count);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
-    };
+    }
     /**
      * Search
      * @param {object} [filters] Filters (defaults to current filters)
@@ -620,49 +606,43 @@ var BusinessObject = /** @class */ (function () {
      * @return {promise<array>} Promise to a list of records (also available as the <code>list</code> member)
      * @function
      */
-    BusinessObject.prototype.search = function (filters, opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            var origin, ses;
-            var _this = this;
-            return __generator(this, function (_a) {
-                origin = 'BusinessObject.search';
-                ses = this.session;
-                opts = opts || {};
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        var p = _this.getReqOptions(opts);
-                        if (opts.page > 0)
-                            p += "&page=".concat(opts.page - 1);
-                        if (opts.metadata === true)
-                            p += '&_md=true';
-                        if (opts.visible === true)
-                            p += '&_visible=true';
-                        _this.filters = filters || {};
-                        ses.sendRequest("".concat(_this.getPath('search', opts)).concat(p), _this.getReqParams(_this.filters, true), function (res, status) {
-                            var r = ses.parseResponse(res, status);
-                            ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                            if (r.type === 'error') {
-                                var err = ses.getError(r.response, undefined, origin);
-                                if (!(opts.error || ses.error).call(_this, err))
-                                    reject.call(_this, err);
-                            }
-                            else {
-                                if (r.response.meta)
-                                    _this.metadata = r.response.meta;
-                                _this.count = r.response.count;
-                                _this.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
-                                _this.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
-                                _this.list = r.response.list;
-                                resolve.call(_this, _this.list);
-                            }
-                        }, function (err) {
-                            err = ses.getError(err, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        });
-                    })];
+    async search(filters, opts) {
+        const origin = 'BusinessObject.search';
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            let p = this.getReqOptions(opts);
+            if (opts.page > 0)
+                p += `&page=${opts.page - 1}`;
+            if (opts.metadata === true)
+                p += '&_md=true';
+            if (opts.visible === true)
+                p += '&_visible=true';
+            this.filters = filters || {};
+            ses.sendRequest(`${this.getPath('search', opts)}${p}`, this.getReqParams(this.filters, true), (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
+                    if (!(opts.error || ses.error).call(this, err))
+                        reject.call(this, err);
+                }
+                else {
+                    if (r.response.meta)
+                        this.metadata = r.response.meta;
+                    this.count = r.response.count;
+                    this.page = r.response.page >= 0 ? r.response.page + 1 : undefined;
+                    this.maxpage = r.response.maxpage >= 0 ? r.response.maxpage + 1 : undefined;
+                    this.list = r.response.list;
+                    resolve.call(this, this.list);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
-    };
+    }
     /**
      * Get
      * @param {string} [rowId] Row ID (defaults to current item's row ID)
@@ -675,55 +655,47 @@ var BusinessObject = /** @class */ (function () {
      * @return {promise<object>} Promise to the record (also available as the <code>item</code> member)
      * @function
      */
-    BusinessObject.prototype.get = function (rowId, opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            var origin, ses;
-            var _this = this;
-            return __generator(this, function (_a) {
-                origin = 'BusinessObject.get';
-                ses = this.session;
-                opts = opts || {};
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        var p = _this.getReqOptions(opts);
-                        var tv = opts.treeView;
-                        if (tv)
-                            p += "&treeview=".concat(encodeURIComponent(tv));
-                        if (opts.fields) {
-                            for (var _i = 0, _a = opts.fields; _i < _a.length; _i++) {
-                                var f = _a[_i];
-                                p += "&fields=".concat(encodeURIComponent(f.replace('.', '__')));
-                            }
-                        }
-                        if (opts.metadata)
-                            p += '&_md=true';
-                        if (opts.social)
-                            p += '&_social=true';
-                        ses.sendRequest("".concat(_this.getPath('get', opts), "&").concat(_this.metadata.rowidfield, "=").concat(encodeURIComponent(rowId || _this.getRowId())).concat(p), undefined, function (res, status) {
-                            var r = ses.parseResponse(res, status);
-                            ses.debug('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response type = ' + r.type);
-                            if (r.type === 'error') {
-                                var err = ses.getError(r.response, undefined, origin);
-                                if (!(opts.error || ses.error).call(_this, err))
-                                    reject.call(_this, err);
-                            }
-                            else {
-                                if (r.response.meta)
-                                    _this.metadata = r.response.meta;
-                                if (r.response.data)
-                                    _this.item = tv ? r.response.data.item : r.response.data;
-                                else
-                                    _this.item = tv ? r.response.item : r.response;
-                                resolve.call(_this, tv ? r.response : _this.item);
-                            }
-                        }, function (err) {
-                            err = ses.getError(err, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        });
-                    })];
+    async get(rowId, opts) {
+        const origin = 'BusinessObject.get';
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            let p = this.getReqOptions(opts);
+            const tv = opts.treeView;
+            if (tv)
+                p += `&treeview=${encodeURIComponent(tv)}`;
+            if (opts.fields) {
+                for (const f of opts.fields)
+                    p += `&fields=${encodeURIComponent(f.replace('.', '__'))}`;
+            }
+            if (opts.metadata)
+                p += '&_md=true';
+            if (opts.social)
+                p += '&_social=true';
+            ses.sendRequest(`${this.getPath('get', opts)}&${this.metadata.rowidfield}=${encodeURIComponent(rowId || this.getRowId() || '')}${p}`, undefined, (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response type = ' + r.type);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
+                    if (!(opts.error || ses.error).call(this, err))
+                        reject.call(this, err);
+                }
+                else {
+                    if (r.response.meta)
+                        this.metadata = r.response.meta;
+                    if (r.response.data)
+                        this.item = tv ? r.response.data.item : r.response.data;
+                    else
+                        this.item = tv ? r.response.item : r.response;
+                    resolve.call(this, tv ? r.response : this.item);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
-    };
+    }
     /**
      * Get for create
      * @param {object} [opts] Options
@@ -733,17 +705,13 @@ var BusinessObject = /** @class */ (function () {
      * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
      * @function
      */
-    BusinessObject.prototype.getForCreate = function (opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                opts = opts || {};
-                delete opts.treeview; // Inhibited in this context
-                delete opts.fields; // Inhibited in this context
-                opts.context = constants_1.constants.CONTEXT_CREATE;
-                return [2 /*return*/, this.get(constants_1.constants.DEFAULT_ROW_ID, opts)];
-            });
-        });
-    };
+    async getForCreate(opts) {
+        opts = opts || {};
+        delete opts.treeview; // Inhibited in this context
+        delete opts.fields; // Inhibited in this context
+        opts.context = constants_js_1.constants.CONTEXT_CREATE;
+        return this.get(constants_js_1.constants.DEFAULT_ROW_ID, opts);
+    }
     /**
      * Get for update
      * @param {string} [rowId] Row ID (defaults to current item's row ID)
@@ -754,17 +722,13 @@ var BusinessObject = /** @class */ (function () {
      * @return {promise<object>} Promise to the record to update (also available as the <code>item</code> member)
      * @function
      */
-    BusinessObject.prototype.getForUpdate = function (rowId, opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                opts = opts || {};
-                delete opts.treeview; // Inhibited in this context
-                delete opts.fields; // Inhibited in this context
-                opts.context = constants_1.constants.CONTEXT_UPDATE;
-                return [2 /*return*/, this.get(rowId || this.getRowId(), opts)];
-            });
-        });
-    };
+    async getForUpdate(rowId, opts) {
+        opts = opts || {};
+        delete opts.treeview; // Inhibited in this context
+        delete opts.fields; // Inhibited in this context
+        opts.context = constants_js_1.constants.CONTEXT_UPDATE;
+        return this.get(rowId || this.getRowId(), opts);
+    }
     /**
      * Get for copy
      * @param {string} [rowId] Row ID to copy (defaults to current item's row ID)
@@ -775,17 +739,13 @@ var BusinessObject = /** @class */ (function () {
      * @return {promise<object>} Promise to the record to create (also available as the <code>item</code> member)
      * @function
      */
-    BusinessObject.prototype.getForCopy = function (rowId, opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                opts = opts || {};
-                delete opts.treeview; // Inhibited in this context
-                delete opts.fields; // Inhibited in this context
-                opts.context = constants_1.constants.CONTEXT_COPY;
-                return [2 /*return*/, this.get(rowId || this.getRowId(), opts)];
-            });
-        });
-    };
+    async getForCopy(rowId, opts) {
+        opts = opts || {};
+        delete opts.treeview; // Inhibited in this context
+        delete opts.fields; // Inhibited in this context
+        opts.context = constants_js_1.constants.CONTEXT_COPY;
+        return this.get(rowId || this.getRowId(), opts);
+    }
     /**
      * Get for delete
      * @param {string} [rowId] Row ID (defaults to current item's row ID)
@@ -796,28 +756,23 @@ var BusinessObject = /** @class */ (function () {
      * @return {promise<object>} Promise to the record to delete (also available as the <code>item</code> member)
      * @function
      */
-    BusinessObject.prototype.getForDelete = function (rowId, opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                opts = opts || {};
-                delete opts.treeview; // Inhibited in this context
-                delete opts.fields; // Inhibited in this context
-                opts.context = constants_1.constants.CONTEXT_DELETE;
-                return [2 /*return*/, this.get(rowId || this.getRowId(), opts)];
-            });
-        });
-    };
+    async getForDelete(rowId, opts) {
+        opts = opts || {};
+        delete opts.treeview; // Inhibited in this context
+        delete opts.fields; // Inhibited in this context
+        opts.context = constants_js_1.constants.CONTEXT_DELETE;
+        return this.get(rowId || this.getRowId(), opts);
+    }
     /**
      * Get specified or current item's row ID value
      * @param {object} [item] Item (defaults to current item)
      * @return {string} Item's row ID value
      * @function
      */
-    BusinessObject.prototype.getRowId = function (item) {
+    getRowId(item) {
         item = item || this.item;
-        if (item)
-            return item[this.getRowIdFieldName()];
-    };
+        return item ? item[this.getRowIdFieldName()] : undefined;
+    }
     /**
      * Populate
      * @param {object} [item] Item (defaults to current item)
@@ -827,38 +782,32 @@ var BusinessObject = /** @class */ (function () {
      * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
      * @function
      */
-    BusinessObject.prototype.populate = function (item, opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            var origin, ses;
-            var _this = this;
-            return __generator(this, function (_a) {
-                origin = 'BusinessObject.populate';
-                ses = this.session;
-                opts = opts || {};
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        if (item)
-                            _this.item = item;
-                        ses.sendRequest("".concat(_this.getPath('populate', opts)).concat(_this.getReqOptions(opts)), _this.getReqParams(_this.item), function (res, status) {
-                            var r = ses.parseResponse(res, status);
-                            ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                            if (r.type === 'error') {
-                                var err = ses.getError(r.response, undefined, origin);
-                                if (!(opts.error || ses.error).call(_this, err))
-                                    reject.call(_this, err);
-                            }
-                            else {
-                                _this.item = r.response.data ? r.response.data : r.response;
-                                resolve.call(_this, _this.item);
-                            }
-                        }, function (err) {
-                            err = ses.getError(err, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        });
-                    })];
+    async populate(item, opts) {
+        const origin = 'BusinessObject.populate';
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            if (item)
+                this.item = item;
+            ses.sendRequest(`${this.getPath('populate', opts)}${this.getReqOptions(opts)}`, this.getReqParams(this.item), (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
+                    if (!(opts.error || ses.error).call(this, err))
+                        reject.call(this, err);
+                }
+                else {
+                    this.item = r.response.data ? r.response.data : r.response;
+                    resolve.call(this, this.item);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
-    };
+    }
     /**
      * Get the linked list for a list of values field and its specified value(s)
      * @param {(string|object)} field Field name or definition
@@ -870,48 +819,42 @@ var BusinessObject = /** @class */ (function () {
      * @return {promise<object>} Promise to the populated record (also available as the <code>item</code> member)
      * @function
      */
-    BusinessObject.prototype.getFieldLinkedList = function (field, linkedField, code, opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            var origin, ses;
-            var _this = this;
-            return __generator(this, function (_a) {
-                origin = 'BusinessObject.getFieldLinkedList';
-                ses = this.session;
-                opts = opts || {};
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        if (typeof field !== 'string')
-                            field = field.fullinput || field.name;
-                        if (typeof linkedField !== 'string')
-                            linkedField = linkedField.fullinput || linkedField.name;
-                        var all = false;
-                        if (code === true) {
-                            all = true;
-                            code = undefined;
-                        }
-                        else if (typeof code === 'undefined') {
-                            code = _this.getFieldValue(field);
-                        }
-                        ses.sendRequest(_this.getPath('getlinkedlist', opts), _this.getReqParams({ origin: field, input: linkedField, code: code, all: all }), function (res, status) {
-                            var r = ses.parseResponse(res, status);
-                            ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
-                            if (r.type === 'error') {
-                                var err = ses.getError(r.response, undefined, origin);
-                                if (!(opts.error || ses.error).call(_this, err))
-                                    reject.call(_this, err);
-                            }
-                            else {
-                                _this.item = r.response.result ? r.response.result : r.response;
-                                resolve.call(_this, _this.item);
-                            }
-                        }, function (err) {
-                            err = ses.getError(err, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        });
-                    })];
+    async getFieldLinkedList(field, linkedField, code, opts) {
+        const origin = 'BusinessObject.getFieldLinkedList';
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            if (typeof field !== 'string')
+                field = field.fullinput || field.name;
+            if (typeof linkedField !== 'string')
+                linkedField = linkedField.fullinput || linkedField.name;
+            let all = false;
+            if (code === true) {
+                all = true;
+                code = undefined;
+            }
+            else if (typeof code === 'undefined') {
+                code = this.getFieldValue(field);
+            }
+            ses.sendRequest(this.getPath('getlinkedlist', opts), this.getReqParams({ origin: field, input: linkedField, code, all }), (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
+                    if (!(opts.error || ses.error).call(this, err))
+                        reject.call(this, err);
+                }
+                else {
+                    this.item = r.response.result ? r.response.result : r.response;
+                    resolve.call(this, this.item);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
-    };
+    }
     /**
      * Save (create or update depending on item row ID value)
      * @param {object} [item] Item (defaults to current item)
@@ -921,21 +864,15 @@ var BusinessObject = /** @class */ (function () {
      * @return {promise<object>} Promise to the saved record (also available as the <code>item</code> member)
      * @function
      */
-    BusinessObject.prototype.save = function (item, opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            var rowId;
-            return __generator(this, function (_a) {
-                if (item)
-                    this.item = item;
-                rowId = this.item[this.metadata.rowidfield];
-                if (!rowId || rowId === constants_1.constants.DEFAULT_ROW_ID)
-                    return [2 /*return*/, this.create(item, opts)];
-                else
-                    return [2 /*return*/, this.update(item, opts)];
-                return [2 /*return*/];
-            });
-        });
-    };
+    async save(item, opts) {
+        if (item)
+            this.item = item;
+        const rowId = this.item[this.metadata.rowidfield];
+        if (!rowId || rowId === constants_js_1.constants.DEFAULT_ROW_ID)
+            return this.create(item, opts);
+        else
+            return this.update(item, opts);
+    }
     /**
      * Create (create or update)
      * @param {object} [item] Item (defaults to current item)
@@ -945,39 +882,33 @@ var BusinessObject = /** @class */ (function () {
      * @return {promise<object>} Promise to the created record (also available as the <code>item</code> member)
      * @function
      */
-    BusinessObject.prototype.create = function (item, opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            var origin, ses;
-            var _this = this;
-            return __generator(this, function (_a) {
-                origin = 'BusinessObject.create';
-                ses = this.session;
-                opts = opts || {};
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        if (item)
-                            _this.item = item;
-                        _this.item.row_id = constants_1.constants.DEFAULT_ROW_ID;
-                        ses.sendRequest("".concat(_this.getPath('create', opts)).concat(_this.getReqOptions(opts)), _this.getReqParams(_this.item), function (res, status) {
-                            var r = ses.parseResponse(res, status);
-                            ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
-                            if (r.type === 'error') {
-                                var err = ses.getError(r.response, undefined, origin);
-                                if (!(opts.error || ses.error).call(_this, err))
-                                    reject.call(_this, err);
-                            }
-                            else {
-                                _this.item = r.response.data ? r.response.data : r.response;
-                                resolve.call(_this, _this.item);
-                            }
-                        }, function (err) {
-                            err = ses.getError(err, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        });
-                    })];
+    async create(item, opts) {
+        const origin = 'BusinessObject.create';
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            if (item)
+                this.item = item;
+            this.item.row_id = constants_js_1.constants.DEFAULT_ROW_ID;
+            ses.sendRequest(`${this.getPath('create', opts)}${this.getReqOptions(opts)}`, this.getReqParams(this.item), (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
+                    if (!(opts.error || ses.error).call(this, err))
+                        reject.call(this, err);
+                }
+                else {
+                    this.item = r.response.data ? r.response.data : r.response;
+                    resolve.call(this, this.item);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
-    };
+    }
     /**
      * Update
      * @param {object} [item] Item (defaults to current item)
@@ -987,38 +918,32 @@ var BusinessObject = /** @class */ (function () {
      * @return {promise<object>} Promise to the updated record (also available as the <code>item</code> member)
      * @function
      */
-    BusinessObject.prototype.update = function (item, opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            var origin, ses;
-            var _this = this;
-            return __generator(this, function (_a) {
-                origin = 'BusinessObject.update';
-                ses = this.session;
-                opts = opts || {};
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        if (item)
-                            _this.item = item;
-                        ses.sendRequest("".concat(_this.getPath('update', opts)).concat(_this.getReqOptions(opts)), _this.getReqParams(_this.item), function (res, status) {
-                            var r = ses.parseResponse(res, status);
-                            ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                            if (r.type === 'error') {
-                                var err = ses.getError(r.response, undefined, origin);
-                                if (!(opts.error || ses.error).call(_this, err))
-                                    reject.call(_this, err);
-                            }
-                            else {
-                                _this.item = r.response.data ? r.response.data : r.response;
-                                resolve.call(_this, _this.item);
-                            }
-                        }, function (err) {
-                            err = ses.getError(err, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        });
-                    })];
+    async update(item, opts) {
+        const origin = 'BusinessObject.update';
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            if (item)
+                this.item = item;
+            ses.sendRequest(`${this.getPath('update', opts)}${this.getReqOptions(opts)}`, this.getReqParams(this.item), (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
+                    if (!(opts.error || ses.error).call(this, err))
+                        reject.call(this, err);
+                }
+                else {
+                    this.item = r.response.data ? r.response.data : r.response;
+                    resolve.call(this, this.item);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
-    };
+    }
     /**
      * Delete
      * @param {object} [item] Item (defaults to current item)
@@ -1028,39 +953,33 @@ var BusinessObject = /** @class */ (function () {
      * @return {promise<object>} Promise (the <code>item</code> member is emptied)
      * @function
      */
-    BusinessObject.prototype.del = function (item, opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            var origin, ses;
-            var _this = this;
-            return __generator(this, function (_a) {
-                origin = 'BusinessObject.del';
-                ses = this.session;
-                opts = opts || {};
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        if (item)
-                            _this.item = item;
-                        ses.sendRequest("".concat(_this.getPath('delete', opts), "&").concat(_this.metadata.rowidfield, "=").concat(encodeURIComponent(_this.item[_this.metadata.rowidfield])), undefined, function (res, status) {
-                            var r = ses.parseResponse(res, status);
-                            ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                            if (r.type === 'error') {
-                                var err = ses.getError(r.response, undefined, origin);
-                                if (!(opts.error || ses.error).call(_this, err))
-                                    reject.call(_this, err);
-                            }
-                            else {
-                                _this.item = undefined;
-                                delete r.response.undoredo;
-                                resolve.call(_this, r.response);
-                            }
-                        }, function (err) {
-                            err = ses.getError(err, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        });
-                    })];
+    async del(item, opts) {
+        const origin = 'BusinessObject.del';
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            if (item)
+                this.item = item;
+            ses.sendRequest(`${this.getPath('delete', opts)}&${this.metadata.rowidfield}=${encodeURIComponent(this.item[this.metadata.rowidfield])}`, undefined, (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
+                    if (!(opts.error || ses.error).call(this, err))
+                        reject.call(this, err);
+                }
+                else {
+                    this.item = undefined;
+                    delete r.response.undoredo;
+                    resolve.call(this, r.response);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
-    };
+    }
     /**
      * Invoke a custom action
      * @param {string} action Action name
@@ -1072,37 +991,31 @@ var BusinessObject = /** @class */ (function () {
      * @return {promise<string|object>} A promise to the action result
      * @function
      */
-    BusinessObject.prototype.action = function (action, rowId, opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            var origin, ses;
-            var _this = this;
-            return __generator(this, function (_a) {
-                origin = "BusinessObject.action(".concat(action, ")");
-                ses = this.session;
-                opts = opts || {};
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        var p = rowId ? "&".concat(_this.getRowIdFieldName(), "=").concat(encodeURIComponent(rowId)) : '';
-                        ses.sendRequest("".concat(_this.getPath(action, opts)).concat(p), _this.getReqParams(opts.parameters), function (res, status) {
-                            var r = ses.parseResponse(res, status);
-                            ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
-                            if (r.type === 'error') {
-                                var err = ses.getError(r.response, undefined, origin);
-                                if (!(opts.error || ses.error).call(_this, err))
-                                    reject.call(_this, err);
-                            }
-                            else {
-                                var result = r.response.result;
-                                resolve.call(_this, result);
-                            }
-                        }, function (err) {
-                            err = ses.getError(err, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        });
-                    })];
+    async action(action, rowId, opts) {
+        const origin = `BusinessObject.action(${action})`;
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            const p = rowId ? `&${this.getRowIdFieldName()}=${encodeURIComponent(rowId)}` : '';
+            ses.sendRequest(`${this.getPath(action, opts)}${p}`, this.getReqParams(opts.parameters), (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
+                    if (!(opts.error || ses.error).call(this, err))
+                        reject.call(this, err);
+                }
+                else {
+                    const result = r.response.result;
+                    resolve.call(this, result);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
-    };
+    }
     /**
      * Build a pivot table
      * @param {string} ctb Pivot table name
@@ -1114,37 +1027,31 @@ var BusinessObject = /** @class */ (function () {
      * @return {promise<object>} A promise to the pivot table data (also available as the <code>crosstabdata</code> member)
      * @function
      */
-    BusinessObject.prototype.crosstab = function (ctb, opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            var origin, ses;
-            var _this = this;
-            return __generator(this, function (_a) {
-                origin = "BusinessObject.crosstab(".concat(ctb, ")");
-                ses = this.session;
-                opts = opts || {};
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        if (opts.filters)
-                            _this.filters = opts.filters;
-                        ses.sendRequest("".concat(_this.getPath(opts.cubes ? 'crosstabcubes' : 'crosstab', opts), "&crosstab=").concat(encodeURIComponent(ctb)), _this.getReqParams(opts.filters || _this.filters, true), function (res, status) {
-                            var r = ses.parseResponse(res, status);
-                            ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                            if (r.type === 'error') {
-                                var err = ses.getError(r.response, undefined, origin);
-                                if (!(opts.error || ses.error).call(_this, err))
-                                    reject.call(_this, err);
-                            }
-                            else {
-                                resolve.call(_this, r.response);
-                            }
-                        }, function (err) {
-                            err = ses.getError(err, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        });
-                    })];
+    async crosstab(ctb, opts) {
+        const origin = `BusinessObject.crosstab(${ctb})`;
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            if (opts.filters)
+                this.filters = opts.filters;
+            ses.sendRequest(`${this.getPath(opts.cubes ? 'crosstabcubes' : 'crosstab', opts)}&crosstab=${encodeURIComponent(ctb)}`, this.getReqParams(opts.filters || this.filters, true), (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
+                    if (!(opts.error || ses.error).call(this, err))
+                        reject.call(this, err);
+                }
+                else {
+                    resolve.call(this, r.response);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
-    };
+    }
     /**
      * Build a custom publication
      * @param {string} prt Publication name
@@ -1155,44 +1062,38 @@ var BusinessObject = /** @class */ (function () {
      * @return {promise<Doc>} A promise to the document of the publication
      * @function
      */
-    BusinessObject.prototype.print = function (prt, rowId, opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            var origin, ses;
-            var _this = this;
-            return __generator(this, function (_a) {
-                origin = "BusinessObject.print(".concat(prt, ")");
-                ses = this.session;
-                opts = opts || {};
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        if (opts.filters)
-                            _this.filters = opts.filters;
-                        var p = '';
-                        if (opts.all)
-                            p += '&all=' + !!opts.all;
-                        if (opts.mailing)
-                            p += '&mailing=' + !!opts.mailing;
-                        if (rowId)
-                            p += "&".concat(_this.getRowIdFieldName(), "=").concat(encodeURIComponent(rowId));
-                        ses.sendRequest("".concat(_this.getPath('print', opts), "&printtemplate=").concat(encodeURIComponent(prt)).concat(p), undefined, function (res, status) {
-                            var r = ses.parseResponse(res, status);
-                            ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
-                            if (r.type === 'error') {
-                                var err = ses.getError(r.response, undefined, origin);
-                                if (!(opts.error || ses.error).call(_this, err))
-                                    reject.call(_this, err);
-                            }
-                            else {
-                                resolve.call(_this, new doc_1.Doc(r.response));
-                            }
-                        }, function (err) {
-                            err = ses.getError(err, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        });
-                    })];
+    async print(prt, rowId, opts) {
+        const origin = `BusinessObject.print(${prt})`;
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            if (opts.filters)
+                this.filters = opts.filters;
+            let p = '';
+            if (opts.all)
+                p += '&all=' + !!opts.all;
+            if (opts.mailing)
+                p += '&mailing=' + !!opts.mailing;
+            if (rowId)
+                p += `&${this.getRowIdFieldName()}=${encodeURIComponent(rowId)}`;
+            ses.sendRequest(`${this.getPath('print', opts)}&printtemplate=${encodeURIComponent(prt)}${p}`, undefined, (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
+                    if (!(opts.error || ses.error).call(this, err))
+                        reject.call(this, err);
+                }
+                else {
+                    resolve.call(this, new doc_js_1.Doc(r.response));
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
-    };
+    }
     /**
      * Get place map data
      * @param {string} pcm Place map name
@@ -1203,38 +1104,32 @@ var BusinessObject = /** @class */ (function () {
      * @return {promise<any>} A promise to the place map data
      * @function
      */
-    BusinessObject.prototype.placemap = function (pcm, filters, opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            var origin, ses;
-            var _this = this;
-            return __generator(this, function (_a) {
-                origin = "BusinessObject.placemap(".concat(pcm, ")");
-                ses = this.session;
-                this.filters = filters || {};
-                opts = opts || {};
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        if (opts.filters)
-                            _this.filters = opts.filters;
-                        ses.sendRequest("".concat(_this.getPath('placemap', opts), "&placemap=").concat(encodeURIComponent(pcm)), _this.getReqParams(_this.filters, true), function (res, status) {
-                            var r = ses.parseResponse(res, status);
-                            ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
-                            if (r.type === 'error') {
-                                var err = ses.getError(r.response, undefined, origin);
-                                if (!(opts.error || ses.error).call(_this, err))
-                                    reject.call(_this, err);
-                            }
-                            else {
-                                resolve.call(_this, r.response);
-                            }
-                        }, function (err) {
-                            err = ses.getError(err, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        });
-                    })];
+    async placemap(pcm, filters, opts) {
+        const origin = `BusinessObject.placemap(${pcm})`;
+        const ses = this.session;
+        this.filters = filters || {};
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            if (opts.filters)
+                this.filters = opts.filters;
+            ses.sendRequest(`${this.getPath('placemap', opts)}&placemap=${encodeURIComponent(pcm)}`, this.getReqParams(this.filters, true), (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug('[' + origin + '] HTTP status = ' + status + ', response type = ' + r.type);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
+                    if (!(opts.error || ses.error).call(this, err))
+                        reject.call(this, err);
+                }
+                else {
+                    resolve.call(this, r.response);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
-    };
+    }
     /**
      * Set an object parameter
      * @param {string} param Parameter name
@@ -1245,39 +1140,33 @@ var BusinessObject = /** @class */ (function () {
      * @return {promise<object>} Promise
      * @function
      */
-    BusinessObject.prototype.setParameter = function (param, value, opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            var origin, ses;
-            var _this = this;
-            return __generator(this, function (_a) {
-                origin = 'BusinessObject.setParameter';
-                ses = this.session;
-                opts = opts || {};
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        var p = { name: param };
-                        if (value)
-                            p.value = value;
-                        ses.sendRequest(_this.getPath('setparameter', opts), _this.getReqParams(p), function (res, status) {
-                            var r = ses.parseResponse(res, status);
-                            ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                            if (r.type === 'error') {
-                                var err = ses.getError(r.response, undefined, origin);
-                                if (!(opts.error || ses.error).call(_this, err))
-                                    reject.call(_this, err);
-                            }
-                            else {
-                                var result = r.response.result;
-                                resolve.call(_this, result);
-                            }
-                        }, function (err) {
-                            err = ses.getError(err, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        });
-                    })];
+    async setParameter(param, value, opts) {
+        const origin = 'BusinessObject.setParameter';
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            const p = { name: param };
+            if (value)
+                p.value = value;
+            ses.sendRequest(this.getPath('setparameter', opts), this.getReqParams(p), (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
+                    if (!(opts.error || ses.error).call(this, err))
+                        reject.call(this, err);
+                }
+                else {
+                    const result = r.response.result;
+                    resolve.call(this, result);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
-    };
+    }
     /**
      * Get an object parameter
      * @param {string} param Parameter name
@@ -1287,37 +1176,31 @@ var BusinessObject = /** @class */ (function () {
      * @return {promise<object>} Promise to the parameter value
      * @function
      */
-    BusinessObject.prototype.getParameter = function (param, opts) {
-        return __awaiter(this, void 0, void 0, function () {
-            var origin, ses;
-            var _this = this;
-            return __generator(this, function (_a) {
-                origin = 'BusinessObject.getParameter';
-                ses = this.session;
-                opts = opts || {};
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        var p = { name: param };
-                        ses.sendRequest(_this.getPath('getparameter', opts), _this.getReqParams(p), function (res, status) {
-                            var r = ses.parseResponse(res, status);
-                            ses.debug("[".concat(origin, "] HTTP status = ").concat(status, ", response type = ").concat(r.type));
-                            if (r.type === 'error') {
-                                var err = ses.getError(r.response, undefined, origin);
-                                if (!(opts.error || ses.error).call(_this, err))
-                                    reject.call(_this, err);
-                            }
-                            else {
-                                var result = r.response.result;
-                                resolve.call(_this, result);
-                            }
-                        }, function (err) {
-                            err = ses.getError(err, undefined, origin);
-                            if (!(opts.error || ses.error).call(_this, err))
-                                reject.call(_this, err);
-                        });
-                    })];
+    async getParameter(param, opts) {
+        const origin = 'BusinessObject.getParameter';
+        const ses = this.session;
+        opts = opts || {};
+        return new Promise((resolve, reject) => {
+            const p = { name: param };
+            ses.sendRequest(this.getPath('getparameter', opts), this.getReqParams(p), (res, status) => {
+                const r = ses.parseResponse(res, status);
+                ses.debug(`[${origin}] HTTP status = ${status}, response type = ${r.type}`);
+                if (r.type === 'error') {
+                    const err = ses.getError(r.response, undefined, origin);
+                    if (!(opts.error || ses.error).call(this, err))
+                        reject.call(this, err);
+                }
+                else {
+                    const result = r.response.result;
+                    resolve.call(this, result);
+                }
+            }, (err) => {
+                err = ses.getError(err, undefined, origin);
+                if (!(opts.error || ses.error).call(this, err))
+                    reject.call(this, err);
             });
         });
-    };
+    }
     /**
      * Get an object resource URL
      * @param {string} code Resource code
@@ -1325,10 +1208,9 @@ var BusinessObject = /** @class */ (function () {
      * @return {string} Object resource URL
      * @function
      */
-    BusinessObject.prototype.getResourceURL = function (code, type) {
+    getResourceURL(code, type) {
         return this.session.getResourceURL(code, type, this.metadata.name, this.metadata.id);
-    };
-    return BusinessObject;
-}());
+    }
+}
 exports.BusinessObject = BusinessObject;
 //# sourceMappingURL=businessobject.js.map

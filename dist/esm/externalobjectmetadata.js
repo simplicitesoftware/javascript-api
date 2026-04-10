@@ -12,6 +12,11 @@ class ExternalObjectMetadata {
     constructor(name) {
         this.name = name;
     }
+    /**
+     * Name
+     * @member {string}
+     */
+    name;
 }
 export { ExternalObjectMetadata };
 //# sourceMappingURL=externalobjectmetadata.js.map

@@ -1,17 +1,17 @@
-/*!
+/**
  * Simplicite(R) platform Javascript API client module (for node.js and browser).
  * @module simplicite
- * @version 3.1.5
+ * @version 3.1.6
  * @license Apache-2.0
  */
-import { Doc } from './doc';
-import { Grant } from './grant';
-import { BusinessObjectMetadata } from './businessobjectmetadata';
-import { BusinessObject } from './businessobject';
-import { ExternalObjectMetadata } from './externalobjectmetadata';
-import { ExternalObject } from './externalobject';
-import { SessionParams } from './sessionparams';
-import { Session } from './session';
+import { Doc } from './doc.js';
+import { Grant } from './grant.js';
+import { BusinessObjectMetadata } from './businessobjectmetadata.js';
+import { BusinessObject } from './businessobject.js';
+import { ExternalObjectMetadata } from './externalobjectmetadata.js';
+import { ExternalObject } from './externalobject.js';
+import { SessionParams } from './sessionparams.js';
+import { Session } from './session.js';
 declare const _default: {
     constants: {
         MODULE_VERSION: string;
@@ -82,9 +82,9 @@ declare const _default: {
         ERRLEVEL_FATAL: number;
         ERRLEVEL_ERROR: number;
         ERRLEVEL_WARNING: number;
-        ENDPOINT_API: import("./sessionparams").SessionParamEndpoint;
-        ENDPOINT_UI: import("./sessionparams").SessionParamEndpoint;
-        ENDPOINT_UIPUBLIC: import("./sessionparams").SessionParamEndpoint;
+        ENDPOINT_API: import("./sessionparams.js").SessionParamEndpoint;
+        ENDPOINT_UI: import("./sessionparams.js").SessionParamEndpoint;
+        ENDPOINT_UIPUBLIC: import("./sessionparams.js").SessionParamEndpoint;
         RESOURCE_TYPE_IMAGE: string;
         RESOURCE_TYPE_ICON: string;
         RESOURCE_TYPE_STYLESHEET: string;

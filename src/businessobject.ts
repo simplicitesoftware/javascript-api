@@ -149,7 +149,7 @@ class BusinessObject {
 	 * @return {string} Instance name
 	 * @function
 	 */
-	public getInstance(): string {
+	public getInstance(): string|undefined {
 		return this.metadata.instance;
 	}
 
@@ -158,7 +158,7 @@ class BusinessObject {
 	 * @return {string} Display label
 	 * @function
 	 */
-	public getLabel(): string {
+	public getLabel(): string|undefined {
 		return this.metadata.label;
 	}
 
@@ -167,7 +167,7 @@ class BusinessObject {
 	 * @return {string} Help
 	 * @function
 	 */
-	public getHelp(): string {
+	public getHelp(): string|undefined {
 		return this.metadata.help;
 	}
 
@@ -176,7 +176,7 @@ class BusinessObject {
 	 * @return {array} Array of field definitions
 	 * @function
 	 */
-	public getFields(): any[] {
+	public getFields(): any[]|undefined {
 		return this.metadata.fields;
 	}
 
@@ -187,7 +187,7 @@ class BusinessObject {
 	 * @function
 	 */
 	public getField(fieldName: string): any {
-		const fs: any[] = this.getFields();
+		const fs: any[] = this.getFields() || [];
 		let n = 0;
 		while (n < fs.length && fs[n].name !== fieldName) n++;
 		if (n < fs.length)
@@ -217,7 +217,7 @@ class BusinessObject {
 	 * @return {array} Array of links
 	 * @function
 	 */
-	public getLinks(): any[] {
+	public getLinks(): any[]|undefined {
 		return this.metadata.links;
 	}
 
@@ -227,7 +227,7 @@ class BusinessObject {
 	 * @return {string} Type (one of <code>constants.TYPE_*</code>)
 	 * @function
 	 */
-	public getFieldType(field: string|any): string {
+	public getFieldType(field: string|any): string|undefined {
 		if (typeof field === 'string')
 			field = this.getField(field);
 		if (field)
@@ -240,7 +240,7 @@ class BusinessObject {
 	 * @return {string} Field label
 	 * @function
 	 */
-	public getFieldLabel(field: string|any): string {
+	public getFieldLabel(field: string|any): string|undefined {
 		if (typeof field === 'string')
 			field = this.getField(field);
 		if (field)
@@ -301,7 +301,7 @@ class BusinessObject {
 	 * @return {string} Document/image field data URL (or nothing if the field is not of document/image type or if it is not inlined or if it is empty)
 	 * @function
 	 */
-	public getFieldDataURL(field: string|any, item?: any): string {
+	public getFieldDataURL(field: string|any, item?: any): string|undefined {
 		if (typeof field !== 'string')
 			field = field.fullinput || field.name;
 		const val: string|any = this.getFieldValue(field, item);
@@ -334,7 +334,7 @@ class BusinessObject {
 	 * @return {string} Document/image field URL (or nothing if the field is not of document/image type or if it is empty)
 	 * @function
 	 */
-	public getFieldDocumentURL(field: string|any, item?: any, thumbnail?: boolean): string {
+	public getFieldDocumentURL(field: string|any, item?: any, thumbnail?: boolean): string|undefined {
 		if (typeof field !== 'string')
 			field = field.fullinput || field.input || field.name;
 		let val: string|any = this.getFieldValue(field, item);
@@ -343,9 +343,9 @@ class BusinessObject {
 		if (val)
 			return this.session.parameters.url + this.session.parameters.docpath
 				+ '?object=' + encodeURIComponent(this.metadata.name)
-				+ '&inst=' + encodeURIComponent(this.metadata.instance)
+				+ '&inst=' + encodeURIComponent(this.metadata.instance || '')
 				+ '&field=' + encodeURIComponent(field)
-				+ '&row_id=' + encodeURIComponent(this.getRowId(item))
+				+ '&row_id=' + encodeURIComponent(this.getRowId(item) || '')
 				+ '&doc_id=' + encodeURIComponent(val)
 				+ (thumbnail ? '&thumbnail=true' : '')
 				+ (this.session.authtoken ? '&_x_simplicite_authorization_=' + encodeURIComponent(this.session.authtoken) : '');
@@ -423,7 +423,7 @@ class BusinessObject {
 			item = this.item;
 
 		// Convert form data to plain object
-		let dt;
+		let dt: any;
 		if (data instanceof FormData) {
 			dt = {};
 			(data as FormData).forEach((v: any, k: string) => dt[k] = v );
@@ -439,7 +439,7 @@ class BusinessObject {
 					promises.push(new Promise(r => {
 						new Doc().load(v as File).then(doc => {
 							this.setFieldValue(k, doc);
-							r.call(this);
+							r.call(this, doc);
 						});
 					}));
 				else
@@ -704,7 +704,7 @@ class BusinessObject {
 				p += '&_md=true';
 			if (opts.social)
 				p += '&_social=true';
-			ses.sendRequest(`${this.getPath('get', opts)}&${this.metadata.rowidfield}=${encodeURIComponent(rowId || this.getRowId())}${p}`, undefined, (res: any, status: number) => {
+			ses.sendRequest(`${this.getPath('get', opts)}&${this.metadata.rowidfield}=${encodeURIComponent(rowId || this.getRowId() || '')}${p}`, undefined, (res: any, status: number) => {
 				const r: any = ses.parseResponse(res, status);
 				ses.debug('[simplicite.BusinessObject.get] HTTP status = ' + status + ', response type = ' + r.type);
 				if (r.type === 'error') {
@@ -803,10 +803,9 @@ class BusinessObject {
 	 * @return {string} Item's row ID value
 	 * @function
 	 */
-	public getRowId(item?: any): string {
+	public getRowId(item?: any): string|undefined {
 		item = item || this.item;
-		if (item)
-			return item[this.getRowIdFieldName()];
+		return item ? item[this.getRowIdFieldName()] : undefined;
 	}
 
 	/**

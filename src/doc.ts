@@ -14,9 +14,9 @@ class Doc {
 		Object.assign(this, typeof value == 'string' ? { name: value } : value || {});
 
 		// Backward compatibility
-		if (this['filename'] && !this.name) {
-			this.name = this['filename'];
-			this['filename'] = undefined;
+		if ((this as any)['filename'] && !this.name) {
+			this.name = (this as any)['filename'];
+			(this as any)['filename'] = undefined;
 		}
 	}
 
@@ -55,7 +55,7 @@ class Doc {
 	 * @return {string} ID
 	 * @function
 	 */
-	public getId(): string {
+	public getId(): string|undefined {
 		return this.id;
 	}
 
@@ -64,7 +64,7 @@ class Doc {
 	 * @return {string} MIME type
 	 * @function
 	 */
-	public getMIMEType(): string {
+	public getMIMEType(): string|undefined {
 		return this.mime;
 	}
 
@@ -98,7 +98,7 @@ class Doc {
 	 * @return {string} Name
 	 * @function
 	 */
-	public getName(): string {
+	public getName(): string|undefined {
 		return this.name;
 	}
 
@@ -150,7 +150,7 @@ class Doc {
 	 * @return {string} Content
 	 * @function
 	 */
-	public getContent(): string {
+	public getContent(): string|undefined {
 		return this.content;
 	}
 
@@ -159,7 +159,7 @@ class Doc {
 	 * @return {string} Thumbnail
 	 * @function
 	 */
-	public getThumbnail(): string {
+	public getThumbnail(): string|undefined {
 		return this.thumbnail;
 	}
 
@@ -228,9 +228,10 @@ class Doc {
 	 * @return {string} Data URL or nothing if content is empty
 	 * @function
 	 */
-	public getDataURL(thumbnail?: boolean): string {
-		if (this.content)
-			return 'data:' + this.mime + ';base64,' + (thumbnail && this.thumbnail ? this.thumbnail : this.content);
+	public getDataURL(thumbnail?: boolean): string|undefined {
+		return this.content
+			? 'data:' + this.mime + ';base64,' + (thumbnail && this.thumbnail ? this.thumbnail : this.content)
+			: undefined;
 	}
 
 	/**
@@ -269,7 +270,7 @@ class Doc {
 	public getValue(): any {
 		return {
 			id: this.id,
-			name: this['filename'] && !this.name ? this['filename'] : this.name, // Backward compatibility
+			name: (this as any)['filename'] && !this.name ? (this as any)['filename'] : this.name, // Backward compatibility
 			mime: this.mime,
 			content: this.content,
 			thumbnail: this.thumbnail

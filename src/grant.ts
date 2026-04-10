@@ -161,7 +161,7 @@ class Grant {
 	 * @return {Doc} Picture data URL
 	 * @function
 	 */
-	public getPictureURL(): string {
+	public getPictureURL(): string|undefined {
 		if (this.picture)
 			return 'data:' + this.picture.mime + ';base64,' + this.picture.content;
 	}
@@ -173,7 +173,7 @@ class Grant {
 	 * @function
 	 */
 	public hasResponsibility(group: string): boolean {
-		return this.responsibilities && this.responsibilities.indexOf(group) !== -1;
+		return this.responsibilities ? this.responsibilities.indexOf(group) !== -1 : false;
 	}
 
 	/**
@@ -197,7 +197,7 @@ class Grant {
 	 * @function
 	 */
 	public getSystemParameter(name: string): string {
-		return this.sysparams ? this.sysparams[name] || '' : '';
+		return this.sysparams ? this.sysparams.get(name) || '' : '';
 	}
 
 	/**
@@ -214,7 +214,7 @@ class Grant {
 	 * @return {string} Text value
 	 */
 	public T(code: string): string {
-		return this.texts ? this.texts[code] || '' : '';
+		return this.texts ? this.texts.get(code) || '' : '';
 	}
 }
 
