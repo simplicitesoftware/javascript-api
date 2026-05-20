@@ -11,7 +11,7 @@ declare class BusinessObject {
      * Constructor
      * @param {Session} ses Session
      * @param {string} name Business object name
-     * @param {string} [instance] Business object instance name, defaults to <code>js_&lt;object name&gt;</code>
+     * @param {string} [instance] Business object instance name, defaults to <code>api_&lt;object name&gt;</code>, not taken into account on the API endpoint.
      */
     constructor(ses: Session, name: string, instance?: string);
     /**
@@ -101,6 +101,12 @@ declare class BusinessObject {
      * @function
      */
     getLabel(): string | undefined;
+    /**
+     * Get display plural label
+     * @return {string} Display plural label
+     * @function
+     */
+    getPluralLabel(): string | undefined;
     /**
      * Get help
      * @return {string} Help

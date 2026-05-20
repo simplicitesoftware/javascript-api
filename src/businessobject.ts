@@ -163,6 +163,15 @@ class BusinessObject {
 	}
 
 	/**
+	 * Get display plural label
+	 * @return {string} Display plural label
+	 * @function
+	 */
+	public getPluralLabel(): string|undefined {
+		return this.metadata.plurallabel;
+	}
+
+	/**
 	 * Get help
 	 * @return {string} Help
 	 * @function

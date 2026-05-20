@@ -45,6 +45,11 @@ class BusinessObjectMetadata {
      */
     label;
     /**
+     * Display plural label
+     * @member {string}
+     */
+    plurallabel;
+    /**
      * Help
      * @member {string}
      */
