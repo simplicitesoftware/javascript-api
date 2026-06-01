@@ -529,7 +529,7 @@ class BusinessObject {
         if (!data)
             return p;
         for (const i of Object.entries(data)) {
-            const k = i[0];
+            const k = encodeURIComponent(i[0]);
             let d = i[1] || '';
             if (d instanceof doc_js_1.Doc)
                 d = d.getValue();

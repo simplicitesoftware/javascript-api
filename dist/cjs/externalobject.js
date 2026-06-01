@@ -55,7 +55,7 @@ class ExternalObject {
         if (!params)
             return p;
         for (const i of Object.entries(params)) {
-            const k = i[0];
+            const k = encodeURIComponent(i[0]);
             const v = i[1] || '';
             if (v.sort) { // Array ?
                 for (const vv of v)
